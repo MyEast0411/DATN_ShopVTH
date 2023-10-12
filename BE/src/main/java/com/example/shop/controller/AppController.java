@@ -8,17 +8,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
+@RestController
 public class AppController {
 
-    @GetMapping("/index")
-    public String index() {
-        return "index";
-    }
-
-    @GetMapping("/hien-thi")
-    public String hienThi(Model model) {
-        model.addAttribute("hi","hihihi");
-        return "index";
-    }
 
 }
