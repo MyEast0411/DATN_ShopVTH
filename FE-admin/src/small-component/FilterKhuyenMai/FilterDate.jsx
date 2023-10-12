@@ -3,9 +3,9 @@ import { DatePicker, Space } from "antd";
 
 const { RangePicker } = DatePicker;
 
-const FilterDatePicker = () => (
+const FilterDatePicker = ({style}) => (
   <Space direction="vertical" size={12}>
-    <RangePicker showTime />
+   <RangePicker showTime style={style} /> 
    
   </Space>
 );

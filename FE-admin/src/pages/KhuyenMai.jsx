@@ -4,6 +4,8 @@ import FilterPhanTram from "../small-component/FilterKhuyenMai/FilterPhanTram";
 import FilterTrangThai from "../small-component/FilterKhuyenMai/FilterTrangThai";
 import FilterDate from "../small-component/FilterKhuyenMai/FilterDate";
 
+import { Button } from "antd";
+import { Link } from "react-router-dom";
 //table
 import DataTableMa from "../small-component/TableKhuyenMai/DataTable";
 
@@ -34,13 +36,16 @@ const KhuyenMai = () => {
             <FilterMa placeholder="Tên khuyến mại" />
           </div>
           <div className="pr-2">
-            <FilterPhanTram placeholder="Giá trị giảm (%)" />
+            <FilterPhanTram
+              placeholder="Giá trị giảm (%)"
+              style={{ width: "150px" }}
+            />
           </div>
           <div className="pr-2">
             <FilterTrangThai placeholder="Chọn trạng thái" />
           </div>
           <div className="pr-2">
-            <FilterDate />
+            <FilterDate style={{ width: "100%" }}/>
           </div>
           <div className="pr-2">
             <button className="icon-hover">
@@ -54,9 +59,22 @@ const KhuyenMai = () => {
             </button>
           </div>
         </div>
-        <div className="mb-2 mt-10 border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
-          <HiOutlineClipboardList />
-          <p className="ml-2 mt-1"> Danh sách</p>
+        <div className="mb-2 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
+          <div className="flex items-center">
+            <HiOutlineClipboardList />
+            <p className="ml-2 mt-1"> Danh sách</p>
+          </div>
+          <Link to={"/them-khuyen-mai"}>
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: "#1976d2",
+                marginBottom: "2px",
+              }}
+            >
+              Thêm
+            </Button>
+          </Link>
         </div>
         <DataTableMa />
       </div>
