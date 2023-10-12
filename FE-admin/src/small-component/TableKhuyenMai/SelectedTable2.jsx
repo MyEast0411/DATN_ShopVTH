@@ -1,10 +1,38 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { TableCell, Button } from "@mui/material";
+import { number } from "prop-types";
+import { TbEyeShare } from "react-icons/tb";
+
+const getColorBox = (color) => (
+  <div
+    style={{
+      width: "20px", // Adjust the width as needed
+      height: "20px", // Adjust the height as needed
+      backgroundColor: "red",
+      borderRadius: "5px"
+    }}
+  ></div>
+);
 
 const columns = [
   { field: "id", headerName: "STT", width: 70 },
-  { field: "hinhAnh", headerName: "Hình ảnh", width: 200 },
+  {
+    field: "hinhAnh",
+    headerName: "Hình ảnh",
+    width: 100,
+    renderCell: (params) => (
+      <TableCell>
+        <img
+          src="https://i.ibb.co/3zcW60M/AIR-JORDAN-1-RETRO-HIGH-UNC.webp"
+          alt="Hình ảnh"
+          style={{
+            maxWidth: "100%",
+          }}
+        />
+      </TableCell>
+    ),
+  },
   { field: "ten", headerName: "Tên sản phẩm", width: 200 },
   {
     field: "gioiTinh",
@@ -15,17 +43,15 @@ const columns = [
   {
     field: "kichThuoc",
     headerName: "Kích thước",
-    description: "Kích thước",
-    sortable: false,
-    width: 160,
+    type: "number",
+    width: 90,
   },
-
   {
     field: "mauSac",
     headerName: "Màu sắc",
-    description: "Màu sắc",
-    sortable: false,
-    width: 160,
+    type: "text",
+    width: 80,
+    renderCell: (params) => <TableCell>{getColorBox(params.value)}</TableCell>,
   },
   {
     field: "trangThai",
@@ -56,20 +82,107 @@ const columns = [
     headerName: "Tình trạng",
     description: "Tình trạng",
     sortable: false,
-    width: 160,
+    width: 100,
+    renderCell: (params) => (
+      <TableCell>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+            fontSize: "20px",
+          }}
+        >
+          <TbEyeShare style={{ marginRight: 4 }} />
+          {params.value}
+        </div>
+      </TableCell>
+    ),
   },
 ];
 
 const rows = [
-  { id: 1, hinhAnh: "Snow", ten: "Jon", gioiTinh: "Nam" },
-  { id: 2, hinhAnh: "Lannister", ten: "Cersei", gioiTinh: "Nam" },
-  { id: 3, hinhAnh: "Lannister", ten: "Jaime", gioiTinh: "Nam" },
-  { id: 4, hinhAnh: "Stark", ten: "Arya", gioiTinh: "Nam" },
-  { id: 5, hinhAnh: "Targaryen", ten: "Daenerys", gioiTinh: "Nữ" },
-  { id: 6, hinhAnh: "Melisandre", ten: null, gioiTinh: "Nam" },
-  { id: 7, hinhAnh: "Clifford", ten: "Ferrara", gioiTinh: "Nam " },
-  { id: 8, hinhAnh: "Frances", ten: "Rossini", gioiTinh: "Nam" },
-  { id: 9, hinhAnh: "Roxie", ten: "Harvey", gioiTinh: "Nam" },
+  {
+    id: 1,
+    hinhAnh: "Snow",
+    ten: "Jonhhh",
+    gioiTinh: "Nam",
+    kichThuoc: 8,
+    mauSac: "Xanh",
+    trangThai: "Đang kinh doanh",
+  },
+  {
+    id: 2,
+    hinhAnh: "Lannister",
+    ten: "Cersei",
+    gioiTinh: "Nam",
+    kichThuoc: 1,
+    mauSac: "Xanh",
+    trangThai: "Đang kinh doanh",
+  },
+  {
+    id: 3,
+    hinhAnh: "Lannister",
+    ten: "Jaime",
+    gioiTinh: "Nam",
+    kichThuoc: 10,
+    mauSac: "Xanh",
+    trangThai: "Đang kinh doanh",
+  },
+  {
+    id: 4,
+    hinhAnh: "Stark",
+    ten: "Arya",
+    gioiTinh: "Nam",
+    kichThuoc: 10,
+    mauSac: "Xanh",
+    trangThai: "Đang kinh doanh",
+  },
+  {
+    id: 5,
+    hinhAnh: "Targaryen",
+    ten: "Daenerys",
+    gioiTinh: "Nữ",
+    kichThuoc: 5,
+    mauSac: "Xanh",
+    trangThai: "Đang kinh doanh",
+  },
+  {
+    id: 6,
+    hinhAnh: "Melisandre",
+    ten: null,
+    gioiTinh: "Nam",
+    kichThuoc: 10,
+    mauSac: "Xanh",
+    trangThai: "Đang kinh doanh",
+  },
+  {
+    id: 7,
+    hinhAnh: "Clifford",
+    ten: "Ferrara",
+    gioiTinh: "Nam ",
+    kichThuoc: 10,
+    mauSac: "Xanh",
+    trangThai: "Đang kinh doanh",
+  },
+  {
+    id: 8,
+    hinhAnh: "Frances",
+    ten: "Rossini",
+    gioiTinh: "Nam",
+    kichThuoc: 9,
+    mauSac: "Xanh",
+    trangThai: "Đang kinh doanh",
+  },
+  {
+    id: 9,
+    hinhAnh: "Roxie",
+    ten: "Harvey",
+    gioiTinh: "Nam",
+    kichThuoc: 7,
+    mauSac: "Xanh",
+    trangThai: "Đang kinh doanh",
+  },
 ];
 
 export default function SelectedTable2() {
