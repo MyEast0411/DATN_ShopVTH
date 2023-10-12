@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
-@CrossOrigin("*")
-@RequestMapping("hoa_don_chi_tiet")
-public class ChiTietHoaDonController {
-
-
-}
+//@RestController
+//@CrossOrigin("*")
+//@RequestMapping("hoa_don_chi_tiet")
+//public class ChiTietHoaDonController {
+//
+//
+//}

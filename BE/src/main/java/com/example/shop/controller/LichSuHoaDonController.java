@@ -16,28 +16,28 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping("lich_su_thanh_toan")
 public class LichSuHoaDonController {
-    @GetMapping
+    @GetMapping("getLichSuHoaDons")
     public ResponseEntity<List<LichSuHoaDon>> getLichSuHoaDons(){
         return ResponseEntity.ok(new ArrayList<>());
     }
 
-    @GetMapping
+    @GetMapping("getLichSuHoaDon/{id}")
     public ResponseEntity<LichSuHoaDon> getLichSuHoaDon(){
         return ResponseEntity.ok(new LichSuHoaDon());
     }
 
 
-    @PostMapping
+    @PostMapping("add")
     public ResponseEntity<List<LichSuHoaDon>> addLichSuHoaDon(){
         return ResponseEntity.ok(new ArrayList<>());
     }
 
-    @PutMapping
+    @PutMapping("update/{id}")
     public ResponseEntity<List<LichSuHoaDon>> updateLichSuHoaDon(){
         return ResponseEntity.ok(new ArrayList<>());
     }
 
-    @DeleteMapping
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<List<LichSuHoaDon>> deleteLichSuHoaDon(){
         return ResponseEntity.ok(new ArrayList<>());
     }
