@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ThemKhuyenMai from "./components/khuyenMai/ThemKhuyenMai";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/khuyen-mai" element={<KhuyenMai />} />
         <Route path="/voucher" element={<Voucher />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
 
         <Route path="/quan-ly-san-pham" element={<Build />}>
           <Route path=":bID">

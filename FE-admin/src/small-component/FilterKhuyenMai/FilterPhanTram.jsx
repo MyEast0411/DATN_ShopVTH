@@ -10,11 +10,8 @@ for (let i = 1; i <= 90; i++) { // Restrict values from 1 to 90
   });
 }
 
-const selected = {
-  width: "150px",
-};
 
-const FilterOption = ({ placeholder }) => {
+const FilterOption = ({ placeholder, style }) => {
   const handleChange = (value) => {
     console.log(`selected ${value}`);
   };
@@ -22,7 +19,7 @@ const FilterOption = ({ placeholder }) => {
   return (
     <Select
       mode="tags"
-      style={selected}
+      style={style}
       placeholder={placeholder}
       onChange={handleChange}
       options={options}

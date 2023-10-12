@@ -59,7 +59,7 @@ const columns = [
   {
     field: "hanhDong",
     headerName: "Hành động",
-    width: 150,
+    width: 200,
     sortable: false,
     renderCell: (params) => (
       <TableCell>
@@ -67,7 +67,12 @@ const columns = [
           variant="contained"
           color="primary"
           size="small"
-          style={{ marginRight: 8 }}
+          style={{
+            marginRight: 8,
+            width: "22px",
+            height: "22px",
+            fontSize: "12px",
+          }}
           onClick={() => {
             console.log(`Edit clicked for row ID: ${params.id}`);
           }}
@@ -78,6 +83,7 @@ const columns = [
           variant="contained"
           color="error"
           size="small"
+          style={{ width: "22px", height: "22px", fontSize: "12px" }}
           onClick={() => {
             console.log(`Delete clicked for row ID: ${params.id}`);
           }}
