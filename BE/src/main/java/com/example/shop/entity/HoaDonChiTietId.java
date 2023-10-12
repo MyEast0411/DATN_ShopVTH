@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HoaDonChiTietId {
-    private UUID id_hoa_don;
+public class HoaDonChiTietId implements Serializable {
+    private String id_hoa_don;
 
-    private UUID id_chi_tiet_san_pham;
+    private String id_chi_tiet_san_pham;
 }

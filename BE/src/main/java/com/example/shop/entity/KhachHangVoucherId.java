@@ -1,10 +1,18 @@
 package com.example.shop.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.UUID;
 
-public class KhachHangVoucherId {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class KhachHangVoucherId implements Serializable {
 
-    private UUID id_voucher;
+    private String id_voucher;
 
-    private UUID id_khach_hang;
+    private String id_khach_hang;
 }

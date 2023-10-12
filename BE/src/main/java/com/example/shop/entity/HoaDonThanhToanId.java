@@ -1,9 +1,17 @@
 package com.example.shop.entity;
 
-import java.util.UUID;
 
-public class HoaDonThanhToanId {
-    private UUID id_hoa_don;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    private UUID id_thanh_toan;
+import java.io.Serializable;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class HoaDonThanhToanId implements Serializable {
+    private String id_hoa_don;
+
+    private String id_thanh_toan;
 }

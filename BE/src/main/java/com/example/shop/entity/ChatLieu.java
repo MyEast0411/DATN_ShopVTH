@@ -16,7 +16,7 @@ import java.util.UUID;
 public class ChatLieu {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(name = "ma")
     private String ma;
