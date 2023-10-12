@@ -64,9 +64,9 @@ input[type="number"] {
 }
 
 .icon-hover:hover {
-  transition: 0.2s;
-  scale: 1.2;
-  fill: #1976d2; /* Change the icon color on hover */
+  transition: 0.06s;
+  /* scale: 1.1; */
+  color: #1976d2;
 }
 
 
