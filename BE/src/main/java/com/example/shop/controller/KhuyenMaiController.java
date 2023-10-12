@@ -20,6 +20,7 @@ public class KhuyenMaiController {
 
     @GetMapping("khuyen-mai")
     public List<KhuyenMai> findAll() {
+        System.out.println("OK");
         return this.khuyenMaiService.findAll();
     }
 
