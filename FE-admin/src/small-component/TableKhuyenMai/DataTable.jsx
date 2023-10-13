@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { TableCell, Button } from "@mui/material";
+import { fetchKhuyenMai } from "../../res/fetchKhuyenMai";
 
 const columns = [
   { field: "id", headerName: "STT", width: 20 },
@@ -95,109 +97,29 @@ const columns = [
   },
 ];
 
-const rows = [
-  {
-    id: 1,
-    ma: "Snow",
-    ten: "Jon",
-    giaTriGiam: 35,
-    startDate: "30/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Còn hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 2,
-    ma: "Lannister",
-    ten: "Cersei",
-    giaTriGiam: 42,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 3,
-    ma: "Lannister",
-    ten: "Jaime",
-    giaTriGiam: 45,
-    startDate: "28/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 4,
-    ma: "Stark",
-    ten: "Arya",
-    giaTriGiam: 16,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 5,
-    ma: "Targaryen",
-    ten: "Daenerys",
-    giaTriGiam: null,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 6,
-    ma: "Melisandre",
-    ten: null,
-    giaTriGiam: 150,
-    startDate: "27/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 7,
-    ma: "Clifford",
-    ten: "Ferrara",
-    giaTriGiam: 44,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 8,
-    ma: "Frances",
-    ten: "Rossini",
-    giaTriGiam: 36,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Còn hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 9,
-    ma: "Roxie",
-    ten: "Harvey",
-    giaTriGiam: 65,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-];
-
 export default function DataTable() {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    fetchKhuyenMai().then((data) => {
+      const processedData = data.map((item, index) => {
+        return {
+          id: index + 1,
+          ma: item.ma,
+          ten: item.ten,
+          giaTriGiam: item.giaTriPhanTram + "%",
+          startDate: item.ngayBatDau,
+          endDate: item.ngayKetThuc,
+          updateDate: item.ngaySua,
+          trangThai: item.trangThai === 0 ? "Còn hạn" : "Hết hạn",
+        };
+      });
+
+      setRows(processedData);
+    });
+  }, []);
+
+
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid
