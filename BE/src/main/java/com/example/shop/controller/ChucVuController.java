@@ -1,10 +1,10 @@
 package com.example.shop.controller;
 
+import com.example.shop.entity.ChucVu;
 import com.example.shop.entity.DiaChi;
-import com.example.shop.service.DiaChiService;
+import com.example.shop.service.ChucVuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,34 +20,34 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
-@RequestMapping("/dia-chi")
+@RequestMapping("/chuc-vu")
 @Controller
-public class DiaChiController {
+public class ChucVuController {
     @Autowired
-    private DiaChiService diaChiService;
+  private   ChucVuService chucVuService;
+
     @GetMapping("/hien-thi")
-    public ArrayList<DiaChi> hienthi(){
-        return diaChiService.getAll();
+    public ArrayList<ChucVu> hienthi(){
+        return chucVuService.getAll();
     }
 
     @GetMapping("/detail/{id}")
-    public DiaChi detail(@PathVariable("id")UUID id){
-        return diaChiService.getById(id);
+    public ChucVu detail(@PathVariable("id") UUID id){
+        return chucVuService.getById(id);
     }
 
-    @DeleteMapping ("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public void  delete(@PathVariable("id")UUID id){
-       diaChiService.delete(id);
+        chucVuService.delete(id);
     }
 
     @PostMapping("/add")
-    public DiaChi add(@RequestBody DiaChi diaChi){
-        return diaChiService.add(diaChi);
+    public ChucVu add(@RequestBody ChucVu chucVu){
+        return chucVuService.add(chucVu);
     }
     @PutMapping("/update/{id}")
-    public DiaChi update(@RequestBody  DiaChi diaChi,@PathVariable UUID id){
-//        DiaChi diaChi1 = diaChiService.getById(id);
-//       diaChi.setId(diaChi1.getId());
-        return diaChiService.update(diaChi);
+    public ChucVu update(@RequestBody  ChucVu chucVu,@PathVariable UUID id){
+
+        return chucVuService.update(chucVu);
     }
 }
