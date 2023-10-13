@@ -3,52 +3,52 @@ package com.example.shop.controller;
 import com.example.shop.entity.KhuyenMai;
 import com.example.shop.services.KhuyenMaiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller
-@CrossOrigin
-@RequestMapping()
 @RestController
+@CrossOrigin
+@RequestMapping("/khuyen-mai")
 public class KhuyenMaiController {
+
     @Autowired
-    KhuyenMaiService khuyenMaiService;
+    private KhuyenMaiService khuyenMaiService;
 
-    @GetMapping("khuyen-mai")
+    @GetMapping
     public List<KhuyenMai> findAll() {
-        System.out.println("OK");
-        return this.khuyenMaiService.findAll();
+        return khuyenMaiService.findAll();
     }
 
-    @PostMapping("khuyen-mai/add")
-    List<KhuyenMai> addKhuyenMai(@RequestBody List<KhuyenMai> khuyenMaiList) {
-        return this.khuyenMaiService.saveAll(khuyenMaiList);
+    @PostMapping("/add")
+    public List<KhuyenMai> addKhuyenMai(@RequestBody List<KhuyenMai> khuyenMaiList) {
+        return khuyenMaiService.saveAll(khuyenMaiList);
     }
 
-    @PutMapping("khuyen-mai/update/{id}")
+    @PutMapping("/update/{id}")
     public KhuyenMai updateKhuyenMai(@PathVariable UUID id, @RequestBody KhuyenMai khuyenMai) {
-        KhuyenMai khuyenMaiTimDuoc = khuyenMaiService.findById(id).get();
+        Optional<KhuyenMai> khuyenMaiTimDuoc = khuyenMaiService.findById(id);
 
-        khuyenMai.setId(khuyenMaiTimDuoc.getId());
-        return khuyenMaiService.save(khuyenMai);
+        if (khuyenMaiTimDuoc.isPresent()) {
+            khuyenMai.setId(khuyenMaiTimDuoc.get().getId());
+            return khuyenMaiService.save(khuyenMai);
+        }
+
+        return null;
 
     }
 
-    @DeleteMapping("khuyen-mai/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public Boolean deleteKhuyenMai(@PathVariable UUID id) {
         Optional<KhuyenMai> khuyenMai = khuyenMaiService.findById(id);
 
-        if (khuyenMai != null) {
+        if (khuyenMai.isPresent()) {
             khuyenMaiService.deleteById(id);
             return true;
         } else {
             return false;
         }
     }
-
-
 }

@@ -5,10 +5,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { TableCell, Button } from "@mui/material";
 import { fetchKhuyenMai } from "../../res/fetchKhuyenMai";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+
+import { FiEdit3 }from 'react-icons/fi';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
+
   return date.toLocaleString("en-GB", {
     day: "2-digit",
     month: "2-digit",
@@ -19,8 +21,8 @@ const formatDate = (dateString) => {
 };
 
 const columns = [
-  { field: "id", headerName: "STT", width: 80 },
-  { field: "ma", headerName: "Mã khuyến mại", width: 70 },
+  { field: "i", headerName: "STT", width: 80 },
+  { field: "ma", headerName: "Mã khuyến mại", width: 120 },
   { field: "ten", headerName: "Tên khuyến mại", minWidth: 180 },
   {
     field: "giaTriGiam",
@@ -33,7 +35,7 @@ const columns = [
     headerName: "Ngày bắt đầu",
     description: "Ngày bắt đầu",
     sortable: DataGrid,
-    width: 200,
+    width: 150,
     valueFormatter: (params) => formatDate(params.value),
   },
   {
@@ -41,7 +43,7 @@ const columns = [
     headerName: "Ngày kết thúc",
     description: "Ngày kết thúc",
     sortable: DataGrid,
-    width: 170,
+    width: 150,
     valueFormatter: (params) => formatDate(params.value),
   },
   {
@@ -49,7 +51,7 @@ const columns = [
     headerName: "Ngày cập  nhật",
     description: "Ngày cập nhật",
     sortable: DataGrid,
-    width: 170,
+    width: 150,
     valueFormatter: (params) => formatDate(params.value),
   },
   {
@@ -113,8 +115,6 @@ const columns = [
                   position: "top-right",
                   autoClose: 2000,
                 });
-                const navigate = useNavigate(); 
-                navigate("/khuyen-mai");
               })
               .catch((error) => {
                 console.error(
@@ -139,6 +139,7 @@ export default function DataTable() {
         return {
           // uuid: item.id,
           id: item.id,
+          i: index+1,
           ma: item.ma,
           ten: item.ten,
           giaTriGiam: item.giaTriPhanTram + "%",
@@ -151,7 +152,7 @@ export default function DataTable() {
 
       setRows(processedData);
     });
-  }, []);
+  }, [rows]);
 
   return (
     <div style={{ height: 400, width: "100%" }}>
