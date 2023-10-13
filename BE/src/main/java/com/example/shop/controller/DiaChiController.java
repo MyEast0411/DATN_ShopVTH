@@ -5,6 +5,7 @@ import com.example.shop.service.DiaChiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,8 +19,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @RestController
-
+@CrossOrigin("http://localhost:3000")
 @RequestMapping("/dia-chi")
+@Controller
 public class DiaChiController {
     @Autowired
     private DiaChiService diaChiService;
@@ -42,8 +44,10 @@ public class DiaChiController {
     public DiaChi add(@RequestBody DiaChi diaChi){
         return diaChiService.add(diaChi);
     }
-    @PutMapping("/update")
-    public DiaChi update(@RequestBody DiaChi diaChi){
+    @PutMapping("/update/{id}")
+    public DiaChi update(@RequestBody  DiaChi diaChi,@PathVariable UUID id){
+        DiaChi diaChi1 = diaChiService.getById(id);
+       diaChi.setId(diaChi1.getId());
         return diaChiService.update(diaChi);
     }
 }
