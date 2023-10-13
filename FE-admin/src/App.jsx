@@ -10,6 +10,8 @@ import Profile from "./pages/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ThemKhuyenMai from "./components/khuyenMai/ThemKhuyenMai";
+import ThemVoucher from "./components/voucher/ThemVoucher";
+import EditVoucher from "./components/voucher/EditVoucher";
 
 const App = () => {
   return (
@@ -38,13 +40,17 @@ const App = () => {
           </Route>
         </Route>
 
-        <Route path="/settings" element={<Build />}>
+        <Route path="/quan-ly-tai-khoan" element={<Build />}>
           <Route path=":bID">
-            <Route path="dang-nhap" />
-            <Route path="dang-ky" />
-            <Route path="dang-xuat" />
+            <Route path="nhan-vien" />
+            <Route path="khach-hang" />
           </Route>
         </Route>
+
+        <Route path="/voucher" element={<Voucher />} />
+        <Route path="/update" element={<EditVoucher />} />
+        <Route path="/delete/:id" />
+        <Route path="/add" element={<ThemVoucher />} />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={3000} />

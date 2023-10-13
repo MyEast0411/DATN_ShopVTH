@@ -57,6 +57,9 @@ public class Voucher {
     @Column(name = "deleted")
     private Integer deleted;
 
+    @Column(name = "trang_thai")
+    private Integer trangThai;
+
     @ManyToOne
     @JoinColumn(name = "id_hoa_don")
     private HoaDon id_hoa_don;

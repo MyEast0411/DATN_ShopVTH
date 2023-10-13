@@ -65,15 +65,17 @@ public class VoucherController {
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> deleteVoucher(@PathVariable("id")String id){
+    public ResponseEntity<List<Voucher>> deleteVoucher(@PathVariable("id")String id){
         String mess = "";
         Voucher voucher = voucherService.getVoucher(id);
         if(voucher == null){
             mess = "Not find voucher with " + id;
+
         }else{
             Boolean kq = voucherService.deleteVoucher(voucher);
             mess = kq? "Delete success":"Delete fail";
         }
-        return new ResponseEntity(mess , HttpStatus.OK);
+        System.out.println(mess);
+        return new ResponseEntity(voucherService.getVouchers() , HttpStatus.OK);
     }
 }
