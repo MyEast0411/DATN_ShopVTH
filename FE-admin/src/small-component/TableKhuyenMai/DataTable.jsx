@@ -1,51 +1,34 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { TableCell, Button } from "@mui/material";
+import axios from "axios";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const columns = [
-  { field: "id", headerName: "STT", width: 20 },
-  { field: "ma", headerName: "Mã khuyến mại", width: 130 },
-  { field: "ten", headerName: "Tên khuyến mại", width: 130 },
+  { field: "i", headerName: "STT", width: 200 },
+  { field: "ma", headerName: "Mã sản phẩm", width: 300 },
+  { field: "ten", headerName: "Tên sản phẩm", width: 300 },
   {
-    field: "giaTriGiam",
-    headerName: "Giá trị giảm",
-    type: "number",
-    width: 110,
-  },
-  {
-    field: "startDate",
-    headerName: "Ngày bắt đầu",
-    description: "Ngày bắt đầu",
-    sortable: DataGrid,
-    width: 170,
-  },
-  {
-    field: "endDate",
-    headerName: "Ngày kết thúc",
-    description: "Ngày kết thúc",
-    sortable: DataGrid,
-    width: 170,
-  },
-  {
-    field: "updateDate",
-    headerName: "Ngày cập  nhật",
-    description: "Ngày cập nhật",
-    sortable: DataGrid,
-    width: 170,
+    field: "soLuongTon",
+    headerName: "Số lượng tồn",
+    width: 200,
   },
   {
     field: "trangThai",
     headerName: "Trạng thái",
     description: "Trạng thái",
     sortable: false,
-    width: 104,
+    width: 150,
     renderCell: (params) => (
       <TableCell>
         <div
           style={{
-            backgroundColor: params.value === "Còn hạn" ? "#79AC78" : "#FF6969",
+            backgroundColor: params.value === "Đang bán" ? "#79AC78" : "#FF6969",
             color: "white",
-            fontSize: "12px",
+            fontSize: "13px",
             textAlign: "center",
             padding: "1px 6px",
             borderRadius: "5px",
@@ -63,143 +46,76 @@ const columns = [
     sortable: false,
     renderCell: (params) => (
       <TableCell>
+        <Link to={`/edit-san-pham/${params.id}`} className="button-link">
         <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          style={{
-            marginRight: 8,
-            width: "22px",
-            height: "22px",
-            fontSize: "12px",
-          }}
-          onClick={() => {
-            console.log(`Edit clicked for row ID: ${params.id}`);
-          }}
+        variant="contained"
+        color="primary"
+        size="small"
+        style={{
+          width: "25px",
+          height: "25px",
+          fontSize: "12px",
+        }}
         >
-          Edit
+        <EditIcon />
         </Button>
+        </Link>
         <Button
           variant="contained"
           color="error"
           size="small"
-          style={{ width: "22px", height: "22px", fontSize: "12px" }}
+          style={{ width: "25px", height: "25px", fontSize: "12px" }}
           onClick={() => {
-            console.log(`Delete clicked for row ID: ${params.id}`);
+            const idToDelete = params.id;
+            axios
+              .delete(`http://localhost:8080/delete/${idToDelete}`)
+              .then((response) => {
+                toast.success(`Xóa thành công`, {
+                  position: "top-right",
+                  autoClose: 2000,
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  `Error deleting record for ID: ${idToDelete}`,
+                  error
+                );
+              });
           }}
         >
-          Delete
+          <DeleteIcon />
         </Button>
       </TableCell>
     ),
   },
 ];
-
-const rows = [
-  {
-    id: 1,
-    ma: "Snow",
-    ten: "Jon",
-    giaTriGiam: 35,
-    startDate: "30/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Còn hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 2,
-    ma: "Lannister",
-    ten: "Cersei",
-    giaTriGiam: 42,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 3,
-    ma: "Lannister",
-    ten: "Jaime",
-    giaTriGiam: 45,
-    startDate: "28/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 4,
-    ma: "Stark",
-    ten: "Arya",
-    giaTriGiam: 16,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 5,
-    ma: "Targaryen",
-    ten: "Daenerys",
-    giaTriGiam: null,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 6,
-    ma: "Melisandre",
-    ten: null,
-    giaTriGiam: 150,
-    startDate: "27/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 7,
-    ma: "Clifford",
-    ten: "Ferrara",
-    giaTriGiam: 44,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 8,
-    ma: "Frances",
-    ten: "Rossini",
-    giaTriGiam: 36,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Còn hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 9,
-    ma: "Roxie",
-    ten: "Harvey",
-    giaTriGiam: 65,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-];
+const url = "http://localhost:8080/chi-tiet-san-pham";
 
 export default function DataTable() {
+  const [rows, setRows] = React.useState([]);
+  
+  React.useEffect(() => {
+    async function fetchChiTietSanPham() {
+      try {
+        const response = await axios.get(url);
+        const updatedRows = response.data.map((item, index) => ({
+          i: index + 1,
+          id: item.id,
+          ma: item.ma,
+          ten: item.ten,
+          soLuongTon: item.soLuongTon,
+          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán"
+        }));
+        setRows(updatedRows);
+      } catch (error) {
+        console.error("Lỗi khi gọi API: ", error);
+      }
+    }
+
+    fetchChiTietSanPham();
+  }, [rows]);
   return (
-    <div style={{ height: 400, width: "100%" }}>
+    <div className="text-center" style={{ height: 371, width: "100%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -209,7 +125,7 @@ export default function DataTable() {
           },
         }}
         pageSizeOptions={[5, 10]}
-        // checkboxSelection
+      // checkboxSelection
       />
     </div>
   );

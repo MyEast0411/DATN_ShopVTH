@@ -163,13 +163,13 @@ const Sidebar = () => {
               {/* image profile */}
               <img
                 className="rounded-full"
-                src="https://c4.wallpaperflare.com/wallpaper/78/331/627/video-game-league-of-legends-jhin-league-of-legends-wallpaper-preview.jpg"
+                src="https://cdn.tgdd.vn/2021/11/campaign/cach-choi-raiden-genshin-impact-thong-tin-guide-skill-moi-thumb-640x360.jpg"
                 alt="avatar"
                 width={40}
               />
               <div className="flex justify-start flex-col items-start">
                 <p className="w-40 leading-7 cursor-pointer text-s text-sm truncate text-gray-600">
-                  nguyenvanhoi@gmail.com
+                  Dong Lun`
                 </p>
               </div>
             </NavLink>

@@ -14,7 +14,7 @@ const Profile = () => {
                   <div className="relative ">
                     <img
                       alt="..."
-                      src="https://c4.wallpaperflare.com/wallpaper/78/331/627/video-game-league-of-legends-jhin-league-of-legends-wallpaper-preview.jpg"
+                      src="https://cdn.tgdd.vn/2021/11/campaign/cach-choi-raiden-genshin-impact-thong-tin-guide-skill-moi-thumb-640x360.jpg"
                       className="rounded-full mt-5 -mb-20"
                       width={150}
                     />
@@ -28,8 +28,8 @@ const Profile = () => {
               </div>
 
               <div className="text-center mt-10">
-                <h3 className="text-xl font-semibold leading-normal mb-2 text-blueGray-700 mb-2">
-                  Nguyễn Văn Hội
+                <h3 className="text-xl font-semibold leading-normal text-blueGray-700 mb-2">
+                  Dong Lun`
                 </h3>
                 <p className="text-sm mb-2">nguyenvanhoi2k3@gmail.com</p>
                 <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">

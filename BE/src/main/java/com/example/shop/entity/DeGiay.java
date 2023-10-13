@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -12,10 +14,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Table(name = "de_giay")
-public class DeGiay {
+public class DeGiay implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(name = "ma")
     private String ma;
@@ -37,4 +39,5 @@ public class DeGiay {
 
     @Column(name = "deleted")
     private Integer deleted;
+
 }
