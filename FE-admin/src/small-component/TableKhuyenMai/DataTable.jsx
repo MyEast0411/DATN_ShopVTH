@@ -1,23 +1,43 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { TableCell, Button } from "@mui/material";
+import { fetchKhuyenMai } from "../../res/fetchKhuyenMai";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
+
+
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
 const columns = [
-  { field: "id", headerName: "STT", width: 20 },
-  { field: "ma", headerName: "Mã khuyến mại", width: 130 },
-  { field: "ten", headerName: "Tên khuyến mại", width: 130 },
+  { field: "id", headerName: "STT", width: 80 },
+  { field: "ma", headerName: "Mã khuyến mại", width: 70 },
+  { field: "ten", headerName: "Tên khuyến mại", minWidth: 180 },
   {
     field: "giaTriGiam",
     headerName: "Giá trị giảm",
     type: "number",
-    width: 110,
+    width: 100,
   },
   {
     field: "startDate",
     headerName: "Ngày bắt đầu",
     description: "Ngày bắt đầu",
     sortable: DataGrid,
-    width: 170,
+    width: 200,
+    valueFormatter: (params) => formatDate(params.value),
   },
   {
     field: "endDate",
@@ -25,6 +45,7 @@ const columns = [
     description: "Ngày kết thúc",
     sortable: DataGrid,
     width: 170,
+    valueFormatter: (params) => formatDate(params.value),
   },
   {
     field: "updateDate",
@@ -32,6 +53,7 @@ const columns = [
     description: "Ngày cập nhật",
     sortable: DataGrid,
     width: 170,
+    valueFormatter: (params) => formatDate(params.value),
   },
   {
     field: "trangThai",
@@ -85,7 +107,24 @@ const columns = [
           size="small"
           style={{ width: "22px", height: "22px", fontSize: "12px" }}
           onClick={() => {
-            console.log(`Delete clicked for row ID: ${params.id}`);
+
+            const idToDelete = params.id;
+            axios
+              .delete(`http://localhost:8080/khuyen-mai/delete/${idToDelete}`)
+              .then((response) => {
+                console.log(`Delete successful for row ID: ${idToDelete}`);
+                toast.success(`Xóa thành công`, {
+                  position: "top-right",
+                  autoClose: 2000,
+                });
+                navigate("/khuyen-mai");
+              })
+              .catch((error) => {
+                console.error(
+                  `Error deleting record for ID: ${idToDelete}`,
+                  error
+                );
+              });
           }}
         >
           Delete
@@ -95,114 +134,35 @@ const columns = [
   },
 ];
 
-const rows = [
-  {
-    id: 1,
-    ma: "Snow",
-    ten: "Jon",
-    giaTriGiam: 35,
-    startDate: "30/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Còn hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 2,
-    ma: "Lannister",
-    ten: "Cersei",
-    giaTriGiam: 42,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 3,
-    ma: "Lannister",
-    ten: "Jaime",
-    giaTriGiam: 45,
-    startDate: "28/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 4,
-    ma: "Stark",
-    ten: "Arya",
-    giaTriGiam: 16,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 5,
-    ma: "Targaryen",
-    ten: "Daenerys",
-    giaTriGiam: null,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 6,
-    ma: "Melisandre",
-    ten: null,
-    giaTriGiam: 150,
-    startDate: "27/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 7,
-    ma: "Clifford",
-    ten: "Ferrara",
-    giaTriGiam: 44,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 8,
-    ma: "Frances",
-    ten: "Rossini",
-    giaTriGiam: 36,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Còn hạn",
-    hanhDong: "action",
-  },
-  {
-    id: 9,
-    ma: "Roxie",
-    ten: "Harvey",
-    giaTriGiam: 65,
-    startDate: "29/06/2003 12:00:00",
-    endDate: "29/07/2003 12:00:00",
-    updateDate: "29/06/2003 12:00:00",
-    trangThai: "Hết hạn",
-    hanhDong: "action",
-  },
-];
-
 export default function DataTable() {
+  const [rows, setRows] = useState([]);
+  var navigate = useNavigate();
+  useEffect(() => {
+    fetchKhuyenMai().then((data) => {
+      const processedData = data.map((item, index) => {
+        return {
+          // uuid: item.id,
+          id: item.id,
+          ma: item.ma,
+          ten: item.ten,
+          giaTriGiam: item.giaTriPhanTram + "%",
+          startDate: item.ngayBatDau,
+          endDate: item.ngayKetThuc,
+          updateDate: item.ngaySua,
+          trangThai: item.trangThai === 0 ? "Còn hạn" : "Hết hạn",
+        };
+      });
+
+      setRows(processedData);
+    });
+  }, []);
+
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
+        autoWidth
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },
