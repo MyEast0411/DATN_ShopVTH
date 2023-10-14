@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface KhuyenMaiRepo extends JpaRepository<KhuyenMai, UUID> {
     List<KhuyenMai> findAll();
+
 }

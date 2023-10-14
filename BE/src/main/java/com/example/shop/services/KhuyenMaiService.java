@@ -20,6 +20,7 @@ public class KhuyenMaiService {
     @Autowired
     KhuyenMaiRepo khuyenMaiRepo;
 
+
     public <S extends KhuyenMai> List<S> saveAll(Iterable<S> entities) {
         return khuyenMaiRepo.saveAll(entities);
     }
