@@ -3,12 +3,16 @@ package com.example.shop.controller;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.viewmodel.ChiTietSanPhamVM;
+import com.example.shop.viewmodel.SanPhamVM;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,7 +39,6 @@ public class AppController {
     ThuongHieuRepository thuongHieuRepository;
     @Autowired
     NhanHieuRepository nhanHieuRepository;
-
 
     @GetMapping("/")
     List<SanPhamChiTiet> getAll(){
@@ -81,9 +84,22 @@ public class AppController {
     List<NhanHieu> getAllNH(){
         return nhanHieuRepository.findAll();
     }
+    public SanPhamVM convertToSanPhamVM(Object[] row) {
+        SanPhamVM sanPhamVM = new SanPhamVM();
+        sanPhamVM.setMa((String) row[0]);
+        sanPhamVM.setTen_san_pham((String) row[1]);
+        sanPhamVM.setSo_luong_ton(Integer.parseInt(row[2].toString()));
+        sanPhamVM.setTrang_thai(Integer.parseInt(row[3].toString()));
+        return sanPhamVM;
+    }
     @GetMapping("/chi-tiet-san-pham")
-    List<SanPhamChiTiet> getAllCTSP() {
-        return repo.findAll();
+    List<SanPhamVM> getAllCTSP() {
+        List<SanPhamVM> sanPhamVMList = new ArrayList<>();
+        for (Object[] row : repo.loadTable()) {
+            SanPhamVM sanPhamVM = convertToSanPhamVM(row);
+            sanPhamVMList.add(sanPhamVM);
+        }
+        return sanPhamVMList;
     }
     @PostMapping("/add")
     SanPhamChiTiet add(@RequestBody ChiTietSanPhamVM sanPham) {
@@ -115,15 +131,9 @@ public class AppController {
         return nhanHieuRepository.save(sanPham);
     }
 
-//    @DeleteMapping("/delete/{id}")
-//    Boolean delete(@PathVariable UUID id) {
-//        System.out.println(repo.findByMa("SP01"));
-//        try {
-//            repo.delete(repo.findById(id).get());
-//            return true;
-//        }catch (Exception x) {
-//            x.printStackTrace();
-//            return false;
-//        }
-//    }
+    @GetMapping("/detailSP/{id}")
+    SanPhamChiTiet detail(@PathVariable String id) {
+        return repo.findById(id).get();
+    }
+
 }

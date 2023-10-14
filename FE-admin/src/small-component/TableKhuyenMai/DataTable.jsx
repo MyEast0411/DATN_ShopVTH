@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 
 const columns = [
-  { field: "i", headerName: "STT", width: 200 },
+  { field: "id", headerName: "STT", width: 200 },
   { field: "ma", headerName: "Mã sản phẩm", width: 300 },
   { field: "ten", headerName: "Tên sản phẩm", width: 300 },
   {
@@ -93,24 +93,22 @@ const url = "http://localhost:8080/chi-tiet-san-pham";
 
 export default function DataTable() {
   const [rows, setRows] = React.useState([]);
-  
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(url);
         const updatedRows = response.data.map((item, index) => ({
-          i: index + 1,
-          id: item.id,
+          id: index + 1,
           ma: item.ma,
-          ten: item.ten,
-          soLuongTon: item.soLuongTon,
-          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán"
+          ten: item.ten_san_pham,
+          soLuongTon: item.so_luong_ton,
+          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán"
         }));
         setRows(updatedRows);
       } catch (error) {
         console.error("Lỗi khi gọi API: ", error);
       }
-    }
+    } 
 
     fetchChiTietSanPham();
   }, [rows]);
