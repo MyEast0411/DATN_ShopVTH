@@ -143,9 +143,9 @@ public class AppController {
         repo.save(spct);
         return ResponseEntity.ok("Thành công");
     }
-    @DeleteMapping("/delete/{id}")
-    Boolean add(@PathVariable String id) {
-        repo.delete(repo.findById(id).get());
+    @DeleteMapping("/delete/{ma}")
+    Boolean delete(@PathVariable String ma) {
+        sanPhamRepository.delete(sanPhamRepository.findByMa(ma));
         return true;
     }
     @PostMapping("/addNew")

@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { sync } from "framer-motion";
 
 const columns = [
   { field: "id", headerName: "STT", width: 200 },
@@ -46,7 +47,7 @@ const columns = [
     sortable: false,
     renderCell: (params) => (
       <TableCell>
-        <Link to={`/edit-san-pham/${params.id}`} className="button-link">
+        <Link to={`/edit-san-pham/${params.row.ma}`} className="button-link">
         <Button
         variant="contained"
         color="primary"
@@ -66,7 +67,8 @@ const columns = [
           size="small"
           style={{ width: "25px", height: "25px", fontSize: "12px" }}
           onClick={() => {
-            const idToDelete = params.id;
+            const idToDelete = params.row.ma;
+            console.log(idToDelete);
             axios
               .delete(`http://localhost:8080/delete/${idToDelete}`)
               .then((response) => {
@@ -76,10 +78,10 @@ const columns = [
                 });
               })
               .catch((error) => {
-                console.error(
-                  `Error deleting record for ID: ${idToDelete}`,
-                  error
-                );
+                toast.error(`Xóa thất bại`, {
+                  position: "top-right",
+                  autoClose: 2000,
+                });
               });
           }}
         >

@@ -69,7 +69,7 @@ export default function SanPham() {
         <div className="mb-2 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
           <div className="flex items-center">
             <HiOutlineClipboardList />
-            <p className="ml-2 mt-1"> Danh sách</p>
+            <p className="ml-2 mt-1"> Danh sách sản phẩm</p>
           </div>
           <Link to={"/them-san-pham"}>
             <Button

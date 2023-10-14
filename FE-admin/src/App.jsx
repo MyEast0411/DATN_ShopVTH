@@ -11,7 +11,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ThemKhuyenMai from "./components/khuyenMai/ThemKhuyenMai";
 import ThemSanPham from "./components/sanPham/ThemSanPham";
-import DetailSanPham from "./components/sanPham/DetailSanPham";
+import ChiTietSanPham from "./components/sanPham/ChiTietSanPham";
 
 const App = () => {
   return (
@@ -24,7 +24,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
         <Route path="/them-san-pham" element={<ThemSanPham />} />
-        <Route path="/edit-san-pham/:id" element={<DetailSanPham />} />
+        <Route path="/edit-san-pham/:ma" element={<ChiTietSanPham />} />
         <Route path="/quan-ly-san-pham" element={<Build />}>
           <Route path=":bID">
             <Route path="product" />
