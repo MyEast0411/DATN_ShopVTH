@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { TableCell, Button } from "@mui/material";
+import { TableCell } from "@mui/material";
 import { fetchKhuyenMai } from "../../res/fetchKhuyenMai";
 import { toast } from "react-toastify";
+import ModalUpdateKhuyenMai from "../../small-component/ModalUpdateKhuyenMai/ModalUpdateKhuyenMai";
 
-import { FiEdit3 }from 'react-icons/fi';
+//icon
+import { MdDeleteOutline } from "react-icons/md";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -83,28 +85,14 @@ const columns = [
     width: 200,
     sortable: false,
     renderCell: (params) => (
-      <TableCell>
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          style={{
-            marginRight: 8,
-            width: "22px",
-            height: "22px",
-            fontSize: "12px",
-          }}
-          onClick={() => {
-            console.log(`Edit clicked for row ID: ${params.id}`);
-          }}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="contained"
-          color="error"
-          size="small"
-          style={{ width: "22px", height: "22px", fontSize: "12px" }}
+      <TableCell
+        style={{
+          display: "flex",
+        }}
+      >
+        <ModalUpdateKhuyenMai idKM={params.id} />
+        <MdDeleteOutline
+          className="cursor-pointer text-xl delete-hover"
           onClick={() => {
             const idToDelete = params.id;
             axios
@@ -123,9 +111,7 @@ const columns = [
                 );
               });
           }}
-        >
-          Delete
-        </Button>
+        />
       </TableCell>
     ),
   },
@@ -137,9 +123,8 @@ export default function DataTable() {
     fetchKhuyenMai().then((data) => {
       const processedData = data.map((item, index) => {
         return {
-          // uuid: item.id,
           id: item.id,
-          i: index+1,
+          i: index + 1,
           ma: item.ma,
           ten: item.ten,
           giaTriGiam: item.giaTriPhanTram + "%",

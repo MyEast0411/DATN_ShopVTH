@@ -7,6 +7,7 @@ class KhuyenMaiService {
   getKhuyenMai() {
     return axios.get(KHUYENMAI_REST_API_URL);
   }
+
 }
 
 export default new KhuyenMaiService();
