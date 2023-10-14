@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -102,8 +103,29 @@ public class AppController {
         return sanPhamVMList;
     }
     @PostMapping("/add")
-    SanPhamChiTiet add(@RequestBody ChiTietSanPhamVM sanPham) {
+    ResponseEntity add(@RequestBody ChiTietSanPhamVM sanPham) {
+        SanPham sp = new SanPham();
+        Boolean check = false;
+        for (SanPham x:
+             sanPhamRepository.findAll()) {
+            if(x.getTen().equals(sanPham.getTen())) {
+                sp.setId(x.getId());
+                check = true;
+            }
+        }
+        if(!check) {
+            Integer maxMa = Integer.parseInt(sanPhamRepository.findMaxMa().replace("SP", ""));
+            sp = new SanPham(null, "SP" + (maxMa + 1), sanPham.getTen(), new Date(), null, "", "", 1);
+            sp = sanPhamRepository.save(sp);
+        }
+        for (SanPhamChiTiet spct:
+             repo.findAll()) {
+            if(spct.getMa().equals(sanPham.getMa())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Trùng mã sản phẩm");
+            }
+        }
         SanPhamChiTiet spct = new SanPhamChiTiet();
+        spct.setId_san_pham(sanPhamRepository.findById(sp.getId()).get());
         spct.setId_mau_sac(mauSacRepository.findById(sanPham.getId_mau_sac()).get());
         spct.setId_de_giay(deGiayRepository.findById(sanPham.getId_de_giay()).get());
         spct.setId_kich_co(kichCoRepository.findById(sanPham.getId_kich_co()).get());
@@ -117,9 +139,9 @@ public class AppController {
         spct.setGiaNhap(sanPham.getGiaNhap());
         spct.setSoLuongTon(sanPham.getSoLuongTon());
         spct.setKhoiLuong(sanPham.getKhoiLuong());
-        spct.setTrangThai("Đang bán");
-        System.out.println(spct);
-        return repo.save(spct);
+        spct.setTrangThai("1");
+        repo.save(spct);
+        return ResponseEntity.ok("Thành công");
     }
     @DeleteMapping("/delete/{id}")
     Boolean add(@PathVariable String id) {
@@ -134,6 +156,11 @@ public class AppController {
     @GetMapping("/detailSP/{id}")
     SanPhamChiTiet detail(@PathVariable String id) {
         return repo.findById(id).get();
+    }
+
+    @GetMapping("findByMa/{ma}")
+    List<SanPhamChiTiet> findByMa(@PathVariable String ma) {
+        return repo.getByMa(ma);
     }
 
 }

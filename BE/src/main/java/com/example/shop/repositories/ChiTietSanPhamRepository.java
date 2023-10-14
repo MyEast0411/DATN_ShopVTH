@@ -4,6 +4,7 @@ import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.viewmodel.SanPhamVM;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,4 +15,10 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             "JOIN san_pham b ON a.id_san_pham = b.id\n" +
             "GROUP BY b.ten,b.ma,a.trang_thai",nativeQuery = true)
     List<Object[]> loadTable();
+
+    @Query(value = "select a.*\n" +
+            "FROM san_pham_chi_tiet a\n" +
+            "JOIN san_pham b ON a.id_san_pham = b.id\n" +
+            "where b.ma = :ma",nativeQuery = true)
+    List<SanPhamChiTiet> getByMa(@Param("ma") String ma);
 }
