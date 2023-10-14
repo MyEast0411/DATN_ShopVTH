@@ -10,9 +10,11 @@ for (let i = 1; i <= 90; i++) {
   });
 }
 
-const FilterOption = ({ placeholder, style }) => {
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
+const FilterOption = ({ placeholder, style, value, onChange }) => {
+  const handleChange = (selectedValue) => {
+    if (onChange) {
+      onChange(selectedValue);
+    }
   };
 
   return (
@@ -21,7 +23,7 @@ const FilterOption = ({ placeholder, style }) => {
       style={style}
       placeholder={placeholder}
       onChange={handleChange}
-      defaultValue="1%"
+      value={value + "%"}
       options={options}
     />
   );

@@ -11,19 +11,13 @@ const ModalUpdateKhuyenMai = ({ titleButton, titleModal, idKM }) => {
   };
 
   const handleOk = () => {
-    setIsModalOpen(false);
+    console.log(idKM);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
-  const okButtonProps = {
-    style: {
-      backgroundColor: "black",
-      color: "white",
-    },
-  };
   const modalStyle = {
     display: "flex",
     alignItems: "center",
@@ -45,8 +39,8 @@ const ModalUpdateKhuyenMai = ({ titleButton, titleModal, idKM }) => {
         visible={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
-        okButtonProps={okButtonProps}
-        okText="Cập nhật"
+        okButtonProps={{ style: { display: "none" } }}
+        cancelButtonProps={{ style: { display: "none" } }}
         cancelText="Hủy"
         style={modalStyle}
       >
