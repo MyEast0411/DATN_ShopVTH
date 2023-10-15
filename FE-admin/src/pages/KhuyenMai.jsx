@@ -21,7 +21,7 @@ const KhuyenMai = () => {
           </div>
 
           <div
-            className="grid grid-cols-3 gap-4"
+            className="grid drop-shadow-lg grid-cols-3 gap-4"
             style={{
               fontSizfe: "8px",
               backgroundColor: "white",
@@ -90,7 +90,7 @@ const KhuyenMai = () => {
         </Link>
 
         <div
-          className="mb-2 justify-between border-b-[2px] font-normal border-gray-500 text-lg	flex items-center"
+          className="mb-2 justify-between drop-shadow-lg font-normal border-gray-500 text-lg	flex items-center"
           style={{
             fontSizfe: "8px",
             backgroundColor: "white",
