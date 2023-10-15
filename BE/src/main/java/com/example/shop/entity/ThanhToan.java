@@ -16,7 +16,7 @@ import java.util.UUID;
 public class ThanhToan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(name = "ma_giao_dich")
     private String ma_giao_dich;

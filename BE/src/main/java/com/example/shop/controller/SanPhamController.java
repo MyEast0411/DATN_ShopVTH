@@ -1,8 +1,6 @@
 package com.example.shop.controller;
 
-<<<<<<< HEAD
-public class SanPhamController {
-=======
+
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.viewmodel.ChiTietSanPhamVM;
@@ -190,6 +188,4 @@ public class SanPhamController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Xóa thất bại!");
         }
     }
-
->>>>>>> origin/donglunhihi
 }
