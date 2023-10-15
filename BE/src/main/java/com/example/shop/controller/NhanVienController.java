@@ -1,10 +1,10 @@
 package com.example.shop.controller;
 
-import com.example.shop.entity.ChucVu;
-import com.example.shop.entity.DiaChi;
-import com.example.shop.service.ChucVuService;
+import com.example.shop.entity.KhachHang;
+import com.example.shop.entity.NhanVien;
+import com.example.shop.service.KhachHangService;
+import com.example.shop.service.NhanVienService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,34 +20,32 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
-@RequestMapping("/chuc-vu")
-
-public class ChucVuController {
+@RequestMapping("/khach-hang")
+public class NhanVienController {
     @Autowired
-  private   ChucVuService chucVuService;
-
+    private NhanVienService nhanVienService;
     @GetMapping("/hien-thi")
-    public ArrayList<ChucVu> hienthi(){
-        return chucVuService.getAll();
+    public ArrayList<NhanVien> hienthi(){
+        return nhanVienService.getAll();
     }
 
     @GetMapping("/detail/{id}")
-    public ChucVu detail(@PathVariable("id") UUID id){
-        return chucVuService.getById(id);
+    public NhanVien detail(@PathVariable("id") UUID id){
+        return nhanVienService.getById(id);
     }
 
     @DeleteMapping("/delete/{id}")
     public void  delete(@PathVariable("id")UUID id){
-        chucVuService.delete(id);
+        nhanVienService.delete(id);
     }
 
     @PostMapping("/add")
-    public ChucVu add(@RequestBody ChucVu chucVu){
-        return chucVuService.add(chucVu);
+    public NhanVien add(@RequestBody NhanVien nhanVien){
+        return nhanVienService.add(nhanVien);
     }
     @PutMapping("/update/{id}")
-    public ChucVu update(@RequestBody  ChucVu chucVu,@PathVariable UUID id){
+    public NhanVien update(@RequestBody  NhanVien nhanVien,@PathVariable UUID id){
 
-        return chucVuService.update(chucVu);
+        return nhanVienService.update(nhanVien);
     }
 }
