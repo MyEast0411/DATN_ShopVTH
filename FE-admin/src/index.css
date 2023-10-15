@@ -69,4 +69,16 @@ input[type="number"] {
   color: #1976d2;
 }
 
+.delete-hover:hover {
+  color: rgb(236, 74, 74);
+  transition: 0.06s;
+}
 
+.blue-hover:hover {
+  color: #1976d2;
+  transition: 0.06s;
+}
+
+.ant-btn.ant-btn-sm {
+  color: black;
+}

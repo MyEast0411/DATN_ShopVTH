@@ -2,28 +2,35 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { TableCell, Button } from "@mui/material";
+import { TableCell } from "@mui/material";
 import { fetchKhuyenMai } from "../../res/fetchKhuyenMai";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import ModalUpdateKhuyenMai from "../../small-component/ModalUpdateKhuyenMai/ModalUpdateKhuyenMai";
 
-
+//icon
+import { MdDeleteOutline } from "react-icons/md";
 
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  return date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
+  const options = {
     year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-  });
+    second: "2-digit",
+  };
+
+  // Adjust for the user's local time zone
+  const formatter = new Intl.DateTimeFormat("en-GB", { ...options, timeZoneName: "short" });
+  return formatter.format(date);
 };
 
+
 const columns = [
-  { field: "id", headerName: "STT", width: 80 },
-  { field: "ma", headerName: "Mã khuyến mại", width: 70 },
+  { field: "i", headerName: "STT", width: 80 },
+  { field: "ma", headerName: "Mã khuyến mại", width: 120 },
   { field: "ten", headerName: "Tên khuyến mại", minWidth: 180 },
   {
     field: "giaTriGiam",
@@ -36,7 +43,7 @@ const columns = [
     headerName: "Ngày bắt đầu",
     description: "Ngày bắt đầu",
     sortable: DataGrid,
-    width: 200,
+    width: 150,
     valueFormatter: (params) => formatDate(params.value),
   },
   {
@@ -44,7 +51,7 @@ const columns = [
     headerName: "Ngày kết thúc",
     description: "Ngày kết thúc",
     sortable: DataGrid,
-    width: 170,
+    width: 150,
     valueFormatter: (params) => formatDate(params.value),
   },
   {
@@ -52,7 +59,7 @@ const columns = [
     headerName: "Ngày cập  nhật",
     description: "Ngày cập nhật",
     sortable: DataGrid,
-    width: 170,
+    width: 150,
     valueFormatter: (params) => formatDate(params.value),
   },
   {
@@ -84,30 +91,15 @@ const columns = [
     width: 200,
     sortable: false,
     renderCell: (params) => (
-      <TableCell>
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          style={{
-            marginRight: 8,
-            width: "22px",
-            height: "22px",
-            fontSize: "12px",
-          }}
+      <TableCell
+        style={{
+          display: "flex",
+        }}
+      >
+        <ModalUpdateKhuyenMai idKM={params.id} />
+        <MdDeleteOutline
+          className="cursor-pointer text-xl delete-hover"
           onClick={() => {
-            console.log(`Edit clicked for row ID: ${params.id}`);
-          }}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="contained"
-          color="error"
-          size="small"
-          style={{ width: "22px", height: "22px", fontSize: "12px" }}
-          onClick={() => {
-
             const idToDelete = params.id;
             axios
               .delete(`http://localhost:8080/khuyen-mai/delete/${idToDelete}`)
@@ -117,7 +109,6 @@ const columns = [
                   position: "top-right",
                   autoClose: 2000,
                 });
-                navigate("/khuyen-mai");
               })
               .catch((error) => {
                 console.error(
@@ -126,9 +117,7 @@ const columns = [
                 );
               });
           }}
-        >
-          Delete
-        </Button>
+        />
       </TableCell>
     ),
   },
@@ -136,13 +125,12 @@ const columns = [
 
 export default function DataTable() {
   const [rows, setRows] = useState([]);
-  var navigate = useNavigate();
   useEffect(() => {
     fetchKhuyenMai().then((data) => {
       const processedData = data.map((item, index) => {
         return {
-          // uuid: item.id,
           id: item.id,
+          i: index + 1,
           ma: item.ma,
           ten: item.ten,
           giaTriGiam: item.giaTriPhanTram + "%",
@@ -155,7 +143,7 @@ export default function DataTable() {
 
       setRows(processedData);
     });
-  }, []);
+  }, [rows]);
 
   return (
     <div style={{ height: 400, width: "100%" }}>

@@ -24,18 +24,22 @@ public class KhuyenMai {
     @Column(name = "ten")
     private String ten;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ngay_bat_dau")
     private Date ngayBatDau;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ngay_ket_thuc")
     private Date ngayKetThuc;
 
     @Column(name = "gia_tri_phan_tram")
     private Float giaTriPhanTram;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ngay_tao")
     private Date ngayTao = new Date();
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ngay_sua")
     private Date ngaySua;
 
@@ -44,6 +48,9 @@ public class KhuyenMai {
 
     @Column(name = "nguoi_sua")
     private String nguoiSua;
+
+    @Column(name = "trang_thai")
+    private int trangThai;
 
     @Column(name = "deleted")
     private Integer deleted;
