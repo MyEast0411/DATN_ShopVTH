@@ -1,61 +1,22 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { TableCell, Button } from "@mui/material";
+import axios from "axios";
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { sync } from "framer-motion";
-import { fetchKhuyenMai } from "../../res/fetchKhuyenMai";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router";
-
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
 
 const columns = [
-  { field: "id", headerName: "STT", width: 80 },
-  { field: "ma", headerName: "Mã khuyến mại", width: 70 },
-  { field: "ten", headerName: "Tên khuyến mại", minWidth: 180 },
+  { field: "id", headerName: "STT", width: 200 },
+  { field: "ma", headerName: "Mã sản phẩm", width: 300 },
+  { field: "ten", headerName: "Tên sản phẩm", width: 300 },
   {
-    field: "giaTriGiam",
-    headerName: "Giá trị giảm",
-    type: "number",
-    width: 100,
-  },
-  {
-    field: "startDate",
-    headerName: "Ngày bắt đầu",
-    description: "Ngày bắt đầu",
-    sortable: DataGrid,
+    field: "soLuongTon",
+    headerName: "Số lượng tồn",
     width: 200,
-    valueFormatter: (params) => formatDate(params.value),
-  },
-  {
-    field: "endDate",
-    headerName: "Ngày kết thúc",
-    description: "Ngày kết thúc",
-    sortable: DataGrid,
-    width: 170,
-    valueFormatter: (params) => formatDate(params.value),
-  },
-  {
-    field: "updateDate",
-    headerName: "Ngày cập  nhật",
-    description: "Ngày cập nhật",
-    sortable: DataGrid,
-    width: 170,
-    valueFormatter: (params) => formatDate(params.value),
   },
   {
     field: "trangThai",
@@ -107,11 +68,11 @@ const columns = [
           size="small"
           style={{ width: "25px", height: "25px", fontSize: "12px" }}
           onClick={() => {
-            const idToDelete = params.id;
+            const idToDelete = params.row.ma;
+            console.log(idToDelete);
             axios
-              .delete(`http://localhost:8080/khuyen-mai/delete/${idToDelete}`)
+              .delete(`http://localhost:8080/delete/${idToDelete}`)
               .then((response) => {
-                console.log(`Delete successful for row ID: ${idToDelete}`);
                 toast.success(`Xóa thành công`, {
                   position: "top-right",
                   autoClose: 2000,
@@ -122,8 +83,6 @@ const columns = [
                   position: "top-right",
                   autoClose: 2000,
                 });
-
-                navigate("/khuyen-mai");
               });
           }}
         >
@@ -133,36 +92,34 @@ const columns = [
     ),
   },
 ];
+const url = "http://localhost:8080/chi-tiet-san-pham";
 
 export default function DataTable() {
-  const [rows, setRows] = useState([]);
-  var navigate = useNavigate();
-  useEffect(() => {
-    fetchKhuyenMai().then((data) => {
-      const processedData = data.map((item, index) => {
-        return {
-          // uuid: item.id,
-          id: item.id,
+  const [rows, setRows] = React.useState([]);
+  React.useEffect(() => {
+    async function fetchChiTietSanPham() {
+      try {
+        const response = await axios.get(url);
+        const updatedRows = response.data.map((item, index) => ({
+          id: index + 1,
           ma: item.ma,
-          ten: item.ten,
-          giaTriGiam: item.giaTriPhanTram + "%",
-          startDate: item.ngayBatDau,
-          endDate: item.ngayKetThuc,
-          updateDate: item.ngaySua,
-          trangThai: item.trangThai === 0 ? "Còn hạn" : "Hết hạn",
-        };
-      });
+          ten: item.ten_san_pham,
+          soLuongTon: item.so_luong_ton,
+          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán"
+        }));
+        setRows(updatedRows);
+      } catch (error) {
+        console.error("Lỗi khi gọi API: ", error);
+      }
+    } 
 
-      setRows(processedData);
-    });
-  }, []);
-
+    fetchChiTietSanPham();
+  }, [rows]);
   return (
     <div className="text-center" style={{ height: 371, width: "100%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
-        autoWidth
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },
