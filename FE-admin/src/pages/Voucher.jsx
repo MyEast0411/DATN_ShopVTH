@@ -128,7 +128,7 @@ export default function Voucher() {
                     Detail
                   </button>
                 </Link>
-                <Link to={"/update"}>
+                <Link to={`/update/${item.id}`}>
                   <button
                     style={{
                       border: "1px solid yellow",
@@ -136,7 +136,7 @@ export default function Voucher() {
                       margin: "5px",
                       background: "yellow",
                     }}
-                    onClick={() => handleUpdate(item.id)}
+                    // onClick={() => handleUpdate(item.id)}
                   >
                     Update
                   </button>

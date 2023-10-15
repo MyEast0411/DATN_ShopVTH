@@ -6,6 +6,8 @@ import com.example.shop.entity.Voucher;
 import com.example.shop.repository.VoucherRepository;
 import com.example.shop.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +22,8 @@ public class VoucherServiceImpl implements VoucherService {
 
 
     @Override
-    public List<Voucher> getVouchers() {
-        return voucherRepository.findAll();
+    public Page<Voucher> getVouchers(Pageable pageable) {
+        return voucherRepository.findAll(pageable);
     }
 
     @Override

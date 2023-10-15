@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
-import java.util.UUID;
+import java.sql.Date;
 
 @Data
 @AllArgsConstructor
@@ -37,13 +37,14 @@ public class Voucher {
     private Integer soLuong;
 
     @Column(name = "ngay_bat_dau")
+//    @DateTimeFormat(pattern = "yyyy/mm/dd")
     private Date ngayBatDau;
 
-    @Column(name = "nguoi_ket_thuc")
-    private String ngayKetThuc;
+    @Column(name = "ngay_ket_thuc")
+    private Date ngayKetThuc;
 
     @Column(name = "ngay_tao")
-    private Date ngayTao = new Date();
+    private Date ngayTao = new Date(System.currentTimeMillis());
 
     @Column(name = "ngay_sua")
     private Date ngaySua;

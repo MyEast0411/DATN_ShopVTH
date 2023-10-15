@@ -4,6 +4,9 @@ import com.example.shop.entity.Voucher;
 import com.example.shop.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -28,8 +32,12 @@ public class VoucherController {
     @Autowired
     private VoucherService voucherService;
     @GetMapping("getVouchers")
-    public ResponseEntity<List<Voucher>> getVouchers(){
-        return ResponseEntity.ok(voucherService.getVouchers());
+    public ResponseEntity<Page<Voucher>> getVouchers(
+            @RequestParam(name = "page" , defaultValue = "0")Integer numPage
+    ){
+        Pageable pageable = PageRequest.of(numPage , 3);
+        Page<Voucher> page = voucherService.getVouchers(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("getVoucher/{id}")
@@ -50,10 +58,11 @@ public class VoucherController {
             @RequestBody Voucher voucher
             ) throws Exception {
         try{
+            System.out.println(voucher);
             Voucher voucher1 = voucherService.getVoucher(id);
             if (voucher1 != null){
                 voucher.setId(voucher.getId());
-                Voucher voucherAdd = voucherService.addVoucher(voucher);
+                Voucher voucherAdd = voucherService.updateVoucher(voucher);
                 return new ResponseEntity<>(voucherAdd , HttpStatus.CREATED);
             }else{
                 throw new Exception("khong co id" + id);
@@ -65,7 +74,7 @@ public class VoucherController {
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<List<Voucher>> deleteVoucher(@PathVariable("id")String id){
+    public ResponseEntity<String> deleteVoucher(@PathVariable("id")String id){
         String mess = "";
         Voucher voucher = voucherService.getVoucher(id);
         if(voucher == null){
@@ -76,6 +85,6 @@ public class VoucherController {
             mess = kq? "Delete success":"Delete fail";
         }
         System.out.println(mess);
-        return new ResponseEntity(voucherService.getVouchers() , HttpStatus.OK);
+        return new ResponseEntity(mess , HttpStatus.OK);
     }
 }

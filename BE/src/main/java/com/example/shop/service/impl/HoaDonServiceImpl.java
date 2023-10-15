@@ -5,6 +5,8 @@ import com.example.shop.entity.HoaDon;
 import com.example.shop.repository.HoaDonRepository;
 import com.example.shop.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +21,8 @@ public class HoaDonServiceImpl implements HoaDonService {
 
 
     @Override
-    public List<HoaDon> getHoaDons() {
-        return hoaDonRepository.findAll();
+    public Page<HoaDon> getHoaDons(Pageable pageable) {
+        return hoaDonRepository.findAll(pageable);
     }
 
     @Override
