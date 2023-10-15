@@ -4,6 +4,7 @@ import { TableCell, Button } from "@mui/material";
 import axios from "axios";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { sync } from "framer-motion";
@@ -58,7 +59,7 @@ const columns = [
           fontSize: "12px",
         }}
         >
-        <EditIcon />
+        <VisibilityIcon />
         </Button>
         </Link>
         <Button
