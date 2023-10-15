@@ -1,13 +1,8 @@
 import React from "react";
-import { DatePicker, Space } from "antd";
+import { DatePicker } from "antd";
 
 const { RangePicker } = DatePicker;
 
-const FilterDatePicker = ({style}) => (
-  <Space direction="vertical" size={12}>
-   <RangePicker showTime style={style} /> 
-   
-  </Space>
-);
+const FilterDatePicker = ({ style }) => <RangePicker showTime style={style} />;
 
 export default FilterDatePicker;

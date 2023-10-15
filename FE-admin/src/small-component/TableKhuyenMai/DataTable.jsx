@@ -1,13 +1,14 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { TableCell, Button } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Link } from "react-router-dom";
 import { fetchKhuyenMai } from "../../res/fetchKhuyenMai";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+
+
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -59,14 +60,14 @@ const columns = [
     headerName: "Trạng thái",
     description: "Trạng thái",
     sortable: false,
-    width: 150,
+    width: 104,
     renderCell: (params) => (
       <TableCell>
         <div
           style={{
-            backgroundColor: params.value === "Đang bán" ? "#79AC78" : "#FF6969",
+            backgroundColor: params.value === "Còn hạn" ? "#79AC78" : "#FF6969",
             color: "white",
-            fontSize: "13px",
+            fontSize: "12px",
             textAlign: "center",
             padding: "1px 6px",
             borderRadius: "5px",
@@ -84,26 +85,29 @@ const columns = [
     sortable: false,
     renderCell: (params) => (
       <TableCell>
-        <Link to={`/edit-san-pham/${params.row.ma}`} className="button-link">
         <Button
-        variant="contained"
-        color="primary"
-        size="small"
-        style={{
-          width: "25px",
-          height: "25px",
-          fontSize: "12px",
-        }}
+          variant="contained"
+          color="primary"
+          size="small"
+          style={{
+            marginRight: 8,
+            width: "22px",
+            height: "22px",
+            fontSize: "12px",
+          }}
+          onClick={() => {
+            console.log(`Edit clicked for row ID: ${params.id}`);
+          }}
         >
-        <VisibilityIcon />
+          Edit
         </Button>
-        </Link>
         <Button
           variant="contained"
           color="error"
           size="small"
-          style={{ width: "25px", height: "25px", fontSize: "12px" }}
+          style={{ width: "22px", height: "22px", fontSize: "12px" }}
           onClick={() => {
+
             const idToDelete = params.id;
             axios
               .delete(`http://localhost:8080/khuyen-mai/delete/${idToDelete}`)
@@ -113,18 +117,17 @@ const columns = [
                   position: "top-right",
                   autoClose: 2000,
                 });
+                navigate("/khuyen-mai");
               })
               .catch((error) => {
-                toast.error(`Xóa thất bại`, {
-                  position: "top-right",
-                  autoClose: 2000,
-                });
-
-                navigate("/khuyen-mai");
+                console.error(
+                  `Error deleting record for ID: ${idToDelete}`,
+                  error
+                );
               });
           }}
         >
-          <DeleteIcon />
+          Delete
         </Button>
       </TableCell>
     ),
@@ -132,12 +135,13 @@ const columns = [
 ];
 
 export default function DataTable() {
-  const [rows, setRows] = React.useState([]);
+  const [rows, setRows] = useState([]);
   var navigate = useNavigate();
-  React.useEffect(() => {
+  useEffect(() => {
     fetchKhuyenMai().then((data) => {
       const processedData = data.map((item, index) => {
         return {
+          // uuid: item.id,
           id: item.id,
           ma: item.ma,
           ten: item.ten,
@@ -154,7 +158,7 @@ export default function DataTable() {
   }, []);
 
   return (
-    <div className="text-center" style={{ height: 371, width: "100%" }}>
+    <div style={{ height: 400, width: "100%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -165,7 +169,7 @@ export default function DataTable() {
           },
         }}
         pageSizeOptions={[5, 10]}
-      // checkboxSelection
+        // checkboxSelection
       />
     </div>
   );

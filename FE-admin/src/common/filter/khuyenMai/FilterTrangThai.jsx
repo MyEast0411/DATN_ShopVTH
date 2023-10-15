@@ -14,7 +14,7 @@ const FilterOption = ({ placeholder }) => {
     (option?.label || "").toLowerCase().includes(input.toLowerCase());
 
   const selectStyle = {
-    width: "150px",
+    width: "100px",
   };
 
   return (
@@ -32,12 +32,12 @@ const FilterOption = ({ placeholder }) => {
           label: "Tất cả",
         },
         {
-          value: "Đang bán",
-          label: "Đang bán",
+          value: "Hết hạn",
+          label: "Hết hạn",
         },
         {
-          value: "Ngừng bán",
-          label: "Ngừng bán",
+          value: "Còn hạn",
+          label: "Còn hạn",
         },
       ]}
       defaultValue="Tất cả"
