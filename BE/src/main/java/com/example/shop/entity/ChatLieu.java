@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -13,10 +14,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Table(name = "chat_lieu")
-public class ChatLieu {
+public class ChatLieu implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(name = "ma")
     private String ma;

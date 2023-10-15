@@ -10,6 +10,9 @@ import Profile from "./pages/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ThemKhuyenMai from "./components/khuyenMai/ThemKhuyenMai";
+import ThemSanPham from "./components/sanPham/ThemSanPham";
+import ChiTietSanPham from "./components/sanPham/ChiTietSanPham";
+import DetailSanPham from "./components/sanPham/DetailSanPham";
 
 const App = () => {
   return (
@@ -21,7 +24,9 @@ const App = () => {
         <Route path="/voucher" element={<Voucher />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
-
+        <Route path="/them-san-pham" element={<ThemSanPham />} />
+        <Route path="/edit-san-pham/:ma" element={<ChiTietSanPham />} />
+        <Route path="/update-san-pham/:maSP" element={<DetailSanPham />} />
         <Route path="/quan-ly-san-pham" element={<Build />}>
           <Route path=":bID">
             <Route path="product" />

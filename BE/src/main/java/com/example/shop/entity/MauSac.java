@@ -1,10 +1,12 @@
 package com.example.shop.entity;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -13,10 +15,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Table(name = "mau_sac")
-public class MauSac {
+public class MauSac implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(name = "ma")
     private String maMau;

@@ -4,13 +4,13 @@ import { Select } from "antd";
 const options = [];
 for (let i = 10; i < 36; i++) {
   options.push({
-    value: i.toString(36) + i,
-    label: i.toString(36) + i,
+    value: "SP"+ i,
+    label: "SP"+ i,
   });
 }
 
 const selected = {
-  width: "190px",
+  width: "250px",
 };
 
 const FilterOption = ({ placeholder }) => {
