@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Controller
 @RestController
-@CrossOrigin
+@CrossOrigin("http://localhost:5173")
 public class AppController {
     @Autowired
     ChiTietSanPhamRepository repo;
@@ -161,6 +161,34 @@ public class AppController {
     @GetMapping("findByMa/{ma}")
     List<SanPhamChiTiet> findByMa(@PathVariable String ma) {
         return repo.getByMa(ma);
+    }
+
+    @GetMapping("getByMa/{ma}")
+    SanPhamChiTiet getByMa(@PathVariable String ma) {
+        return repo.findByMa(ma);
+    }
+
+    @PutMapping("updateSPCT")
+    ResponseEntity updateSPCT(@RequestBody SanPhamChiTiet sanPham) {
+        try {
+            System.out.println(sanPham);
+            repo.save(sanPham);
+            return ResponseEntity.ok("Cập nhật thành công");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cập nhật thất bại!");
+        }
+    }
+
+    @DeleteMapping("/deleteSPCT/{ma}")
+    ResponseEntity deleteSPCT (@PathVariable String ma) {
+        try {
+            repo.delete(repo.findByMa(ma));
+            return ResponseEntity.ok("Xóa thành công");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Xóa thất bại!");
+        }
     }
 
 }

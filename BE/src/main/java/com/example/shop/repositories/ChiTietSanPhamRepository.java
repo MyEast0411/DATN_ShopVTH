@@ -21,4 +21,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             "JOIN san_pham b ON a.id_san_pham = b.id\n" +
             "where b.ma = :ma",nativeQuery = true)
     List<SanPhamChiTiet> getByMa(@Param("ma") String ma);
+
+    @Query(value = "select * from `shopvth`.`san_pham_chi_tiet`\n" +
+            "where ma = :ma",nativeQuery = true)
+    SanPhamChiTiet findByMa(@Param("ma") String ma);
 }
