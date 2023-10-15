@@ -8,11 +8,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { sync } from "framer-motion";
+import { MdDeleteOutline } from "react-icons/md";
+import { LiaEyeSolid } from "react-icons/lia";
 
 const columns = [
   { field: "id", headerName: "STT", width: 200 },
-  { field: "ma", headerName: "Mã sản phẩm", width: 300 },
-  { field: "ten", headerName: "Tên sản phẩm", width: 300 },
+  { field: "ma", headerName: "Mã sản phẩm", width: 330 },
+  { field: "ten", headerName: "Tên sản phẩm", width: 330 },
   {
     field: "soLuongTon",
     headerName: "Số lượng tồn",
@@ -23,7 +25,7 @@ const columns = [
     headerName: "Trạng thái",
     description: "Trạng thái",
     sortable: false,
-    width: 150,
+    width: 250,
     renderCell: (params) => (
       <TableCell>
         <div
@@ -32,7 +34,9 @@ const columns = [
             color: "white",
             fontSize: "13px",
             textAlign: "center",
-            padding: "1px 6px",
+            width: 100,
+            height : 23,
+            padding: "2px 1px",
             borderRadius: "5px",
           }}
         >
@@ -48,46 +52,38 @@ const columns = [
     sortable: false,
     renderCell: (params) => (
       <TableCell>
-        <Link to={`/edit-san-pham/${params.row.ma}`} className="button-link">
-        <Button
-        variant="contained"
-        color="primary"
-        size="small"
-        style={{
-          width: "25px",
-          height: "25px",
-          fontSize: "12px",
-        }}
-        >
-        <VisibilityIcon />
-        </Button>
-        </Link>
-        <Button
-          variant="contained"
-          color="error"
-          size="small"
-          style={{ width: "25px", height: "25px", fontSize: "12px" }}
-          onClick={() => {
-            const idToDelete = params.row.ma;
-            console.log(idToDelete);
-            axios
-              .delete(`http://localhost:8080/delete/${idToDelete}`)
-              .then((response) => {
-                toast.success(`Xóa thành công`, {
-                  position: "top-right",
-                  autoClose: 2000,
+        <div className="flex items-center">
+          <Link to={`/edit-san-pham/${params.row.ma}`} className="button-link group relative">
+            <LiaEyeSolid className="cursor-pointer text-xl blue-hover mr-4" />
+            <div className="text invisible group-hover:visible absolute -top-2 left-16 border border-gray-500 p-2">
+              Chi tiết
+            </div>
+          </Link>
+          <div className="group relative">
+          <MdDeleteOutline
+            className="cursor-pointer text-xl delete-hover relative"
+            onClick={() => {
+              const idToDelete = params.row.ma;
+              console.log(idToDelete);
+              axios
+                .delete(`http://localhost:8080/delete/${idToDelete}`)
+                .then((response) => {
+                  toast.success(`Xóa thành công`, {
+                    position: "top-right",
+                    autoClose: 2000,
+                  });
+                })
+                .catch((error) => {
+                  toast.error(`Xóa thất bại`, {
+                    position: "top-right",
+                    autoClose: 2000,
+                  });
                 });
-              })
-              .catch((error) => {
-                toast.error(`Xóa thất bại`, {
-                  position: "top-right",
-                  autoClose: 2000,
-                });
-              });
-          }}
-        >
-          <DeleteIcon />
-        </Button>
+            }}
+          />
+          <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span>
+          </div>
+       </div>
       </TableCell>
     ),
   },
@@ -120,13 +116,14 @@ export default function DataTable() {
       <DataGrid
         rows={rows}
         columns={columns}
+        autoWidth
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },
           },
         }}
         pageSizeOptions={[5, 10]}
-      // checkboxSelection
+        
       />
     </div>
   );

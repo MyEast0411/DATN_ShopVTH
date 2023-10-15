@@ -3,7 +3,7 @@ import { Button } from "antd";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import {AiOutlinePlus} from "react-icons/ai";
 export default function ThemSanPham() {
   const { maSP } = useParams();
   let navigate = useNavigate();
@@ -244,7 +244,7 @@ export default function ThemSanPham() {
                   >
                     Thương hiệu
                   </label>
-                  <div className="mt-2 space-x-2">
+                  <div className="mt-2 space-x-2 flex">
                   <select
                       id="thuongHieu"
                       name="id_thuong_hieu"
@@ -263,6 +263,14 @@ export default function ThemSanPham() {
                         </option>
                        ))}
                     </select>
+                    <div className="p-2" style={{
+                      backgroundColor: "#00C5CD",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}>
+                      <AiOutlinePlus />
+                    </div>
                   </div>
                 </div>
                 <div className="sm:col-span-3">
