@@ -8,7 +8,7 @@ export default function GiaoDienUpdateKhuyenMai({ idKM }) {
   const [currentDateTime, setCurrentDateTime] = useState(
     moment().format("YYYY-MM-DDTHH:mm:ss")
   );
-  
+
   const [khuyenMai, setKhuyenMai] = useState({});
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
@@ -67,10 +67,10 @@ export default function GiaoDienUpdateKhuyenMai({ idKM }) {
       giaTriPhanTram: khuyenMai.giaTriPhanTram,
       ngaySua: currentDateTime,
       ngayTao: null,
-      nguoiTao:"Nguyễn Văn Hội",
-      nguoiSua:"Nguyễn Văn Hội",
+      nguoiTao: "Nguyễn Văn Hội",
+      nguoiSua: "Nguyễn Văn Hội",
     };
-
+    console.log(updatedKhuyenMai);
     try {
       // Gọi API cập nhật khuyến mãi bằng phương thức PUT
       const response = await axios.put(

@@ -10,17 +10,23 @@ import ModalUpdateKhuyenMai from "../../small-component/ModalUpdateKhuyenMai/Mod
 //icon
 import { MdDeleteOutline } from "react-icons/md";
 
+
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-
-  return date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
+  const options = {
     year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-  });
+    second: "2-digit",
+  };
+
+  // Adjust for the user's local time zone
+  const formatter = new Intl.DateTimeFormat("en-GB", { ...options, timeZoneName: "short" });
+  return formatter.format(date);
 };
+
 
 const columns = [
   { field: "i", headerName: "STT", width: 80 },
