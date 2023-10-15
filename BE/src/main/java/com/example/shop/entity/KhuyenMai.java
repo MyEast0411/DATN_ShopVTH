@@ -45,6 +45,9 @@ public class KhuyenMai {
     @Column(name = "nguoi_sua")
     private String nguoiSua;
 
+    @Column(name = "trang_thai")
+    private int trangThai;
+
     @Column(name = "deleted")
     private Integer deleted;
 }

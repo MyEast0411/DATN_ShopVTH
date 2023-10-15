@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { TableCell, Button } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { sync } from "framer-motion";
 import { fetchKhuyenMai } from "../../res/fetchKhuyenMai";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
+import axios from "axios";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -135,13 +132,12 @@ const columns = [
 ];
 
 export default function DataTable() {
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = React.useState([]);
   var navigate = useNavigate();
-  useEffect(() => {
+  React.useEffect(() => {
     fetchKhuyenMai().then((data) => {
       const processedData = data.map((item, index) => {
         return {
-          // uuid: item.id,
           id: item.id,
           ma: item.ma,
           ten: item.ten,

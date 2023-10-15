@@ -10,7 +10,7 @@ import { Button } from "antd";
 import { Link } from "react-router-dom";
 
 //table
-import DataTableMa from "../small-component/TableKhuyenMai/DataTable";
+import DataTableMa from "../small-component/Table/DataTableSanPham";
 
 //icon
 import { BiFilterAlt } from "react-icons/bi";
