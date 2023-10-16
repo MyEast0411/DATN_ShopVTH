@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import { DateTime } from "luxon";
+import { Settings } from "luxon";
 import {
   TableCell,
   Button,
@@ -17,21 +19,11 @@ import { PiPencilSimpleBold } from "react-icons/pi";
 //icon
 import { MdDeleteOutline } from "react-icons/md";
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  const options = {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  };
+Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 
-  // Adjust for the user's local time zone
-  const formatter = new Intl.DateTimeFormat("en-GB", {
-    ...options,
-  });
-  return formatter.format(date);
+const formateDateVietNam = (dateTimeStr) => {
+  const vietNamTime = DateTime.fromISO(dateTimeStr, { zone: "utc" });
+  return vietNamTime.toFormat("dd/MM/yyyy HH:mm");
 };
 
 const columns = [
@@ -51,7 +43,7 @@ const columns = [
     description: "Ngày bắt đầu",
     sortable: DataGrid,
     width: 160,
-    valueFormatter: (params) => formatDate(params.value),
+    valueFormatter: (params) => formateDateVietNam(params.value),
     align: "left",
   },
   {
@@ -60,7 +52,7 @@ const columns = [
     description: "Ngày kết thúc",
     sortable: DataGrid,
     width: 160,
-    valueFormatter: (params) => formatDate(params.value),
+    valueFormatter: (params) => formateDateVietNam(params.value),
     align: "left",
   },
   {
@@ -69,7 +61,7 @@ const columns = [
     description: "Ngày cập nhật",
     sortable: DataGrid,
     width: 160,
-    valueFormatter: (params) => formatDate(params.value),
+    valueFormatter: (params) => formateDateVietNam(params.value),
     align: "left",
   },
   {

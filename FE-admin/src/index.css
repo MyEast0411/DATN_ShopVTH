@@ -83,4 +83,15 @@ input[type="number"] {
   color: black;
 }
 
+/* color ok button ant modal */
+.ant-modal-footer .ant-btn-primary {
+  background-color: #1976d2; /* Replace with your desired background color */
+  border-color: #1976d2; /* Replace with your desired border color */
+  color: #fff; /* Text color for the button */
+}
 
+.ant-modal-footer .ant-btn-primary:hover {
+  background-color: #1976d2; /* Replace with your desired hover background color */
+  border-color: #1976d2; /* Replace with your desired hover border color */
+  color: #fff; /* Text color for the button on hover */
+}
