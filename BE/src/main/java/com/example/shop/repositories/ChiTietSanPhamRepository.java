@@ -25,4 +25,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
     @Query(value = "select * from `shopvth`.`san_pham_chi_tiet`\n" +
             "where ma = :ma",nativeQuery = true)
     SanPhamChiTiet findByMa(@Param("ma") String ma);
+
+    @Query(value = "select MAX(ma) from san_pham_chi_tiet",nativeQuery = true)
+    String findMaxMa();
 }

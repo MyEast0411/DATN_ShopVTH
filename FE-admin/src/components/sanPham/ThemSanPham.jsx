@@ -2,17 +2,23 @@ import React, { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { InputNumber } from "antd";
+import { TableCell } from "@mui/material";
+//icon
 import { AiOutlinePlus } from "react-icons/ai";
-import { Button, Modal } from "antd";
-
+import { MdDeleteOutline } from "react-icons/md";
+import { Button, Modal, Table } from "antd";
 import Badge from "@mui/material/Badge";
-// import MailIcon from '@mui/icons-material/Mail';
 
 export default function ThemSanPham() {
   let navigate = useNavigate();
+  const [tableData, setTableData] = useState([]);
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedKichCo, setSelectedKichCo] = useState([]);
   const [isBlur, setIsBlur] = useState(false);
   const [mauSac, setMauSac] = useState([]);
-  const [selectedColor, setSelectedColor] = useState(null);
   const [thuongHieu, setThuongHieu] = useState([]);
   const [chatLieu, setChatLieu] = useState([]);
   const [deGiay, setDeGiay] = useState([]);
@@ -33,15 +39,7 @@ export default function ThemSanPham() {
     id_thuong_hieu: "",
     id_nhan_hieu: "",
   });
-  const [availableColors, setAvailableColors] = useState([]);
-  // const [selectedColor, setSelectedColors] = useState([]);
-  const handleColorSelection = (color) => {
-    if (selectedColor.includes(color)) {
-      setSelectedColors(selectedColor.filter((c) => c !== color));
-    } else {
-      setSelectedColors([...selectedColor, color]);
-    }
-  };
+
   const {
     ma,
     ten,
@@ -58,6 +56,114 @@ export default function ThemSanPham() {
     id_nhan_hieu,
   } = sanPham;
 
+  //table data
+  const handleChange = (pagination, filters, sorter) => {
+    console.log("Various parameters", pagination, filters, sorter);
+    setFilteredInfo(filters);
+    setSortedInfo(sorter);
+  };
+
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "id",
+      key: "id",
+      sorter: (a, b) => a.id - b.id,
+      sortOrder: sortedInfo.columnKey === "id" ? sortedInfo.order : null,
+      ellipsis: true,
+    },
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "tenSanPham",
+      key: "tenSanPham",
+      filteredValue: filteredInfo.tenSanPham || null,
+      onFilter: (value, record) => record.tenSanPham.includes(value),
+      sorter: (a, b) => a.tenSanPham.length - b.tenSanPham.length,
+      sortOrder:
+        sortedInfo.columnKey === "tenSanPham" ? sortedInfo.order : null,
+      ellipsis: true,
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "soLuongTon",
+      sorter: (a, b) => a.soLuongTon - b.soLuongTon,
+      sortOrder: sortedInfo.columnKey === "soLuongTon" ? sortedInfo.order : null,
+      ellipsis: true,
+      render: (text, record) => (
+        <InputNumber
+          value={record.soLuongTon}
+          onChange={(value) => handleSoLuongChange(record.key, value)}
+        />
+      ),
+    },
+    {
+      title: "Giá bán",
+      dataIndex: "giaBan",
+      sorter: (a, b) => a.giaBan - b.giaBan,
+      sortOrder: sortedInfo.columnKey === "giaBan" ? sortedInfo.order : null,
+      ellipsis: true,
+      render: (text, record) => (
+        <InputNumber
+          value={record.giaBan}
+          onChange={(value) => handleGiaBanChange(record.key, value)}
+        />
+      ),
+    },
+    {
+      dataIndex: "hanhDong",
+      title: "Hành động",
+      width: 200,
+      render: (params) => (
+        <div className="flex items-center">
+          <div className="group relative">
+            <MdDeleteOutline
+              className="cursor-pointer text-xl delete-hover relative"
+              onClick={() => {
+              }}
+            />
+            <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "hinhAnh",
+      key: "hinhAnh",
+    }
+  ];
+  
+  const paginationOptions = {
+    defaultPageSize: 5
+  };
+
+  const handleSoLuongChange = (key, value) => {
+    // Tìm dòng dữ liệu theo key và cập nhật giá trị soLuong
+    const updatedData = dataSource.map((item) => {
+      if (item.key === key) {
+        return { ...item, soLuong: value };
+      }
+      return item;
+    });
+    // Cập nhật dữ liệu
+    //setDataSource(updatedData);
+  };
+  
+  const handleGiaBanChange = (key, value) => {
+    // Tìm dòng dữ liệu theo key và cập nhật giá trị giaBan
+    const updatedData = dataSource.map((item) => {
+      if (item.key === key) {
+        return { ...item, giaBan: value };
+      }
+      return item;
+    });
+    // Cập nhật dữ liệu
+    //setDataSource(updatedData);
+  };
+  
+// -------------------------end table data-------------------------
+
+
   // ------------------------modal mau sac-------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -69,17 +175,67 @@ export default function ThemSanPham() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  // ------------------------modal mau sac-------------------------
-
+  // ------------------------modal kich co-------------------------
+  const [isModalOpen1, setIsModalOpen1] = useState(false);
+  const showModal1 = () => {
+    setIsModalOpen1(true);
+  };
+  const handleOk1 = () => {
+    setIsModalOpen1(false);
+  };
+  const handleCancel1 = () => {
+    setIsModalOpen1(false);
+  };
+  // ---------------------------------------------------------------
   const onChange = (e) => {
     setSanPham({ ...sanPham, [e.target.name]: e.target.value });
   };
+  const data = [
+    {
+      key: "1",
+      STT: 1,
+      tenSanPham: "JORDAN-AIR",
+      soLuong: 1,
+      giaBan: "320,000"
+    }
+  ];
+  const loadTable = () => {
+    const tableData = [];
+    let index = 1;
+    for (const mau of selectedColors) {
+      for (const kichCo of selectedKichCo) {
+        const sp = {
+          id: index,
+          ten: sanPham.ten,
+          tenSanPham: sanPham.ten + ` [ ${kichCo} - ${mau} ]`,
+          soLuongTon: 1,
+          khoiLuong: 1,
+          moTa: sanPham.moTa,
+          giaNhap: "100,000",
+          giaBan: "200,000",
+          id_mau_sac: mau,
+          id_kich_co: kichCo,
+          id_thuong_hieu : sanPham.id_thuong_hieu,
+          id_nhan_hieu : sanPham.id_nhan_hieu,
+          id_chat_lieu : sanPham.id_chat_lieu,
+          id_de_giay : sanPham.id_de_giay
+        };
+        tableData.push(sp);
+        index+=1;
+      }
+    }
+    setTableData(tableData);
+    console.log(tableData);
+  };
   useEffect(() => {
+    loadTable();
+  },[data])
+  useEffect(() => {
+    getAllKC();
     getAllNH();
     getAllMS();
     getAllCL();
     getAllDG();
-    getAllKC();
     getAllTH();
   }, []);
   const getAllNH = async () => {
@@ -89,11 +245,7 @@ export default function ThemSanPham() {
   };
   const getAllMS = async () => {
     await axios.get("http://localhost:8080/getAllMS").then((response) => {
-      setAvailableColors(response.data);
-      // setMauSac(response.data);
-      {
-        response.data.map((color) => console.log(color.maMau));
-      }
+      setMauSac(response.data);
     });
   };
 
@@ -120,10 +272,15 @@ export default function ThemSanPham() {
       setKichCo(response.data);
     });
   };
+
   const onSubmit = async (e) => {
     e.preventDefault();
+    const data = tableData.map((sp) => [sp.id, sp.ten, sp.tenSanPham, sp.soLuongTon, sp.khoiLuong,
+       sp.moTa, sp.giaNhap, sp.giaBan, sp.id_mau_sac, sp.id_kich_co,sp.id_thuong_hieu,sp.id_nhan_hieu,
+       sp.id_chat_lieu,sp.id_de_giay]);
+    console.log(data);
     await axios
-      .post("http://localhost:8080/add", sanPham)
+      .post("http://localhost:8080/san-pham/add", data)
       .then((response) => {
         console.log(response);
         toast.success(`Thêm thành công`, {
@@ -133,11 +290,24 @@ export default function ThemSanPham() {
         navigate("/quan-ly-san-pham/san-pham");
       })
       .catch((error) => {
-        toast.error(error.response.data, {
+        toast.error(`Thêm thất bại`, {
           position: "top-right",
           autoClose: 2000,
         });
+        console.log(error);
       });
+  };
+
+  const handleRemoveColor = (maMau) => {
+    setSelectedColors((prevSelected) =>
+      prevSelected.filter((color) => color !== maMau)
+    );
+  };
+
+  const handleRemoveKichCo = (ten) => {
+    setSelectedKichCo((prevSelected) =>
+      prevSelected.filter((kichCo) => kichCo !== ten)
+    );
   };
   return (
     <>
@@ -165,6 +335,7 @@ export default function ThemSanPham() {
                       <input
                         type="text"
                         name="ten"
+                        value={ten}
                         className="block p-2 flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                         placeholder="Nhập tên sản phẩm"
                         onChange={(e) => onChange(e)}
@@ -172,25 +343,6 @@ export default function ThemSanPham() {
                     </div>
                   </div>
                 </div>
-                {/* <div className="sm:col-span-4">
-                  <label
-                    htmlFor="username"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Mã sản phẩm
-                  </label>
-                  <div className="mt-2">
-                    <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                      <input
-                        type="text"
-                        name="ma"
-                        className="block p-2 flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="Nhập mã sản phẩm"
-                        onChange={(e) => onChange(e)}
-                      />
-                    </div>
-                  </div>
-                </div> */}
                 <div className="col-span-full">
                   <label
                     htmlFor="about"
@@ -215,7 +367,7 @@ export default function ThemSanPham() {
 
             <div className="border-b border-gray-900/10 pb-12">
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="sm:col-span-3">
+                {/* <div className="sm:col-span-3">
                   <label
                     htmlFor="first-name"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -232,8 +384,8 @@ export default function ThemSanPham() {
                       onChange={(e) => onChange(e)}
                     />
                   </div>
-                </div>
-                <div className="sm:col-span-3">
+                </div> */}
+                {/* <div className="sm:col-span-3">
                   <label
                     htmlFor="first-name"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -250,7 +402,7 @@ export default function ThemSanPham() {
                       onChange={(e) => onChange(e)}
                     />
                   </div>
-                </div>
+                </div> */}
 
                 <div className="sm:col-span-3">
                   <label
@@ -259,7 +411,7 @@ export default function ThemSanPham() {
                   >
                     Thương hiệu
                   </label>
-                  <div className="mt-2 space-x-2">
+                  <div className="mt-2 space-x-2 flex">
                     <select
                       id="thuongHieu"
                       name="id_thuong_hieu"
@@ -278,6 +430,114 @@ export default function ThemSanPham() {
                         </option>
                       ))}
                     </select>
+                    <div className="p-2" style={{
+                      backgroundColor: "#00C5CD",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}>
+                      <AiOutlinePlus />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label
+                    htmlFor="country"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Nhãn hiệu
+                  </label>
+                  <div className="mt-2 space-x-2 flex">
+                    <select
+                      id="nhanHieu"
+                      name="id_nhan_hieu"
+                      autoComplete="country-name"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                      onChange={(e) => onChange(e)}
+                    >
+                      <option selected>--Chọn Nhãn Hiệu--</option>
+                      {nhanHieu.map((x) => (
+                        <option key={x.id} value={x.id}>
+                          {x.ten}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="p-2" style={{
+                      backgroundColor: "#00C5CD",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}>
+                      <AiOutlinePlus />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label
+                    htmlFor="chatLieu"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Chất Liệu
+                  </label>
+                  <div className="mt-2 space-x-2 flex">
+                    <select
+                      id="chatLieu"
+                      name="id_chat_lieu"
+                      onChange={(e) => onChange(e)}
+                      autoComplete="country-name"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    >
+                      <option value="" selected>
+                        --Chọn Chất Liệu--
+                      </option>
+                      {chatLieu.map((x) => (
+                        <option key={x.id} value={x.id}>
+                          {x.ten}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="p-2" style={{
+                      backgroundColor: "#00C5CD",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}>
+                      <AiOutlinePlus />
+                    </div>
+                  </div>
+                </div>
+                <div className="sm:col-span-3">
+                  <label
+                    htmlFor="deGiay"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Đế giày
+                  </label>
+                  <div className="mt-2 space-x-2 flex">
+                    <select
+                      id="deGiay"
+                      name="id_de_giay"
+                      onChange={(e) => onChange(e)}
+                      autoComplete="country-name"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    >
+                      <option selected>--Chọn Đế Giày--</option>
+                      {deGiay.map((x) => (
+                        <option key={x.id} value={x.id}>
+                          {x.ten}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="p-2" style={{
+                      backgroundColor: "#00C5CD",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}>
+                      <AiOutlinePlus />
+                    </div>
                   </div>
                 </div>
                 <div className="sm:col-span-3">
@@ -288,27 +548,32 @@ export default function ThemSanPham() {
                     Màu sắc
                   </label>
                   <div className="mt-2 space-x-3 flex">
-                    <Badge
-                      className="cursor-pointer"
-                      badgeContent={"--"}
-                      color="error"
-                    >
-                      <div
-                        className=""
-                        style={{
-                          backgroundColor: "black",
-                          border: "1px solid #ccc",
-                          borderRadius: "5px",
-                          padding: "5px 7px",
-                          width: "35px",
-                          height: "35px",
-                        }}
-                      ></div>
-                    </Badge>
+                    {
+                      selectedColors.map((item,index) => (
+                        <Badge
+                          className="cursor-pointer"
+                          badgeContent={"--"}
+                          color="error"
+                          key={index}
+                          onClick={() => handleRemoveColor(item)}
+                        >
+                          <div
+                            style={{
+                              backgroundColor: item,
+                              border: "1px solid #ccc",
+                              borderRadius: "5px",
+                              padding: "5px 7px",
+                              width: "35px",
+                              height: "35px",
+                            }}
+                          ></div>
+                        </Badge>
+                      ))
+                    }
                     <div
                       className="inline-block "
                       style={{
-                        backgroundColor: "#1976d2",
+                        backgroundColor: "#00C5CD",
                         borderRadius: "5px",
                         color: "white",
                         cursor: "pointer",
@@ -327,28 +592,42 @@ export default function ThemSanPham() {
                       cancelText="Hủy"
                       okText="Thêm"
                       style={{ position: "relative" }}
-                      className=""
                     >
-                      <div
-                        className={`flex justify-center text-white cursor-pointer ${
-                          selectedColor == "black" ? "border-2" : "border-sky-50"
-                        }`}
-                        style={{
-                          width: "20%",
-                          height: "25px",
-                          backgroundColor: "red",
-                          borderRadius: "5px",
-                          alignItems: "center",
-                          marginTop: "35px",
-                          borderColor: "black",
-                          // borderWidth: "3px"
-                        }}
-                        onClick={() => {
-                          setSelectedColor("black");
-                          console.log(selectedColor);
-                        }}
-                      >
-                        #1976d2
+                      <div style={{ display: "flex", flexWrap: "wrap"}}>
+                      {
+                        mauSac.map((item) => (
+                          <div
+                          key={item.id}
+                          className={`flex justify-center text-white cursor-pointer ${
+                            selectedColors.includes(item.maMau) ? "border-2" : "border-none"
+                          }`}
+                          style={{
+                            width: "20%",
+                            height: "25px",
+                            backgroundColor: item.maMau,
+                            borderRadius: "5px",
+                            alignItems: "center",
+                            marginTop: "35px",
+                            borderColor: "yellow",
+                            marginRight: "5px"
+                          }}
+                          onClick={() => {
+                            if (selectedColors.includes(item.maMau)) {
+                              setSelectedColors((prevSelected) =>
+                                prevSelected.filter((color) => color !== item.maMau)
+                              );
+                            } else {
+                              if (selectedColors.length < 3) {
+                                setSelectedColors((prevSelected) => [...prevSelected, item.maMau]);
+                              }
+                            }
+                            console.log(selectedColors);
+                          }}>
+                          {item.maMau}
+                          </div>
+                        ))
+                      }
+                      
                       </div>
                       <div>
                         <Button
@@ -372,56 +651,7 @@ export default function ThemSanPham() {
                     </Modal>
                   </div>
                 </div>
-                <div className="sm:col-span-3">
-                  <label
-                    htmlFor="chatLieu"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Chất Liệu
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      id="chatLieu"
-                      name="id_chat_lieu"
-                      onChange={(e) => onChange(e)}
-                      autoComplete="country-name"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    >
-                      <option value="" selected>
-                        --Chọn Chất Liệu--
-                      </option>
-                      {chatLieu.map((x) => (
-                        <option key={x.id} value={x.id}>
-                          {x.ten}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="sm:col-span-3">
-                  <label
-                    htmlFor="deGiay"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Đế giày
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      id="deGiay"
-                      name="id_de_giay"
-                      onChange={(e) => onChange(e)}
-                      autoComplete="country-name"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    >
-                      <option selected>--Chọn Đế Giày--</option>
-                      {deGiay.map((x) => (
-                        <option key={x.id} value={x.id}>
-                          {x.ten}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+
                 <div className="sm:col-span-3">
                   <label
                     htmlFor="country"
@@ -429,48 +659,113 @@ export default function ThemSanPham() {
                   >
                     Kích cỡ
                   </label>
-                  <div className="mt-2">
-                    <select
-                      id="kichCo"
-                      name="id_kich_co"
-                      onChange={(e) => onChange(e)}
-                      autoComplete="country-name"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  <div className="mt-2 space-x-3 flex">
+                    {
+                      selectedKichCo.map((item,index) => (
+                        <Badge
+                          className="cursor-pointer"
+                          badgeContent={"--"}
+                          color="error"
+                          key={index}
+                          onClick={() => handleRemoveKichCo(item)}
+                        >
+                          <div
+                            style={{
+                              border: "1px solid #ccc",
+                              borderRadius: "5px",
+                              padding: "5px 7px",
+                              width: "35px",
+                              height: "35px",
+                              color: "black"
+                            }}
+                          >{item}</div>
+                        </Badge>
+                      ))
+                    }
+                    <div
+                      className="inline-block "
+                      style={{
+                        borderRadius: "5px",
+                        backgroundColor : "#00C5CD",
+                        color: "black",
+                        cursor: "pointer",
+                        width: "35px",
+                        height: "35px",
+                        padding: "9px",
+                      }}
                     >
-                      <option selected>--Chọn Kích Cỡ--</option>
-                      {kichCo.map((x) => (
-                        <option key={x.id} value={x.id}>
-                          {x.ten}
-                        </option>
-                      ))}
-                    </select>
+                      <AiOutlinePlus onClick={showModal1}/>
+                    </div>
+                    <Modal
+                      title="Chọn kích cỡ"
+                      open={isModalOpen1}
+                      onOk={handleOk1}
+                      onCancel={handleCancel1}
+                      cancelText="Hủy"
+                      okText="Thêm"
+                      style={{ position: "relative" }}
+                      className=""
+                    >
+                      <div style={{ display: "flex", flexWrap: "wrap"}}>
+                      {
+                        kichCo.map((item) => (
+                          <div
+                          key={item.id}
+                          className={`flex justify-center text-white cursor-pointer ${
+                            selectedKichCo.includes(item.ten) ? "selectedKichCo" : "border-none"
+                          }`}
+                          style={{
+                            width: "70px",
+                            height: "35px",
+                            borderRadius: "5px",
+                            alignItems: "center",
+                            marginTop: "35px",
+                            borderColor: "yellow",
+                            marginRight: "5px",
+                            color:"black",
+                          }}
+                          onClick={() => {
+                            if (selectedKichCo.includes(item.ten)) {
+                              setSelectedKichCo((prevSelected) =>
+                                prevSelected.filter((kichCo) => kichCo !== item.ten)
+                              );
+                            } else {
+                              if (selectedKichCo.length < 3) {
+                                setSelectedKichCo((prevSelected) => [...prevSelected, item.ten]);
+                              }
+                            }
+                            console.log(selectedKichCo);
+                          }}>
+                          {item.ten}
+                          </div>
+                        ))
+                      }
+                      </div>
+
+                      <div>
+                        <Button
+                          className="flex drop-shadow-lg"
+                          type="primary"
+                          style={{
+                            backgroundColor: "white",
+                            alignItems: "center",
+                            position: "absolute",
+                            right: 5,
+                            top: 50,
+                            color: "black",
+                            border: "0.5px solid #ccc",
+                            marginRight: "3.5%",
+                          }}
+                        >
+                          <AiOutlinePlus className="mr-2" />
+                          Thêm kích cỡ
+                        </Button>
+                      </div>
+                    </Modal>
                   </div>
                 </div>
-                <div className="sm:col-span-3">
-                  <label
-                    htmlFor="country"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Nhãn hiệu
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      id="nhanHieu"
-                      name="id_nhan_hieu"
-                      autoComplete="country-name"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                      onChange={(e) => onChange(e)}
-                    >
-                      <option selected>--Chọn Nhãn Hiệu--</option>
-                      {nhanHieu.map((x) => (
-                        <option key={x.id} value={x.id}>
-                          {x.ten}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="sm:col-span-4">
+
+                {/* <div className="sm:col-span-4">
                   <label
                     htmlFor="email"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -487,8 +782,8 @@ export default function ThemSanPham() {
                       onChange={(e) => onChange(e)}
                     />
                   </div>
-                </div>
-                <div className="sm:col-span-4">
+                </div> */}
+                {/* <div className="sm:col-span-4">
                   <label
                     htmlFor="email"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -504,8 +799,8 @@ export default function ThemSanPham() {
                       onChange={(e) => onChange(e)}
                     />
                   </div>
-                </div>
-                <div className="sm:col-span-4">
+                </div> */}
+                {/* <div className="sm:col-span-4">
                   <label
                     htmlFor="email"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -519,10 +814,26 @@ export default function ThemSanPham() {
                       className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            <button
+            type="button"
+              className="rounded-md mb-5 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              onClick={loadTable}
+            >
+              Hoàn tất
+            </button>
+          </div>
+          <Table
+            columns={columns}
+            dataSource={tableData}
+            onChange={handleChange}
+            pagination={paginationOptions} 
+            scroll={{ y: 2000 }}
+          />
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <Link
               to="/quan-ly-san-pham/san-pham"

@@ -42,12 +42,12 @@ export default function SanPham() {
               <FilterMa style={{ width: "100%" }} />
             </div>
             <div className="p-5">
-            <div className="flex items-center">
-              <span className="pr-2">Trạng thái:</span>
-              <FilterTrangThai
-                style={{ width: "100%" }}
-              />
-              </div>
+              <div className="flex items-center">
+                <span className="pr-2">Trạng thái:</span>
+                <FilterTrangThai
+                  style={{ width: "100%" }}
+                />
+                </div>
             </div>
             <div className="p-5">
               <Slider style={{ width: "100%" }} />

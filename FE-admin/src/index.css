@@ -95,3 +95,7 @@ input[type="number"] {
   border-color: #1976d2; /* Replace with your desired hover border color */
   color: #fff; /* Text color for the button on hover */
 }
+
+.selectedKichCo {
+  border: 2px solid yellow;
+}

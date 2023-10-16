@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -100,46 +101,72 @@ public class SanPhamController {
         }
         return sanPhamVMList;
     }
-    @PostMapping("/add")
-    ResponseEntity add(@RequestBody ChiTietSanPhamVM sanPham) {
+    @PostMapping("/san-pham/add")
+    ResponseEntity add(@RequestBody List<Object[]> sanPham) {
+        List<ChiTietSanPhamVM> list = new ArrayList<>();
+        List<SanPhamChiTiet> lst = new ArrayList<>();
+        for (Object[] row : sanPham) {
+            ChiTietSanPhamVM x = new ChiTietSanPhamVM();
+            x.setTen((String) row[1]);
+            x.setMoTa((String) row[5]);
+            x.setGiaBan(BigDecimal.valueOf(Double.parseDouble(row[7].toString().replace(",",""))));
+            x.setId_mau_sac((String) row[8]);
+            x.setId_kich_co((String) row[9]);
+            x.setId_thuong_hieu((String) row[10]);
+            x.setId_nhan_hieu((String) row[11]);
+            x.setId_chat_lieu((String) row[12]);
+            x.setId_de_giay((String) row[13]);
+            list.add(x);
+        }
+        list.forEach(x-> System.out.println(x.toString()));
         SanPham sp = new SanPham();
         Boolean check = false;
         for (SanPham x:
              sanPhamRepository.findAll()) {
-            if(x.getTen().equals(sanPham.getTen())) {
+            if(x.getTen().equals(list.get(0).getTen())) {
                 sp.setId(x.getId());
                 check = true;
             }
         }
         if(!check) {
             Integer maxMa = Integer.parseInt(sanPhamRepository.findMaxMa().replace("SP", ""));
-            sp = new SanPham(null, "SP" + (maxMa + 1), sanPham.getTen(), new Date(), null, "", "", 1);
+            sp = new SanPham(null, "SP" + (maxMa + 1), list.get(0).getTen(), new Date(), null, "", "", 1);
             sp = sanPhamRepository.save(sp);
         }
-        for (SanPhamChiTiet spct:
-             repo.findAll()) {
-            if(spct.getMa().equals(sanPham.getMa())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Trùng mã sản phẩm");
-            }
+        Integer index = 1;
+        for (ChiTietSanPhamVM x:
+             list) {
+            SanPhamChiTiet spct = new SanPhamChiTiet();
+            Integer maMax = Integer.parseInt(repo.findMaxMa().replace("SPCT", ""));
+            spct.setMa("SPCT"+(maMax+index));
+            spct.setId_san_pham(sanPhamRepository.findById(sp.getId()).get());
+            spct.setId_mau_sac(mauSacRepository.findByMaMau(x.getId_mau_sac()));
+            spct.setId_de_giay(deGiayRepository.findById(x.getId_de_giay()).get());
+            spct.setId_kich_co(kichCoRepository.findByTen(x.getId_kich_co()));
+            spct.setId_nhan_hieu(nhanHieuRepository.findById(x.getId_nhan_hieu()).get());
+            spct.setId_thuong_hieu(thuongHieuRepository.findById(x.getId_thuong_hieu()).get());
+            spct.setId_chat_lieu(chatLieuRepository.findById(x.getId_chat_lieu()).get());
+            spct.setMoTa(x.getMoTa());
+            spct.setGiaBan(x.getGiaBan());
+            spct.setGiaNhap(x.getGiaNhap());
+            spct.setSoLuongTon(x.getSoLuongTon());
+            spct.setKhoiLuong(x.getKhoiLuong());
+            spct.setSoLuongTon(1);
+            spct.setTrangThai("1");
+            index++;
+            lst.add(spct);
         }
-        SanPhamChiTiet spct = new SanPhamChiTiet();
-        spct.setId_san_pham(sanPhamRepository.findById(sp.getId()).get());
-        spct.setId_mau_sac(mauSacRepository.findById(sanPham.getId_mau_sac()).get());
-        spct.setId_de_giay(deGiayRepository.findById(sanPham.getId_de_giay()).get());
-        spct.setId_kich_co(kichCoRepository.findById(sanPham.getId_kich_co()).get());
-        spct.setId_nhan_hieu(nhanHieuRepository.findById(sanPham.getId_nhan_hieu()).get());
-        spct.setId_thuong_hieu(thuongHieuRepository.findById(sanPham.getId_thuong_hieu()).get());
-        spct.setId_chat_lieu(chatLieuRepository.findById(sanPham.getId_chat_lieu()).get());
-        spct.setMa(sanPham.getMa());
-        spct.setTen(sanPham.getTen());
-        spct.setMoTa(sanPham.getMoTa());
-        spct.setGiaBan(sanPham.getGiaBan());
-        spct.setGiaNhap(sanPham.getGiaNhap());
-        spct.setSoLuongTon(sanPham.getSoLuongTon());
-        spct.setKhoiLuong(sanPham.getKhoiLuong());
-        spct.setTrangThai("1");
-        repo.save(spct);
-        return ResponseEntity.ok("Thành công");
+        try {
+            lst.forEach(x -> System.out.println(x.toString()));
+            repo.saveAll(lst);
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
+        }
+
+
+
     }
     @DeleteMapping("/delete/{ma}")
     Boolean delete(@PathVariable String ma) {
