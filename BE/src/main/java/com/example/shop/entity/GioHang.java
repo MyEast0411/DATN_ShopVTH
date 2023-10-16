@@ -16,7 +16,7 @@ import java.util.UUID;
 public class GioHang {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String ids;
 
     @Column(name = "ma")
     private String ma;

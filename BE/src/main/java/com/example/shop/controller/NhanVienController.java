@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
-@RequestMapping("/khach-hang")
+@RequestMapping("/nhan_vien")
 public class NhanVienController {
     @Autowired
     private NhanVienService nhanVienService;

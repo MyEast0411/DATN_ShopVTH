@@ -16,7 +16,7 @@ import java.util.UUID;
 public class LichSuHoaDon {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String ids;
 
     @Column(name = "mo_ta_hoa_don")
     private String moTaHoaDon;

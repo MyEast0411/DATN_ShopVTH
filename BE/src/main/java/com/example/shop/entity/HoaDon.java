@@ -17,7 +17,7 @@ import java.util.UUID;
 public class HoaDon {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String ids;
 
     @Column(name = "sdt")
     private String sdt;

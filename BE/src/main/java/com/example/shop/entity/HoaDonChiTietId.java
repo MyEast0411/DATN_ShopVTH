@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HoaDonChiTietId {
-    private UUID id_hoa_don;
+    private String id_hoa_don;
 
-    private UUID id_chi_tiet_san_pham;
+    private String id_chi_tiet_san_pham;
 }
