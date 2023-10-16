@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Controller
 @RestController
@@ -118,7 +119,6 @@ public class SanPhamController {
             x.setId_de_giay((String) row[13]);
             list.add(x);
         }
-        list.forEach(x-> System.out.println(x.toString()));
         SanPham sp = new SanPham();
         Boolean check = false;
         for (SanPham x:
@@ -133,12 +133,16 @@ public class SanPhamController {
             sp = new SanPham(null, "SP" + (maxMa + 1), list.get(0).getTen(), new Date(), null, "", "", 1);
             sp = sanPhamRepository.save(sp);
         }
-        Integer index = 1;
         for (ChiTietSanPhamVM x:
              list) {
+            int seconds = (int) System.currentTimeMillis() / 1000;
+            Random random = new Random();
+            int number = random.nextInt(seconds + 1);
+            String threeNumbers = String.valueOf(number).substring(0, 3);
+
             SanPhamChiTiet spct = new SanPhamChiTiet();
             Integer maMax = Integer.parseInt(repo.findMaxMa().replace("SPCT", ""));
-            spct.setMa("SPCT"+(maMax+index));
+            spct.setMa("SPCT"+threeNumbers);
             spct.setId_san_pham(sanPhamRepository.findById(sp.getId()).get());
             spct.setId_mau_sac(mauSacRepository.findByMaMau(x.getId_mau_sac()));
             spct.setId_de_giay(deGiayRepository.findById(x.getId_de_giay()).get());
@@ -153,20 +157,15 @@ public class SanPhamController {
             spct.setKhoiLuong(x.getKhoiLuong());
             spct.setSoLuongTon(1);
             spct.setTrangThai("1");
-            index++;
             lst.add(spct);
         }
         try {
-            lst.forEach(x -> System.out.println(x.toString()));
             repo.saveAll(lst);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
-
-
-
     }
     @DeleteMapping("/delete/{ma}")
     Boolean delete(@PathVariable String ma) {
