@@ -4,11 +4,12 @@ import FilterDate from "../small-component/FilterKhuyenMai/FilterDate";
 import { Button } from "antd";
 import { Link } from "react-router-dom";
 import FilterMa from "../common/filter/khuyenMai/FilterMa";
-import TableAllKhuyenMai from "../common/table/khuyenMai/TableAllKhuyenMai";
+// import TableAllKhuyenMai from "../common/table/khuyenMai/TableAllKhuyenMai";
 import { BiFilterAlt } from "react-icons/bi";
 import { AiOutlinePlus } from "react-icons/ai";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import FilterTen from "../common/filter/khuyenMai/FilterTen";
+import TableAllKhuyenMai from "../common/table/khuyenMai/TableAllKhuyenMai";
 
 const KhuyenMai = () => {
   return (
@@ -69,6 +70,7 @@ const KhuyenMai = () => {
         <div className="mb-2 mt-16 border-b-[1px] font-normal  border-gray-500 text-lg flex  items-center">
           <HiOutlineClipboardList />
           <p className="ml-2 mt-1"> Danh sách</p>
+         
         </div>
 
         <Link
@@ -90,12 +92,12 @@ const KhuyenMai = () => {
         </Link>
 
         <div
-          className="mb-2 justify-between drop-shadow-lg font-normal border-gray-500 text-lg	flex items-center"
+          className="drop-shadow-lg font-normal border-gray-500 text-lg"
           style={{
-            fontSizfe: "8px",
             backgroundColor: "white",
             padding: "10px",
             borderRadius: "8px",
+            width: "100%",
           }}
         >
           <div>

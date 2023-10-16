@@ -1,175 +1,243 @@
-import React, { useState } from "react";
-import { Button, Space, Table } from "antd";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import * as React from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import {
+  TableCell,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
+import { fetchKhuyenMai } from "../../../res/fetchKhuyenMai";
+import { toast } from "react-toastify";
+import { PiPencilSimpleBold } from "react-icons/pi";
+//icon
+import { MdDeleteOutline } from "react-icons/md";
 
-const data = [
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  // Adjust for the user's local time zone
+  const formatter = new Intl.DateTimeFormat("en-GB", {
+    ...options,
+  });
+  return formatter.format(date);
+};
+
+const columns = [
+  { field: "i", headerName: "STT", width: 80, align: "left" },
+  { field: "ma", headerName: "Mã khuyến mại", width: 120, align: "left" },
+  { field: "ten", headerName: "Tên khuyến mại", minWidth: 180, align: "left" },
   {
-    key: "1",
-    STT: 1,
-    maKhuyenMai: "KM1",
-    tenKhuyenMai: "Khuyến mại tháng 1",
-    giaTriPhanTram: 32,
-    address: "New York No. 1 Lake Park",
+    field: "giaTriGiam",
+    headerName: "Giá trị giảm",
+    type: "number",
+    width: 100,
+    align: "center",
   },
   {
-    key: "2",
-    STT: 2,
-    maKhuyenMai: "KM002",
-    tenKhuyenMai: "Khuyến mại tháng 11",
-    giaTriPhanTram: 42,
-    address: "London No. 1 Lake Park",
+    field: "startDate",
+    headerName: "Ngày bắt đầu",
+    description: "Ngày bắt đầu",
+    sortable: DataGrid,
+    width: 160,
+    valueFormatter: (params) => formatDate(params.value),
+    align: "left",
   },
   {
-    key: "3",
-    STT: 3,
-    maKhuyenMai: "KM03",
-    tenKhuyenMai: "Khuyến mại Tết",
-    giaTriPhanTram: 32,
-    address: "Sydney No. 1 Lake Park",
+    field: "endDate",
+    headerName: "Ngày kết thúc",
+    description: "Ngày kết thúc",
+    sortable: DataGrid,
+    width: 160,
+    valueFormatter: (params) => formatDate(params.value),
+    align: "left",
   },
   {
-    key: "4",
-    STT: 4,
-    maKhuyenMai: "KM0004",
-    tenKhuyenMai: "Khuyến mại tháng 1",
-    giaTriPhanTram: 32,
-    address: "London No. 2 Lake Park",
+    field: "updateDate",
+    headerName: "Ngày cập  nhật",
+    description: "Ngày cập nhật",
+    sortable: DataGrid,
+    width: 160,
+    valueFormatter: (params) => formatDate(params.value),
+    align: "left",
   },
   {
-    key: "5",
-    STT: 4,
-    maKhuyenMai: "KM0004",
-    tenKhuyenMai: "Khuyến mại tháng 1",
-    giaTriPhanTram: 32,
-    address: "London No. 2 Lake Park",
+    field: "trangThai",
+    headerName: "Trạng thái",
+    description: "Trạng thái",
+    sortable: false,
+    width: 104,
+    renderCell: (params) => (
+      <TableCell>
+        <div
+          style={{
+            backgroundColor: params.value === "Còn hạn" ? "#79AC78" : "#FF6969",
+            color: "white",
+            fontSize: "12px",
+            textAlign: "center",
+            padding: "1px 6px",
+            borderRadius: "5px",
+          }}
+        >
+          {params.value}
+        </div>
+      </TableCell>
+    ),
+    align: "center",
   },
+
   {
-    key: "6",
-    STT: 4,
-    maKhuyenMai: "KM0004",
-    tenKhuyenMai: "Khuyến mại tháng 1",
-    giaTriPhanTram: 32,
-    address: "London No. 2 Lake Park",
-  },
-  {
-    key: "7",
-    STT: 4,
-    maKhuyenMai: "KM0004",
-    tenKhuyenMai: "Khuyến mại tháng 1",
-    giaTriPhanTram: 32,
-    address: "London No. 2 Lake Park",
+    field: "hanhDong",
+    headerName: "Hành động",
+    width: 100,
+    sortable: false,
+    align: "center",
+    renderCell: (params) => (
+      <TableCell
+        style={{
+          display: "flex",
+        }}
+      >
+        <PiPencilSimpleBold className="cursor-pointer text-xl ml-2 mr-3 blue-hover" />
+
+        <MdDeleteOutline
+          className="cursor-pointer text-xl delete-hover"
+          onClick={() => {
+            const idToDelete = params.id;
+            axios
+              .delete(`http://localhost:8080/khuyen-mai/delete/${idToDelete}`)
+              .then((response) => {
+                console.log(`Delete successful for row ID: ${idToDelete}`);
+                toast.success(`Xóa thành công`, {
+                  position: "top-right",
+                  autoClose: 2000,
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  `Error deleting record for ID: ${idToDelete}`,
+                  error
+                );
+              });
+          }}
+        />
+      </TableCell>
+    ),
   },
 ];
-const paginationOptions = {
-  defaultPageSize: 5,
-};
 
-const TableAllKhuyenMai = () => {
-  const [filteredInfo, setFilteredInfo] = useState({});
-  const [sortedInfo, setSortedInfo] = useState({});
+export default function DataTable() {
+  const [rows, setRows] = useState([]);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
 
-  const handleChange = (pagination, filters, sorter) => {
-    console.log("Various parameters", pagination, filters, sorter);
-    setFilteredInfo(filters);
-    setSortedInfo(sorter);
+  const handleDelete = (idToDelete) => {
+    setIdToDelete(idToDelete);
+    setDeleteConfirmationOpen(true);
   };
 
-  const columns = [
-    {
-      title: "STT",
-      dataIndex: "STT",
-      key: "STT",
-      sorter: (a, b) => a.STT - b.STT,
-      sortOrder: sortedInfo.columnKey === "STT" ? sortedInfo.order : null,
-      ellipsis: true,
-    },
-    {
-      title: "Mã khuyến mại",
-      dataIndex: "maKhuyenMai",
-      key: "maKhuyenMai",
-      filteredValue: filteredInfo.maKhuyenMai || null,
-      onFilter: (value, record) => record.maKhuyenMai.includes(value),
-      sorter: (a, b) => a.maKhuyenMai.length - b.maKhuyenMai.length,
-      sortOrder:
-        sortedInfo.columnKey === "maKhuyenMai" ? sortedInfo.order : null,
-      ellipsis: true,
-    },
-    {
-      title: "Tên khuyến mại",
-      dataIndex: "tenKhuyenMai",
-      key: "tenKhuyenMai",
-      filteredValue: filteredInfo.tenKhuyenMai || null,
-      onFilter: (value, record) => record.tenKhuyenMai.includes(value),
-      sorter: (a, b) => a.tenKhuyenMai.length - b.tenKhuyenMai.length,
-      sortOrder:
-        sortedInfo.columnKey === "tenKhuyenMai" ? sortedInfo.order : null,
-      ellipsis: true,
-    },
-    {
-      title: "Giá trị giảm (%)",
-      dataIndex: "giaTriPhanTram",
-      key: "giaTriPhanTram",
-      sorter: (a, b) => a.giaTriPhanTram - b.giaTriPhanTram,
-      sortOrder:
-        sortedInfo.columnKey === "giaTriPhanTram" ? sortedInfo.order : null,
-      ellipsis: true,
-    },
-    {
-      title: "Ngày bắt đầu",
-      dataIndex: "ngayBatDau",
-      key: "ngayBatDau",
-    },
-    {
-      title: "Ngày kết thúc",
-      dataIndex: "ngayKetThuc",
-      key: "ngayKetThuc",
-    },
-
-    {
-      title: "Ngày cập nhật",
-      dataIndex: "ngayCapNhat",
-      key: "ngayCapNhat",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "trangThai",
-      key: "trangThai",
-    },
-    ,
-    {
-      title: "Hành động",
-      dataIndex: "hanhDong",
-      key: "hanhDong",
-    },
-  ];
-  const headerRowStyle = () => {
-    return {
-      background: "orange",
-    };
+  const confirmDelete = () => {
+    axios
+      .delete(`http://localhost:8080/khuyen-mai/delete/${idToDelete}`)
+      .then((response) => {
+        console.log(`Delete successful for row ID: ${idToDelete}`);
+        toast.success("Xóa thành công", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      })
+      .catch((error) => {
+        console.error(`Error deleting record for ID: ${idToDelete}`, error);
+      })
+      .finally(() => {
+        setDeleteConfirmationOpen(false);
+      });
   };
 
-  const headerCellStyle = (column) => {
-    return {
-      color: "red", // Set the text color of the header cell
-    };
+  const cancelDelete = () => {
+    setDeleteConfirmationOpen(false);
   };
+
+  useEffect(() => {
+    fetchKhuyenMai().then((data) => {
+      const processedData = data.map((item, index) => {
+        return {
+          id: item.id,
+          i: index + 1,
+          ma: item.ma,
+          ten: item.ten,
+          giaTriGiam: item.giaTriPhanTram + "%",
+          startDate: item.ngayBatDau,
+          endDate: item.ngayKetThuc,
+          updateDate: item.ngaySua,
+          trangThai: item.trangThai === 0 ? "Còn hạn" : "Hết hạn",
+        };
+      });
+
+      setRows(processedData);
+    });
+  }, [rows]);
+
   return (
-    <>
-      <Table
-        columns={columns}
-        dataSource={data}
-        onChange={handleChange}
-        pagination={paginationOptions} // Set pagination options
-        onHeaderRow={() => ({
-          style: {
-            backgroundColor: "red"
+    <div style={{ height: 400, width: "100%" }}>
+      <DataGrid
+        rows={rows}
+        columns={columns.map((column) => {
+          if (column.field === "hanhDong") {
+            return {
+              ...column,
+              renderCell: (params) => (
+                <TableCell
+                  style={{
+                    display: "flex",
+                  }}
+                >
+                  <PiPencilSimpleBold className="cursor-pointer text-xl ml-2 mr-3 blue-hover" />
+                  <MdDeleteOutline
+                    className="cursor-pointer text-xl delete-hover"
+                    onClick={() => handleDelete(params.id)}
+                  />
+                </TableCell>
+              ),
+            };
+          }
+          return column;
+        })}
+        autoWidth
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 5 },
           },
-        })}
-        onHeaderCell={() => ({
-          backgroundColor: "red"
-        })}
+        }}
+        pageSizeOptions={[5, 10]}
       />
-    </>
+      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn xóa khuyến mại này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="primary">
+            Hủy
+          </Button>
+          <Button onClick={confirmDelete} color="primary">
+            Vẫn xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
-};
-
-export default TableAllKhuyenMai;
+}
