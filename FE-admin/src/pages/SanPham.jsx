@@ -2,16 +2,17 @@ import React from 'react'
 
 //filter
 import FilterPhanTram from "../common/filter/khuyenMai/FilterPhanTram";
-import FilterTrangThai from "../common/filter/khuyenMai/FilterTrangThai";
+import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
 import FilterDate from "../small-component/FilterKhuyenMai/FilterDate";
-import FilterMa from "../common/filter/khuyenMai/FilterMa";
-import FilterTen from "../common/filter/khuyenMai/FilterTen";
+import FilterMa from "../common/filter/sanPham/FilterMa";
+import Slider from '../common/filter/sanPham/Slider';
 
 import { Button } from "antd";
 import { Link } from "react-router-dom";
 
 //table
 import DataTableMa from "../small-component/Table/DataTableSanPham";
+// import DataTableMa from "../small-component/Table/DataTableSanPham";
 
 //icon
 import { BiFilterAlt } from "react-icons/bi";
@@ -23,13 +24,13 @@ export default function SanPham() {
 <>
     <div>
         <div>
-          <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex  items-center">
+          <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex items-center">
             <BiFilterAlt />
             <p className="ml-2 mt-1"> Bộ lọc</p>
           </div>
 
           <div
-            className="grid drop-shadow-lg grid-cols-3 gap-4"
+            className="grid drop-shadow-lg grid-cols-1 md:grid-cols-3 gap-4"
             style={{
               fontSizfe: "8px",
               backgroundColor: "white",
@@ -37,29 +38,21 @@ export default function SanPham() {
               borderRadius: "8px",
             }}
           >
-            <div className="p-5">
+            <div className="p-5 ml-32">
               <FilterMa style={{ width: "100%" }} />
             </div>
             <div className="p-5">
-              <FilterTen style={{ width: "100%" }} />
-            </div>
-            <div className="p-5">
-              <FilterPhanTram
-                placeholder="Giá trị giảm (%)"
-                style={{ width: "100%" }}
-              />
-            </div>
-            <div className="p-5">
+            <div className="flex items-center">
+              <span className="pr-2">Trạng thái:</span>
               <FilterTrangThai
-                placeholder="Chọn trạng thái"
                 style={{ width: "100%" }}
               />
+              </div>
             </div>
             <div className="p-5">
-              <FilterDate style={{ width: "100%" }} />
+              <Slider style={{ width: "100%" }} />
             </div>
-            <div></div>
-            <div className="p-5">
+            <div className="p-5 text-center mt-4">
               <Button
                 type="primary"
                 style={{
