@@ -1,7 +1,7 @@
 import React from "react";
 import { Select } from "antd";
 
-const FilterOption = ({ placeholder }) => {
+const FilterOption = ({ placeholder, style }) => {
   const onChange = (value) => {
     console.log(`selected ${value}`);
   };
@@ -13,10 +13,6 @@ const FilterOption = ({ placeholder }) => {
   const filterOption = (input, option) =>
     (option?.label || "").toLowerCase().includes(input.toLowerCase());
 
-  const selectStyle = {
-    width: "100px",
-  };
-
   return (
     <Select
       showSearch
@@ -25,7 +21,7 @@ const FilterOption = ({ placeholder }) => {
       onChange={onChange}
       onSearch={onSearch}
       filterOption={filterOption}
-      style={selectStyle} // Apply the custom width style here
+      style={style} // Apply the custom width style here
       options={[
         {
           value: "Tất cả",
