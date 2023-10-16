@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Button } from "antd";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { v4 as uuidv4} from "uuid";
 import { toast } from "react-toastify";
+import { BiLogIn } from "react-icons/bi";
 
 export default function ThemSanPham() {
   let navigate = useNavigate();
@@ -29,6 +29,15 @@ export default function ThemSanPham() {
     "id_thuong_hieu" : "",
     "id_nhan_hieu" : ""
   });
+  const [availableColors, setAvailableColors] = useState([]);
+  const [selectedColor, setSelectedColors] = useState([]);
+  const handleColorSelection = (color) => {
+    if (selectedColor.includes(color)) {
+      setSelectedColors(selectedColor.filter((c) => c !== color));
+    } else {
+      setSelectedColors([...selectedColor, color]);
+    }
+  };
   const { ma , ten, soLuongTon, khoiLuong, moTa, giaBan, giaNhap,
     id_thuong_hieu, id_chat_lieu,id_de_giay,id_kich_co,id_mau_sac,id_nhan_hieu} = sanPham;
 
@@ -50,7 +59,11 @@ export default function ThemSanPham() {
     }
     const getAllMS = async() => {
     await axios.get("http://localhost:8080/getAllMS").then((response) => {
-        setMauSac(response.data);
+        setAvailableColors(response.data)
+        // setMauSac(response.data);
+        {response.data.map((color) => (
+          console.log(color.maMau)
+        ))}
     });
     }
 
@@ -126,7 +139,7 @@ export default function ThemSanPham() {
                     </div>
                   </div>
                 </div>
-                <div className="sm:col-span-4">
+                {/* <div className="sm:col-span-4">
                   <label
                     htmlFor="username"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -144,7 +157,7 @@ export default function ThemSanPham() {
                       />
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="col-span-full">
                   <label
                     htmlFor="about"
@@ -243,7 +256,7 @@ export default function ThemSanPham() {
                     Màu sắc
                   </label>
                   <div className="mt-2 space-x-3">
-                  <select
+                  {/* <select
                       id="mauSac"
                       name="id_mau_sac"
                       autoComplete="country-name"
@@ -259,7 +272,18 @@ export default function ThemSanPham() {
                         {x.ten}
                         </option>
                        ))}
-                    </select>
+                    </select> */}
+                    <div className="color-selector">
+                      {availableColors.map((color) => (
+                        <div
+                          key={color.id}
+                          className={`color-box ${selectedColor === color.id ? "selected" : ""}`}
+                          style={{ backgroundColor: "#000000" }}
+                          onClick={() => setSelectedColors(color.id)}
+                        ></div>
+                      ))}
+                      {/* <div style={{ backgroundColor: "#000000" }}>Màu đen</div> */}
+                    </div>
                   </div>
                 </div>
                 <div className="sm:col-span-3">

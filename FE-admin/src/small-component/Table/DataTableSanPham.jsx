@@ -2,18 +2,14 @@ import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { TableCell, Button } from "@mui/material";
 import axios from "axios";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { sync } from "framer-motion";
 import { MdDeleteOutline } from "react-icons/md";
 import { LiaEyeSolid } from "react-icons/lia";
 
 const columns = [
-  { field: "id", headerName: "STT", width: 200 },
-  { field: "ma", headerName: "Mã sản phẩm", width: 330 },
+  { field: "id", headerName: "STT", width: 200},
+  { field: "ma", headerName: "Mã sản phẩm", width: 330,padding:100 },
   { field: "ten", headerName: "Tên sản phẩm", width: 330 },
   {
     field: "soLuongTon",
@@ -23,7 +19,7 @@ const columns = [
   {
     field: "trangThai",
     headerName: "Trạng thái",
-    description: "Trạng thái",
+    // description: "Trạng thái",
     sortable: false,
     width: 250,
     renderCell: (params) => (
@@ -54,7 +50,9 @@ const columns = [
       <TableCell>
         <div className="flex items-center">
           <Link to={`/edit-san-pham/${params.row.ma}`} className="button-link group relative">
-            <LiaEyeSolid className="cursor-pointer text-xl blue-hover mr-4" />
+            <LiaEyeSolid
+            description="Chi tiết"
+             className="cursor-pointer text-xl blue-hover mr-4" />
             <div className="text invisible group-hover:visible absolute -top-2 left-16 border border-gray-500 p-2">
               Chi tiết
             </div>
@@ -108,22 +106,19 @@ export default function DataTable() {
         console.error("Lỗi khi gọi API: ", error);
       }
     } 
-
     fetchChiTietSanPham();
-  }, [rows]);
+  }, []);
   return (
     <div className="text-center" style={{ height: 371, width: "100%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
-        autoWidth
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },
           },
         }}
         pageSizeOptions={[5, 10]}
-        
       />
     </div>
   );
