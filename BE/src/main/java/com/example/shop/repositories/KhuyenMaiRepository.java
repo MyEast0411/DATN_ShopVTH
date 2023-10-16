@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, String> {
     List<KhuyenMai> findAll();
-
+    KhuyenMai findByMa(String ma);
 }
