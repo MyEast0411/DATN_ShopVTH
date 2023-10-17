@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
+
 import {
   TableCell,
   Button,
@@ -37,11 +39,9 @@ const columns = [
     width: 150,
     align: "center",
     sortComparator: (v1, v2) => {
-      // Extract numeric values (remove "%" and parse as number)
       const value1 = parseFloat(v1.replace("%", ""));
       const value2 = parseFloat(v2.replace("%", ""));
 
-      // Compare the numeric values
       return value1 - value2;
     },
   },
@@ -94,37 +94,6 @@ const columns = [
     width: 130,
     sortable: false,
     align: "center",
-    renderCell: (params) => (
-      <TableCell
-        style={{
-          display: "flex",
-        }}
-      >
-        <PiPencilSimpleBold className="cursor-pointer text-xl ml-2 mr-3 blue-hover" />
-
-        <MdDeleteOutline
-          className="cursor-pointer text-xl delete-hover"
-          onClick={() => {
-            const idToDelete = params.id;
-            axios
-              .delete(`http://localhost:8080/khuyen-mai/delete/${idToDelete}`)
-              .then((response) => {
-                console.log(`Delete successful for row ID: ${idToDelete}`);
-                toast.success(`Xóa thành công`, {
-                  position: "top-right",
-                  autoClose: 2000,
-                });
-              })
-              .catch((error) => {
-                console.error(
-                  `Error deleting record for ID: ${idToDelete}`,
-                  error
-                );
-              });
-          }}
-        />
-      </TableCell>
-    ),
   },
 ];
 
@@ -198,7 +167,9 @@ export default function DataTable() {
                     display: "flex",
                   }}
                 >
-                  <PiPencilSimpleBold className="cursor-pointer text-xl ml-2 mr-3 blue-hover" />
+                  <Link to={`/khuyen-mai/update/${params.id}`}>
+                    <PiPencilSimpleBold className="cursor-pointer text-xl ml-2 mr-3 blue-hover" />
+                  </Link>
                   <MdDeleteOutline
                     className="cursor-pointer text-xl delete-hover"
                     onClick={() => handleDelete(params.id)}

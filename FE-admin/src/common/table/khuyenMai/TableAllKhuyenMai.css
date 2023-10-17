@@ -24,3 +24,8 @@
   display: flex;
   border-right: 0.5px solid #e4e4e4 !important;
 }
+
+.css-yrdy0g-MuiDataGrid-columnHeaderRow{
+  display: flex;
+  justify-content: center;
+}
