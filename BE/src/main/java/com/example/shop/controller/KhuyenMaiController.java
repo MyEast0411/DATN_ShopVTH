@@ -33,10 +33,10 @@ public class KhuyenMaiController {
     @PostMapping("/add")
     ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai) {
         try {
-            System.out.println(khuyenMai);
             khuyenMai.setMa(generateUniqueMaKhuyenMai());
             khuyenMai.setNgayTao(new Date());
             khuyenMaiService.save(khuyenMai);
+            System.out.println(khuyenMai.getMa());
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
