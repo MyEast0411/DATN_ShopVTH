@@ -1,55 +1,85 @@
 import React, { useState } from "react";
 import axios from "axios";
-import FilterPhanTram from "../../small-component/FilterKhuyenMai/FilterPhanTram";
-import FilterDatePicker from "../../small-component/FilterKhuyenMai/FilterDate";
-import { Button } from "antd";
+import { Button } from "antd"; // Import from antd
 import SelectedTable1 from "../../small-component/TableKhuyenMai/SelectedTable1";
 import SelectedTable2 from "../../small-component/TableKhuyenMai/SelectedTable2";
 import { toast } from "react-toastify";
+import { DateTime } from "luxon";
+import { addKhuyenMai } from "../../api/KhuyenMaiApi/KhuyenMaiApi";
+import {
+  Button as ButtonMaterial, // Rename one of the Button imports
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function ThemKhuyenMai() {
-  const [ma, setMa] = useState("");
   const [ten, setTen] = useState("");
-  const [giaTriPhanTram, setGiaTriPhanTram] = useState("");
-  const [thoiGian, setThoiGian] = useState("");
+  const [giaTriPhanTram, setGiaTriPhanTram] = useState(1);
+  const [ngayBatDau, setNgayBatDau] = useState("");
+  const [ngayKetThuc, setNgayKetThuc] = useState("");
+  const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
 
-  const [selectedValue, setSelectedValue] = useState("");
+  const chuyenTrang = useNavigate();
 
   // Tạo một mảng giá trị phần trăm từ 1 đến 90
   const percentValues = Array.from({ length: 90 }, (_, index) => index + 1);
 
-  const handleSelectChange = (event) => {
-    setSelectedValue(event.target.value);
+  const handleOpenAddConfirmation = () => {
+    setAddConfirmationOpen(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleCloseAddConfirmation = () => {
+    setAddConfirmationOpen(false);
+  };
 
+  const confirmAdd = async () => {
     try {
-      const payload = {
-        ma: ma,
+      if (ten === "") {
+        toast.error("Tên khuyên mại đang trống!");
+        handleCloseAddConfirmation();
+        return;
+      }
+      if (ngayBatDau === "" || ngayKetThuc === "") {
+        toast.error("Bạn chưa chọn ngày!");
+        handleCloseAddConfirmation();
+        return;
+      }
+      const startDate = new Date(ngayBatDau);
+      const endDate = new Date(ngayKetThuc);
+
+      if (startDate >= endDate) {
+        toast.error("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
+        handleCloseAddConfirmation();
+        return;
+      }
+
+      const khuyenMai = {
         ten: ten,
         giaTriPhanTram: giaTriPhanTram,
-        thoiGian: thoiGian,
+        ngayBatDau: ngayBatDau,
+        ngayKetThuc: ngayKetThuc,
       };
-      console.log("Request Payload:", payload);
-      const response = await axios.post(
-        "http://localhost:8080/khuyen-mai/add",
-        payload
-      );
+      console.log(khuyenMai);
+      const response = await addKhuyenMai(khuyenMai);
 
-      if (response.status === 200) {
-        setMa("");
-        setTen("");
-        setGiaTriGiam("");
-        setThoiGian("");
-      }
+      setTen("");
+      setGiaTriPhanTram(1);
+      setNgayBatDau("");
+      setNgayKetThuc("");
+      handleCloseAddConfirmation();
       toast.success(`Thêm thành công`, {
         position: "top-right",
         autoClose: 2000,
       });
+      chuyenTrang("/khuyen-mai");
     } catch (error) {
       console.error("Error adding KhuyenMai:", error);
+      toast.error("Thêm thất bại.");
+      handleCloseAddConfirmation();
     }
   };
 
@@ -57,12 +87,12 @@ export default function ThemKhuyenMai() {
     <>
       <div className="grid grid-cols-8 gap-4 fixed">
         <div className="col-span-2">
-          <form className="bg-slate-500 rounded" onSubmit={handleSubmit}>
+          <form className="bg-slate-500 rounded">
             <h2 className="text-xl mb-10 font-bold text-gray-800">
               Thêm khuyến mại
             </h2>
             <div className="grid gap-6 mb-6 md:grid-cols-1">
-              <div>
+              {/* <div>
                 <label
                   htmlFor="full_name"
                   className="block mb-2 text-sm font-medium text-gray-900"
@@ -75,9 +105,9 @@ export default function ThemKhuyenMai() {
                   onChange={(e) => setMa(e.target.value)}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Nhập mã khuyến mại"
-                  required
+                  disabled
                 />
-              </div>
+              </div> */}
 
               <div>
                 <label
@@ -88,7 +118,7 @@ export default function ThemKhuyenMai() {
                 </label>
                 <input
                   type="text"
-                  value={ten}
+                  // value={ten}
                   onChange={(e) => setTen(e.target.value)}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Nhập tên khuyến mại"
@@ -104,7 +134,6 @@ export default function ThemKhuyenMai() {
                   Giá trị giảm
                 </label>
                 <select
-                  value={selectedValue}
                   onChange={(e) => setGiaTriPhanTram(e.target.value)}
                   style={{
                     width: "100%",
@@ -125,11 +154,26 @@ export default function ThemKhuyenMai() {
                 htmlFor="phone"
                 className="block -mb-4 mt-1 text-sm font-medium text-gray-900"
               >
-                Thời gian
+                Ngày bắt đầu
               </label>
-              <FilterDatePicker
-                value={thoiGian}
-                onChange={(value) => setThoiGian(value)}
+              <input
+                type="datetime-local"
+                id="dateInput"
+                onChange={(e) => setNgayBatDau(e.target.value)}
+                required
+              />
+
+              <label
+                htmlFor="phone"
+                className="block -mb-4 mt-1 text-sm font-medium text-gray-900"
+              >
+                Ngày kết thúc
+              </label>
+              <input
+                type="datetime-local"
+                id="dateInput"
+                onChange={(e) => setNgayKetThuc(e.target.value)}
+                required
               />
             </div>
             <div className="flex justify-center">
@@ -139,7 +183,7 @@ export default function ThemKhuyenMai() {
                   backgroundColor: "#1976d2",
                   marginBottom: "2px",
                 }}
-                htmlType="submit"
+                onClick={handleOpenAddConfirmation} // Open confirmation dialog
               >
                 Thêm
               </Button>
@@ -169,6 +213,23 @@ export default function ThemKhuyenMai() {
             <SelectedTable2 />
           </div>
         </div>
+
+        <Dialog open={addConfirmationOpen} onClose={handleCloseAddConfirmation}>
+          <DialogTitle>Xác nhận thêm</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Bạn có chắc muốn thêm khuyến mại này?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseAddConfirmation} color="primary">
+              Hủy
+            </Button>
+            <Button onClick={confirmAdd} color="primary">
+              Vẫn thêm
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </>
   );

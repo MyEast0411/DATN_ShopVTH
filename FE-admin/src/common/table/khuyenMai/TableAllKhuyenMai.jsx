@@ -16,8 +16,8 @@ import {
 import { fetchKhuyenMai } from "../../../res/fetchKhuyenMai";
 import { toast } from "react-toastify";
 import { PiPencilSimpleBold } from "react-icons/pi";
-//icon
 import { MdDeleteOutline } from "react-icons/md";
+import "./TableAllKhuyenMai.css";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 
@@ -27,42 +27,41 @@ const formateDateVietNam = (dateTimeStr) => {
 };
 
 const columns = [
-  { field: "i", headerName: "STT", width: 80, align: "left" },
-  { field: "ma", headerName: "Mã khuyến mại", width: 120, align: "left" },
-  { field: "ten", headerName: "Tên khuyến mại", minWidth: 180, align: "left" },
+  { field: "i", headerName: "STT", width: 80, align: "center" },
+  { field: "ma", headerName: "Mã khuyến mại", width: 150, align: "center" },
+  { field: "ten", headerName: "Tên khuyến mại", width: 200, align: "center" },
   {
     field: "giaTriGiam",
-    headerName: "Giá trị giảm",
+    headerName: "Giá trị giảm (%)",
     type: "number",
-    width: 100,
+    width: 150,
     align: "center",
+    sortComparator: (v1, v2) => {
+      // Extract numeric values (remove "%" and parse as number)
+      const value1 = parseFloat(v1.replace("%", ""));
+      const value2 = parseFloat(v2.replace("%", ""));
+
+      // Compare the numeric values
+      return value1 - value2;
+    },
   },
   {
     field: "startDate",
     headerName: "Ngày bắt đầu",
     description: "Ngày bắt đầu",
     sortable: DataGrid,
-    width: 160,
+    width: 200,
     valueFormatter: (params) => formateDateVietNam(params.value),
-    align: "left",
+    align: "center",
   },
   {
     field: "endDate",
     headerName: "Ngày kết thúc",
     description: "Ngày kết thúc",
     sortable: DataGrid,
-    width: 160,
+    width: 200,
     valueFormatter: (params) => formateDateVietNam(params.value),
-    align: "left",
-  },
-  {
-    field: "updateDate",
-    headerName: "Ngày cập  nhật",
-    description: "Ngày cập nhật",
-    sortable: DataGrid,
-    width: 160,
-    valueFormatter: (params) => formateDateVietNam(params.value),
-    align: "left",
+    align: "center",
   },
   {
     field: "trangThai",
@@ -92,7 +91,7 @@ const columns = [
   {
     field: "hanhDong",
     headerName: "Hành động",
-    width: 100,
+    width: 130,
     sortable: false,
     align: "center",
     renderCell: (params) => (
@@ -164,6 +163,10 @@ export default function DataTable() {
   useEffect(() => {
     fetchKhuyenMai().then((data) => {
       const processedData = data.map((item, index) => {
+        const now = DateTime.now();
+        const endDate = DateTime.fromISO(item.ngayKetThuc);
+        const trangThai = now < endDate ? "Còn hạn" : "Hết hạn";
+
         return {
           id: item.id,
           i: index + 1,
@@ -172,8 +175,7 @@ export default function DataTable() {
           giaTriGiam: item.giaTriPhanTram + "%",
           startDate: item.ngayBatDau,
           endDate: item.ngayKetThuc,
-          updateDate: item.ngaySua,
-          trangThai: item.trangThai === 0 ? "Còn hạn" : "Hết hạn",
+          trangThai: trangThai,
         };
       });
 
@@ -184,6 +186,7 @@ export default function DataTable() {
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid
+        style={{ width: "100%", height: "100%" }}
         rows={rows}
         columns={columns.map((column) => {
           if (column.field === "hanhDong") {

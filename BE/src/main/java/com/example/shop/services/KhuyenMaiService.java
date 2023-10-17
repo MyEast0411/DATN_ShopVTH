@@ -28,6 +28,10 @@ public class KhuyenMaiService {
         khuyenMaiRepo.flush();
     }
 
+    public KhuyenMai findByMa(String ma) {
+        return khuyenMaiRepo.findByMa(ma);
+    }
+
     public <S extends KhuyenMai> S saveAndFlush(S entity) {
         return khuyenMaiRepo.saveAndFlush(entity);
     }

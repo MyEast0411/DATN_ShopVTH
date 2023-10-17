@@ -22,12 +22,14 @@ const KhuyenMai = () => {
           </div>
 
           <div
-            className="grid drop-shadow-lg grid-cols-3 gap-4"
+            className="grid grid-cols-3 gap-4"
             style={{
               fontSizfe: "8px",
               backgroundColor: "white",
               padding: "20px 10px",
               borderRadius: "8px",
+              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+              transition: "transform 0.2s",
             }}
           >
             <div className="p-5">
@@ -92,12 +94,14 @@ const KhuyenMai = () => {
         </Link>
 
         <div
-          className="drop-shadow-lg font-normal border-gray-500 text-lg"
+          className="font-normal border-gray-500 text-lg"
           style={{
             backgroundColor: "white",
             padding: "10px",
             borderRadius: "8px",
             width: "100%",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+            transition: "transform 0.2s",
           }}
         >
           <div>
