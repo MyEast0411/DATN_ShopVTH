@@ -107,9 +107,13 @@ const Sidebar = () => {
         variants={Nav_animation}
         initial={{ x: isTabletMid ? -250 : 0 }}
         animate={open ? "open" : "closed"}
-        className="bg-white text-gray shadow-xl z-[999] max-w-[16rem]  w-[16rem] 
+        className="text-gray shadow-xl z-[999] max-w-[16rem]  w-[16rem] 
             overflow-hidden md:relative fixed
          h-screen "
+         style={{
+          backgroundColor: "#DDE6ED",
+          borderRight: "2px solid #ADC4CE"
+         }}
       >
         <div className="flex items-center font-medium border-b border-slate-300">
           <img src={logo} width={120} alt="Ảnh logo" />

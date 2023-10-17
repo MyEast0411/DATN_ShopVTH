@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Button } from "antd"; // Import from antd
-import SelectedTable1 from "../../small-component/TableKhuyenMai/SelectedTable1";
-import SelectedTable2 from "../../small-component/TableKhuyenMai/SelectedTable2";
+import SelectedTable2 from "../../common/table/khuyenMai/SelectedTable2";
 import { toast } from "react-toastify";
 import { DateTime } from "luxon";
 import { addKhuyenMai } from "../../api/khuyenMai/KhuyenMaiApi";
-import DataTableMa from "./DataTableSanPham";
+import DataTableSanPham from "../../common/table/khuyenMai/DataTableSanPham";
 import {
-  Button as ButtonMaterial, // Rename one of the Button imports
+  Button as ButtonMaterial,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,6 +23,12 @@ export default function ThemKhuyenMai() {
   const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
 
   const chuyenTrang = useNavigate();
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const handleProductSelection = (product) => {
+    setSelectedProduct(product);
+  };
 
   // Tạo một mảng giá trị phần trăm từ 1 đến 90
   const percentValues = Array.from({ length: 90 }, (_, index) => index + 1);
@@ -85,7 +90,7 @@ export default function ThemKhuyenMai() {
 
   return (
     <>
-      <div className="grid grid-cols-8 gap-4 fixed">
+      <div className="grid grid-cols-8 gap-4 fixed ">
         <div className="col-span-2">
           <form className="bg-slate-500 rounded">
             <h2 className="text-xl mb-10 font-bold text-gray-800">
@@ -195,6 +200,7 @@ export default function ThemKhuyenMai() {
           style={{
             borderColor: "#ccc",
             height: "80%",
+            width: "100%",
           }}
         >
           <h2
@@ -204,13 +210,13 @@ export default function ThemKhuyenMai() {
             Sản phẩm
           </h2>
           <div className="">
-          <DataTableMa />
+          <DataTableSanPham onProductSelect={handleProductSelection} />
           </div>
           <h2 className="text-xl mt-7 mb-1 font-bold text-gray-800">
             Chi tiết sản phẩm
           </h2>
           <div className="">
-            <SelectedTable2 />
+          <SelectedTable2 selectedProduct={selectedProduct} />
           </div>
         </div>
 

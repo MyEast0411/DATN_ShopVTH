@@ -8,19 +8,33 @@ import { MdDeleteOutline } from "react-icons/md";
 import { LiaEyeSolid } from "react-icons/lia";
 
 const columns = [
-  { field: "id", headerName: "STT", width: 100,align:"center"},
-  { field: "ma", headerName: "Mã sản phẩm", width: 200,padding:100,align:"center" },
+  { field: "id", headerName: "STT", width: 100, align: "center" },
+  {
+    field: "ma",
+    headerName: "Mã sản phẩm",
+    width: 200,
+    padding: 100,
+    align: "center",
+  },
   { field: "ten", headerName: "Tên sản phẩm", width: 300 },
   {
     field: "soLuongTon",
     headerName: "Số lượng tồn",
     width: 120,
-  }
+  },
 ];
 const url = "http://localhost:8080/chi-tiet-san-pham";
 
-export default function DataTable() {
+export default function DataTableSanPham({ onProductSelect }) {
   const [rows, setRows] = React.useState([]);
+  const handleRowSelection = (selectedRows) => {
+    console.log(selectedRows)
+    if (selectedRows && selectedRows.data.length === 1) {
+      const selectedProductId = selectedRows.data[0].id;
+      const selectedProduct = rows.find((product) => product.id === selectedProductId);
+      onProductSelect(selectedProduct);
+    }
+  };
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
@@ -30,13 +44,13 @@ export default function DataTable() {
           ma: item.ma,
           ten: item.ten_san_pham,
           soLuongTon: item.so_luong_ton,
-          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán"
+          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
         }));
         setRows(updatedRows);
       } catch (error) {
         console.error("Lỗi khi gọi API: ", error);
       }
-    } 
+    }
     fetchChiTietSanPham();
   }, [rows]);
   return (
@@ -44,6 +58,7 @@ export default function DataTable() {
       <DataGrid
         rows={rows}
         columns={columns}
+        onSelectionModelChange={handleRowSelection}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },
