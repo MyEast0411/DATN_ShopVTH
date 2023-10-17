@@ -5,97 +5,108 @@ import { Button } from "antd";
 import { useParams } from "react-router-dom";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
-
+import { toast } from "react-toastify";
+import {
+  getKhuyenMaiById,
+  updateKhuyenMai,
+} from "../../api/KhuyenMaiApi/KhuyenMaiApi"; // Import your API functions
+import {
+  Button as ButtonMaterial, // Rename one of the Button imports
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 
 export default function KhuyenMaiUpdate() {
   let { idKM } = useParams();
-  //   const [isDialogOpen, setDialogOpen] = useState(false);
-  //   const [isSuccessMessageVisible, setSuccessMessageVisible] = useState(false);
+  const chuyenTrang = useNavigate();
+  const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
+  const handleOpenUpdateConfirmation = () => {
+    setUpdateConfirmationOpen(true);
+  };
+  const handleCloseUpdateConfirmation = () => {
+    setUpdateConfirmationOpen(false);
+  };
 
   const [currentDateTime, setCurrentDateTime] = useState(
     moment().format("YYYY-MM-DDTHH:mm:ss")
   );
   const percentValues = Array.from({ length: 90 }, (_, index) => index + 1);
 
-  const [khuyenMai, setKhuyenMai] = useState({});
-  const [selectedStartDate, setSelectedStartDate] = useState("");
-  const [selectedEndDate, setSelectedEndDate] = useState("");
-
-  function formatDateToISOString(date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
-
-  const formateDateVietNam = (dateTimeStr) => {
-    const vietNamTime = DateTime.fromISO(dateTimeStr, { zone: "utc" });
-    return vietNamTime.toFormat("dd/MM/yyyy HH:mm");
-  };
+  const [khuyenMai, setKhuyenMai] = useState({
+    ma: "",
+    ten: "",
+    ngayBatDau: "",
+    ngayKetThuc: "",
+    giaTriPhanTram: 1,
+  });
 
   const handleStartDateChange = (event) => {
-    setSelectedStartDate(event.target.value);
+    setKhuyenMai({
+      ...khuyenMai,
+      ngayBatDau: event.target.value,
+    });
   };
 
   const handleEndDateChange = (event) => {
-    setSelectedEndDate(event.target.value);
+    setKhuyenMai({
+      ...khuyenMai,
+      ngayKetThuc: event.target.value,
+    });
   };
 
   useEffect(() => {
-    const fetchKhuyenMaiById = async (id) => {
+    const fetchKhuyenMaiData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/khuyen-mai/find-khuyenMai-byId/${id}`
-        );
-        setSelectedStartDate(
-          formateDateVietNam(new Date(response.data.ngayBatDau))
-        );
-        setSelectedEndDate(
-          formateDateVietNam(new Date(response.data.ngayKetThuc))
-        );
-        const data = response.data;
-        setKhuyenMai(data);
+        const response = await getKhuyenMaiById(idKM);
+
+        setKhuyenMai({
+          ma: response.ma,
+          ten: response.ten,
+          ngayBatDau: response.ngayBatDau,
+          ngayKetThuc: response.ngayKetThuc,
+          giaTriPhanTram: response.giaTriPhanTram,
+        });
       } catch (error) {
         console.error("Error fetching KhuyenMai data:", error);
       }
     };
 
-    fetchKhuyenMaiById(idKM);
-    const updateInterval = setInterval(() => {
-      setCurrentDateTime(moment().format("YYYY-MM-DDTHH:mm:ss"));
-    }, 1000);
-
-    return () => clearInterval(updateInterval);
+    fetchKhuyenMaiData();
   }, [idKM]);
-  const [giaTriPhanTram, setGiaTriPhanTram] = useState(1);
+
   const handleUpdateKhuyenMai = async () => {
     const updatedKhuyenMai = {
       ma: khuyenMai.ma,
       ten: khuyenMai.ten,
-      ngayBatDau: selectedStartDate,
-      ngayKetThuc: selectedEndDate,
-      giaTriPhanTram: giaTriPhanTram,
+      ngayBatDau: khuyenMai.ngayBatDau,
+      ngayKetThuc: khuyenMai.ngayKetThuc,
+      giaTriPhanTram: khuyenMai.giaTriPhanTram,
       ngaySua: currentDateTime,
-      ngayTao: null,
       nguoiTao: "Nguyễn Văn Hội",
       nguoiSua: "Nguyễn Văn Hội",
     };
-    console.log(updatedKhuyenMai);
+
     try {
-      // Gọi API cập nhật khuyến mãi bằng phương thức PUT
-      const response = await axios.put(
-        `http://localhost:8080/khuyen-mai/update/${idKM}`,
-        updatedKhuyenMai
-      );
+      // Update Khuyen Mai data
+      const response = await updateKhuyenMai(idKM, updatedKhuyenMai);
+      handleCloseUpdateConfirmation();
+      toast.success(`Cập nhật thành công`, {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      chuyenTrang("/khuyen-mai");
       console.log("Khuyến mãi đã được cập nhật:", response.data);
     } catch (error) {
+      toast.error("Dữ liệu không hợp lệ");
       console.error("Lỗi khi cập nhật khuyến mãi:", error);
     }
   };
+
   return (
     <>
       <div
@@ -151,6 +162,7 @@ export default function KhuyenMaiUpdate() {
               placeholder="Nhập mã khuyến mại"
               value={khuyenMai.ma}
               required
+              readOnly
             />
           </div>
           <div className="mb-6 mt-5">
@@ -166,6 +178,9 @@ export default function KhuyenMaiUpdate() {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Nhập tên khuyến mại"
               required
+              onChange={(e) =>
+                setKhuyenMai({ ...khuyenMai, ten: e.target.value })
+              }
               value={khuyenMai.ten}
             />
           </div>
@@ -179,7 +194,7 @@ export default function KhuyenMaiUpdate() {
             <input
               type="datetime-local"
               id="startDateInput"
-              value={selectedStartDate}
+              value={khuyenMai.ngayBatDau}
               onChange={handleStartDateChange}
               style={{
                 width: "100%",
@@ -200,7 +215,7 @@ export default function KhuyenMaiUpdate() {
             <input
               type="datetime-local"
               id="endDateInput"
-              //   value={()=>formateDateVietNam(khuyenMai.ngayKetThuc)}
+              value={khuyenMai.ngayKetThuc}
               onChange={handleEndDateChange}
               style={{
                 width: "100%",
@@ -219,13 +234,16 @@ export default function KhuyenMaiUpdate() {
               Giá trị phần trăm
             </label>
             <select
-              onChange={(e) => setGiaTriPhanTram(e.target.value)}
+              onChange={(e) =>
+                setKhuyenMai({ ...khuyenMai, giaTriPhanTram: e.target.value })
+              }
               style={{
                 width: "100%",
                 border: "1px solid #e4e4e4",
                 borderRadius: "4px",
                 padding: "3px 7px",
               }}
+              value={khuyenMai.giaTriPhanTram}
             >
               {percentValues.map((percent) => (
                 <option key={percent} value={percent}>
@@ -262,12 +280,34 @@ export default function KhuyenMaiUpdate() {
                 backgroundColor: "#1976d2",
                 marginBottom: "2px",
               }}
-              onClick={handleUpdateKhuyenMai}
+              onClick={handleOpenUpdateConfirmation}
             >
               Cập nhật
             </Button>
           </div>
         </form>
+        <Dialog
+          open={updateConfirmationOpen}
+          onClose={handleCloseUpdateConfirmation}
+        >
+          <DialogTitle>Xác nhận cập nhật</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Bạn có chắc muốn chỉnh sửa khuyến mại này?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <ButtonMaterial
+              onClick={handleCloseUpdateConfirmation}
+              color="primary"
+            >
+              Hủy
+            </ButtonMaterial>
+            <ButtonMaterial onClick={handleUpdateKhuyenMai} color="primary">
+              Xác nhận
+            </ButtonMaterial>
+          </DialogActions>
+        </Dialog>
       </div>
     </>
   );
