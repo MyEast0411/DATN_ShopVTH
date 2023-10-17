@@ -29,3 +29,9 @@
   display: flex;
   justify-content: center;
 }
+
+.MuiDataGrid-main {
+  table-layout: auto;
+  width: 100%;
+  border-collapse: collapse;
+}

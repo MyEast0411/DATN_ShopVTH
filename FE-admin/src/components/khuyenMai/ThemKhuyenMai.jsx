@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { Button } from "antd"; // Import from antd
 import SelectedTable1 from "../../small-component/TableKhuyenMai/SelectedTable1";
 import SelectedTable2 from "../../small-component/TableKhuyenMai/SelectedTable2";
 import { toast } from "react-toastify";
 import { DateTime } from "luxon";
-import { addKhuyenMai } from "../../api/KhuyenMaiApi/KhuyenMaiApi";
+import { addKhuyenMai } from "../../api/khuyenMai/KhuyenMaiApi";
 import {
   Button as ButtonMaterial, // Rename one of the Button imports
   Dialog,

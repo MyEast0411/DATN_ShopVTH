@@ -2,6 +2,16 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8080"; 
 
+// Get all 
+export const getAllKhuyenMai = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/khuyen-mai`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+// add
 export const addKhuyenMai = async (khuyenMai) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/khuyen-mai/add`, khuyenMai);
@@ -10,7 +20,7 @@ export const addKhuyenMai = async (khuyenMai) => {
     throw error;
   }
 };
-
+// get by id
 export const getKhuyenMaiById = async (id) => {
   try {
     const response = await axios.get(
@@ -22,6 +32,7 @@ export const getKhuyenMaiById = async (id) => {
   }
 };
 
+// update
 export const updateKhuyenMai = async (id, khuyenMai) => {
   try {
     const response = await axios.put(

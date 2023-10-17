@@ -9,9 +9,9 @@ import { toast } from "react-toastify";
 import {
   getKhuyenMaiById,
   updateKhuyenMai,
-} from "../../api/KhuyenMaiApi/KhuyenMaiApi"; // Import your API functions
+} from "../../api/khuyenMai/KhuyenMaiApi";
 import {
-  Button as ButtonMaterial, // Rename one of the Button imports
+  Button as ButtonMaterial,
   Dialog,
   DialogActions,
   DialogContent,
@@ -25,6 +25,7 @@ export default function KhuyenMaiUpdate() {
   let { idKM } = useParams();
   const chuyenTrang = useNavigate();
   const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
+  
   const handleOpenUpdateConfirmation = () => {
     setUpdateConfirmationOpen(true);
   };
@@ -71,6 +72,7 @@ export default function KhuyenMaiUpdate() {
           ngayKetThuc: response.ngayKetThuc,
           giaTriPhanTram: response.giaTriPhanTram,
         });
+        console.log(khuyenMai)
       } catch (error) {
         console.error("Error fetching KhuyenMai data:", error);
       }
@@ -80,6 +82,20 @@ export default function KhuyenMaiUpdate() {
   }, [idKM]);
 
   const handleUpdateKhuyenMai = async () => {
+    
+    if (khuyenMai.ngayBatDau >= khuyenMai.ngayKetThuc) {
+      toast.error("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
+      handleCloseUpdateConfirmation();
+      return;
+    }
+
+   
+    if (!khuyenMai.ten || !khuyenMai.ngayBatDau || !khuyenMai.ngayKetThuc) {
+      toast.error("Vui lòng điền đầy đủ thông tin");
+      handleCloseUpdateConfirmation();
+      return;
+    }
+
     const updatedKhuyenMai = {
       ma: khuyenMai.ma,
       ten: khuyenMai.ten,
@@ -100,7 +116,6 @@ export default function KhuyenMaiUpdate() {
         autoClose: 2000,
       });
       chuyenTrang("/khuyen-mai");
-      console.log("Khuyến mãi đã được cập nhật:", response.data);
     } catch (error) {
       toast.error("Dữ liệu không hợp lệ");
       console.error("Lỗi khi cập nhật khuyến mãi:", error);

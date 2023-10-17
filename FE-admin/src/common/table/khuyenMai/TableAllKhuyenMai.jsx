@@ -15,11 +15,11 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { fetchKhuyenMai } from "../../../res/fetchKhuyenMai";
 import { toast } from "react-toastify";
 import { PiPencilSimpleBold } from "react-icons/pi";
 import { MdDeleteOutline } from "react-icons/md";
 import "./TableAllKhuyenMai.css";
+import { getAllKhuyenMai } from "../../../api/khuyenMai/KhuyenMaiApi";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 
@@ -130,7 +130,7 @@ export default function DataTable() {
   };
 
   useEffect(() => {
-    fetchKhuyenMai().then((data) => {
+    getAllKhuyenMai().then((data) => {
       const processedData = data.map((item, index) => {
         const now = DateTime.now();
         const endDate = DateTime.fromISO(item.ngayKetThuc);
@@ -167,13 +167,38 @@ export default function DataTable() {
                     display: "flex",
                   }}
                 >
-                  <Link to={`/khuyen-mai/update/${params.id}`}>
-                    <PiPencilSimpleBold className="cursor-pointer text-xl ml-2 mr-3 blue-hover" />
+                  <Link
+                    to={`/khuyen-mai/update/${params.id}`}
+                    className="button-link group relative  blue-hover"
+                  >
+                    <PiPencilSimpleBold className="cursor-pointer text-xl ml-2 mr-3" />
+                    <div
+                      className="z-90 invisible group-hover:visible absolute top-4 right-5 border border-gray-500 p-2"
+                      style={{
+                        fontSize: "10px",
+                        padding: 2,
+                        background: "white",
+                      }}
+                    >
+                      Cập nhật
+                    </div>
                   </Link>
-                  <MdDeleteOutline
-                    className="cursor-pointer text-xl delete-hover"
-                    onClick={() => handleDelete(params.id)}
-                  />
+                  <div className="button-link group relative delete-hover ">
+                    <MdDeleteOutline
+                      className="cursor-pointer text-xl "
+                      onClick={() => handleDelete(params.id)}
+                    />
+                    <div
+                      className="z-90 invisible group-hover:visible absolute top-4 right-5 border border-gray-500 p-2"
+                      style={{
+                        fontSize: "11px",
+                        padding: 2,
+                        background: "white",
+                      }}
+                    >
+                      Xóa
+                    </div>
+                  </div>
                 </TableCell>
               ),
             };
