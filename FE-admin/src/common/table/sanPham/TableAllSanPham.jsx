@@ -5,7 +5,7 @@ const data = [
   {
     key: "1",
     STT: 1,
-    maKhuyenMai: "KM1",
+    tenSanPham: "KM1",
     tenKhuyenMai: "Khuyến mại tháng 1",
     giaTriPhanTram: 32,
     address: "New York No. 1 Lake Park",
@@ -36,7 +36,7 @@ const data = [
   },
   {
     key: "5",
-    STT: 4,
+    STT: 5,
     maKhuyenMai: "KM0004",
     tenKhuyenMai: "Khuyến mại tháng 1",
     giaTriPhanTram: 32,
@@ -44,7 +44,7 @@ const data = [
   },
   {
     key: "6",
-    STT: 4,
+    STT: 6,
     maKhuyenMai: "KM0004",
     tenKhuyenMai: "Khuyến mại tháng 1",
     giaTriPhanTram: 32,
@@ -52,8 +52,8 @@ const data = [
   },
   {
     key: "7",
-    STT: 4,
-    maKhuyenMai: "KM0004",
+    STT: 7,
+    tenSanPham: "KM0004",
     tenKhuyenMai: "Khuyến mại tháng 1",
     giaTriPhanTram: 32,
     address: "London No. 2 Lake Park",
@@ -83,63 +83,46 @@ const TableAllKhuyenMai = () => {
       ellipsis: true,
     },
     {
-      title: "Mã khuyến mại",
-      dataIndex: "maKhuyenMai",
-      key: "maKhuyenMai",
-      filteredValue: filteredInfo.maKhuyenMai || null,
-      onFilter: (value, record) => record.maKhuyenMai.includes(value),
-      sorter: (a, b) => a.maKhuyenMai.length - b.maKhuyenMai.length,
+      title: "Tên sản phẩm",
+      dataIndex: "tenSanPham",
+      key: "tenSanPham",
+      filteredValue: filteredInfo.tenSanPham || null,
+      onFilter: (value, record) => record.tenSanPham.includes(value),
+      sorter: (a, b) => a.tenSanPham.length - b.tenSanPham.length,
       sortOrder:
-        sortedInfo.columnKey === "maKhuyenMai" ? sortedInfo.order : null,
+        sortedInfo.columnKey === "tenSanPham" ? sortedInfo.order : null,
       ellipsis: true,
     },
     {
-      title: "Tên khuyến mại",
-      dataIndex: "tenKhuyenMai",
-      key: "tenKhuyenMai",
-      filteredValue: filteredInfo.tenKhuyenMai || null,
-      onFilter: (value, record) => record.tenKhuyenMai.includes(value),
-      sorter: (a, b) => a.tenKhuyenMai.length - b.tenKhuyenMai.length,
+      title: "Số lượng",
+      dataIndex: "soLuong",
+      key: "soLuong",
+      filteredValue: filteredInfo.soLuong || null,
+      onFilter: (value, record) => record.soLuong.includes(value),
+      sorter: (a, b) => a.soLuong.length - b.soLuong.length,
       sortOrder:
-        sortedInfo.columnKey === "tenKhuyenMai" ? sortedInfo.order : null,
+        sortedInfo.columnKey === "soLuong" ? sortedInfo.order : null,
       ellipsis: true,
     },
     {
-      title: "Giá trị giảm (%)",
-      dataIndex: "giaTriPhanTram",
-      key: "giaTriPhanTram",
-      sorter: (a, b) => a.giaTriPhanTram - b.giaTriPhanTram,
+      title: "Giá bán",
+      dataIndex: "giaBan",
+      key: "giaBan",
+      sorter: (a, b) => a.giaBan - b.giaBan,
       sortOrder:
-        sortedInfo.columnKey === "giaTriPhanTram" ? sortedInfo.order : null,
+        sortedInfo.columnKey === "giaBan" ? sortedInfo.order : null,
       ellipsis: true,
     },
-    {
-      title: "Ngày bắt đầu",
-      dataIndex: "ngayBatDau",
-      key: "ngayBatDau",
-    },
-    {
-      title: "Ngày kết thúc",
-      dataIndex: "ngayKetThuc",
-      key: "ngayKetThuc",
-    },
-
-    {
-      title: "Ngày cập nhật",
-      dataIndex: "ngayCapNhat",
-      key: "ngayCapNhat",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "trangThai",
-      key: "trangThai",
-    },
-    ,
     {
       title: "Hành động",
       dataIndex: "hanhDong",
       key: "hanhDong",
     },
+    {
+      title: "Ảnh",
+      dataIndex: "hinhAnh",
+      key: "hinhAnh",
+    }
   ];
 
   return (
@@ -149,7 +132,7 @@ const TableAllKhuyenMai = () => {
         dataSource={data}
         onChange={handleChange}
         pagination={paginationOptions} 
-        scroll={{ y: 500 }}
+        scroll={{ y: 2000 }}
       />
     </>
   );

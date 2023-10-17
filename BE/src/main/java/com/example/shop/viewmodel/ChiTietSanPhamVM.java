@@ -15,6 +15,7 @@ public class ChiTietSanPhamVM implements Serializable {
     private String id;
     private String ma;
     private String ten;
+    private String tenSanPham;
     private Integer soLuongTon;
     private Double khoiLuong;
     private String moTa;
@@ -36,6 +37,7 @@ public class ChiTietSanPhamVM implements Serializable {
                 "id='" + id + '\'' +
                 ", ma='" + ma + '\'' +
                 ", ten='" + ten + '\'' +
+                ", tenSanPham='" + tenSanPham + '\'' +
                 ", soLuongTon=" + soLuongTon +
                 ", khoiLuong=" + khoiLuong +
                 ", moTa='" + moTa + '\'' +

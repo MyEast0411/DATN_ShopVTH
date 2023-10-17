@@ -58,28 +58,28 @@ const columns = [
             </div>
           </Link>
           <div className="group relative">
-          <MdDeleteOutline
-            className="cursor-pointer text-xl delete-hover relative"
-            onClick={() => {
-              const idToDelete = params.row.ma;
-              console.log(idToDelete);
-              axios
-                .delete(`http://localhost:8080/delete/${idToDelete}`)
-                .then((response) => {
-                  toast.success(`Xóa thành công`, {
-                    position: "top-right",
-                    autoClose: 2000,
+            <MdDeleteOutline
+              className="cursor-pointer text-xl delete-hover relative"
+              onClick={() => {
+                const idToDelete = params.row.ma;
+                console.log(idToDelete);
+                axios
+                  .delete(`http://localhost:8080/delete/${idToDelete}`)
+                  .then((response) => {
+                    toast.success(`Xóa thành công`, {
+                      position: "top-right",
+                      autoClose: 2000,
+                    });
+                  })
+                  .catch((error) => {
+                    toast.error(`Xóa thất bại`, {
+                      position: "top-right",
+                      autoClose: 2000,
+                    });
                   });
-                })
-                .catch((error) => {
-                  toast.error(`Xóa thất bại`, {
-                    position: "top-right",
-                    autoClose: 2000,
-                  });
-                });
-            }}
-          />
-          <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span>
+              }}
+            />
+            <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span>
           </div>
        </div>
       </TableCell>
@@ -107,7 +107,7 @@ export default function DataTable() {
       }
     } 
     fetchChiTietSanPham();
-  }, []);
+  }, [rows]);
   return (
     <div className="text-center" style={{ height: 371, width: "100%" }}>
       <DataGrid
