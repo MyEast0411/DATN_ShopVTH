@@ -1,0 +1,27 @@
+/* tbale material*/
+.MuiDataGrid-columnHeaders {
+    background-color: #98e4ff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    flex-wrap: nowrap;
+  }
+  
+  .MuiDataGrid-root .MuiDataGrid-iconSeparator {
+    visibility: visible !important;
+  }
+  
+  .css-c5c7cs-MuiDataGrid-root .MuiDataGrid-iconSeparator {
+    color: rgb(101, 101, 101) !important;
+  }
+  
+  .MuiDataGrid-columnHeaderTitleContainer {
+    justify-content: center;
+  }
+  
+  .MuiDataGrid-cell {
+    display: flex;
+    border-right: 0.5px solid #e4e4e4 !important;
+  }
+  
