@@ -25,7 +25,20 @@ export default function KhuyenMaiUpdate() {
   let { idKM } = useParams();
   const chuyenTrang = useNavigate();
   const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
-  
+
+  const [selectedStartDate, setSelectedStartDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
+
+  function formatDateToISOString(date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
   const handleOpenUpdateConfirmation = () => {
     setUpdateConfirmationOpen(true);
   };
@@ -47,17 +60,19 @@ export default function KhuyenMaiUpdate() {
   });
 
   const handleStartDateChange = (event) => {
-    setKhuyenMai({
-      ...khuyenMai,
-      ngayBatDau: event.target.value,
-    });
+    // setKhuyenMai({
+    //   ...khuyenMai,
+    //   ngayBatDau: event.target.value,
+    // });
+    setSelectedStartDate(event.target.value);
   };
 
   const handleEndDateChange = (event) => {
-    setKhuyenMai({
-      ...khuyenMai,
-      ngayKetThuc: event.target.value,
-    });
+    // setKhuyenMai({
+    //   ...khuyenMai,
+    //   ngayKetThuc: event.target.value,
+    // });
+    setSelectedEndDate(event.target.value);
   };
 
   useEffect(() => {
@@ -72,7 +87,14 @@ export default function KhuyenMaiUpdate() {
           ngayKetThuc: response.ngayKetThuc,
           giaTriPhanTram: response.giaTriPhanTram,
         });
-        console.log(khuyenMai)
+        setSelectedStartDate(
+          formatDateToISOString(new Date(response.ngayBatDau))
+        );
+        setSelectedEndDate(
+          formatDateToISOString(new Date(response.ngayKetThuc))
+        );
+        console.log(selectedStartDate);
+        console.log("set Khuyen Mai:" + khuyenMai.ngayBatDau);
       } catch (error) {
         console.error("Error fetching KhuyenMai data:", error);
       }
@@ -82,14 +104,12 @@ export default function KhuyenMaiUpdate() {
   }, [idKM]);
 
   const handleUpdateKhuyenMai = async () => {
-    
     if (khuyenMai.ngayBatDau >= khuyenMai.ngayKetThuc) {
       toast.error("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
       handleCloseUpdateConfirmation();
       return;
     }
 
-   
     if (!khuyenMai.ten || !khuyenMai.ngayBatDau || !khuyenMai.ngayKetThuc) {
       toast.error("Vui lòng điền đầy đủ thông tin");
       handleCloseUpdateConfirmation();
@@ -99,13 +119,14 @@ export default function KhuyenMaiUpdate() {
     const updatedKhuyenMai = {
       ma: khuyenMai.ma,
       ten: khuyenMai.ten,
-      ngayBatDau: khuyenMai.ngayBatDau,
-      ngayKetThuc: khuyenMai.ngayKetThuc,
+      ngayBatDau: selectedStartDate,
+      ngayKetThuc: selectedEndDate,
       giaTriPhanTram: khuyenMai.giaTriPhanTram,
       ngaySua: currentDateTime,
       nguoiTao: "Nguyễn Văn Hội",
       nguoiSua: "Nguyễn Văn Hội",
     };
+    // console.log(ngayBatDau);
 
     try {
       // Update Khuyen Mai data
@@ -209,7 +230,7 @@ export default function KhuyenMaiUpdate() {
             <input
               type="datetime-local"
               id="startDateInput"
-              value={khuyenMai.ngayBatDau}
+              value={selectedStartDate}
               onChange={handleStartDateChange}
               style={{
                 width: "100%",
@@ -230,7 +251,7 @@ export default function KhuyenMaiUpdate() {
             <input
               type="datetime-local"
               id="endDateInput"
-              value={khuyenMai.ngayKetThuc}
+              value={selectedEndDate}
               onChange={handleEndDateChange}
               style={{
                 width: "100%",

@@ -5,6 +5,7 @@ import SelectedTable2 from "../../small-component/TableKhuyenMai/SelectedTable2"
 import { toast } from "react-toastify";
 import { DateTime } from "luxon";
 import { addKhuyenMai } from "../../api/khuyenMai/KhuyenMaiApi";
+import DataTableMa from "./DataTableSanPham";
 import {
   Button as ButtonMaterial, // Rename one of the Button imports
   Dialog,
@@ -203,7 +204,7 @@ export default function ThemKhuyenMai() {
             Sản phẩm
           </h2>
           <div className="">
-            <SelectedTable1 />
+          <DataTableMa />
           </div>
           <h2 className="text-xl mt-7 mb-1 font-bold text-gray-800">
             Chi tiết sản phẩm
