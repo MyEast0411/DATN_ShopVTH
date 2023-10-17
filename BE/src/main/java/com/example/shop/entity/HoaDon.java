@@ -17,13 +17,20 @@ import java.util.UUID;
 public class HoaDon {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @Column(name = "id")
+    private String ids;
+
+    private String ma;
 
     @Column(name = "sdt")
     private String sdt;
 
     @Column(name = "dia_chi")
     private String diaChi;
+
+    @Column(name = "ho_ten")
+    private String hoTen;
+
 
     @Column(name = "tong_tien")
     private BigDecimal tongTien;
@@ -66,6 +73,6 @@ public class HoaDon {
 
     @ManyToOne
     @JoinColumn(name = "id_nhan_vien")
-    private NhanVien id_nhan_vien;
+    private NhanVien nhanVien;
 
 }

@@ -56,7 +56,7 @@ public class ThanhToanController {
         try {
             ThanhToan thanhToanExist = thanhToanService.getThanhToan(id);
             if (thanhToanExist != null) {
-                thanhToan.setId(thanhToanExist.getId());
+                thanhToan.setIds(thanhToanExist.getIds());
                 ThanhToan voucherAdd = thanhToanService.addThanhToan(thanhToan);
                 return new ResponseEntity<>(voucherAdd, HttpStatus.CREATED);
             } else {

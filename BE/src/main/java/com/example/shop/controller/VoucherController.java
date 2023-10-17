@@ -61,7 +61,7 @@ public class VoucherController {
             System.out.println(voucher);
             Voucher voucher1 = voucherService.getVoucher(id);
             if (voucher1 != null){
-                voucher.setId(voucher.getId());
+                voucher.setIds(voucher.getIds());
                 Voucher voucherAdd = voucherService.updateVoucher(voucher);
                 return new ResponseEntity<>(voucherAdd , HttpStatus.CREATED);
             }else{

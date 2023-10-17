@@ -16,7 +16,8 @@ import java.util.UUID;
 public class DiaChi {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @Column(name = "id")
+    private String ids;
 
     @Column(name = "duong")
     private String duong;

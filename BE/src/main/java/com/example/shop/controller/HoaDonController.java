@@ -29,11 +29,23 @@ public class HoaDonController {
     @Autowired
     private HoaDonService hoaDonService;
     @GetMapping("getHoaDons")
-    public ResponseEntity<Page<HoaDon>> getHoaDons(
+    public ResponseEntity<List<HoaDon>> getHoaDons(
             @RequestParam(name = "page" , defaultValue = "0")Integer numPage
     ){
-        Pageable pageable = PageRequest.of(numPage , 3);
-        Page<HoaDon> page = hoaDonService.getHoaDons(pageable);
+//        Pageable pageable = PageRequest.of(numPage , 3);
+//        Page<HoaDon> page = hoaDonService.getHoaDons(pageable);
+        List<HoaDon> page = hoaDonService.getHoaDons();
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("getHoaDons/{trangThai}")
+    public ResponseEntity<List<HoaDon>> getHDs(
+            @RequestParam(name = "page" , defaultValue = "0")Integer numPage,
+            @PathVariable Integer trangThai
+    ){
+//        Pageable pageable = PageRequest.of(numPage , 3);
+//        Page<HoaDon> page = hoaDonService.getHDs(trangThai , pageable);
+        List<HoaDon> page = hoaDonService.getHDs(trangThai);
         return ResponseEntity.ok(page);
     }
 
@@ -59,7 +71,7 @@ public class HoaDonController {
         try{
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null){
-                hoaDon.setId(hoaDon.getId());
+                hoaDon.setIds(hoaDon.getIds());
                 HoaDon updateHoaDon = hoaDonService.updateHoaDon(hoaDon);
                 return new ResponseEntity<>(updateHoaDon , HttpStatus.CREATED);
             }else{

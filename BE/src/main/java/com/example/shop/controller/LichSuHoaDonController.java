@@ -1,10 +1,13 @@
 package com.example.shop.controller;
 
 import com.example.shop.entity.LichSuHoaDon;
+import com.example.shop.service.LichSuHoaDonService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +19,12 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping("lich_su_thanh_toan")
 public class LichSuHoaDonController {
-    @GetMapping("getLichSuHoaDons")
-    public ResponseEntity<List<LichSuHoaDon>> getLichSuHoaDons(){
-        return ResponseEntity.ok(new ArrayList<>());
+    @Autowired
+    private LichSuHoaDonService lichSuHoaDonService;
+    @GetMapping("getLichSuHoaDons/{id}")
+    public ResponseEntity<List<LichSuHoaDon>> getLichSuHoaDons(@PathVariable String id){
+        List<LichSuHoaDon> list = lichSuHoaDonService.getLichSuHoaDons(id);
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("getLichSuHoaDon/{id}")

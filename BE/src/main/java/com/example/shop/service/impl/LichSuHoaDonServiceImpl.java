@@ -5,6 +5,7 @@ import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.repository.LichSuHoaDonRepository;
 import com.example.shop.service.LichSuHoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +20,8 @@ public class LichSuHoaDonServiceImpl implements LichSuHoaDonService {
 
 
     @Override
-    public List<LichSuHoaDon> getLichSuHoaDons() {
-        return lichSuHoaDonRepository.findAll();
+    public List<LichSuHoaDon> getLichSuHoaDons(String idHD ) {
+        return lichSuHoaDonRepository.getLichSuHoaDon(idHD , Sort.by(Sort.Direction.ASC, "ngayTao"));
     }
 
     @Override

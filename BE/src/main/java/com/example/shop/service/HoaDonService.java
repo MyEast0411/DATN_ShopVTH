@@ -10,10 +10,12 @@ import java.util.List;
 
 @Service
 public interface HoaDonService  {
-    Page<HoaDon> getHoaDons(Pageable pageable);
+    List<HoaDon> getHoaDons();
     HoaDon getHoaDon(String id);
     HoaDon addHoaDon(HoaDon hoaDon);
     HoaDon updateHoaDon(HoaDon hoaDon);
     Boolean deleteHoaDon(HoaDon hoaDon);
+
+    List<HoaDon> getHDs(int page );
 
 }

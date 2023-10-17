@@ -21,8 +21,8 @@ public class HoaDonServiceImpl implements HoaDonService {
 
 
     @Override
-    public Page<HoaDon> getHoaDons(Pageable pageable) {
-        return hoaDonRepository.findAll(pageable);
+    public List<HoaDon> getHoaDons() {
+        return hoaDonRepository.getPageDeleted();
     }
 
     @Override
@@ -49,5 +49,10 @@ public class HoaDonServiceImpl implements HoaDonService {
            exception.printStackTrace();
            return false;
        }
+    }
+
+    @Override
+    public List<HoaDon> getHDs(int page) {
+        return hoaDonRepository.getPage(page);
     }
 }

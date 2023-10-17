@@ -15,7 +15,8 @@ import java.util.UUID;
 public class DeGiay {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @Column(name = "id")
+    private String ids;
 
     @Column(name = "ma")
     private String ma;
