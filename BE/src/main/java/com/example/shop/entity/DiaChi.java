@@ -48,7 +48,4 @@ public class DiaChi {
     @Column(name = "deleted")
     private Integer deleted;
 
-    @ManyToOne
-    @JoinColumn(name = "id_khach_hang")
-    private KhachHang id_khach_hang;
 }

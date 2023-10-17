@@ -61,7 +61,7 @@ export default function DataTable() {
     {
       field: "hanhDong",
       headerName: "Hành động",
-      width: 200,
+      width: 246,
       sortable: false,
       align: "center",
       renderCell: (params) => (

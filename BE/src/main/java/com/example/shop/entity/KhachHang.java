@@ -15,6 +15,7 @@ import java.util.UUID;
 @Data
 @Table(name = "khach_hang")
 public class KhachHang {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -51,4 +52,8 @@ public class KhachHang {
 
     @Column(name = "deleted")
     private Integer deleted;
+
+    @ManyToOne
+    @JoinColumn(name = "id_dia_chi")
+    private DiaChi id_dia_chi;
 }
