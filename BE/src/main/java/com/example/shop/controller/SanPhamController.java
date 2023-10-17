@@ -3,6 +3,8 @@ package com.example.shop.controller;
 
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
+import com.example.shop.requests.DeGiayRequest;
+import com.example.shop.requests.KichCoRequest;
 import com.example.shop.viewmodel.ChiTietSanPhamVM;
 import com.example.shop.viewmodel.SanPhamVM;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +77,7 @@ public class SanPhamController {
     }
     @GetMapping("/getAllDG")
     List<DeGiay> getAllDG(){
-        return deGiayRepository.findAll();
+        return deGiayRepository.getListDeGiay();
     }
     @GetMapping("/getAllKC")
     List<KichCo> getAllKC(){
@@ -213,5 +215,37 @@ public class SanPhamController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Xóa thất bại!");
         }
+    }
+
+    @PostMapping("/addDeGiay")
+    public DeGiay addDeGiay(@RequestBody DeGiayRequest request) {
+        DeGiay deGiay = new DeGiay();
+        int seconds = (int) System.currentTimeMillis() / 1000;
+        Random random = new Random();
+        int number = random.nextInt(seconds + 1);
+        String threeNumbers = String.valueOf(number).substring(0, 3);
+        deGiay.setMa("DG"+threeNumbers);
+        deGiay.setTen(request.getTenDeGiay());
+        deGiay.setDeleted(1);
+        return deGiayRepository.save(deGiay);
+    }
+
+    @PostMapping("/addKichCo")
+    public ResponseEntity addKichCo(@RequestBody KichCoRequest request) {
+        try {
+            KichCo kichCo = new KichCo();
+            int seconds = (int) System.currentTimeMillis() / 1000;
+            Random random = new Random();
+            int number = random.nextInt(seconds + 1);
+            String threeNumbers = String.valueOf(number).substring(0, 3);
+            kichCo.setMa("KC"+threeNumbers);
+            kichCo.setTen(request.getTenKichCo());
+            kichCo.setDeleted(1);
+            kichCoRepository.save(kichCo);
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại kích cỡ này!");
+        }
+
     }
 }

@@ -4,6 +4,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { InputNumber } from "antd";
 import { TableCell } from "@mui/material";
+import {
+  Button as ButtonMaterial, 
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 //icon
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdDeleteOutline } from "react-icons/md";
@@ -12,7 +20,9 @@ import Badge from "@mui/material/Badge";
 
 export default function ThemSanPham() {
   let navigate = useNavigate();
+  const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
   const [tableData, setTableData] = useState([]);
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
   const [selectedColors, setSelectedColors] = useState([]);
@@ -39,6 +49,19 @@ export default function ThemSanPham() {
     id_thuong_hieu: "",
     id_nhan_hieu: "",
   });
+  const [deGiayModal,setDeGiayModal] = useState({
+    tenDeGiay : ""
+  });
+  const {
+    tenDeGiay
+  } = deGiayModal;
+
+  const [kichCoModal,setKichCoModal] = useState({
+    tenKichCo : ""
+  });
+  const {
+    tenKichCo
+  } = kichCoModal;
 
   const {
     ma,
@@ -186,7 +209,75 @@ export default function ThemSanPham() {
   const handleCancel1 = () => {
     setIsModalOpen1(false);
   };
-  // ---------------------------------------------------------------
+
+  const [isModalOpenKC, setIsModalOpenKC] = useState(false);
+  const showModalKC = () => {
+    setIsModalOpenKC(true);
+  };
+  const handleOkKC =async () => {
+    await axios
+      .post("http://localhost:8080/addKichCo", kichCoModal)
+      .then((response) => {
+        toast.success(`Thêm thành công`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      })
+      .catch((error) => {
+        toast.error(error.response.data, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      });
+    setIsModalOpenKC(false);
+  };
+  const handleCancelKC = () => {
+    setIsModalOpenKC(false);
+  };
+  const onChangeKC = (e) => {
+    setKichCoModal({[e.target.name]: e.target.value });
+  };
+
+  // ------------------------modal de giay-------------------------
+  const [isModalOpenDG, setIsModalOpenDG] = useState(false);
+  const showModalDG = () => {
+    setIsModalOpenDG(true);
+  };
+  const handleOkDG =async () => {
+    console.log(deGiayModal);
+    await axios
+      .post("http://localhost:8080/addDeGiay", deGiayModal)
+      .then((response) => {
+        toast.success(`Thêm thành công`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      })
+      .catch((error) => {
+        toast.error(`Thêm thất bại`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      });
+    setIsModalOpenDG(false);
+  };
+  const handleCancelDG = () => {
+    setIsModalOpenDG(false);
+  };
+  const onChangeDG = (e) => {
+    setDeGiayModal({[e.target.name]: e.target.value });
+  };
+  // --------------------------comfirm-------------------------------
+  const handleOpenAddConfirmation = () => {
+    setIsConfirmed(true);
+    setAddConfirmationOpen(true);
+  };
+
+  const handleCloseAddConfirmation = () => {
+    setIsConfirmed(false);
+    setAddConfirmationOpen(false);
+  };
+  // -----------------------end comfirm ----------------------------
   const onChange = (e) => {
     setSanPham({ ...sanPham, [e.target.name]: e.target.value });
   };
@@ -229,13 +320,20 @@ export default function ThemSanPham() {
   };
   useEffect(() => {
     loadTable();
-  },[data])
+  },[tableData])
+
+  useEffect(() => {
+    getAllDG();
+  },[deGiay])
+
   useEffect(() => {
     getAllKC();
+  },[kichCo])
+
+  useEffect(() => {
     getAllNH();
     getAllMS();
     getAllCL();
-    getAllDG();
     getAllTH();
   }, []);
   const getAllNH = async () => {
@@ -274,15 +372,15 @@ export default function ThemSanPham() {
   };
 
   const onSubmit = async (e) => {
+    console.log("aloalo");
     e.preventDefault();
     const data = tableData.map((sp) => [sp.id, sp.ten, sp.tenSanPham, sp.soLuongTon, sp.khoiLuong,
        sp.moTa, sp.giaNhap, sp.giaBan, sp.id_mau_sac, sp.id_kich_co,sp.id_thuong_hieu,sp.id_nhan_hieu,
        sp.id_chat_lieu,sp.id_de_giay]);
-    console.log(data);
+    if (isConfirmed) {
     await axios
       .post("http://localhost:8080/san-pham/add", data)
       .then((response) => {
-        console.log(response);
         toast.success(`Thêm thành công`, {
           position: "top-right",
           autoClose: 2000,
@@ -294,8 +392,8 @@ export default function ThemSanPham() {
           position: "top-right",
           autoClose: 2000,
         });
-        console.log(error);
       });
+    }
   };
 
   const handleRemoveColor = (maMau) => {
@@ -367,43 +465,6 @@ export default function ThemSanPham() {
 
             <div className="border-b border-gray-900/10 pb-12">
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                {/* <div className="sm:col-span-3">
-                  <label
-                    htmlFor="first-name"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Giá bán
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      name="giaBan"
-                      id="giaBan"
-                      placeholder=" ..."
-                      className="block w-80 rounded-md p-2 border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      onChange={(e) => onChange(e)}
-                    />
-                  </div>
-                </div> */}
-                {/* <div className="sm:col-span-3">
-                  <label
-                    htmlFor="first-name"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Giá nhập
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      name="giaNhap"
-                      id="giaNhap"
-                      placeholder=" ..."
-                      className="block w-80 rounded-md p-2 border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      onChange={(e) => onChange(e)}
-                    />
-                  </div>
-                </div> */}
-
                 <div className="sm:col-span-3">
                   <label
                     htmlFor="country"
@@ -536,8 +597,35 @@ export default function ThemSanPham() {
                       color: "white",
                       cursor: "pointer",
                     }}>
-                      <AiOutlinePlus />
+                      <AiOutlinePlus onClick={showModalDG}/>
                     </div>
+                    <Modal
+                      title="Thêm đế giày"
+                      open={isModalOpenDG}
+                      onOk={handleOkDG}
+                      onCancel={handleCancelDG}
+                      cancelText="Hủy"
+                      okText="Thêm"
+                      style={{ position: "relative" }}
+                    >
+                    <div>
+                      <label
+                      htmlFor="country"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                       Tên đế giày
+                      </label>
+                      <input
+                        type="text"
+                        name="tenDeGiay"
+                        value={tenDeGiay}
+                        className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                        placeholder="Nhập tên đế giày"
+                        onChange={(e) => onChangeDG(e)}
+                        style={{borderRadius:"5px"}}
+                      />
+                    </div>
+                    </Modal>
                   </div>
                 </div>
                 <div className="sm:col-span-3">
@@ -756,65 +844,46 @@ export default function ThemSanPham() {
                             border: "0.5px solid #ccc",
                             marginRight: "3.5%",
                           }}
+                          onClick={() => {
+                            // handleCancel1();
+                            showModalKC();
+                            }}
                         >
-                          <AiOutlinePlus className="mr-2" />
+                          <AiOutlinePlus className="mr-2"
+                           />
                           Thêm kích cỡ
                         </Button>
                       </div>
                     </Modal>
+                    <Modal
+                      title="Thêm đế giày"
+                      open={isModalOpenKC}
+                      onOk={handleOkKC}
+                      onCancel={handleCancelKC}
+                      cancelText="Cancel"
+                      okText="Thêm"
+                      style={{ position: "relative" }}
+                    >
+                    <div>
+                      <label
+                      htmlFor="country"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                       Tên đế giày
+                      </label>
+                      <input
+                        type="text"
+                        name="tenKichCo"
+                        value={tenKichCo}
+                        className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                        placeholder="Nhập tên đế giày"
+                        onChange={(e) => onChangeKC(e)}
+                        style={{borderRadius:"5px"}}
+                      />
+                    </div>
+                    </Modal>
                   </div>
                 </div>
-
-                {/* <div className="sm:col-span-4">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Số lượng tồn
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      min={1}
-                      name="soLuongTon"
-                      placeholder="1"
-                      className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      onChange={(e) => onChange(e)}
-                    />
-                  </div>
-                </div> */}
-                {/* <div className="sm:col-span-4">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Khối lượng
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      placeholder="Nhập khối lượng"
-                      name="khoiLuong"
-                      className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      onChange={(e) => onChange(e)}
-                    />
-                  </div>
-                </div> */}
-                {/* <div className="sm:col-span-4">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Hình ảnh sản phẩm
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="text"
-                      placeholder="https://assets.nike.com/medias/sys_master/root/20211224/1tuJ/61c4c229aeb26901101a29d1/-1117Wx1400H-469034008-black-MODEL.jpg"
-                      className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>
@@ -844,13 +913,41 @@ export default function ThemSanPham() {
             </Link>
 
             <button
-              type="submit"
+               type="button"
               className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              onClick={handleOpenAddConfirmation} 
             >
               Thêm sản phẩm
             </button>
           </div>
         </form>
+        <div>
+        <Dialog open={addConfirmationOpen} onClose={handleCloseAddConfirmation}>
+          <DialogTitle>Xác nhận thêm</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Bạn có chắc muốn thêm sản phẩm này?
+              </DialogContentText>
+            </DialogContent>
+          <DialogActions>
+            <ButtonMaterial onClick={handleCloseAddConfirmation} color="primary">
+               Hủy
+            </ButtonMaterial>
+            <ButtonMaterial
+            onClick={(e) => {
+              setIsConfirmed(true);
+              onSubmit(e);
+              handleCloseAddConfirmation();
+            }}
+            color="primary"
+            >
+              Vẫn thêm
+            </ButtonMaterial>
+            </DialogActions>
+        </Dialog>
+
+        
+        </div>
       </div>
     </>
   );

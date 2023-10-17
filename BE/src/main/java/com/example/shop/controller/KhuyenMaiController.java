@@ -1,5 +1,6 @@
 package com.example.shop.controller;
 
+import com.example.shop.entity.DeGiay;
 import com.example.shop.entity.KhuyenMai;
 import com.example.shop.services.KhuyenMaiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,4 +75,5 @@ public class KhuyenMaiController {
             return false;
         }
     }
+
 }
