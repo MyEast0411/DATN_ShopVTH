@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "khach_hang_voucer")
+@Table(name = "khach_hang_voucher")
 @IdClass(KhachHangVoucherId.class)
 public class KhachHangVoucher {
     @Id
