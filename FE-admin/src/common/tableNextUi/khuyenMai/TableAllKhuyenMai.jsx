@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import {
   Table,
   TableHeader,
@@ -13,17 +14,36 @@ import {
   DropdownMenu,
   DropdownItem,
   Chip,
-  User,
   Pagination,
 } from "@nextui-org/react";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { PlusIcon } from "../../../common/tableNextUi/khuyenMai/PlusIcon";
 import { VerticalDotsIcon } from "../../../common/tableNextUi/khuyenMai/VerticalDotsIcon";
 import { SearchIcon } from "../../../common/tableNextUi/khuyenMai/SearchIcon";
 import { ChevronDownIcon } from "../../../common/tableNextUi/khuyenMai/ChevronDownIcon";
 import { columns, statusOptions } from "./DataAllKhuyenMai";
 import { capitalize } from "../../../common/tableNextUi/khuyenMai/utils";
+import {
+  getAllKhuyenMai,
+  deleteKhuyenMai,
+} from "../../../api/khuyenMai/KhuyenMaiApi";
+import { DateTime } from "luxon";
+import { Settings } from "luxon";
+import { toast } from "react-toastify";
+import { TbInfoTriangle } from "react-icons/tb";
 
-import { getAllKhuyenMai } from "../../../api/khuyenMai/KhuyenMaiApi";
+Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
+
+const formateDateVietNam = (dateTimeStr) => {
+  const vietNamTime = DateTime.fromISO(dateTimeStr, { zone: "utc" });
+  return vietNamTime.toFormat("dd/MM/yyyy HH:mm");
+};
 
 const statusColorMap = {
   active: "success",
@@ -45,6 +65,38 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 export default function App() {
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
+
+  const handleDelete = (idToDelete) => {
+    setIdToDelete(idToDelete);
+    setDeleteConfirmationOpen(true);
+  };
+
+  const cancelDelete = () => {
+    setIdToDelete(null);
+    setDeleteConfirmationOpen(false);
+  };
+
+  const confirmDelete = () => {
+    if (idToDelete) {
+      deleteKhuyenMai(idToDelete)
+        .then((response) => {
+          console.log(`Delete successful for row ID: ${idToDelete}`);
+          toast("🎉 Xóa thành công");
+          // Remove the deleted item from the state
+          setKhuyenMais((prevKhuyenMais) =>
+            prevKhuyenMais.filter((item) => item.id !== idToDelete)
+          );
+        })
+        .catch((error) => {
+          console.error(`Error deleting record for ID: ${idToDelete}`, error);
+        });
+
+      cancelDelete(); // Close the dialog after deletion
+    }
+  };
+
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -58,18 +110,26 @@ export default function App() {
   });
   const [page, setPage] = React.useState(1);
   const [khuyenMais, setKhuyenMais] = useState([]);
+
   useEffect(() => {
     async function fetchKhuyenMais() {
       try {
         const data = await getAllKhuyenMai();
-        setKhuyenMais(data);
+
+        const khuyenMaisFormatted = data.map((khuyenMai) => ({
+          ...khuyenMai,
+          ngayBatDau: formateDateVietNam(khuyenMai.ngayBatDau),
+          ngayKetThuc: formateDateVietNam(khuyenMai.ngayKetThuc),
+        }));
+
+        setKhuyenMais(khuyenMaisFormatted);
       } catch (error) {
         console.error("Lỗi khi gọi API: ", error);
       }
     }
-
     fetchKhuyenMais();
   }, [khuyenMais]);
+
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -81,14 +141,9 @@ export default function App() {
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    // Sử dụng state `khuyenMais` thay vì dữ liệu cứng `khuyenMais`
+    const filterText = filterValue.toLowerCase();
     let filteredKhuyenMais = [...khuyenMais];
 
-    if (hasSearchFilter) {
-      filteredKhuyenMais = filteredKhuyenMais.filter((khuyenMai) =>
-        khuyenMai.ten.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
@@ -96,9 +151,14 @@ export default function App() {
       filteredKhuyenMais = filteredKhuyenMais.filter((khuyenMai) =>
         Array.from(statusFilter).includes(khuyenMai.trangThai)
       );
+      return filteredKhuyenMais;
     }
 
-    return filteredKhuyenMais;
+    return khuyenMais.filter((khuyenMai) =>
+      Object.values(khuyenMai).some((value) =>
+        String(value).toLowerCase().includes(filterText)
+      )
+    );
   }, [khuyenMais, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
@@ -147,7 +207,9 @@ export default function App() {
               <DropdownMenu>
                 <DropdownItem>Xem</DropdownItem>
                 <DropdownItem>Chỉnh sửa</DropdownItem>
-                <DropdownItem>Xóa</DropdownItem>
+                <DropdownItem onClick={() => handleDelete(khuyenMai.id)}>
+                  Xóa
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -195,12 +257,14 @@ export default function App() {
           <Input
             isClearable
             className="w-full sm:max-w-[30%]"
-            placeholder="Tìm theo tên..."
+            placeholder="Tìm kiếm bất kỳ..."
             startContent={<SearchIcon />}
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
+          {/* <Input type="datetime-local" label="Từ ngày" />
+          <Input type="datetime-local" label="Đến ngày"/> */}
           <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -250,9 +314,11 @@ export default function App() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
-              Thêm mới
-            </Button>
+            <Link to={"/them-khuyen-mai"}>
+              <Button color="primary" endContent={<PlusIcon />}>
+                Thêm mới
+              </Button>
+            </Link>
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -323,42 +389,81 @@ export default function App() {
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
   return (
-    <Table
-      aria-label="Example table with custom cells, pagination and sorting"
-      isHeaderSticky
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "max-h-[382px]",
-      }}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
+    <>
+      <Table
+        style={{ height: "382px" }}
+        aria-label="Example table with custom cells, pagination and sorting"
+        isHeaderSticky
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
+        classNames={{
+          wrapper: "max-h-[382px]",
+        }}
+        selectedKeys={selectedKeys}
+        selectionMode="multiple"
+        sortDescriptor={sortDescriptor}
+        topContent={topContent}
+        topContentPlacement="outside"
+        onSelectionChange={setSelectedKeys}
+        onSortChange={setSortDescriptor}
+      >
+        <TableHeader columns={headerColumns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "hanhDong" ? "center" : "start"}
+              allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody
+          emptyContent={"Không tìm thấy khuyến mại"}
+          items={sortedItems}
+        >
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
           >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"Không tìm thấy khuyến mại"} items={sortedItems}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận xóa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn xóa khuyến mại này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="warning">
+            Hủy
+          </Button>
+          <Button onClick={confirmDelete} color="primary">
+            Vẫn xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }

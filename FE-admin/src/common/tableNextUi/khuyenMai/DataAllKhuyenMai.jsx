@@ -1,4 +1,3 @@
-import React from "react";
 const columns = [
   { name: "Mã", uid: "ma", sortable: true },
   { name: "Tên", uid: "ten", sortable: true },
@@ -15,34 +14,4 @@ const statusOptions = [
   { name: "Sắp diễn ra", uid: "Sắp diễn ra" },
 ];
 
-const khuyenMais = [
-  {
-    id: 1,
-    ma: "KM123",
-    ten: "Khuyến mại A",
-    giaTriPhanTram: 10,
-    ngayBatDau: "2023-10-15",
-    ngayKetThuc: "2023-10-30",
-    trangThai: "Sắp diễn ra",
-  },
-  {
-    id: 2,
-    ma: "KM456",
-    ten: "Khuyến mại C",
-    giaTriPhanTram: 20,
-    ngayBatDau: "2023-10-15",
-    ngayKetThuc: "2023-10-30",
-    trangThai: "Đang diễn ra",
-  },
-  {
-    id: 3,
-    ma: "KM525",
-    ten: "Khuyến mại B",
-    giaTriPhanTram: 15,
-    ngayBatDau: "2023-10-15",
-    ngayKetThuc: "2023-10-30",
-    trangThai: "Đã kết thúc",
-  },
-];
-
-export { columns, khuyenMais, statusOptions };
+export { columns, statusOptions };
