@@ -27,7 +27,6 @@ import { PlusIcon } from "../../../common/tableNextUi/khuyenMai/PlusIcon";
 import { VerticalDotsIcon } from "../../../common/tableNextUi/khuyenMai/VerticalDotsIcon";
 import { SearchIcon } from "../../../common/tableNextUi/khuyenMai/SearchIcon";
 import { ChevronDownIcon } from "../../../common/tableNextUi/khuyenMai/ChevronDownIcon";
-import { columns, statusOptions } from "./DataAllKhuyenMai";
 import { capitalize } from "../../../common/tableNextUi/khuyenMai/utils";
 import {
   getAllKhuyenMai,
@@ -39,6 +38,21 @@ import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
+const columns = [
+  { name: "Mã", uid: "ma", sortable: true },
+  { name: "Tên", uid: "ten", sortable: true },
+  { name: "Giá trị giảm (%)", uid: "giaTriPhanTram", sortable: true },
+  { name: "Ngày bắt đầu", uid: "ngayBatDau", sortable: true },
+  { name: "Ngày kết thúc", uid: "ngayKetThuc", sortable: true },
+  { name: "Trạng thái", uid: "trangThai", sortable: true },
+  { name: "Hành Động", uid: "hanhDong" },
+];
+
+const statusOptions = [
+  { name: "Đang diễn ra", uid: "Đang diễn ra" },
+  { name: "Đã kết thúc", uid: "Đã kết thúc" },
+  { name: "Sắp diễn ra", uid: "Sắp diễn ra" },
+];
 
 const formateDateVietNam = (dateTimeStr) => {
   const vietNamTime = DateTime.fromISO(dateTimeStr, { zone: "utc" });

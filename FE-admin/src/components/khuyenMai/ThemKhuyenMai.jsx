@@ -77,10 +77,7 @@ export default function ThemKhuyenMai() {
       setNgayBatDau("");
       setNgayKetThuc("");
       handleCloseAddConfirmation();
-      toast.success(`Thêm thành công`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast("🎉 Thêm thành công!")
       chuyenTrang("/khuyen-mai");
     } catch (error) {
       console.error("Error adding KhuyenMai:", error);
