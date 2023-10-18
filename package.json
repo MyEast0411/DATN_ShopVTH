@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "date-fns": "^2.30.0",
+    "html5-qrcode": "^2.3.8",
     "intl": "^1.2.5",
-    "luxon": "^3.4.3"
+    "luxon": "^3.4.3",
+    "react-qr-reader": "^3.0.0-beta-1"
   }
 }
