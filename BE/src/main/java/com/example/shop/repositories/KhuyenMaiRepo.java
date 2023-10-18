@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface KhuyenMaiRepo extends JpaRepository<KhuyenMai, UUID> {
+public interface KhuyenMaiRepo extends JpaRepository<KhuyenMai, String> {
     List<KhuyenMai> findAll();
+
+    List<KhuyenMai> findAllByDeleted(int deleted);
 
 }
