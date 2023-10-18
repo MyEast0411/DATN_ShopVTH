@@ -331,11 +331,7 @@ export default function App() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Link to={"/them-khuyen-mai"}>
-              <Button color="primary" endContent={<PlusIcon />}>
-                Thêm mới
-              </Button>
-            </Link>
+            
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -369,11 +365,11 @@ export default function App() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
+        {/* <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
             : `${selectedKeys.size} khyến mại đã được chọn`}
-        </span>
+        </span> */}
         <Pagination
           isCompact
           showControls

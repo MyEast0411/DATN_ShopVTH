@@ -87,9 +87,12 @@ export default function ThemKhuyenMai() {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-4 fixed ">
-        <div className="grid ">
-          <form className="bg-slate-500 rounded">
+      <div className="flex justify-between gap-4">
+        <div className="grid" style={{
+          width: '30%',
+
+        }}>
+          <form className="bg-slate-500 rounded fixed">
             <h2 className="text-xl mb-10 font-bold text-gray-800">
               Thêm khuyến mại
             </h2>
@@ -193,7 +196,7 @@ export default function ThemKhuyenMai() {
           </form>
         </div>
         <div
-          className="pl-5 border-l-[2px] col-span-2 overflow-y-auto"
+          className="pl-5 border-l-[2px]"
           style={{
             borderColor: "#ccc",
             height: "80%",
