@@ -28,16 +28,16 @@ public class KhuyenMaiController {
 
     @GetMapping
     public List<KhuyenMai> findAll() {
-        return khuyenMaiService.findAll();
+        return khuyenMaiService.findAllByDeleted(0);
     }
-
     @PostMapping("/add")
     ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai) {
         try {
-            System.out.println(khuyenMai);
             khuyenMai.setMa(generateUniqueMaKhuyenMai());
             khuyenMai.setNgayTao(new Date());
+            khuyenMai.setDeleted(0);
             khuyenMaiService.save(khuyenMai);
+            System.out.println(khuyenMai.getMa());
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
@@ -64,15 +64,16 @@ public class KhuyenMaiController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public Boolean deleteKhuyenMai(@PathVariable String id) {
+    @DeleteMapping("/soft-delete/{id}")
+    public ResponseEntity<String> softDeleteKhuyenMai(@PathVariable String id) {
         Optional<KhuyenMai> khuyenMai = khuyenMaiService.findById(id);
 
         if (khuyenMai.isPresent()) {
-            khuyenMaiService.deleteById(id);
-            return true;
+            khuyenMai.get().setDeleted(1);
+            khuyenMaiService.save(khuyenMai.get());
+            return ResponseEntity.ok("Đã xóa mềm");
         } else {
-            return false;
+            return ResponseEntity.notFound().build();
         }
     }
 

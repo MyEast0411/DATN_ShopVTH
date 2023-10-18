@@ -10,7 +10,7 @@ const getColorBox = (color) => (
       width: "20px", // Adjust the width as needed
       height: "20px", // Adjust the height as needed
       backgroundColor: "red",
-      borderRadius: "5px"
+      borderRadius: "5px",
     }}
   ></div>
 );
@@ -185,7 +185,8 @@ const rows = [
   },
 ];
 
-export default function SelectedTable2() {
+export default function SelectedTable2({ selectedProduct }) {
+  console.log(selectedProduct);
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid

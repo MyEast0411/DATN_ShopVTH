@@ -20,6 +20,10 @@ public class KhuyenMaiService {
     @Autowired
     KhuyenMaiRepository khuyenMaiRepo;
 
+    public List<KhuyenMai> findAllByDeleted(int deleted) {
+        return khuyenMaiRepo.findAllByDeleted(deleted);
+    }
+
     public List<KhuyenMai> findAll() {
         return khuyenMaiRepo.findAll();
     }

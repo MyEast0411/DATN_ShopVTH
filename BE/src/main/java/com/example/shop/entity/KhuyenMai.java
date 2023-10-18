@@ -18,7 +18,7 @@ public class KhuyenMai {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "ma")
+    @Column(name = "ma", unique = true)
     private String ma;
 
     @Column(name = "ten")
@@ -50,7 +50,7 @@ public class KhuyenMai {
     private String nguoiSua;
 
     @Column(name = "trang_thai")
-    private int trangThai;
+    private String trangThai;
 
     @Column(name = "deleted")
     private Integer deleted;

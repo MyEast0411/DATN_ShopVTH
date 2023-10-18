@@ -10,4 +10,5 @@ import java.util.List;
 public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, String> {
     List<KhuyenMai> findAll();
     KhuyenMai findByMa(String ma);
+    List<KhuyenMai> findAllByDeleted(int deleted);
 }
