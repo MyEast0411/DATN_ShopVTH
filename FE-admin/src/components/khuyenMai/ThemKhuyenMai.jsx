@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { Button } from "antd"; // Import from antd
-import SelectedTable2 from "../../common/table/khuyenMai/SelectedTable2";
 import { toast } from "react-toastify";
 import { DateTime } from "luxon";
 import { addKhuyenMai } from "../../api/khuyenMai/KhuyenMaiApi";
-import DataTableSanPham from "../../common/table/khuyenMai/DataTableSanPham";
 import {
   Dialog,
   DialogActions,
@@ -15,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Button as NextuiButton } from "@nextui-org/button";
 import { TbInfoTriangle } from "react-icons/tb";
+import TableAllSanPham from "../../common/tableNextUi/khuyenMai/TableAllSanPham";
 
 export default function ThemKhuyenMai() {
   const [ten, setTen] = useState("");
@@ -77,7 +76,7 @@ export default function ThemKhuyenMai() {
       setNgayBatDau("");
       setNgayKetThuc("");
       handleCloseAddConfirmation();
-      toast("🎉 Thêm thành công!")
+      toast("🎉 Thêm thành công!");
       chuyenTrang("/khuyen-mai");
     } catch (error) {
       console.error("Error adding KhuyenMai:", error);
@@ -88,8 +87,8 @@ export default function ThemKhuyenMai() {
 
   return (
     <>
-      <div className="grid grid-cols-8 gap-4 fixed ">
-        <div className="col-span-2">
+      <div className="grid grid-cols-3 gap-4 fixed ">
+        <div className="grid ">
           <form className="bg-slate-500 rounded">
             <h2 className="text-xl mb-10 font-bold text-gray-800">
               Thêm khuyến mại
@@ -194,7 +193,7 @@ export default function ThemKhuyenMai() {
           </form>
         </div>
         <div
-          className="pl-5 border-l-[2px] col-span-6 overflow-y-auto"
+          className="pl-5 border-l-[2px] col-span-2 overflow-y-auto"
           style={{
             borderColor: "#ccc",
             height: "80%",
@@ -208,13 +207,13 @@ export default function ThemKhuyenMai() {
             Sản phẩm
           </h2>
           <div className="">
-            <DataTableSanPham onProductSelect={handleProductSelection} />
+            <TableAllSanPham />
           </div>
-          <h2 className="text-xl mt-7 mb-1 font-bold text-gray-800">
+          <h2 className="text-xl mt-7 mb-1 mr-5 font-bold text-gray-800">
             Chi tiết sản phẩm
           </h2>
           <div className="">
-            <SelectedTable2 selectedProduct={selectedProduct} />
+            <TableAllSanPham />
           </div>
         </div>
 

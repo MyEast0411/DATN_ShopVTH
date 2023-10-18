@@ -33,13 +33,13 @@ const App = () => {
 
           <Route path="/edit-san-pham/:ma" element={<ChiTietSanPham />} />
           <Route path="/update-san-pham/:maSP" element={<DetailSanPham />} />
-
-          <Route path="/quan-ly-san-pham" element={<Build />} />
-          <Route path=":bID">
-            <Route path="product" />
-            <Route path="type" />
-            <Route path="de-giay" />
-            <Route path="mau-sac" />
+          <Route path="/quan-ly-san-pham" element={<Build />}>
+            <Route path=":bID">
+              <Route path="product" />
+              <Route path="type" />
+              <Route path="de-giay" />
+              <Route path="mau-sac" />
+            </Route>
           </Route>
 
           <Route path="/quan-ly-tai-khoan" element={<Build />}>

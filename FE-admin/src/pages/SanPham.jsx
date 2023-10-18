@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 
 //table
 import DataTableMa from "../small-component/Table/DataTableSanPham";
-// import DataTableMa from "../small-component/Table/DataTableSanPham";
+import TableAllSanPham from '../common/tableNextUi/sanPham/TableAllSanPham'
 
 //icon
 import { BiFilterAlt } from "react-icons/bi";
@@ -96,7 +96,7 @@ export default function SanPham() {
           }}
         >
           <div>
-          <DataTableMa />
+          <TableAllSanPham />
           </div>
         </div>
       </div>
