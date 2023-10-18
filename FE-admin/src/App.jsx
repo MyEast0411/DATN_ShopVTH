@@ -12,17 +12,21 @@ import "react-toastify/dist/ReactToastify.css";
 import ThemKhuyenMai from "./components/khuyenMai/ThemKhuyenMai";
 import ThemVoucher from "./components/voucher/ThemVoucher";
 import EditVoucher from "./components/voucher/EditVoucher";
+import DetailHoaDon from "./components/quanlyhoadon/DetailHoaDon";
 
 const App = () => {
   return (
     <RootLayout>
       <Routes>
         <Route path="/" element={<BanHangTaiQuay />} />
-        <Route path="/quan-ly-hoa-don" element={<QuanLyHoaDon />} />
+
         <Route path="/khuyen-mai" element={<KhuyenMai />} />
         <Route path="/voucher" element={<Voucher />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
+
+        <Route path="/detail-hoa-don/:id" element={<DetailHoaDon />} />
+        <Route path="/quan-ly-hoa-don" element={<QuanLyHoaDon />} />
 
         <Route path="/quan-ly-san-pham" element={<Build />}>
           <Route path=":bID">
