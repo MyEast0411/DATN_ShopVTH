@@ -19,7 +19,6 @@ import KhuyenMaiUpdate from "./components/khuyenMai/KhuyenMaiUpdate";
 
 const App = () => {
   return (
-<<<<<<< HEAD
     <NextUIProvider>
       <RootLayout>
         <Routes>
@@ -43,26 +42,6 @@ const App = () => {
               <Route path="de-giay" />
               <Route path="mau-sac" />
             </Route>
-=======
-    <RootLayout>
-      <Routes>
-        <Route path="/" element={<BanHangTaiQuay />} />
-        <Route path="/quan-ly-hoa-don" element={<QuanLyHoaDon />} />
-        <Route path="/khuyen-mai" element={<KhuyenMai />} />
-        <Route path="/voucher" element={<Voucher />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
-        <Route path="/them-khach-hang" element={<ThemKhachHang />} />
-        <Route path="/them-san-pham" element={<ThemSanPham />} />
-        <Route path="/edit-san-pham/:ma" element={<ChiTietSanPham />} />
-        <Route path="/update-san-pham/:maSP" element={<DetailSanPham />} />
-        <Route path="/quan-ly-san-pham" element={<Build />}>
-          <Route path=":bID">
-            <Route path="product" />
-            <Route path="type" />
-            <Route path="de-giay" />
-            <Route path="mau-sac" />
->>>>>>> e292bfef7864cf7134d30d2ee0ef6f647d32512d
           </Route>
 
           <Route path="/quan-ly-tai-khoan" element={<Build />}>

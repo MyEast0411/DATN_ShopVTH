@@ -111,7 +111,7 @@ const Sidebar = () => {
             overflow-hidden md:relative fixed
          h-screen "
          style={{
-          backgroundColor: "#F0EEED",
+          backgroundColor: "white",
           borderRight: "2px solid #ccc"
          }}
       >
