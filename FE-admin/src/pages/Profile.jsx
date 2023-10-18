@@ -31,7 +31,7 @@ const Profile = () => {
                 <h3 className="text-xl font-semibold leading-normal text-blueGray-700 mb-2">
                   Dong Lun`
                 </h3>
-                <p className="text-sm mb-2">nguyenvanhoi2k3@gmail.com</p>
+                <p className="text-sm mb-2">donglun0411@gmail.com</p>
                 <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
                   Hà Nội, Việt Nam
                 </div>

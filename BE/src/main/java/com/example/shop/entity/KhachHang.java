@@ -29,6 +29,12 @@ public class KhachHang {
     @Column(name = "so_dien_thoai")
     private String sdt;
 
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "cccd")
+    private String cccd;
+
     @Column(name = "gioi_tinh")
     private String gioiTinh;
 
