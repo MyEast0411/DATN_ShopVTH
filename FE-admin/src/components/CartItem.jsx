@@ -4,8 +4,10 @@ const Cart = () => {
   return (
     <div className=" bg-gray-100 pt-5">
       <div className="mx-auto w-full justify-center px-6 md:flex md:space-x-6 xl:px-0">
-        <div className="rounded-lg w-full overflow-y-auto"
-        style={{height: '500px'}}>
+        <div
+          className="rounded-lg w-full overflow-y-auto"
+          style={{ height: "500px" }}
+        >
           <CartItem
             imageUrl="https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
             name="Nike Air Max 2019"

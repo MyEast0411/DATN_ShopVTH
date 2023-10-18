@@ -22,4 +22,9 @@ public class HoaDonChiTietSẻviceImpl implements HoaDonChiTietService {
     public List<HoaDonChiTiet> getHDCT(String idHD) {
         return repository.getHDCT(idHD);
     }
+
+    @Override
+    public Boolean deleteHDCT(String idHD, String idSPCT) {
+        return repository.deleteHDCT(idHD, idSPCT);
+    }
 }
