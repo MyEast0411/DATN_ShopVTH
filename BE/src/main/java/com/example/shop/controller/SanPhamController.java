@@ -127,7 +127,6 @@ public class SanPhamController {
         Boolean check = false;
         for (SanPham x:
              sanPhamRepository.findAll()) {
-            System.out.println(list.size());
             if(x.getTen().equals(list.get(0).getTen())) {
                 sp.setId(x.getId());
                 check = true;
@@ -200,7 +199,6 @@ public class SanPhamController {
     @PutMapping("updateSPCT")
     ResponseEntity updateSPCT(@RequestBody SanPhamChiTiet sanPham) {
         try {
-            System.out.println(sanPham);
             repo.save(sanPham);
             return ResponseEntity.ok("Cập nhật thành công");
         }catch (Exception e) {

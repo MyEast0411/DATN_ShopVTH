@@ -23,17 +23,31 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { PlusIcon } from "../sanPham/PlusIcon";
-import { VerticalDotsIcon } from "../sanPham/VerticalDotsIcon";
-import { SearchIcon } from "../sanPham/SearchIcon";
-import { ChevronDownIcon } from "../sanPham/ChevronDownIcon";
-import { columns, statusOptions } from "./DataAllSanPham";
-import { capitalize } from "../sanPham/utils";
+import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
+import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
+import { ChevronDownIcon } from "../../tableNextUi/khuyenMai/ChevronDownIcon";
+import { capitalize } from "../../tableNextUi/khuyenMai/utils";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
-import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+const url = "http://localhost:8080/chi-tiet-san-pham";
+const columns = [
+  { name: "STT", uid: "stt", sortable: true },
+  { name: "Mã", uid: "ma", sortable: true },
+  { name: "Tên", uid: "ten", sortable: true },
+  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true },
+  { name: "Trạng thái", uid: "trangThai", sortable: true },
+  { name: "Hành Động", uid: "hanhDong" },
+];
+
+const statusOptions = [
+  { name: "Đang bán", uid: "Đang bán" },
+  { name: "Ngừng bán", uid: "Ngừng bán" },
+];
+
 
 const statusColorMap = {
   active: "success",
@@ -42,7 +56,6 @@ const statusColorMap = {
 };
 statusColorMap["Đang bán"] = "success";
 statusColorMap["Ngừng bán"] = "danger";
-const url = "http://localhost:8080/chi-tiet-san-pham";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
@@ -52,6 +65,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "trangThai",
   "hanhDong",
 ];
+
 export default function App() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
@@ -70,13 +84,12 @@ export default function App() {
     if (idToDelete) {
       await axios.delete(`http://localhost:8080/delete/${idToDelete}`)
         .then((response) => {
-          console.log(`Delete successful for row ID: ${idToDelete}`);
           toast("🎉 Xóa thành công");
+          cancelDelete();
         })
         .catch((error) => {
           toast("😢 Xóa thất bại");
         });
-
       cancelDelete();
     }
   };
@@ -93,7 +106,7 @@ export default function App() {
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
-  const [sanPhams, setSanPhams] = useState([]);
+  const [sanPhams, setSanPhams] = React.useState([]);
 
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
@@ -105,13 +118,13 @@ export default function App() {
           ma: item.ma,
           ten: item.ten_san_pham,
           soLuongTon: item.so_luong_ton,
-          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán"
+          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
         }));
         setSanPhams(updatedRows);
       } catch (error) {
         console.error("Lỗi khi gọi API: ", error);
       }
-    } 
+    }
     fetchChiTietSanPham();
   }, [sanPhams]);
 
@@ -127,16 +140,16 @@ export default function App() {
 
   const filteredItems = React.useMemo(() => {
     const filterText = filterValue.toLowerCase();
-    let filteredKhuyenMais = [...sanPhams];
+    let filteredSanPhams = [...sanPhams];
 
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredKhuyenMais = filteredKhuyenMais.filter((khuyenMai) =>
-        Array.from(statusFilter).includes(khuyenMai.trangThai)
+      filteredSanPhams = filteredSanPhams.filter((sanPham) =>
+        Array.from(statusFilter).includes(sanPham.trangThai)
       );
-      return filteredKhuyenMais;
+      return filteredSanPhams;
     }
 
     return sanPhams.filter((sanPham) =>
@@ -186,7 +199,7 @@ export default function App() {
             <Dropdown>
               <DropdownTrigger>
                 <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-1000" />
+                  <VerticalDotsIcon className="text-default-300" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
@@ -250,11 +263,6 @@ export default function App() {
           />
           {/* <Input type="datetime-local" label="Từ ngày" />
           <Input type="datetime-local" label="Đến ngày"/> */}
-          {/* <Link to={"/them-san-pham"}>
-              <Button color="primary" endContent={<PlusIcon />}>
-                Thêm mới
-              </Button>
-            </Link> */}
           <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -270,6 +278,7 @@ export default function App() {
                 aria-label="Table Columns"
                 closeOnSelect={false}
                 selectedKeys={statusFilter}
+                selectionMode="multiple"
                 onSelectionChange={setStatusFilter}
               >
                 {statusOptions.map((status) => (
@@ -303,7 +312,6 @@ export default function App() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -337,11 +345,11 @@ export default function App() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
+        {/* <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
-            : `${selectedKeys.size} sản phẩm đã được chọn`}
-        </span>
+            : `${selectedKeys.size} khyến mại đã được chọn`}
+        </span> */}
         <Pagination
           isCompact
           showControls
@@ -403,7 +411,7 @@ export default function App() {
           )}
         </TableHeader>
         <TableBody
-          emptyContent={"No data"}
+          emptyContent={"Không tìm thấy sản phẩm nào!"}
           items={sortedItems}
         >
           {(item) => (
@@ -436,14 +444,17 @@ export default function App() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc muốn xóa sản phẩm này?
+            Bạn có chắc muốn xóa Sản phẩm này?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelDelete} color="warning">
             Hủy
           </Button>
-          <Button color="primary" onClick={confirmDelete}>
+          <Button
+            color="primary"
+            onClick={confirmDelete}
+          >
             Vẫn xóa
           </Button>
         </DialogActions>
