@@ -6,7 +6,6 @@ import { DateTime } from "luxon";
 import { addKhuyenMai } from "../../api/khuyenMai/KhuyenMaiApi";
 import DataTableSanPham from "../../common/table/khuyenMai/DataTableSanPham";
 import {
-  Button as ButtonMaterial,
   Dialog,
   DialogActions,
   DialogContent,
@@ -14,6 +13,8 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Button as NextuiButton } from "@nextui-org/button";
+import { TbInfoTriangle } from "react-icons/tb";
 
 export default function ThemKhuyenMai() {
   const [ten, setTen] = useState("");
@@ -210,30 +211,47 @@ export default function ThemKhuyenMai() {
             Sản phẩm
           </h2>
           <div className="">
-          <DataTableSanPham onProductSelect={handleProductSelection} />
+            <DataTableSanPham onProductSelect={handleProductSelection} />
           </div>
           <h2 className="text-xl mt-7 mb-1 font-bold text-gray-800">
             Chi tiết sản phẩm
           </h2>
           <div className="">
-          <SelectedTable2 selectedProduct={selectedProduct} />
+            <SelectedTable2 selectedProduct={selectedProduct} />
           </div>
         </div>
 
         <Dialog open={addConfirmationOpen} onClose={handleCloseAddConfirmation}>
-          <DialogTitle>Xác nhận thêm</DialogTitle>
+          <DialogTitle>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: "15px",
+              }}
+            >
+              <TbInfoTriangle
+                className="mr-2"
+                style={{
+                  color: "red",
+                  fontSize: "25px",
+                }}
+              />
+              <span>Xác nhận thêm</span>
+            </div>
+          </DialogTitle>
           <DialogContent>
             <DialogContentText>
               Bạn có chắc muốn thêm khuyến mại này?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseAddConfirmation} color="primary">
+            <NextuiButton onClick={handleCloseAddConfirmation} color="warning">
               Hủy
-            </Button>
-            <Button onClick={confirmAdd} color="primary">
+            </NextuiButton>
+            <NextuiButton onClick={confirmAdd} color="success">
               Vẫn thêm
-            </Button>
+            </NextuiButton>
           </DialogActions>
         </Dialog>
       </div>

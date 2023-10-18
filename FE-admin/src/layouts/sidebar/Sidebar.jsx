@@ -111,8 +111,8 @@ const Sidebar = () => {
             overflow-hidden md:relative fixed
          h-screen "
          style={{
-          backgroundColor: "#DDE6ED",
-          borderRight: "2px solid #ADC4CE"
+          backgroundColor: "#F0EEED",
+          borderRight: "2px solid #ccc"
          }}
       >
         <div className="flex items-center font-medium border-b border-slate-300">
