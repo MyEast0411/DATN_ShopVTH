@@ -1,10 +1,9 @@
 package com.example.shop.service.impl;
 
-import com.example.shop.entity.HinhThucThanhToan;
+import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.HoaDonChiTiet;
-import com.example.shop.repository.HinhThucThanhToanRepository;
 import com.example.shop.repository.HoaDonChiTietRepository;
-import com.example.shop.service.HinhThucThanhToanService;
+import com.example.shop.repository.HoaDonRepository;
 import com.example.shop.service.HoaDonChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,10 +11,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class HoaDonChiTietSẻviceImpl implements HoaDonChiTietService {
+public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     @Autowired
-    private HoaDonChiTietRepository repository
-            ;
+    private HoaDonChiTietRepository repository;
+
+
 
 
     @Override
@@ -24,7 +24,12 @@ public class HoaDonChiTietSẻviceImpl implements HoaDonChiTietService {
     }
 
     @Override
-    public Boolean deleteHDCT(String idHD, String idSPCT) {
-        return repository.deleteHDCT(idHD, idSPCT);
+    public void deleteHDCT(String idHD, String idSPCT) {
+         repository.deleteHDCT(idHD, idSPCT);
+
+
+
+
+
     }
 }

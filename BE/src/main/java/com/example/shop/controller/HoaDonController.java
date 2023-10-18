@@ -45,7 +45,11 @@ public class HoaDonController {
     ){
 //        Pageable pageable = PageRequest.of(numPage , 3);
 //        Page<HoaDon> page = hoaDonService.getHDs(trangThai , pageable);
-        List<HoaDon> page = hoaDonService.getHDs(trangThai);
+        List<HoaDon> page = hoaDonService.getHoaDons();
+        if(trangThai !=-1){
+            page   = hoaDonService.getHDs(trangThai);
+        }
+
         return ResponseEntity.ok(page);
     }
 

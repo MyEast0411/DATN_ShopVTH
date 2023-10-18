@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface HoaDonChiTietService {
     List<HoaDonChiTiet> getHDCT(String idHD);
+    void deleteHDCT(String idHD , String idSPCT) ;
 }
