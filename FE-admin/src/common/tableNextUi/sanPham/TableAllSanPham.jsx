@@ -66,24 +66,20 @@ export default function App() {
     setDeleteConfirmationOpen(false);
   };
 
-  // const confirmDelete = () => {
-  //   if (idToDelete) {
-  //     deleteKhuyenMai(idToDelete)
-  //       .then((response) => {
-  //         console.log(`Delete successful for row ID: ${idToDelete}`);
-  //         toast("🎉 Xóa thành công");
-  //         // Remove the deleted item from the state
-  //         setKhuyenMais((prevKhuyenMais) =>
-  //           prevKhuyenMais.filter((item) => item.id !== idToDelete)
-  //         );
-  //       })
-  //       .catch((error) => {
-  //         console.error(`Error deleting record for ID: ${idToDelete}`, error);
-  //       });
+  const confirmDelete =async () => {
+    if (idToDelete) {
+      await axios.delete(`http://localhost:8080/delete/${idToDelete}`)
+        .then((response) => {
+          console.log(`Delete successful for row ID: ${idToDelete}`);
+          toast("🎉 Xóa thành công");
+        })
+        .catch((error) => {
+          toast("😢 Xóa thất bại");
+        });
 
-  //     cancelDelete(); // Close the dialog after deletion
-  //   }
-  // };
+      cancelDelete();
+    }
+  };
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -169,15 +165,15 @@ export default function App() {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((khuyenMai, columnKey) => {
-    const cellValue = khuyenMai[columnKey];
+  const renderCell = React.useCallback((sanPham, columnKey) => {
+    const cellValue = sanPham[columnKey];
 
     switch (columnKey) {
       case "trangThai":
         return (
           <Chip
             // className="capitalize"
-            color={statusColorMap[khuyenMai.trangThai]}
+            color={statusColorMap[sanPham.trangThai]}
             size="sm"
             variant="flat"
           >
@@ -196,7 +192,7 @@ export default function App() {
               <DropdownMenu>
                 <DropdownItem>Xem</DropdownItem>
                 <DropdownItem>Chỉnh sửa</DropdownItem>
-                <DropdownItem onClick={() => handleDelete(khuyenMai.id)}>
+                <DropdownItem onClick={() => handleDelete(sanPham.ma)}>
                   Xóa
                 </DropdownItem>
               </DropdownMenu>
@@ -447,7 +443,7 @@ export default function App() {
           <Button onClick={cancelDelete} color="warning">
             Hủy
           </Button>
-          <Button color="primary">
+          <Button color="primary" onClick={confirmDelete}>
             Vẫn xóa
           </Button>
         </DialogActions>

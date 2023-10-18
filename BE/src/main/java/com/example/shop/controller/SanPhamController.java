@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -106,6 +107,7 @@ public class SanPhamController {
     }
     @PostMapping("/san-pham/add")
     ResponseEntity add(@RequestBody List<Object[]> sanPham) {
+
         List<ChiTietSanPhamVM> list = new ArrayList<>();
         List<SanPhamChiTiet> lst = new ArrayList<>();
         for (Object[] row : sanPham) {
@@ -125,6 +127,7 @@ public class SanPhamController {
         Boolean check = false;
         for (SanPham x:
              sanPhamRepository.findAll()) {
+            System.out.println(list.size());
             if(x.getTen().equals(list.get(0).getTen())) {
                 sp.setId(x.getId());
                 check = true;
