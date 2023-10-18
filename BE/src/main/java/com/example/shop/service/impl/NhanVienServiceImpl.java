@@ -20,16 +20,16 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public NhanVien getById(UUID id) {
+    public NhanVien getById(String id) {
         NhanVien nhanVien = nhanVienRepository.findById(id).orElse(null);
-
         return nhanVien;
     }
 
     @Override
-    public void delete(UUID id) {
+    public void delete(String id) {
         nhanVienRepository.deleteById(id);
     }
+
 
     @Override
     public NhanVien add(NhanVien nhanVien) {

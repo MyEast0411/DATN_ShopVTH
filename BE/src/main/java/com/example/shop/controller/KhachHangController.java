@@ -25,27 +25,34 @@ public class KhachHangController {
     private KhachHangService khachHangService;
 
     @GetMapping("/hien-thi")
-    public ArrayList<KhachHang> hienthi(){
+    public ArrayList<KhachHang> hienthi() {
         return khachHangService.getAll();
     }
 
     @GetMapping("/detail/{id}")
-    public KhachHang detail(@PathVariable("id") UUID id){
+    public KhachHang detail(@PathVariable("id") String id) {
         return khachHangService.getById(id);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void  delete(@PathVariable("id")UUID id){
+    public void delete(@PathVariable("id") String id) {
         khachHangService.delete(id);
     }
 
     @PostMapping("/add")
-    public KhachHang add(@RequestBody KhachHang khachHang){
+    public KhachHang add(@RequestBody KhachHang khachHang) {
         return khachHangService.add(khachHang);
     }
-    @PutMapping("/update/{id}")
-    public KhachHang update(@RequestBody  KhachHang khachHang,@PathVariable UUID id){
 
+    @PutMapping("/update/{ids}")
+    public KhachHang update(@RequestBody KhachHang khachHang, @PathVariable String ids) {
+        khachHang.setIds(ids);
+        return khachHangService.update(khachHang);
+    }
+
+    @PutMapping("/deleteSoft/{id}")
+    public KhachHang deleteSoft(@PathVariable("id") KhachHang khachHang) {
+        khachHang.setDeleted(1);
         return khachHangService.update(khachHang);
     }
 }

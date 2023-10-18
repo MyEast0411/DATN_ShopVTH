@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public interface DiaChiService {
     ArrayList<DiaChi> getAll();
-    DiaChi getById(UUID id);
+    DiaChi getById(String id);
 
-    void delete(UUID id);
+    void delete(String id);
     DiaChi add(DiaChi diaChi);
     DiaChi update(DiaChi diaChi);
 }

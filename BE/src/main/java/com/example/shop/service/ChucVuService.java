@@ -9,9 +9,9 @@ import java.util.UUID;
 
 public interface ChucVuService {
     ArrayList<ChucVu> getAll();
-    ChucVu getById(UUID id);
+    ChucVu getById(String id);
 
-    void delete(UUID id);
+    void delete(String id);
     ChucVu add(ChucVu chucVu);
     ChucVu update(ChucVu chucVu);
 }

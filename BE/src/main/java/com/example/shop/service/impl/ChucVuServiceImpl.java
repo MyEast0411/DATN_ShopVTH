@@ -21,15 +21,16 @@ public class ChucVuServiceImpl implements ChucVuService {
     }
 
     @Override
-    public ChucVu getById(UUID id) {
+    public ChucVu getById(String id) {
         ChucVu chucVu = chucVuRepository.findById(id).orElse(null);
         return chucVu;
     }
 
     @Override
-    public void delete(UUID id) {
-        chucVuRepository.deleteById(id);
+    public void delete(String id) {
+chucVuRepository.deleteById(id);
     }
+
 
     @Override
     public ChucVu add(ChucVu chucVu) {

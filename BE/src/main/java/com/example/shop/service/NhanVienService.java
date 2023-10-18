@@ -9,9 +9,9 @@ import java.util.UUID;
 
 public interface NhanVienService {
     ArrayList<NhanVien> getAll();
-    NhanVien getById(UUID id);
+    NhanVien getById(String id);
 
-    void delete(UUID id);
+    void delete(String id);
     NhanVien add(NhanVien nhanVien);
     NhanVien update(NhanVien nhanVien);
 }

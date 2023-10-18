@@ -32,12 +32,12 @@ public class ChucVuController {
     }
 
     @GetMapping("/detail/{id}")
-    public ChucVu detail(@PathVariable("id") UUID id){
+    public ChucVu detail(@PathVariable("id") String id){
         return chucVuService.getById(id);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void  delete(@PathVariable("id")UUID id){
+    public void  delete(@PathVariable("id")String id){
         chucVuService.delete(id);
     }
 
@@ -46,7 +46,7 @@ public class ChucVuController {
         return chucVuService.add(chucVu);
     }
     @PutMapping("/update/{id}")
-    public ChucVu update(@RequestBody  ChucVu chucVu,@PathVariable UUID id){
+    public ChucVu update(@RequestBody  ChucVu chucVu,@PathVariable String id){
 
         return chucVuService.update(chucVu);
     }

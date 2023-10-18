@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 @Repository
-public interface DiaChiRepository extends JpaRepository<DiaChi, UUID> {
+public interface DiaChiRepository extends JpaRepository<DiaChi, String> {
 }

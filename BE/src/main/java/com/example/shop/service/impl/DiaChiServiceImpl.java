@@ -20,15 +20,16 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
-    public DiaChi getById(UUID id) {
+    public DiaChi getById(String id) {
         DiaChi diaChi = diaChiRepository.findById(id).orElse(null);
         return diaChi;
     }
 
     @Override
-    public void delete(UUID id) {
+    public void delete(String id) {
         diaChiRepository.deleteById(id);
     }
+
 
     @Override
     public DiaChi add(DiaChi diaChi) {

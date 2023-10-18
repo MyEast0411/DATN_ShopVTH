@@ -31,12 +31,12 @@ public class DiaChiController {
     }
 
     @GetMapping("/detail/{id}")
-    public DiaChi detail(@PathVariable("id")UUID id){
+    public DiaChi detail(@PathVariable("ids")String  id){
         return diaChiService.getById(id);
     }
 
     @DeleteMapping ("/delete/{id}")
-    public void  delete(@PathVariable("id")UUID id){
+    public void  delete(@PathVariable("ids")String id){
        diaChiService.delete(id);
     }
 

@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
-@RequestMapping("/nhan_vien")
+@RequestMapping("/nhan-vien")
 public class NhanVienController {
     @Autowired
     private NhanVienService nhanVienService;
@@ -29,13 +29,13 @@ public class NhanVienController {
         return nhanVienService.getAll();
     }
 
-    @GetMapping("/detail/{id}")
-    public NhanVien detail(@PathVariable("id") UUID id){
+    @GetMapping("/detail/{ids}")
+    public NhanVien detail(@PathVariable("ids") String id){
         return nhanVienService.getById(id);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void  delete(@PathVariable("id")UUID id){
+    @DeleteMapping("/delete/{ids}")
+    public void  delete(@PathVariable("ids")String id){
         nhanVienService.delete(id);
     }
 
@@ -43,9 +43,9 @@ public class NhanVienController {
     public NhanVien add(@RequestBody NhanVien nhanVien){
         return nhanVienService.add(nhanVien);
     }
-    @PutMapping("/update/{id}")
-    public NhanVien update(@RequestBody  NhanVien nhanVien,@PathVariable UUID id){
-
+    @PutMapping("/update/{ids}")
+    public NhanVien update(@RequestBody  NhanVien nhanVien, @PathVariable String ids){
+            nhanVien.setIds(ids);
         return nhanVienService.update(nhanVien);
     }
 }

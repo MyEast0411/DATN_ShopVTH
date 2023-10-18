@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public interface KhachHangService {
     ArrayList<KhachHang> getAll();
-    KhachHang getById(UUID id);
+    KhachHang getById(String id);
 
-    void delete(UUID id);
+    void delete(String id);
     KhachHang add(KhachHang khachHang);
     KhachHang update(KhachHang khachHang);
 }

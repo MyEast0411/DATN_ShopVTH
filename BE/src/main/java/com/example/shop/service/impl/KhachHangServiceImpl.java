@@ -16,19 +16,21 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public ArrayList<KhachHang> getAll() {
-        return (ArrayList<KhachHang>) khachHangRepository.findAll();
+        return (ArrayList<KhachHang>) khachHangRepository.getKhachHangsByDeleted();
     }
 
     @Override
-    public KhachHang getById(UUID id) {
+    public KhachHang getById(String id) {
         KhachHang khachHang = khachHangRepository.findById(id).orElse(null);
+
         return khachHang;
     }
 
     @Override
-    public void delete(UUID id) {
+    public void delete(String id) {
         khachHangRepository.deleteById(id);
     }
+
 
     @Override
     public KhachHang add(KhachHang khachHang) {
