@@ -70,6 +70,7 @@ const KhuyenMai = () => {
           </div>
         </div> */}
 
+
         <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex  items-center">
           <HiOutlineClipboardList />
           <p className="ml-2 mt-1"> Danh sách khuyến mại</p>

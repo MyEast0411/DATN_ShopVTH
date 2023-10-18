@@ -6,7 +6,7 @@ function RootLayout({ children }) {
       <Sidebar />
       <main className="w-full flex-1 mx-auto p-5 overflow-y-auto"
       style={{
-        backgroundColor:"white",
+        backgroundColor:"#F0F0F0",
         width: "100%",
       }}
       >{children}</main>
