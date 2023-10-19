@@ -23,36 +23,32 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { PlusIcon } from "../../../common/tableNextUi/khuyenMai/PlusIcon";
-import { VerticalDotsIcon } from "../../../common/tableNextUi/khuyenMai/VerticalDotsIcon";
-import { SearchIcon } from "../../../common/tableNextUi/khuyenMai/SearchIcon";
-import { ChevronDownIcon } from "../../../common/tableNextUi/khuyenMai/ChevronDownIcon";
-import { capitalize } from "../../../common/tableNextUi/khuyenMai/utils";
-import {
-  getAllKhuyenMai,
-  deleteKhuyenMai,
-} from "../../../api/khuyenMai/KhuyenMaiApi";
+import { PlusIcon } from "../../tableNextUi/khuyenMai/PlusIcon";
+import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
+import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
+import { ChevronDownIcon } from "../../tableNextUi/khuyenMai/ChevronDownIcon";
+import { capitalize } from "../../tableNextUi/khuyenMai/utils";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
+import axios from "axios";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
+const url = "http://localhost:8080/chi-tiet-san-pham";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "Mã", uid: "ma", sortable: true },
-  { name: "Tên", uid: "ten", sortable: true },
-  { name: "Giá trị giảm (%)", uid: "giaTriPhanTram", sortable: true },
-  { name: "Ngày bắt đầu", uid: "ngayBatDau", sortable: true },
-  { name: "Ngày kết thúc", uid: "ngayKetThuc", sortable: true },
+  { name: "Ảnh", uid: "anh" },
+  { name: "Tên", uid: "ma", sortable: true },
+  { name: "Kích thước", uid: "kichThuoc", sortable: true },
+  { name: "Màu", uid: "mau" },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
-  { name: "Hành Động", uid: "hanhDong" },
+  { name: "Tình trạng", uid: "tinhTrang" },
 ];
 
 const statusOptions = [
-  { name: "Đang diễn ra", uid: "Đang diễn ra" },
-  { name: "Đã kết thúc", uid: "Đã kết thúc" },
-  { name: "Sắp diễn ra", uid: "Sắp diễn ra" },
+  { name: "Đang bán", uid: "Đang bán" },
+  { name: "Ngừng bán", uid: "Ngừng bán" },
 ];
 
 const formateDateVietNam = (dateTimeStr) => {
@@ -65,54 +61,20 @@ const statusColorMap = {
   paused: "danger",
   incoming: "warning",
 };
-statusColorMap["Sắp diễn ra"] = "warning";
-statusColorMap["Đang diễn ra"] = "success";
-statusColorMap["Đã kết thúc"] = "danger";
+statusColorMap["Đang bán"] = "success";
+statusColorMap["Ngừng bán"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
-  "ma",
+  "anh",
   "ten",
-  "giaTriPhanTram",
-  "ngayBatDau",
-  "ngayKetThuc",
+  "kichThuoc",
+  "mau",
   "trangThai",
-  "hanhDong",
+  "tinhTrang",
 ];
 
 export default function App() {
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
-  const [idToDelete, setIdToDelete] = useState(null);
-
-  const handleDelete = (idToDelete) => {
-    setIdToDelete(idToDelete);
-    setDeleteConfirmationOpen(true);
-  };
-
-  const cancelDelete = () => {
-    setIdToDelete(null);
-    setDeleteConfirmationOpen(false);
-  };
-
-  const confirmDelete = () => {
-    if (idToDelete) {
-      deleteKhuyenMai(idToDelete)
-        .then((response) => {
-          console.log(`Delete successful for row ID: ${idToDelete}`);
-          toast("🎉 Xóa thành công");
-          // Remove the deleted item from the state
-          setKhuyenMais((prevKhuyenMais) =>
-            prevKhuyenMais.filter((item) => item.id !== idToDelete)
-          );
-        })
-        .catch((error) => {
-          console.error(`Error deleting record for ID: ${idToDelete}`, error);
-        });
-
-      cancelDelete(); // Close the dialog after deletion
-    }
-  };
-
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -125,27 +87,27 @@ export default function App() {
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
-  const [khuyenMais, setKhuyenMais] = useState([]);
+  const [chiTietSanPhams, setChiTietSanPhams] = React.useState([]);
 
-  useEffect(() => {
-    async function fetchKhuyenMais() {
-      try {
-        const data = await getAllKhuyenMai();
-
-        const khuyenMaisFormatted = data.map((khuyenMai, index) => ({
-          ...khuyenMai,
-          stt: index + 1,
-          ngayBatDau: formateDateVietNam(khuyenMai.ngayBatDau),
-          ngayKetThuc: formateDateVietNam(khuyenMai.ngayKetThuc),
-        }));
-
-        setKhuyenMais(khuyenMaisFormatted);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
-    }
-    fetchKhuyenMais();
-  }, [khuyenMais]);
+  //   React.useEffect(() => {
+  //     async function fetchChiTietSanPham() {
+  //       try {
+  //         const response = await axios.get(url);
+  //         const updatedRows = response.data.map((item, index) => ({
+  //           id: index + 1,
+  //           stt: index + 1,
+  //           ma: item.ma,
+  //           ten: item.ten_san_pham,
+  //           soLuongTon: item.so_luong_ton,
+  //           trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
+  //         }));
+  //         setSanPhams(updatedRows);
+  //       } catch (error) {
+  //         console.error("Lỗi khi gọi API: ", error);
+  //       }
+  //     }
+  //     fetchChiTietSanPham();
+  //   }, [sanPhams]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -159,24 +121,25 @@ export default function App() {
 
   const filteredItems = React.useMemo(() => {
     const filterText = filterValue.toLowerCase();
-    let filteredKhuyenMais = [...khuyenMais];
+    let filteredChiTietSanPhams = [...chiTietSanPhams];
 
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredKhuyenMais = filteredKhuyenMais.filter((khuyenMai) =>
-        Array.from(statusFilter).includes(khuyenMai.trangThai)
+      filteredChiTietSanPhams = filteredChiTietSanPhams.filter(
+        (chiTietSanPham) =>
+          Array.from(statusFilter).includes(chiTietSanPham.trangThai)
       );
-      return filteredKhuyenMais;
+      return filteredChiTietSanPhams;
     }
 
-    return khuyenMais.filter((khuyenMai) =>
-      Object.values(khuyenMai).some((value) =>
+    return chiTietSanPhams.filter((chiTietSanPham) =>
+      Object.values(chiTietSanPham).some((value) =>
         String(value).toLowerCase().includes(filterText)
       )
     );
-  }, [khuyenMais, filterValue, statusFilter]);
+  }, [chiTietSanPhams, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -197,15 +160,15 @@ export default function App() {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((khuyenMai, columnKey) => {
-    const cellValue = khuyenMai[columnKey];
+  const renderCell = React.useCallback((chiTietSanPham, columnKey) => {
+    const cellValue = chiTietSanPham[columnKey];
 
     switch (columnKey) {
       case "trangThai":
         return (
           <Chip
             // className="capitalize"
-            color={statusColorMap[khuyenMai.trangThai]}
+            color={statusColorMap[chiTietSanPham.trangThai]}
             size="sm"
             variant="flat"
           >
@@ -223,18 +186,6 @@ export default function App() {
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem>Xem</DropdownItem>
-
-                <DropdownItem>
-                  <Link
-                    to={`/them-khuyen-mai/${khuyenMai.id}`}
-                    style={{ display: "block" }}
-                  >
-                    Chỉnh sửa
-                  </Link>
-                </DropdownItem>
-                <DropdownItem onClick={() => handleDelete(khuyenMai.id)}>
-                  Xóa
-                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -343,7 +294,7 @@ export default function App() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Tổng {khuyenMais.length} khuyến mại
+            Tổng {chiTietSanPhams.length} sản phẩm chi tiết
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
@@ -364,7 +315,7 @@ export default function App() {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    khuyenMais.length,
+    chiTietSanPhams.length,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -372,11 +323,11 @@ export default function App() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        {/* <span className="w-[30%] text-small text-default-400">
+        <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
             : `${selectedKeys.size} khyến mại đã được chọn`}
-        </span> */}
+        </span>
         <Pagination
           isCompact
           showControls
@@ -420,7 +371,7 @@ export default function App() {
           wrapper: "max-h-[382px]",
         }}
         selectedKeys={selectedKeys}
-        // selectionMode="multiple"
+        selectionMode="multiple"
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
@@ -439,7 +390,7 @@ export default function App() {
           )}
         </TableHeader>
         <TableBody
-          emptyContent={"Không tìm thấy khuyến mại"}
+          emptyContent={"Không tìm thấy sản phẩm nào!"}
           items={sortedItems}
         >
           {(item) => (
@@ -451,39 +402,6 @@ export default function App() {
           )}
         </TableBody>
       </Table>
-      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
-        <DialogTitle>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "15px",
-            }}
-          >
-            <TbInfoTriangle
-              className="mr-2"
-              style={{
-                color: "red",
-                fontSize: "25px",
-              }}
-            />
-            <span>Xác nhận xóa</span>
-          </div>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn xóa khuyến mại này?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} color="warning">
-            Hủy
-          </Button>
-          <Button onClick={confirmDelete} color="primary">
-            Vẫn xóa
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 }

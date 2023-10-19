@@ -7,7 +7,6 @@ import Voucher from "./pages/Voucher";
 import KhuyenMai from "./pages/KhuyenMai";
 import Profile from "./pages/Profile";
 import { NextUIProvider } from "@nextui-org/react";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ThemKhuyenMai from "./components/khuyenMai/ThemKhuyenMai";
@@ -15,7 +14,6 @@ import ThemKhachHang from "./components/khachHang/ThemKhachHang";
 import ThemSanPham from "./components/sanPham/ThemSanPham";
 import ChiTietSanPham from "./components/sanPham/ChiTietSanPham";
 import DetailSanPham from "./components/sanPham/DetailSanPham";
-
 const App = () => {
   return (
     <NextUIProvider>
@@ -28,6 +26,7 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
 
           <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
+          <Route path="/them-khuyen-mai/:idKM" element={<ThemKhuyenMai />} />
           <Route path="/them-khach-hang" element={<ThemKhachHang />} />
           <Route path="/them-san-pham" element={<ThemSanPham />} />
 

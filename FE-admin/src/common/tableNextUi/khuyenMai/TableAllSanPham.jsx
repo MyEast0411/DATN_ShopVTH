@@ -50,11 +50,6 @@ const statusOptions = [
   { name: "Ngừng bán", uid: "Ngừng bán" },
 ];
 
-const formateDateVietNam = (dateTimeStr) => {
-  const vietNamTime = DateTime.fromISO(dateTimeStr, { zone: "utc" });
-  return vietNamTime.toFormat("dd/MM/yyyy HH:mm");
-};
-
 const statusColorMap = {
   active: "success",
   paused: "danger",
@@ -63,48 +58,9 @@ const statusColorMap = {
 statusColorMap["Đang bán"] = "success";
 statusColorMap["Ngừng bán"] = "danger";
 
-const INITIAL_VISIBLE_COLUMNS = [
-  "stt",
-  "ma",
-  "ten",
-  "soLuongTon",
-  "trangThai",
-  "hanhDong",
-];
+const INITIAL_VISIBLE_COLUMNS = ["stt", "ma", "ten", "trangThai", "hanhDong"];
 
 export default function App() {
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
-  const [idToDelete, setIdToDelete] = useState(null);
-
-  const handleDelete = (idToDelete) => {
-    setIdToDelete(idToDelete);
-    setDeleteConfirmationOpen(true);
-  };
-
-  const cancelDelete = () => {
-    setIdToDelete(null);
-    setDeleteConfirmationOpen(false);
-  };
-
-  // const confirmDelete = () => {
-  //   if (idToDelete) {
-  //     deleteKhuyenMai(idToDelete)
-  //       .then((response) => {
-  //         console.log(`Delete successful for row ID: ${idToDelete}`);
-  //         toast("🎉 Xóa thành công");
-  //         // Remove the deleted item from the state
-  //         setKhuyenMais((prevKhuyenMais) =>
-  //           prevKhuyenMais.filter((item) => item.id !== idToDelete)
-  //         );
-  //       })
-  //       .catch((error) => {
-  //         console.error(`Error deleting record for ID: ${idToDelete}`, error);
-  //       });
-
-  //     cancelDelete(); // Close the dialog after deletion
-  //   }
-  // };
-
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -435,42 +391,6 @@ export default function App() {
           )}
         </TableBody>
       </Table>
-      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
-        <DialogTitle>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "15px",
-            }}
-          >
-            <TbInfoTriangle
-              className="mr-2"
-              style={{
-                color: "red",
-                fontSize: "25px",
-              }}
-            />
-            <span>Xác nhận xóa</span>
-          </div>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn xóa Sản phẩm này?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} color="warning">
-            Hủy
-          </Button>
-          <Button
-            color="primary"
-            // onClick={confirmDelete}
-          >
-            Vẫn xóa
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 }
