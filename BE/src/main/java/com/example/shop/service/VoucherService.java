@@ -9,9 +9,11 @@ import java.util.List;
 
 @Service
 public interface VoucherService {
-    Page<Voucher> getVouchers(Pageable pageable);
+    List<Voucher> getVouchers();
+    List<Voucher> getVouchers(int deleted);
     Voucher getVoucher(String id);
     Voucher addVoucher(Voucher voucher);
     Voucher updateVoucher(Voucher voucher);
+
     Boolean deleteVoucher(Voucher voucher);
 }

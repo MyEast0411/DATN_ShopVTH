@@ -32,11 +32,12 @@ public class VoucherController {
     @Autowired
     private VoucherService voucherService;
     @GetMapping("getVouchers")
-    public ResponseEntity<Page<Voucher>> getVouchers(
+    public ResponseEntity<List<Voucher>> getVouchers(
             @RequestParam(name = "page" , defaultValue = "0")Integer numPage
     ){
-        Pageable pageable = PageRequest.of(numPage , 3);
-        Page<Voucher> page = voucherService.getVouchers(pageable);
+
+//        List<Voucher> page = voucherService.getVouchers();
+       List<Voucher> page = voucherService.getVouchers(0);
         return ResponseEntity.ok(page);
     }
 
@@ -73,18 +74,39 @@ public class VoucherController {
 
     }
 
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> deleteVoucher(@PathVariable("id")String id){
-        String mess = "";
-        Voucher voucher = voucherService.getVoucher(id);
-        if(voucher == null){
-            mess = "Not find voucher with " + id;
-
-        }else{
-            Boolean kq = voucherService.deleteVoucher(voucher);
-            mess = kq? "Delete success":"Delete fail";
+    @PutMapping("update-trang-thai/{id}")
+    public ResponseEntity<Voucher> updateVoucher(
+            @PathVariable("id")String id
+    ) throws Exception {
+        try{
+            Voucher voucher1 = voucherService.getVoucher(id);
+            if (voucher1 != null){
+                voucher1.setTrangThai(voucher1.getTrangThai()==1?0:1);
+                Voucher voucherAdd = voucherService.updateVoucher(voucher1);
+                return new ResponseEntity<>(voucherAdd , HttpStatus.CREATED);
+            }else{
+                throw new Exception("khong co id" + id);
+            }
+        }catch (Exception exception){
+            return null;
         }
-        System.out.println(mess);
-        return new ResponseEntity(mess , HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<Voucher> deleteVoucher(@PathVariable("id")String id){
+        try{
+            Voucher voucher1 = voucherService.getVoucher(id);
+            if (voucher1 != null){
+                voucher1.setDeleted(1);
+                Voucher voucherAdd = voucherService.updateVoucher(voucher1);
+                return new ResponseEntity<>(voucherAdd , HttpStatus.CREATED);
+            }else{
+                throw new Exception("khong co id" + id);
+            }
+        }catch (Exception exception){
+            return new ResponseEntity(null , HttpStatus.NOT_FOUND);
+        }
+//        return new ResponseEntity(null , HttpStatus.OK);
     }
 }

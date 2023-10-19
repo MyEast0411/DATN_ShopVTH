@@ -42,8 +42,6 @@ public class HoaDonChiTietController {
 //        Boolean kq = true;
         try {
             serviceHDCT.deleteHDCT(idHD , idSPCT);
-            // cập nhật lại tong tien
-            // get HoaDon
             HoaDon hoaDon = hoaDonService.getHoaDon(idHD);
             List<HoaDonChiTiet> list = serviceHDCT.getHDCT(idHD);
             double tongTien = 0;

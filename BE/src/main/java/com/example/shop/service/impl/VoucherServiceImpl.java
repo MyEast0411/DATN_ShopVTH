@@ -22,8 +22,13 @@ public class VoucherServiceImpl implements VoucherService {
 
 
     @Override
-    public Page<Voucher> getVouchers(Pageable pageable) {
-        return voucherRepository.findAll(pageable);
+    public List<Voucher> getVouchers() {
+        return voucherRepository.findAll();
+    }
+
+    @Override
+    public List<Voucher> getVouchers(int deleted) {
+        return voucherRepository.getVoucherByDeleted(0);
     }
 
     @Override
@@ -40,6 +45,7 @@ public class VoucherServiceImpl implements VoucherService {
     public Voucher updateVoucher(Voucher voucher) {
         return voucherRepository.save(voucher);
     }
+
 
     @Override
     public Boolean deleteVoucher(Voucher voucher) {

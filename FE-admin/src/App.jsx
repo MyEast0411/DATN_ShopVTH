@@ -10,9 +10,10 @@ import Profile from "./pages/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ThemKhuyenMai from "./components/khuyenMai/ThemKhuyenMai";
-import ThemVoucher from "./components/voucher/ThemVoucher";
 import EditVoucher from "./components/voucher/EditVoucher";
 import DetailHoaDon from "./components/quanlyhoadon/DetailHoaDon";
+import DetailVoucher from "./components/voucher/DetailVoucher";
+import AddVoucher from "./components/voucher/AddVoucher";
 
 const App = () => {
   return (
@@ -21,10 +22,15 @@ const App = () => {
         <Route path="/" element={<BanHangTaiQuay />} />
 
         <Route path="/khuyen-mai" element={<KhuyenMai />} />
-        <Route path="/voucher" element={<Voucher />} />
+
         <Route path="/profile" element={<Profile />} />
         <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
 
+        <Route path="/add-voucher" element={<AddVoucher />} />
+        <Route path="/eidt-voucher/:id" element={<EditVoucher />} />
+        <Route path="/detail-voucher/:id" element={<DetailVoucher />} />
+
+        <Route path="/voucher" element={<Voucher />} />
         <Route path="/detail-hoa-don/:id" element={<DetailHoaDon />} />
         <Route path="/quan-ly-hoa-don" element={<QuanLyHoaDon />} />
 
@@ -50,11 +56,6 @@ const App = () => {
             <Route path="khach-hang" />
           </Route>
         </Route>
-
-        <Route path="/voucher" element={<Voucher />} />
-        <Route path="/update" element={<EditVoucher />} />
-        <Route path="/delete/:id" />
-        <Route path="/add" element={<ThemVoucher />} />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={3000} />
