@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import axios from "axios";
-import { Table, Tag, message, Modal } from "antd";
+import { Table, Tag, message, Modal, Input } from "antd";
 import { format } from "date-fns";
+import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
+import { FaBug, FaRegCalendarCheck, FaRegFileAlt } from "react-icons/fa";
 
 export default function DetailHoaDon() {
   const { id } = useParams();
@@ -17,15 +19,28 @@ export default function DetailHoaDon() {
     tongTien: 0,
   });
   const [rowsSPCT, setRowsSPCT] = useState([]);
+  // Timline and history
+  const [currentTimeLine, setCurrentTimeLine] = useState(0);
+  const [listTimeLineOnline, setListTimeLineOnline] = useState([]);
+  const [rowsLichSu, setRowsLichSu] = useState([]);
 
-  // modal
+  // modal message
   const [messageApi, contextHolder] = message.useMessage();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openTimeLine, setOpenTimeLine] = useState(false);
 
-  const success = () => {
+  const showModal = () => {
+    setOpenTimeLine(true);
+  };
+
+  const hideModal = () => {
+    setOpenTimeLine(false);
+  };
+  // xóa spct
+  const success = (mess) => {
     messageApi.open({
       type: "success",
-      content: "Xóa Thành Công",
+      content: mess,
     });
     getDataLichSuThanhToan();
     getInfoHD();
@@ -39,10 +54,40 @@ export default function DetailHoaDon() {
     });
   };
 
+  const onHandleTimeLineChange = () => {
+    if (currentTimeLine < 5) {
+      Modal.confirm({
+        title: `Bạn có muốn ${listTitleTimline[currentTimeLine].title} không ?`,
+        okText: "Yes",
+        okType: "danger",
+        onOk: () => {
+          setCurrentTimeLine(currentTimeLine + 1);
+          success(`${listTitleTimline[currentTimeLine].title} thành công`);
+          hideModal();
+        },
+      });
+    }
+  };
+
+  // modal lich su
+  const [open, setOpen] = useState(false);
+
+  const showModalLichSu = () => {
+    setOpen(true);
+  };
+  const handleOkLichSu = () => {
+    setOpen(false);
+  };
+
+  const handleCancelLichSu = () => {
+    setOpen(false);
+  };
+
   useEffect(() => {
     getDataLichSuThanhToan();
     getInfoHD();
     getDataChiTietSanPham();
+    getDataLichSu();
   }, []);
 
   const getDataLichSuThanhToan = async () => {
@@ -95,11 +140,49 @@ export default function DetailHoaDon() {
         const res = await axios
           .delete(`http://localhost:8080/hdct/deleteHDCT/${id}/${idSPCT}`)
           .then((response) => {
-            response.data == true ? success() : error();
+            response.data == true ? success("Xóa thành công") : error();
           })
           .catch((e) => error());
       },
     });
+  };
+  const getDataLichSu = async () => {
+    await axios
+      .get(`http://localhost:8080/lich_su_thanh_toan/getLichSuHoaDons/${id}`)
+      .then((res) => {
+        const data = res.data;
+        console.log(res.data);
+        setRowsLichSu(
+          data.map((item, index) => {
+            return {
+              ...item,
+              description: listTitleTimline[index].title,
+            };
+          })
+        );
+        setCurrentTimeLine(data.length);
+
+        setListTimeLineOnline(
+          data.map((item, index) => {
+            return {
+              ...item,
+              subtitle: format(
+                new Date(item.ngayTao),
+                " hh:mm:ss ,   dd-MM-yyyy"
+              ),
+              description: listTitleTimline[index].title,
+            };
+          })
+        );
+
+        console.log(listTimeLineOnline);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    //  for (let index = 0; index < rowsLichSu.length; index++) {
+
+    //  }
   };
 
   const getInfoHD = async () => {
@@ -122,22 +205,123 @@ export default function DetailHoaDon() {
 
       <div className="conatiner mx-auto space-y-5">
         <div className="row timeline bg-white">
-          <div className="row timeline " style={{ height: 300 }}>
-            Time line đây
+          <div className="row timeline justify-center" style={{ height: 300 }}>
+            <Timeline minEvents={5} placeholder>
+              {listTimeLineOnline.map((item) => (
+                <TimelineEvent
+                  color="#9c2919"
+                  icon={FaBug}
+                  title={item.description}
+                  subtitle={item.subtitle}
+                  // action={{
+                  //   label: "Ver detalhes...",
+                  //   onClick: () => window.alert("Erro!"),
+                  // }}
+                />
+              ))}
+            </Timeline>
           </div>
           <div className="row button-contact p-4 grid grid-cols-2">
             <div className="row ">
-              <Button className="me-4" color="blue">
-                Xac nhan
-              </Button>
+              {currentTimeLine < 5 && info.loaiHd === 0 ? (
+                <Button
+                  className="me-4"
+                  color="blue"
+                  type="primary"
+                  onClick={showModal}
+                  style={{ marginRight: 5 }}
+                >
+                  {listTitleTimline[currentTimeLine].title}
+                </Button>
+              ) : (
+                ""
+              )}
+
+              <Modal
+                title="Ghi Chú"
+                style={{
+                  top: 20,
+                }}
+                open={openTimeLine}
+                onOk={hideModal}
+                onCancel={hideModal}
+                okText="Xác Nhận Thao Tác"
+                cancelText="Hủy"
+                footer={() => (
+                  <>
+                    <Button className="me-1" color="blue" onClick={hideModal}>
+                      Hủy
+                    </Button>
+                    <Button color="red" onClick={onHandleTimeLineChange}>
+                      Xác Nhận
+                    </Button>
+                  </>
+                )}
+              >
+                <Input.TextArea
+                  rows={4}
+                  placeholder="Ghi chu ...."
+                  maxLength={6}
+                />
+              </Modal>
+
               <Button className="me-4" color="green">
                 Xuất hoá đơn
               </Button>
             </div>
             <div className="row grid justify-items-end">
-              <Button className="me-4" color="red">
+              <Button className="me-4" color="red" onClick={showModalLichSu}>
                 Lịch Sử
               </Button>
+
+              <Modal
+                open={open}
+                title="Lịch Sử Hóa Đơn"
+                onOk={handleOkLichSu}
+                onCancel={handleCancelLichSu}
+                footer={() => (
+                  <>
+                    <Button onClick={handleCancelLichSu}>OK</Button>
+                  </>
+                )}
+              >
+                <div className="divide-y divide-blue-200">
+                  {rowsLichSu.map((item) => (
+                    <div className="mb-4">
+                      <p>
+                        <span className="font-bold">Trạng Thái : </span>
+                        &nbsp;&nbsp;
+                        {item.description}
+                      </p>
+                      <p>
+                        <span className="font-bold">Mã Nhân Viên : </span>
+                        &nbsp;&nbsp;
+                        {item.id_hoa_don.nhanVien.ma}
+                      </p>
+                      <p>
+                        <span className="font-bold">Tên Nhân Viên : </span>
+                        &nbsp;&nbsp;
+                        {item.id_hoa_don.nhanVien.ten}
+                      </p>
+                      <p>
+                        <span className="font-bold">Thoi gian : </span>
+                        &nbsp;&nbsp;
+                        {format(
+                          new Date(item.ngayTao),
+                          " hh:mm:ss ,   dd-MM-yyyy"
+                        )}
+                      </p>
+                      <p>
+                        <span className="font-bold">Nguoi xac nhan : </span>
+                        &nbsp;&nbsp;
+                        {item.id_hoa_don.nguoiXacNhan == null
+                          ? "Admin"
+                          : item.id_hoa_don.nguoiXacNhan.ten}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </Modal>
             </div>
           </div>
         </div>
@@ -309,14 +493,23 @@ export default function DetailHoaDon() {
   );
 }
 
-// const CartItem = ({ imageUrl, name, size, quantity, price }, props) => {
-//   console.log(props);
-//   const [quantityEdit, setQuantityEdit] = React.useState(quantity);
-
-//   return (
-
-//   );
-// };
+const listTitleTimline = [
+  {
+    title: "Xác Nhận",
+  },
+  {
+    title: "Đóng Hàng",
+  },
+  {
+    title: "Vận Đơn",
+  },
+  {
+    title: "Chuyển",
+  },
+  {
+    title: "Giao Hàng",
+  },
+];
 
 const columnsThanhToan = [
   { key: "id", title: "STT", dataIndex: "id", width: 15 },
