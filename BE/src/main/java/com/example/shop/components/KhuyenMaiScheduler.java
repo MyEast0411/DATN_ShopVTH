@@ -19,15 +19,25 @@ public class KhuyenMaiScheduler {
     @Scheduled(fixedRate = 1000) // Cập nhật mỗi giây (1000 milliseconds)
     public void updateKhuyenMaiStatus() {
         Date currentDate = new Date();
-
         List<KhuyenMai> khuyenMaiList = khuyenMaiService.findAll();
         for (KhuyenMai khuyenMai : khuyenMaiList) {
             if (khuyenMai.getNgayBatDau().after(currentDate)) {
                 khuyenMai.setTrangThai("Sắp diễn ra");
+                System.out.println("Khuyen Mai name: " + khuyenMai.getTen());
+                System.out.println("Current date: " + currentDate);
+                System.out.println("Start date: " + khuyenMai.getNgayBatDau());
+                System.out.println("End date: " + khuyenMai.getNgayKetThuc());
+                System.out.println(khuyenMai.getTrangThai());
             } else if (khuyenMai.getNgayKetThuc().before(currentDate)) {
                 khuyenMai.setTrangThai("Đã kết thúc");
+                System.out.println("Khuyen Mai name: " + khuyenMai.getTen());
+                System.out.println("Current date: " + currentDate);
+                System.out.println("Start date: " + khuyenMai.getNgayBatDau());
+                System.out.println("End date: " + khuyenMai.getNgayKetThuc());
+                System.out.println(khuyenMai.getTrangThai());
             } else {
                 khuyenMai.setTrangThai("Đang diễn ra");
+                System.out.println("Active");
             }
 
             khuyenMaiService.save(khuyenMai);
