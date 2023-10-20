@@ -17,10 +17,42 @@ public class UploadAnh {
 
     private static final String IMGUR_CLIENT_ID = "9df5d9cecb5d8ee";
 
-    public static void main(String[] args) {
-        String imagePath = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
+//    public static void main(String[] args) {
+//        String imagePath = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
+//
+//        File imageFile = new File(imagePath);
+//
+//        if (imageFile.exists()) {
+//            try {
+//                Retrofit retrofit = new Retrofit.Builder()
+//                        .baseUrl("https://api.imgur.com/3/")
+//                        .addConverterFactory(GsonConverterFactory.create())
+//                        .build();
+//
+//                ImgurService imgurService = retrofit.create(ImgurService.class);
+//
+//                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), imageFile);
+//                MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), requestBody);
+//
+//                Call<ImgurResponse> call = imgurService.uploadImage("Client-ID " + IMGUR_CLIENT_ID, imagePart);
+//                ImgurResponse response = call.execute().body();
+//
+//                if (response != null && response.success) {
+//                    System.out.println("Ảnh đã được tải lên thành công! Link Imgur: " + response.data.link);
+//                } else {
+//                    System.err.println("Không thể tải lên ảnh lên Imgur.");
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        } else {
+//            System.err.println("Không tìm thấy tệp ảnh.");
+//        }
+//    }
+    public String upload(String urlImg) {
+        urlImg = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
 
-        File imageFile = new File(imagePath);
+        File imageFile = new File(urlImg);
 
         if (imageFile.exists()) {
             try {
@@ -39,6 +71,7 @@ public class UploadAnh {
 
                 if (response != null && response.success) {
                     System.out.println("Ảnh đã được tải lên thành công! Link Imgur: " + response.data.link);
+                    return response.data.link;
                 } else {
                     System.err.println("Không thể tải lên ảnh lên Imgur.");
                 }
@@ -48,8 +81,8 @@ public class UploadAnh {
         } else {
             System.err.println("Không tìm thấy tệp ảnh.");
         }
+        return null;
     }
-
     interface ImgurService {
         @Multipart
         @POST("image")
