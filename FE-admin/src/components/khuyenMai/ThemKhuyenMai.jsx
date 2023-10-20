@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "antd"; // Import from antd
+import { Button } from "antd";
 import { toast } from "react-toastify";
-import { DateTime } from "luxon";
+
 import { addKhuyenMai } from "../../api/khuyenMai/KhuyenMaiApi";
 import {
   Dialog,
@@ -17,17 +17,15 @@ import TableAllSanPham from "../../common/tableNextUi/khuyenMai/TableAllSanPham"
 import TableAllChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiTietSP";
 import { useParams } from "react-router-dom";
 import { getKhuyenMaiById } from "../../api/khuyenMai/KhuyenMaiApi";
-import moment from "moment/moment";
 
 export default function ThemKhuyenMai() {
   const { idKM } = useParams();
-  console.log(idKM);
   const [ten, setTen] = useState("");
   const [giaTriPhanTram, setGiaTriPhanTram] = useState(1);
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
   const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
-  // const [khuyenMai, setKhuyenMai] = useState({});
+
   const chuyenTrang = useNavigate();
   // Tạo một mảng giá trị phần trăm từ 1 đến 90
   const percentValues = Array.from({ length: 90 }, (_, index) => index + 1);
@@ -38,23 +36,19 @@ export default function ThemKhuyenMai() {
   const currentHour = currentDate.getHours().toString().padStart(2, "0");
   const currentMinute = currentDate.getMinutes().toString().padStart(2, "0");
   const [selectedStartDate, setSelectedStartDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
   const handleNgayBatDauChange = (e) => {
-    // Thực hiện xử lý bạn cần
     const newValue = e.target.value;
-    console.log(newValue);
-    // Cập nhật giá trị ngayBatDau và setSelectedStartDate
+    console.log("Ngày bắt đầu input: " + newValue);
     setNgayBatDau(newValue);
     setSelectedStartDate(newValue);
   };
-  function formatDateToISOString(date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
+  const handleNgayKetThucChange = (e) => {
+    const newValue = e.target.value;
+    console.log("Ngày kết thúc input: " + newValue);
+    setNgayBatDau(newValue);
+    setSelectedEndDate(newValue);
+  };
 
   const minDate = `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}`;
   const handleOpenAddConfirmation = () => {
@@ -70,13 +64,9 @@ export default function ThemKhuyenMai() {
       try {
         const response = await getKhuyenMaiById(idKM);
         const data = response;
-        console.log("Data:", data);
         setTen(data.ten);
         setGiaTriPhanTram(data.giaTriPhanTram);
-        // setNgayBatDau(formatDateToISOString(new Date(data.ngayBatDau)));
-        // setNgayKetThuc(formatDateToISOString(new Date(data.ngayKetThuc)));
-
-        // setSelectedStartDate(formatDateToISOString(new Date(data.ngayBatDau)));
+        console.log("Data:", data);
       } catch (error) {
         console.error("Error fetching KhuyenMai by ID:", error);
       }
@@ -197,12 +187,6 @@ export default function ThemKhuyenMai() {
               >
                 Ngày bắt đầu
               </label>
-              <label
-                htmlFor="phone"
-                className="block -mb-4 mt-1 text-sm font-medium text-gray-900"
-              >
-                Ngày bắt đầu
-              </label>
               <input
                 type="datetime-local"
                 id="ngayBatDauInput"
@@ -228,7 +212,7 @@ export default function ThemKhuyenMai() {
                 value={ngayKetThuc}
                 type="datetime-local"
                 id="ngayKetThucInput"
-                onChange={(e) => setNgayKetThuc(e.target.value)}
+                onChange={handleNgayKetThucChange}
                 required
                 min={selectedStartDate} // Set the minimum date based on selected start date
                 style={{

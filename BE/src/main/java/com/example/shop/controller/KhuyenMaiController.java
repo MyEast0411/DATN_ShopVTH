@@ -37,7 +37,6 @@ public class KhuyenMaiController {
     public ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai) {
         try {
             if (khuyenMai.getId() != null) {
-                // Nếu khuyến mãi có ID (đã tồn tại), cập nhật nó
                 Optional<KhuyenMai> existingKhuyenMai = khuyenMaiService.findById(khuyenMai.getId());
                 if (existingKhuyenMai.isPresent()) {
                     KhuyenMai existing = existingKhuyenMai.get();
@@ -52,7 +51,6 @@ public class KhuyenMaiController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khuyến mãi không tồn tại");
                 }
             } else {
-                // Nếu khuyến mãi không có ID (chưa tồn tại), thêm mới nó
                 khuyenMai.setMa(generateUniqueMaKhuyenMai());
                 khuyenMai.setNgayTao(new Date());
                 khuyenMai.setDeleted(0);

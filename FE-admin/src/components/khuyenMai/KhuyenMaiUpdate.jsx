@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import moment from "moment/moment";
 import { Button } from "antd";
 import { useParams } from "react-router-dom";
-import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import { toast } from "react-toastify";
 import {
@@ -60,18 +58,10 @@ export default function KhuyenMaiUpdate() {
   });
 
   const handleStartDateChange = (event) => {
-    // setKhuyenMai({
-    //   ...khuyenMai,
-    //   ngayBatDau: event.target.value,
-    // });
     setSelectedStartDate(event.target.value);
   };
 
   const handleEndDateChange = (event) => {
-    // setKhuyenMai({
-    //   ...khuyenMai,
-    //   ngayKetThuc: event.target.value,
-    // });
     setSelectedEndDate(event.target.value);
   };
 
@@ -93,8 +83,6 @@ export default function KhuyenMaiUpdate() {
         setSelectedEndDate(
           formatDateToISOString(new Date(response.ngayKetThuc))
         );
-        console.log(selectedStartDate);
-        console.log("set Khuyen Mai:" + khuyenMai.ngayBatDau);
       } catch (error) {
         console.error("Error fetching KhuyenMai data:", error);
       }
@@ -126,10 +114,8 @@ export default function KhuyenMaiUpdate() {
       nguoiTao: "Nguyễn Văn Hội",
       nguoiSua: "Nguyễn Văn Hội",
     };
-    // console.log(ngayBatDau);
 
     try {
-      // Update Khuyen Mai data
       const response = await updateKhuyenMai(idKM, updatedKhuyenMai);
       handleCloseUpdateConfirmation();
       toast.success(`Cập nhật thành công`, {

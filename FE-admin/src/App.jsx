@@ -28,6 +28,7 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
 
           <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
+          <Route path="/them-khuyen-mai/:idKM" element={<ThemKhuyenMai />} />
           <Route path="/them-khach-hang" element={<ThemKhachHang />} />
           <Route path="/them-san-pham" element={<ThemSanPham />} />
 
