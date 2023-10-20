@@ -38,7 +38,14 @@ export default function ThemKhuyenMai() {
   const currentHour = currentDate.getHours().toString().padStart(2, "0");
   const currentMinute = currentDate.getMinutes().toString().padStart(2, "0");
   const [selectedStartDate, setSelectedStartDate] = useState("");
-
+  const handleNgayBatDauChange = (e) => {
+    // Thực hiện xử lý bạn cần
+    const newValue = e.target.value;
+    console.log(newValue);
+    // Cập nhật giá trị ngayBatDau và setSelectedStartDate
+    setNgayBatDau(newValue);
+    setSelectedStartDate(newValue);
+  };
   function formatDateToISOString(date) {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -105,7 +112,7 @@ export default function ThemKhuyenMai() {
         ngayBatDau: ngayBatDau,
         ngayKetThuc: ngayKetThuc,
       };
-      console.log(khuyenMai);
+      console.log(khuyenMai.ngayBatDau);
       const response = await addKhuyenMai(khuyenMai);
 
       setTen("");
@@ -190,13 +197,16 @@ export default function ThemKhuyenMai() {
               >
                 Ngày bắt đầu
               </label>
+              <label
+                htmlFor="phone"
+                className="block -mb-4 mt-1 text-sm font-medium text-gray-900"
+              >
+                Ngày bắt đầu
+              </label>
               <input
                 type="datetime-local"
                 id="ngayBatDauInput"
-                onChange={(e) => {
-                  setNgayBatDau(e.target.value);
-                  setSelectedStartDate(e.target.value);
-                }}
+                onChange={handleNgayBatDauChange}
                 required
                 min={minDate}
                 value={ngayBatDau}
