@@ -109,8 +109,8 @@ export default function ThemKhuyenMai() {
         id: idKM,
         ten: ten,
         giaTriPhanTram: giaTriPhanTram,
-        ngayBatDau: ngayBatDau,
-        ngayKetThuc: ngayKetThuc,
+        ngayBatDau: new Date(ngayBatDau).toISOString(),
+        ngayKetThuc: new Date(ngayKetThuc).toISOString(),
       };
       console.log(khuyenMai.ngayBatDau);
       const response = await addKhuyenMai(khuyenMai);

@@ -4,7 +4,7 @@ import { Modal } from "antd";
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from 'date-fns';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
     Dialog,
     DialogActions,
@@ -22,6 +22,9 @@ export default function ThemKhachHang() {
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
     const [value, setValue] = useState(''); 
+    const [valueTP, setValueTP] = useState(''); 
+    const [valueHuyen, setValueHuyen] = useState(''); 
+    const [valueXa, setValueXa] = useState(''); 
     const [showScanner, setShowScanner] = useState(false); 
     const [selectedProvince, setSelectedProvince] = useState('');
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
@@ -37,18 +40,17 @@ export default function ThemKhachHang() {
         getProvinces().then((data) => {
           setProvinces(data);
         });
-      }, []);
+    }, []);
     const handleProvinceChange = (provinceCode) => {
-        console.log(provinceCode);
         provinces.map((item) => {
             if(item.code == provinceCode) {
                 setKhachHang((prevKhachHang) => ({
                     ...prevKhachHang,
-                    thanhPho: item.name
+                    thanhPho: selectedProvince.name
                 }));
             }
         })
-        console.log(khachHang);
+
         getDistricts(provinceCode).then((data) => {
           setDistricts(data);
         });
@@ -64,14 +66,12 @@ export default function ThemKhachHang() {
                 }));
             }
         })
-        console.log(khachHang);
         getWards(districtCode).then((data) => {
           setWards(data);
         });
     };
 
     const handleWardsChange = (wardsCode) => {
-        console.log(wardsCode);
         wards.map((item) => {
             if(item.code == wardsCode) {
                 setKhachHang((prevKhachHang) => ({
@@ -83,6 +83,7 @@ export default function ThemKhachHang() {
         console.log(khachHang);
     };
     const [khachHang, setKhachHang] = useState({
+        id:"",
         ma: "",
         ten: "",
         anhNguoiDung: "",
@@ -93,8 +94,8 @@ export default function ThemKhachHang() {
         cccd: "",
         soNha: "",
         xa: "",
-        huyen: "",
-        thanhPho: ""
+        huyen:"",
+        thanhPho:""
     });
 
     const {
@@ -109,19 +110,55 @@ export default function ThemKhachHang() {
         soNha,
         xa,
         huyen,
-        tinh,
+        thanhPho
     } = khachHang;
 
-    function parseDate(input) {
-        var parts = input.match(/(\d{2})(\d{2})(\d{4})/);
-        if (parts) {
-            var day = +parts[1];
-            var month = +parts[2];
-            var year = +parts[3];
-            return new Date(Date.UTC(year, month - 1, day));
+    function formatDate(dateString) {
+        if (dateString) {
+          const date = new Date(dateString);
+          const year = date.getUTCFullYear();
+          const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+          const day = String(date.getUTCDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
         }
-        return null; // Trả về null nếu chuỗi không hợp lệ
+        return '';
+      }
+
+    const {maKH} = useParams();
+    const getKhachHang = async() => {
+        const result = await axios.get(`http://localhost:8080/khach-hang/findByMa/${maKH}`)
+        const khachHangData = result.data; // Dữ liệu khách hàng từ phản hồi API
+        provinces.map((item) => {
+            if(item.name == khachHangData.id_dia_chi.thanhPho) {
+                setValueTP(item.code);
+            }
+        }); 
+        console.log(khachHangData.ngaySinh);
+        setBackgroundImage(khachHangData.anhNguoiDung);
+        setKhachHang({
+            id: khachHangData.id,
+            ma: khachHangData.ma,
+            ten: khachHangData.ten,
+            anhNguoiDung: khachHangData.anhNguoiDung,
+            gioi_tinh: khachHangData.gioiTinh,
+            sdt: khachHangData.sdt,
+            ngay_sinh: khachHangData.ngaySinh,
+            email: khachHangData.email,
+            cccd: khachHangData.cccd,
+            thanhPho: khachHangData.id_dia_chi.thanhPho,
+            huyen: khachHangData.id_dia_chi.huyen,
+            xa: khachHangData.id_dia_chi.xa,
+            soNha : khachHangData.id_dia_chi.duong
+        });
+        
     }
+
+    const setBackgroundImage = (url) => {
+        imgDivRef.current.style.backgroundImage = `url(${url})`;
+    };
+    useEffect(() => {
+        getKhachHang();
+    },[valueTP,khachHang])
 
     const onChange = (e) => {
         setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
@@ -173,7 +210,6 @@ export default function ThemKhachHang() {
             console.log(khachHang);
             imgDivRef.current.style.backgroundImage = `url(${imageUrl})`;
             imgDivRef.current.style.backgroundSize = 'cover';
-             // Sử dụng useRef để đặt nền ảnh
           };
           reader.readAsDataURL(file);
         }
@@ -200,11 +236,12 @@ export default function ThemKhachHang() {
                 boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
                 transition: "transform 0.2s",
                 }}>
-                <div className='border-r-4 text-center pt-5' style={{
+                <div className='border-r-4 pt-5 relative' style={{
                     borderColor: "#61677A"
                 }}>
-                    <h1 className='font-medium text-2xl mb-14'>Ảnh đại diện</h1>
-                    <div className="anh-dai-dien flex justify-center">
+                    <h1 className='absolute -top-3'>Thông tin khách hàng</h1>
+                    {/* <h1 className='font-medium mt-4 text-2xl mb-5'>Ảnh đại diện</h1> */}
+                    <div className="anh-dai-dien mt-14 flex justify-center">
                         <div
                         className='relative cursor-pointer'
                         style={{
@@ -213,130 +250,84 @@ export default function ThemKhachHang() {
                             backgroundColor: "white",
                             borderRadius: "50%",
                             border: "1px dashed #ccc",
+                            backgroundSize: "cover"
                         }}
                         ref={imgDivRef} 
                         >
                         <span className='absolute text-4xl' style={{ top: "40%", left: "47%" }}>
                             +
                         </span>
-                        <div className='absolute' style={{ top: "54%", left: "42%" }}>
-                            <button onClick={() => fileInputRef.current.click()}>Tải ảnh</button>
-                        </div>
+                            <div className='absolute' style={{ top: "54%", left: "42%" }}>
+                                <button onClick={() => fileInputRef.current.click()}>Tải ảnh</button>
+                            </div>
                         </div>
                     </div>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        style={{ display: 'none' }}
-                        ref={fileInputRef}
-                    />
-                </div>
-                <div className="col-span-2 m-10">
-                    <div className='grid grid-cols-2 gap-4'>
-                        <div className="left">
-                            <div className='mb-8'>
-                                <label
-                                    htmlFor="phone"
-                                    className="block  text-xl font-medium text-gray-900"
-                                >
-                                    Tên khách hàng
-                                </label>
-                                <input
-                                    value={ten}
-                                    type="text"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                                    placeholder="Nhập tên khách hàng"
-                                    required
-                                    onChange={(e) => {onChange(e)}}
-                                />
-                            </div>
-                            <div className='mb-8'>
-                                <label
-                                    htmlFor="phone"
-                                    className="block text-xl font-medium text-gray-900"
-                                >
-                                    Căn cước công dân
-                                </label>
-                                <input
-                                    type="number"
-                                    value={cccd}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                                    placeholder="CCCD"
-                                    required
-                                    onChange={(e) => {onChange(e)}}
-                                />
-                            </div>
-                            <div className='mb-8'>
-                                <label
-                                    htmlFor="phone"
-                                    className="block pt-2 text-xl font-medium text-gray-900"
-                                >
-                                    Email
-                                </label>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    name='email'
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                                    placeholder="Email"
-                                    required
-                                    onChange={(e) => {onChange(e)}}
-                                />
-                            </div>
-                            <div className="mb-8">
-                                <label
-                                htmlFor="city"
-                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                Chọn thành phố
-                                </label>
-                                <select
-                                id="city"
-                                className="bg-gray-50 border mb-24 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                onChange={(e) => handleProvinceChange(e.target.value)}
-                                >
-                                <option value="">Chọn thành phố</option>
-                                {provinces.map((province) => (
-                                    <option key={province.code} value={province.code}>
-                                    {province.name}
-                                    </option>
-                                ))}
-                                </select>
-                            </div>
-                            <div className="mb-6">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            style={{ display: 'none' }}
+                            ref={fileInputRef}
+                        />
+                        <div className='mb-1 p-5'>
                             <label
-                            htmlFor="wards"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                htmlFor="phone"
+                                className="block text-xl font-medium text-gray-900"
                             >
-                            Chọn xã phường
+                                Tên khách hàng
                             </label>
-                            <select
-                            id="wards"
-                            onChange={(e) => handleWardsChange(e.target.value)}
-                            className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            <input
+                                value={ten}
+                                type="text"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                dark:focus:ring-blue-500 mb-0 dark:focus:border-blue-500"
+                                placeholder="Nhập tên khách hàng"
+                                required
+                                onChange={(e) => {onChange(e)}}
+                            />
+                        </div>
+                        <div className='p-5'>
+                            <label
+                                htmlFor="phone"
+                                className="block text-xl font-medium text-gray-900"
                             >
-                            <option value="">Chọn xã phường</option>
-                            {wards.map((ward) => (
-                                <option key={ward.code} value={ward.code}>
-                                {ward.name}
-                                </option>
-                            ))}
-                            </select>
+                                Căn cước công dân
+                            </label>
+                            <input
+                                type="number"
+                                value={cccd}
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                    w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                    dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="CCCD"
+                                required
+                                onChange={(e) => {onChange(e)}}
+                            />
                         </div>
+                        <div className='p-5'>
+                            <label
+                                htmlFor="email"
+                                className="block pt-2 text-xl font-medium text-gray-900"
+                            >
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                value={email}
+                                name='email'
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                    w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                    dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Email"
+                                required
+                                onChange={(e) => {onChange(e)}}
+                            />
                         </div>
-
-                        <div className="right relative">
-                            <div className='mb-8'>
+                        <div className='p-5'>
                                 <label
                                     htmlFor="phone"
                                     className="block text-xl font-medium text-gray-900"
@@ -345,12 +336,12 @@ export default function ThemKhachHang() {
                                 </label>
                                 <input
                                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                 w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                  dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500'
+                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                    w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                  dark:focus:ring-blue-500 dark:focus:border-blue-500'
                                     type="date"
                                     name='ngay_sinh'
-                                    value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ''}
+                                    value={formatDate(ngay_sinh)}
                                     id="dateInput"
                                     style={{
                                         width: "100%"
@@ -358,57 +349,29 @@ export default function ThemKhachHang() {
                                     required
                                     onChange={(e) => {onChange(e)}}
                                 />
-                                <button type="button" style={{
-                                    position : "absolute",
-                                    top : -40,
-                                    right :  0,
-                                    fontSize : 15,
-                                    borderRadius : 5,
-                                    align : "left",
-                                    
-                                }} className='bg-blue-500 text-white rounded w-32 h-10'
-                                   onClick={showModal}>
-                                    <img src="https://cdn-icons-png.flaticon.com/512/241/241521.png"
-                                     className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2" />
-                                    <span className="ml-8">
-                                        Quét QR
-                                    </span></button>
-                                <Modal
-                                    open={isModalOpen}
-                                    onOk={handleOk}
-                                    onCancel={handleCancel}
-                                    style={{ position: "relative" }}
-                                    className=""
+                        </div>
+                        
+                        <div className='p-5'>
+                                <label
+                                    htmlFor="phone"
+                                    className="block text-xl font-medium text-gray-900"
                                 >
-                                    <div>
-                                    <QrReader
-                                        onResult={(data) => {
-                                            if (data != undefined) {
-                                              handleOk();
-                                              console.log(data.text);
-                                              function splitString(inputString) {
-                                                const values = inputString.split('|');
-                                                    return values;
-                                                }
-                                                const result = splitString(data.text);
-                                                console.log(result);
-                                                setKhachHang({
-                                                    ...khachHang,
-                                                    ten: result[2],
-                                                    cccd : result[0],
-                                                    ngay_sinh : result[3],
-                                                    gioi_tinh: result[4],
-                                                    
-                                                });
-                                            }
-                                          }}
-                                        onError={handleError}
-                                        style={{ width: '100%' }}
-                                    />
-                                    </div>
-                                </Modal>
-                            </div>
-                            <div className="mb-8 flex">
+                                    Số điện thoại
+                                </label>
+                                <input
+                                    type="number"
+                                    name='sdt'
+                                    value={sdt}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                      dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Số điện thoại"
+                                    required
+                                    onChange={(e) => {onChange(e)}}
+                                />
+                        </div>
+                        <div className="p-5 flex">
                                 <FormControl>
                                     <FormLabel
                                         id="demo-controlled-radio-buttons-group"
@@ -441,48 +404,131 @@ export default function ThemKhachHang() {
                                         </div>
                                     </RadioGroup>
                                 </FormControl>
-                            </div>
-                            <div className='mb-8'>
-                                <label
-                                    htmlFor="phone"
-                                    className="block pt-14 text-xl font-medium text-gray-900"
-                                >
-                                    Số điện thoại
-                                </label>
-                                <input
-                                    type="number"
-                                    name='sdt'
-                                    value={sdt}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20  dark:focus:border-blue-500"
-                                    placeholder="Số điện thoại"
-                                    required
-                                    onChange={(e) => {onChange(e)}}
-                                />
-                            </div>
-                            
-                        <div className="mb-6">
-                            <label
-                            htmlFor="District"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                            Chọn huyện
-                            </label>
-                            <select
-                            id="District"
-                            className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            onChange={(e) => handleDistrictChange(e.target.value)}
-                            >
-                            <option value="">Chọn huyện</option>
-                            {districts.map((district) => (
-                                <option key={district.code} value={district.code}>
-                                {district.name}
-                                </option>
-                            ))}
-                            </select>
                         </div>
+                </div>
+                    
+                <div className="col-span-2 m-10">
+
+                    <div className='grid grid-cols-2 gap-4'>
+                    <div className="left relative">
+                        <h1 className='absolute -top-12'>Thông tin địa chỉ</h1>
+                            <div className="mb-8">
+                                <label
+                                htmlFor="city"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                Chọn thành phố
+                                </label>
+                                <select
+                                id="city"
+                                className="bg-gray-50 border mb-24 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                onChange={(e) => {
+                                    handleProvinceChange(e.target.value);
+                                }}
+                                value={valueTP}
+                                >
+                                <option value="">Chọn thành phố</option>
+                                {provinces.map((province) => (
+                                    <option key={province.code} value={province.code}>
+                                    {province.name}
+                                    </option>
+                                ))}
+                                </select>
+                            </div>
+                            <div className="mb-6">
+                                <label
+                                htmlFor="District"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                Chọn huyện
+                                </label>
+                                <select
+                                id="District"
+                                className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                onChange={(e) => handleDistrictChange(e.target.value)}
+                                value={valueHuyen}
+                                >
+                                <option value="">Chọn huyện</option>
+                                {districts.map((district) => (
+                                    <option key={district.code} value={district.code}>
+                                    {district.name}
+                                    </option>
+                                ))}
+                                </select>
+                            </div>
+                            <div className="mb-6">
+                                <label
+                                htmlFor="wards"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                >
+                                Chọn xã phường
+                                </label>
+                                <select
+                                id="wards"
+                                onChange={(e) => handleWardsChange(e.target.value)}
+                                className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                value={valueXa}
+                                >
+                                <option value="">Chọn xã phường</option>
+                                {wards.map((ward) => (
+                                    <option key={ward.code} value={ward.code}>
+                                    {ward.name}
+                                    </option>
+                                ))}
+                                </select>
+                            </div>
+                    </div>
+
+                    <div className="right relative">
+                                <button type="button" style={{
+                                    position : "absolute",
+                                    top : -40,
+                                    right :  0,
+                                    fontSize : 15,
+                                    borderRadius : 5,
+                                    align : "left",
+                                    
+                                }} className='bg-blue-500 text-white rounded w-32 h-10'
+                                   onClick={showModal}>
+                                    <img src="https://cdn-icons-png.flaticon.com/512/241/241521.png"
+                                     className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2" />
+                                    <span className="ml-8">
+                                        Quét QR
+                                    </span></button>
+                                <Modal
+                                    open={isModalOpen}
+                                    onOk={handleOk}
+                                    onCancel={handleCancel}
+                                    style={{ position: "relative" }}
+                                >
+                                <div>
+                                    <QrReader
+                                        onResult={(data) => {
+                                            if (data != undefined) {
+                                              handleOk();
+                                              console.log(data.text);
+                                              function splitString(inputString) {
+                                                const values = inputString.split('|');
+                                                    return values;
+                                                }
+                                                const result = splitString(data.text);
+                                                console.log(result);
+                                                setKhachHang({
+                                                    ...khachHang,
+                                                    ten: result[2],
+                                                    cccd : result[0],
+                                                    ngay_sinh : result[3],
+                                                    gioi_tinh: result[4]
+                                                });
+                                            }
+                                          }}
+                                        onError={handleError}
+                                        style={{ width: '100%' }}
+                                    />
+                                    </div>
+                                </Modal>
+                            </div>
+                        
                         <div className='mb-8'>
                             <label
                                 htmlFor="phone"
@@ -497,13 +543,13 @@ export default function ThemKhachHang() {
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                 rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                    dark:focus:ring-blue-500 mb-20 mt-4 dark:focus:border-blue-500"
+                                    dark:focus:ring-blue-500 mb-96 mt-4 dark:focus:border-blue-500"
                                 placeholder="Số nhà/Ngõ/Đường"
                                 required
                                 onChange={(e) => {onChange(e)}}
                             />
                         </div>
-                        <div className="mt-6 flex items-center justify-end gap-x-6">
+                        <div className="mt-36 flex items-center justify-end gap-x-6">
                             <Link
                             to="/quan-ly-tai-khoan/khach-hang"
                             type="button"
@@ -516,13 +562,13 @@ export default function ThemKhachHang() {
                             className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             onClick={handleAdd}
                             >
-                            Thêm khách hàng
+                            Cập nhật thông tin
                             </button>
                     </div>
-                    </div>
+                </div>
+                
                 </div>
             </div>
-        </div>
         <Dialog open={deleteConfirmationOpen} onClose={cancelAdd} fullWidth>
         <DialogTitle>
           <div
@@ -539,12 +585,12 @@ export default function ThemKhachHang() {
                 fontSize: "25px",
               }}
             />
-            <span>Xác nhận thêm</span>
+            <span>Xác nhận sửa</span>
           </div>
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc muốn thêm khách hàng này?
+            Bạn có chắc muốn sửa khách hàng này?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -555,7 +601,7 @@ export default function ThemKhachHang() {
             color="primary"
             onClick={onSubmit}
           >
-            Vẫn thêm
+            Vẫn sửa
           </Button>
         </DialogActions>
       </Dialog>

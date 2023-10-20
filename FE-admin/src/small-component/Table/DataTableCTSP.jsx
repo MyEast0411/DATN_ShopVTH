@@ -8,13 +8,14 @@ import { toast } from "react-toastify";
 import { Link, useParams } from "react-router-dom";
 
 const columns = [
-  { field: "id", headerName: "STT", width: 200 },
-  { field: "ma", headerName: "Mã sản phẩm", width: 200 },
+  { field: "id", headerName: "STT", width: 200 , align : "center"},
+  { field: "ma", headerName: "Mã sản phẩm", width: 200, align : "center" },
   { field: "kichCo", headerName: "Kích cỡ", width: 200 },
   {
     field: "mauSac",
     headerName: "Màu sắc",
     width: 200,
+    align : "center",
     renderCell: (params) => (
       <TableCell>
         <div
@@ -32,18 +33,19 @@ const columns = [
       </TableCell>
     ),
   },
-  { field: "giaBan", headerName: "Giá bán", width: 200 },
+  { field: "giaBan", headerName: "Giá bán", width: 200 , align : "center"},
   {
     field: "soLuongTon",
     headerName: "Số lượng tồn",
     width: 200,
+    align : "center"
   },
   {
     field: "trangThai",
     headerName: "Trạng thái",
     description: "Trạng thái",
     sortable: false,
-    width: 150,
+    width: 222,
     renderCell: (params) => (
       <TableCell>
         <div

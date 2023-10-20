@@ -22,6 +22,7 @@ export default function ThemSanPham() {
   let navigate = useNavigate();
   const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
   const [tableData, setTableData] = useState([]);
+  const [tables, setTables] = useState([]);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
@@ -281,24 +282,15 @@ export default function ThemSanPham() {
   const onChange = (e) => {
     setSanPham({ ...sanPham, [e.target.name]: e.target.value });
   };
-  const data = [
-    {
-      key: "1",
-      STT: 1,
-      tenSanPham: "JORDAN-AIR",
-      soLuong: 1,
-      giaBan: "320,000"
-    }
-  ];
-  const loadTable = () => {
+
+  const groupProductsByColor = () => {
+    let index = 0;
     const tableData = [];
-    let index = 1;
     for (const mau of selectedColors) {
       for (const kichCo of selectedKichCo) {
-        const sp = {
-          id: index,
+        const sanPhamItem = {
           ten: sanPham.ten,
-          tenSanPham: sanPham.ten + ` [ ${kichCo} - ${mau} ]`,
+          tenSanPham: `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ''} ]`,
           soLuongTon: 1,
           khoiLuong: 1,
           moTa: sanPham.moTa,
@@ -306,21 +298,43 @@ export default function ThemSanPham() {
           giaBan: "200,000",
           id_mau_sac: mau,
           id_kich_co: kichCo,
-          id_thuong_hieu : sanPham.id_thuong_hieu,
-          id_nhan_hieu : sanPham.id_nhan_hieu,
-          id_chat_lieu : sanPham.id_chat_lieu,
-          id_de_giay : sanPham.id_de_giay
+          id_thuong_hieu: sanPham.id_thuong_hieu,
+          id_nhan_hieu: sanPham.id_nhan_hieu,
+          id_chat_lieu: sanPham.id_chat_lieu,
+          id_de_giay: sanPham.id_de_giay,
         };
-        tableData.push(sp);
-        index+=1;
+        
+        tableData.push(sanPhamItem);
       }
     }
     setTableData(tableData);
-    console.log(tableData);
+
+    for (const mau of selectedColors) {
+      const spByColor = selectedKichCo.map((kichCo) => ({
+        id: index+=1,
+        ten: sanPham.ten,
+        tenSanPham: `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ''} ]`,
+        soLuongTon: 1,
+        khoiLuong: 1,
+        moTa: sanPham.moTa,
+        giaNhap: "100,000",
+        giaBan: "200,000",
+        id_mau_sac: mau,
+        id_kich_co: kichCo,
+        id_thuong_hieu: sanPham.id_thuong_hieu,
+        id_nhan_hieu: sanPham.id_nhan_hieu,
+        id_chat_lieu: sanPham.id_chat_lieu,
+        id_de_giay: sanPham.id_de_giay,
+      }));
+      setTables((prevTables) => ({
+        ...prevTables,
+        [mau]: spByColor,
+      }));
+    }
   };
   useEffect(() => {
-    loadTable();
-  },[tableData])
+    groupProductsByColor();
+  }, [selectedColors,selectedKichCo]);
 
   useEffect(() => {
     getAllDG();
@@ -372,11 +386,14 @@ export default function ThemSanPham() {
   };
 
   const onSubmit = async (e) => {
-    console.log("aloalo");
     e.preventDefault();
-    const data = tableData.map((sp) => [sp.id, sp.ten, sp.tenSanPham, sp.soLuongTon, sp.khoiLuong,
-       sp.moTa, sp.giaNhap, sp.giaBan, sp.id_mau_sac, sp.id_kich_co,sp.id_thuong_hieu,sp.id_nhan_hieu,
-       sp.id_chat_lieu,sp.id_de_giay]);
+    const data = tableData.map((sp) => [
+      sp.id, sp.ten, sp.tenSanPham, sp.soLuongTon, sp.khoiLuong,
+      sp.moTa, sp.giaNhap, sp.giaBan, sp.id_mau_sac, sp.id_kich_co,
+      sp.id_thuong_hieu,sp.id_nhan_hieu,
+      sp.id_chat_lieu,sp.id_de_giay
+      ]);
+      console.log(data);
     if (isConfirmed) {
     await axios
       .post("http://localhost:8080/san-pham/add", data)
@@ -891,18 +908,22 @@ export default function ThemSanPham() {
             <button
             type="button"
               className="rounded-md mb-5 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              onClick={loadTable}
+              onClick={groupProductsByColor}
             >
               Hoàn tất
             </button>
           </div>
-          <Table
-            columns={columns}
-            dataSource={tableData}
-            onChange={handleChange}
-            pagination={paginationOptions} 
-            scroll={{ y: 2000 }}
-          />
+          {selectedColors.map((mau) => (
+            <div key={mau}>
+              <h2>Sản phẩm theo : {mauSac.find((item) => item.maMau === mau)?.ten || ''} </h2>
+              <Table
+                columns={columns}
+                dataSource={tables[mau]}
+                pagination={false}
+                scroll={{ y: 2000 }}
+              />
+            </div>
+          ))}
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <Link
               to="/quan-ly-san-pham/san-pham"

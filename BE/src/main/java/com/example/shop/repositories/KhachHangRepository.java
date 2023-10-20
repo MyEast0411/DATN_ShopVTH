@@ -4,4 +4,6 @@ import com.example.shop.entity.KhachHang;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface KhachHangRepository extends JpaRepository<KhachHang,String> {
+
+    KhachHang findByMa(String ma);
 }

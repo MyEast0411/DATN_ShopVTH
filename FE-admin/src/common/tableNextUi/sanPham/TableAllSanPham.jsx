@@ -31,8 +31,8 @@ import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
+import { toast } from "react-toastify";
 
-Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 const url = "http://localhost:8080/chi-tiet-san-pham";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -48,10 +48,6 @@ const statusOptions = [
   { name: "Ngừng bán", uid: "Ngừng bán" },
 ];
 
-const formateDateVietNam = (dateTimeStr) => {
-  const vietNamTime = DateTime.fromISO(dateTimeStr, { zone: "utc" });
-  return vietNamTime.toFormat("dd/MM/yyyy HH:mm");
-};
 
 const statusColorMap = {
   active: "success",
@@ -73,6 +69,7 @@ const INITIAL_VISIBLE_COLUMNS = [
 export default function App() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
+  const [totalPages, setTotalPages] = React.useState(1);
 
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
@@ -84,24 +81,19 @@ export default function App() {
     setDeleteConfirmationOpen(false);
   };
 
-  // const confirmDelete = () => {
-  //   if (idToDelete) {
-  //     deleteKhuyenMai(idToDelete)
-  //       .then((response) => {
-  //         console.log(`Delete successful for row ID: ${idToDelete}`);
-  //         toast("🎉 Xóa thành công");
-  //         // Remove the deleted item from the state
-  //         setKhuyenMais((prevKhuyenMais) =>
-  //           prevKhuyenMais.filter((item) => item.id !== idToDelete)
-  //         );
-  //       })
-  //       .catch((error) => {
-  //         console.error(`Error deleting record for ID: ${idToDelete}`, error);
-  //       });
-
-  //     cancelDelete(); // Close the dialog after deletion
-  //   }
-  // };
+  const confirmDelete =async () => {
+    if (idToDelete) {
+      await axios.delete(`http://localhost:8080/delete/${idToDelete}`)
+        .then((response) => {
+          toast("🎉 Xóa thành công");
+          cancelDelete();
+        })
+        .catch((error) => {
+          toast("😢 Xóa thất bại");
+        });
+      cancelDelete();
+    }
+  };
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -212,9 +204,12 @@ export default function App() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem>Xem</DropdownItem>
-                <DropdownItem>Chỉnh sửa</DropdownItem>
-                <DropdownItem onClick={() => handleDelete(sanPham.id)}>
+                <DropdownItem>
+                <Link to={`/edit-san-pham/${sanPham.ma}`} style={{display:"block"}} className="button-link group relative">
+                  Chi tiết
+                </Link>
+                </DropdownItem>
+                <DropdownItem onClick={() => handleDelete(sanPham.ma)}>
                   Xóa
                 </DropdownItem>
               </DropdownMenu>
@@ -225,7 +220,7 @@ export default function App() {
         return cellValue;
     }
   }, []);
-
+  
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
@@ -240,6 +235,7 @@ export default function App() {
 
   const onRowsPerPageChange = React.useCallback((e) => {
     setRowsPerPage(Number(e.target.value));
+    setTotalPages(Math.ceil(filteredItems.length / Number(e.target.value)));
     setPage(1);
   }, []);
 
@@ -365,7 +361,7 @@ export default function App() {
           showShadow
           color="primary"
           page={page}
-          total={pages}
+          total={totalPages}
           onChange={setPage}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
@@ -402,7 +398,6 @@ export default function App() {
           wrapper: "max-h-[382px]",
         }}
         selectedKeys={selectedKeys}
-        // selectionMode="multiple"
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
@@ -463,7 +458,7 @@ export default function App() {
           </Button>
           <Button
             color="primary"
-            // onClick={confirmDelete}
+            onClick={confirmDelete}
           >
             Vẫn xóa
           </Button>

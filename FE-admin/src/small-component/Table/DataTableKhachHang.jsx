@@ -21,9 +21,22 @@ export default function DataTable() {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
   const [idToDelete, setIdToDelete] = React.useState(null);
   const columns = [
-    { field: "id", headerName: "STT", width: 100,align: "center"},
-    { field: "ma", headerName: "Ảnh", width: 200,padding:100,align: "center" },
-    { field: "ten", headerName: "Tên khách hàng", width: 240 },
+    { field: "id", headerName: "STT", width: 130,align: "center"},
+    {
+      field: 'anh',
+      headerName: 'Ảnh',
+      width: 213,
+      padding: 100,
+      align: 'center',
+      renderCell: (params) => (
+        <img
+          src={params.value}  
+          alt="Ảnh"
+          style={{ width: 80, height: 70 }} 
+        />
+      ),
+    },
+    { field: "ten", headerName: "Tên khách hàng", width: 240,align: "center" },
     {
       field: "cccd",
       headerName: "CCCD",
@@ -37,10 +50,18 @@ export default function DataTable() {
     align: "center"
     },
     {
-    field: "ngaySinh",
-    headerName: "Ngày sinh",
-    width: 206,
-    align: "center"
+      field: "ngaySinh",
+      headerName: "Ngày sinh",
+      width: 206,
+      align: "center",
+      valueFormatter: (params) => {
+        const date = new Date(params.value);
+        const day = date.getDate();
+        const month = date.getMonth() + 1; //tháng trong JavaScript bắt đầu từ 0
+        const year = date.getFullYear();
+  
+        return `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`;
+      },
     },
     {
       field: "trangThai",
@@ -77,7 +98,7 @@ export default function DataTable() {
       renderCell: (params) => (
         <TableCell>
           <div className="flex items-center">
-            <Link to={`/edit-san-pham/${params.row.ma}`} className="button-link group relative">
+            <Link to={`/edit-khach-hang/${params.row.maKH}`} className="button-link group relative">
               <LiaEyeSolid
               description="Chi tiết"
                className="cursor-pointer text-xl blue-hover mr-4" />
@@ -89,7 +110,7 @@ export default function DataTable() {
               <MdDeleteOutline
                 className="cursor-pointer text-xl delete-hover relative"
                 onClick={() => 
-                  handleOpenConfirmDelete(params.row.ma)}
+                  handleOpenConfirmDelete(params.row.maKH)}
               />
               <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span>
             </div>
@@ -133,10 +154,13 @@ export default function DataTable() {
         console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
           id: index + 1,
-          ma: item.ma,
+          maKH : item.ma,
+          anh: item.anhNguoiDung,
           ten: item.ten,
-          soLuongTon: item.so_luong_ton,
-          trangThai: item.trang_thai == 1 ? "Kích hoạt" : "Chưa kích hoạt"
+          cccd: item.cccd,
+          sdt : item.sdt,
+          ngaySinh : item.ngaySinh,
+          trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt"
         }));
         setRows(updatedRows);
       } catch (error) {
@@ -150,6 +174,7 @@ export default function DataTable() {
       <DataGrid
         rows={rows}
         columns={columns}
+        rowHeight={80}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },

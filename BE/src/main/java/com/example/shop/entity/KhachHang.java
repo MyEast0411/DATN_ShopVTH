@@ -35,6 +35,9 @@ public class KhachHang {
     @Column(name = "cccd")
     private String cccd;
 
+    @Column(name = "ngay_sinh")
+    private Date ngaySinh;
+
     @Column(name = "gioi_tinh")
     private String gioiTinh;
 

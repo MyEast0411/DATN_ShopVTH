@@ -36,6 +36,7 @@ import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
+import { format } from 'date-fns';
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 const columns = [
@@ -131,14 +132,12 @@ export default function App() {
     async function fetchKhuyenMais() {
       try {
         const data = await getAllKhuyenMai();
-
         const khuyenMaisFormatted = data.map((khuyenMai, index) => ({
           ...khuyenMai,
-          stt: index + 1,
-          ngayBatDau: formateDateVietNam(khuyenMai.ngayBatDau),
-          ngayKetThuc: formateDateVietNam(khuyenMai.ngayKetThuc),
+          stt: index +1,
+          ngayBatDau: format(new Date(khuyenMai.ngayBatDau), "yyyy-MM-dd HH:mm"),
+          ngayKetThuc: format(new Date(khuyenMai.ngayKetThuc), "yyyy-MM-dd HH:mm"),
         }));
-
         setKhuyenMais(khuyenMaisFormatted);
       } catch (error) {
         console.error("Lỗi khi gọi API: ", error);
@@ -223,15 +222,7 @@ export default function App() {
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem>Xem</DropdownItem>
-
-                <DropdownItem>
-                  <Link
-                    to={`/them-khuyen-mai/${khuyenMai.id}`}
-                    style={{ display: "block" }}
-                  >
-                    Chỉnh sửa
-                  </Link>
-                </DropdownItem>
+                <DropdownItem>Chỉnh sửa</DropdownItem>
                 <DropdownItem onClick={() => handleDelete(khuyenMai.id)}>
                   Xóa
                 </DropdownItem>
@@ -339,6 +330,11 @@ export default function App() {
                 ))}
               </DropdownMenu>
             </Dropdown>
+            <Link to={"/them-khuyen-mai"}>
+              <Button color="primary" endContent={<PlusIcon />}>
+                Thêm mới
+              </Button>
+            </Link>
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -372,11 +368,11 @@ export default function App() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        {/* <span className="w-[30%] text-small text-default-400">
+        <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
             : `${selectedKeys.size} khyến mại đã được chọn`}
-        </span> */}
+        </span>
         <Pagination
           isCompact
           showControls
