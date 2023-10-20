@@ -36,6 +36,7 @@ import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
+import { format } from 'date-fns';
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 const columns = [
@@ -131,14 +132,12 @@ export default function App() {
     async function fetchKhuyenMais() {
       try {
         const data = await getAllKhuyenMai();
-
         const khuyenMaisFormatted = data.map((khuyenMai, index) => ({
           ...khuyenMai,
           stt: index +1,
-          ngayBatDau: formateDateVietNam(khuyenMai.ngayBatDau),
-          ngayKetThuc: formateDateVietNam(khuyenMai.ngayKetThuc),
+          ngayBatDau: format(new Date(khuyenMai.ngayBatDau), "yyyy-MM-dd HH:mm"),
+          ngayKetThuc: format(new Date(khuyenMai.ngayKetThuc), "yyyy-MM-dd HH:mm"),
         }));
-
         setKhuyenMais(khuyenMaisFormatted);
       } catch (error) {
         console.error("Lỗi khi gọi API: ", error);

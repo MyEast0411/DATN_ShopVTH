@@ -65,8 +65,8 @@ export default function ThemKhuyenMai() {
       const khuyenMai = {
         ten: ten,
         giaTriPhanTram: giaTriPhanTram,
-        ngayBatDau: ngayBatDau,
-        ngayKetThuc: ngayKetThuc,
+        ngayBatDau: new Date(ngayBatDau).toISOString(),
+        ngayKetThuc: new Date(ngayKetThuc).toISOString(),
       };
       console.log(khuyenMai);
       const response = await addKhuyenMai(khuyenMai);
