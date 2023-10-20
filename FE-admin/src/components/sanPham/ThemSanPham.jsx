@@ -289,7 +289,6 @@ export default function ThemSanPham() {
     for (const mau of selectedColors) {
       for (const kichCo of selectedKichCo) {
         const sanPhamItem = {
-          id: index += 1,
           ten: sanPham.ten,
           tenSanPham: `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ''} ]`,
           soLuongTon: 1,
@@ -309,7 +308,7 @@ export default function ThemSanPham() {
       }
     }
     setTableData(tableData);
-    console.log(tableData);
+
     for (const mau of selectedColors) {
       const spByColor = selectedKichCo.map((kichCo) => ({
         id: index+=1,
@@ -335,7 +334,7 @@ export default function ThemSanPham() {
   };
   useEffect(() => {
     groupProductsByColor();
-  }, []);
+  }, [selectedColors,selectedKichCo]);
 
   useEffect(() => {
     getAllDG();

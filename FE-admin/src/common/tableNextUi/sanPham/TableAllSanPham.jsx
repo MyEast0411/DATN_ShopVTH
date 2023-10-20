@@ -69,6 +69,7 @@ const INITIAL_VISIBLE_COLUMNS = [
 export default function App() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
+  const [totalPages, setTotalPages] = React.useState(1);
 
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
@@ -203,8 +204,11 @@ export default function App() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem>Xem</DropdownItem>
-                <DropdownItem>Chỉnh sửa</DropdownItem>
+                <DropdownItem>
+                <Link to={`/edit-san-pham/${sanPham.ma}`} style={{display:"block"}} className="button-link group relative">
+                  Chi tiết
+                </Link>
+                </DropdownItem>
                 <DropdownItem onClick={() => handleDelete(sanPham.ma)}>
                   Xóa
                 </DropdownItem>
@@ -216,7 +220,7 @@ export default function App() {
         return cellValue;
     }
   }, []);
-
+  
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
@@ -231,6 +235,7 @@ export default function App() {
 
   const onRowsPerPageChange = React.useCallback((e) => {
     setRowsPerPage(Number(e.target.value));
+    setTotalPages(Math.ceil(filteredItems.length / Number(e.target.value)));
     setPage(1);
   }, []);
 
@@ -356,7 +361,7 @@ export default function App() {
           showShadow
           color="primary"
           page={page}
-          total={pages}
+          total={totalPages}
           onChange={setPage}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">

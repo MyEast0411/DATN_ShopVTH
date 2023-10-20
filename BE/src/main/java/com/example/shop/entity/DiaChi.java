@@ -24,8 +24,11 @@ public class DiaChi {
     @Column(name = "thanh_pho")
     private String thanhPho;
 
-    @Column(name = "tinh")
-    private String tinh;
+    @Column(name = "huyen")
+    private String huyen;
+
+    @Column(name = "xa")
+    private String xa;
 
     @Column(name = "quoc_gia")
     private String quocGia;
