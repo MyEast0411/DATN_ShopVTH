@@ -30,20 +30,40 @@ public class KhuyenMaiController {
     public List<KhuyenMai> findAll() {
         return khuyenMaiService.findAllByDeleted(0);
     }
+
     @PostMapping("/add")
-    ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai) {
+    public ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai) {
         try {
-            khuyenMai.setMa(generateUniqueMaKhuyenMai());
-            khuyenMai.setNgayTao(new Date());
-            khuyenMai.setDeleted(0);
-            khuyenMaiService.save(khuyenMai);
-            System.out.println(khuyenMai.getMa());
-            return ResponseEntity.ok("Thành công");
-        }catch (Exception e) {
+            if (khuyenMai.getId() != null) {
+                // Nếu khuyến mãi có ID (đã tồn tại), cập nhật nó
+                Optional<KhuyenMai> existingKhuyenMai = khuyenMaiService.findById(khuyenMai.getId());
+                if (existingKhuyenMai.isPresent()) {
+                    KhuyenMai existing = existingKhuyenMai.get();
+                    existing.setTen(khuyenMai.getTen());
+                    existing.setNgayBatDau(khuyenMai.getNgayBatDau());
+                    existing.setNgayKetThuc(khuyenMai.getNgayKetThuc());
+                    existing.setGiaTriPhanTram(khuyenMai.getGiaTriPhanTram());
+                    existing.setDeleted(0);
+                    khuyenMaiService.save(existing);
+                    return ResponseEntity.ok("Cập nhật thành công");
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khuyến mãi không tồn tại");
+                }
+            } else {
+                // Nếu khuyến mãi không có ID (chưa tồn tại), thêm mới nó
+                khuyenMai.setMa(generateUniqueMaKhuyenMai());
+                khuyenMai.setNgayTao(new Date());
+                khuyenMai.setDeleted(0);
+                khuyenMaiService.save(khuyenMai);
+                System.out.println(khuyenMai.getMa());
+                return ResponseEntity.ok("Thêm mới thành công");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
     }
+
 
     @GetMapping("/find-khuyenMai-byId/{id}")
     public ResponseEntity<KhuyenMai> findById(@PathVariable String id) {

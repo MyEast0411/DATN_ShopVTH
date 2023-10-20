@@ -41,7 +41,7 @@ public class KhuyenMai {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ngay_sua")
-    private Date ngaySua;
+    private Date ngaySua = new Date();
 
     @Column(name = "nguoi_tao")
     private String nguoiTao;

@@ -38,17 +38,23 @@ Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 const url = "http://localhost:8080/chi-tiet-san-pham";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "Mã", uid: "ma", sortable: true },
-  { name: "Tên", uid: "ten", sortable: true },
-  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true },
+  { name: "Ảnh", uid: "anh" },
+  { name: "Tên", uid: "ma", sortable: true },
+  { name: "Kích thước", uid: "kichThuoc", sortable: true },
+  { name: "Màu", uid: "mau" },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
-  // { name: "Hành Động", uid: "hanhDong" },
+  { name: "Tình trạng", uid: "tinhTrang" },
 ];
 
 const statusOptions = [
   { name: "Đang bán", uid: "Đang bán" },
   { name: "Ngừng bán", uid: "Ngừng bán" },
 ];
+
+const formateDateVietNam = (dateTimeStr) => {
+  const vietNamTime = DateTime.fromISO(dateTimeStr, { zone: "utc" });
+  return vietNamTime.toFormat("dd/MM/yyyy HH:mm");
+};
 
 const statusColorMap = {
   active: "success",
@@ -58,7 +64,15 @@ const statusColorMap = {
 statusColorMap["Đang bán"] = "success";
 statusColorMap["Ngừng bán"] = "danger";
 
-const INITIAL_VISIBLE_COLUMNS = ["stt", "ma", "ten", "trangThai", "hanhDong"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "stt",
+  "anh",
+  "ten",
+  "kichThuoc",
+  "mau",
+  "trangThai",
+  "tinhTrang",
+];
 
 export default function App() {
   const [filterValue, setFilterValue] = React.useState("");
@@ -73,27 +87,27 @@ export default function App() {
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
-  const [sanPhams, setSanPhams] = React.useState([]);
+  const [chiTietSanPhams, setChiTietSanPhams] = React.useState([]);
 
-  React.useEffect(() => {
-    async function fetchChiTietSanPham() {
-      try {
-        const response = await axios.get(url);
-        const updatedRows = response.data.map((item, index) => ({
-          id: index + 1,
-          stt: index + 1,
-          ma: item.ma,
-          ten: item.ten_san_pham,
-          soLuongTon: item.so_luong_ton,
-          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
-        }));
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
-    }
-    fetchChiTietSanPham();
-  }, [sanPhams]);
+  //   React.useEffect(() => {
+  //     async function fetchChiTietSanPham() {
+  //       try {
+  //         const response = await axios.get(url);
+  //         const updatedRows = response.data.map((item, index) => ({
+  //           id: index + 1,
+  //           stt: index + 1,
+  //           ma: item.ma,
+  //           ten: item.ten_san_pham,
+  //           soLuongTon: item.so_luong_ton,
+  //           trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
+  //         }));
+  //         setSanPhams(updatedRows);
+  //       } catch (error) {
+  //         console.error("Lỗi khi gọi API: ", error);
+  //       }
+  //     }
+  //     fetchChiTietSanPham();
+  //   }, [sanPhams]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -107,24 +121,25 @@ export default function App() {
 
   const filteredItems = React.useMemo(() => {
     const filterText = filterValue.toLowerCase();
-    let filteredSanPhams = [...sanPhams];
+    let filteredChiTietSanPhams = [...chiTietSanPhams];
 
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredSanPhams = filteredSanPhams.filter((sanPham) =>
-        Array.from(statusFilter).includes(sanPham.trangThai)
+      filteredChiTietSanPhams = filteredChiTietSanPhams.filter(
+        (chiTietSanPham) =>
+          Array.from(statusFilter).includes(chiTietSanPham.trangThai)
       );
-      return filteredSanPhams;
+      return filteredChiTietSanPhams;
     }
 
-    return sanPhams.filter((sanPham) =>
-      Object.values(sanPham).some((value) =>
+    return chiTietSanPhams.filter((chiTietSanPham) =>
+      Object.values(chiTietSanPham).some((value) =>
         String(value).toLowerCase().includes(filterText)
       )
     );
-  }, [sanPhams, filterValue, statusFilter]);
+  }, [chiTietSanPhams, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -145,15 +160,15 @@ export default function App() {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((sanPham, columnKey) => {
-    const cellValue = sanPham[columnKey];
+  const renderCell = React.useCallback((chiTietSanPham, columnKey) => {
+    const cellValue = chiTietSanPham[columnKey];
 
     switch (columnKey) {
       case "trangThai":
         return (
           <Chip
             // className="capitalize"
-            color={statusColorMap[sanPham.trangThai]}
+            color={statusColorMap[chiTietSanPham.trangThai]}
             size="sm"
             variant="flat"
           >
@@ -171,10 +186,6 @@ export default function App() {
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem>Xem</DropdownItem>
-                <DropdownItem>Chỉnh sửa</DropdownItem>
-                <DropdownItem onClick={() => handleDelete(sanPham.id)}>
-                  Xóa
-                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -283,7 +294,7 @@ export default function App() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Tổng {sanPhams.length} sản phẩm
+            Tổng {chiTietSanPhams.length} sản phẩm chi tiết
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
@@ -304,7 +315,7 @@ export default function App() {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    sanPhams.length,
+    chiTietSanPhams.length,
     onSearchChange,
     hasSearchFilter,
   ]);

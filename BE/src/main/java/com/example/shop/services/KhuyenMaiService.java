@@ -20,20 +20,20 @@ public class KhuyenMaiService {
     @Autowired
     KhuyenMaiRepository khuyenMaiRepo;
 
-    public List<KhuyenMai> findAllByDeleted(int deleted) {
-        return khuyenMaiRepo.findAllByDeleted(deleted);
-    }
-
     public List<KhuyenMai> findAll() {
         return khuyenMaiRepo.findAll();
     }
 
-    public void flush() {
-        khuyenMaiRepo.flush();
-    }
-
     public KhuyenMai findByMa(String ma) {
         return khuyenMaiRepo.findByMa(ma);
+    }
+
+    public List<KhuyenMai> findAllByDeleted(int deleted) {
+        return khuyenMaiRepo.findAllByDeleted(deleted);
+    }
+
+    public void flush() {
+        khuyenMaiRepo.flush();
     }
 
     public <S extends KhuyenMai> S saveAndFlush(S entity) {
