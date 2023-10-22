@@ -29,6 +29,8 @@ export default function Voucher() {
   const [list, setList] = useState([]);
 
   // modal
+  const [modal1Open, setModal1Open] = useState(false);
+  const [modal2Open, setModal2Open] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -47,9 +49,6 @@ export default function Voucher() {
           giaTriMax: item.giaTriMax,
           trangThai: item.trangThai,
           tinhTrang: convertTinhTrang(
-            // item.ngayBatDau,
-            // item.ngayKetThuc
-
             format(new Date(item.ngayBatDau), "yyyy-MM-dd hh:mm:ss"),
             format(new Date(item.ngayKetThuc), "yyyy-MM-dd hh:mm:ss")
           ),
@@ -86,6 +85,7 @@ export default function Voucher() {
         className="bg-white"
         style={{
           fontSizfe: "8px",
+          paddingLeft: 10,
         }}
       >
         <div className="mb-2 border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
@@ -129,17 +129,76 @@ export default function Voucher() {
             <HiOutlineClipboardList />
             <p className="ml-2 mt-1"> Danh sách</p>
           </div>
-          <Link to={"/add-voucher"}>
+          <div className="row">
             <Button
               type="primary"
+              onClick={() => setModal1Open(true)}
+              style={{
+                backgroundColor: "red",
+                marginBottom: "2px",
+                marginRight: 4,
+              }}
+            >
+              Thêm Nhanh
+            </Button>
+
+            <Modal
+              title="Thêm Nhanh Voucher"
+              style={{ top: 20 }}
+              open={modal1Open}
+              onOk={() => setModal1Open(false)}
+              onCancel={() => setModal1Open(false)}
+            >
+              <p>Thêm nhanh voucher</p>
+            </Modal>
+
+            <Button
+              type="primary"
+              onClick={() => setModal2Open(true)}
+              style={{
+                backgroundColor: "green",
+                marginBottom: "2px",
+                marginRight: 4,
+              }}
+            >
+              Thêm Nhiều
+            </Button>
+
+            <Modal
+              title="Thêm Nhiều Voucher"
+              style={{ top: 20 }}
+              open={modal2Open}
+              onOk={() => setModal2Open(false)}
+              onCancel={() => setModal2Open(false)}
+            >
+              <p>Thêm nhiều voucher</p>
+            </Modal>
+
+            <Button
+              type="primary"
+              disabled
               style={{
                 backgroundColor: "#1976d2",
                 marginBottom: "2px",
+                marginRight: 4,
               }}
             >
-              Thêm
+              Import
             </Button>
-          </Link>
+
+            <Link to={"/add-voucher"}>
+              <Button
+                type="primary"
+                style={{
+                  backgroundColor: "#1976d2",
+                  marginBottom: "2px",
+                  marginRight: 4,
+                }}
+              >
+                Thêm
+              </Button>
+            </Link>
+          </div>
         </div>
         <TableCommon
           pageSize={5}

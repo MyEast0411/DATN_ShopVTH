@@ -102,7 +102,7 @@ export default function ThemKhuyenMai() {
         >
           <h2
             className="text-xl mb-1 font-bold text-gray-800"
-            style={{ backgroundColor: "#f1f1f1", }}
+            style={{ backgroundColor: "#f1f1f1" }}
           >
             Sản phẩm
           </h2>

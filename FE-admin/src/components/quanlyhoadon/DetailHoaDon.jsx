@@ -5,7 +5,10 @@ import axios from "axios";
 import { Table, Tag, message, Modal, Input } from "antd";
 import { format } from "date-fns";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
-import { FaBug, FaRegCalendarCheck, FaRegFileAlt } from "react-icons/fa";
+import { GiConfirmed, GiReceiveMoney } from "react-icons/gi";
+import { LuPackageCheck } from "react-icons/lu";
+import { FaShippingFast, FaFileInvoice } from "react-icons/fa";
+import { TbPackages } from "react-icons/tb";
 
 export default function DetailHoaDon() {
   const { id } = useParams();
@@ -54,6 +57,21 @@ export default function DetailHoaDon() {
     });
   };
 
+  const addLichSuHoaDon = async () => {
+    await axios
+      .post(`http://localhost:8080/lich_su_thanh_toan/add/${id}`, {
+        moTaHoaDon: listTitleTimline[currentTimeLine].title,
+        deleted: 0,
+        nguoiTao: "Cam",
+      })
+      .then((response) => {
+        setCurrentTimeLine(currentTimeLine + 1);
+        success(`${listTitleTimline[currentTimeLine].title} thành công`);
+        hideModal();
+        getDataLichSu();
+      });
+  };
+
   const onHandleTimeLineChange = () => {
     if (currentTimeLine < 5) {
       Modal.confirm({
@@ -61,9 +79,7 @@ export default function DetailHoaDon() {
         okText: "Yes",
         okType: "danger",
         onOk: () => {
-          setCurrentTimeLine(currentTimeLine + 1);
-          success(`${listTitleTimline[currentTimeLine].title} thành công`);
-          hideModal();
+          addLichSuHoaDon();
         },
       });
     }
@@ -171,6 +187,7 @@ export default function DetailHoaDon() {
                 " hh:mm:ss ,   dd-MM-yyyy"
               ),
               description: listTitleTimline[index].title,
+              icon: listTitleTimline[index].icon,
             };
           })
         );
@@ -206,20 +223,27 @@ export default function DetailHoaDon() {
       <div className="conatiner mx-auto space-y-5">
         <div className="row timeline bg-white">
           <div className="row timeline justify-center" style={{ height: 300 }}>
-            <Timeline minEvents={5} placeholder>
-              {listTimeLineOnline.map((item) => (
+            {info.loaiHd === 1 ? (
+              <Timeline minEvents={5} placeholder>
+                {listTimeLineOnline.map((item) => (
+                  <TimelineEvent
+                    color="#9c2919"
+                    icon={GiConfirmed}
+                    title={item.description}
+                    subtitle={item.subtitle}
+                  />
+                ))}
+              </Timeline>
+            ) : (
+              <Timeline minEvents={1} placeholder>
                 <TimelineEvent
                   color="#9c2919"
-                  icon={FaBug}
-                  title={item.description}
-                  subtitle={item.subtitle}
-                  // action={{
-                  //   label: "Ver detalhes...",
-                  //   onClick: () => window.alert("Erro!"),
-                  // }}
+                  icon={TbPackages}
+                  title="Thành công"
+                  subtitle="dfasda"
                 />
-              ))}
-            </Timeline>
+              </Timeline>
+            )}
           </div>
           <div className="row button-contact p-4 grid grid-cols-2">
             <div className="row ">
@@ -496,18 +520,23 @@ export default function DetailHoaDon() {
 const listTitleTimline = [
   {
     title: "Xác Nhận",
+    icon: { GiConfirmed },
   },
   {
     title: "Đóng Hàng",
+    icon: { LuPackageCheck },
   },
   {
     title: "Vận Đơn",
+    icon: { FaFileInvoice },
   },
   {
-    title: "Chuyển",
+    title: "Chuyển Ship",
+    icon: { GiReceiveMoney },
   },
   {
     title: "Giao Hàng",
+    icon: { FaShippingFast },
   },
 ];
 

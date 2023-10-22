@@ -14,6 +14,7 @@ import EditVoucher from "./components/voucher/EditVoucher";
 import DetailHoaDon from "./components/quanlyhoadon/DetailHoaDon";
 import DetailVoucher from "./components/voucher/DetailVoucher";
 import AddVoucher from "./components/voucher/AddVoucher";
+import Test from "./components/voucher/Test,";
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
         <Route path="/voucher" element={<Voucher />} />
         <Route path="/detail-hoa-don/:id" element={<DetailHoaDon />} />
         <Route path="/quan-ly-hoa-don" element={<QuanLyHoaDon />} />
+        <Route path="/test" element={<Test />} />
 
         <Route path="/quan-ly-san-pham" element={<Build />}>
           <Route path=":bID">
