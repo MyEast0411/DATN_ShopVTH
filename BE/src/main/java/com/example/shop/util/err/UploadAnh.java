@@ -49,10 +49,10 @@ public class UploadAnh {
 //            System.err.println("Không tìm thấy tệp ảnh.");
 //        }
 //    }
-    public String upload(String urlImg) {
-        urlImg = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
+    public static String upload(String urlImg) {
+        //urlImg = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
 
-        File imageFile = new File(urlImg);
+        File imageFile = new File("C:\\Users\\ASUS\\Pictures\\Saved Pictures\\"+urlImg);
 
         if (imageFile.exists()) {
             try {
