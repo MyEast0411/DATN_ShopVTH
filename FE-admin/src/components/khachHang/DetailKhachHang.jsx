@@ -11,7 +11,7 @@ import {
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Accordion, AccordionItem, Avatar } from "@nextui-org/react";
+import { Accordion, AccordionItem, Avatar, Button } from "@nextui-org/react";
 
 import {
   Dialog,
@@ -20,10 +20,10 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { Button } from "@nextui-org/react";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { AiOutlineCamera } from "react-icons/ai";
 export default function ThemKhachHang() {
   let navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
@@ -265,10 +265,10 @@ export default function ThemKhachHang() {
           {/* <h1 className='font-medium mt-4 text-2xl mb-5'>Ảnh đại diện</h1> */}
           <div className="anh-dai-dien mt-14 flex justify-center">
             <div
-              className="relative cursor-pointer"
+              className="relative mb-10"
               style={{
-                width: "300px",
-                height: "300px",
+                width: "250px",
+                height: "250px",
                 backgroundColor: "white",
                 borderRadius: "50%",
                 border: "1px dashed #ccc",
@@ -276,16 +276,11 @@ export default function ThemKhachHang() {
               }}
               ref={imgDivRef}
             >
-              <span
-                className="absolute text-4xl"
-                style={{ top: "40%", left: "47%" }}
+              <div
+                className="absolute blue-hover inline-block cursor-pointer hover:text-sky-700 text-center text-3xl"
+                style={{ bottom: "-35px", left: "45%" }}
               >
-                +
-              </span>
-              <div className="absolute" style={{ top: "54%", left: "42%" }}>
-                <button onClick={() => fileInputRef.current.click()}>
-                  Tải ảnh
-                </button>
+                <AiOutlineCamera onClick={() => fileInputRef.current.click()} />
               </div>
             </div>
           </div>
@@ -297,10 +292,7 @@ export default function ThemKhachHang() {
             ref={fileInputRef}
           />
           <div className="mb-1 p-5">
-            <label
-              htmlFor="phone"
-              className="block text-xl font-medium text-gray-900"
-            >
+            <label htmlFor="phone" className="block  font-medium text-gray-900">
               Tên khách hàng
             </label>
             <input
@@ -318,10 +310,7 @@ export default function ThemKhachHang() {
             />
           </div>
           <div className="p-5">
-            <label
-              htmlFor="phone"
-              className="block text-xl font-medium text-gray-900"
-            >
+            <label htmlFor="phone" className="block  font-medium text-gray-900">
               Căn cước công dân
             </label>
             <input
@@ -341,7 +330,7 @@ export default function ThemKhachHang() {
           <div className="p-5">
             <label
               htmlFor="email"
-              className="block pt-2 text-xl font-medium text-gray-900"
+              className="block pt-2  font-medium text-gray-900"
             >
               Email
             </label>
@@ -361,10 +350,7 @@ export default function ThemKhachHang() {
             />
           </div>
           <div className="p-5">
-            <label
-              htmlFor="phone"
-              className="block text-xl font-medium text-gray-900"
-            >
+            <label htmlFor="phone" className="block  font-medium text-gray-900">
               Ngày sinh
             </label>
             <input
@@ -387,10 +373,7 @@ export default function ThemKhachHang() {
           </div>
 
           <div className="p-5">
-            <label
-              htmlFor="phone"
-              className="block text-xl font-medium text-gray-900"
-            >
+            <label htmlFor="phone" className="block  font-medium text-gray-900">
               Số điện thoại
             </label>
             <input
@@ -413,9 +396,8 @@ export default function ThemKhachHang() {
               <FormLabel
                 id="demo-controlled-radio-buttons-group"
                 style={{
+                  color: "#212125",
                   fontWeight: "bold",
-                  color: "#212121",
-                  fontSize: "20px",
                 }}
               >
                 Giới tính
@@ -504,8 +486,16 @@ export default function ThemKhachHang() {
             </AccordionItem>
           </Accordion>
           <div className="">
-            <Button type="primary" onClick={showModal}>
-              Thêm địa chỉ
+            <Button
+              className="mt-5"
+              style={{
+                backgroundColor: "#1976d2",
+                color: "#fff",
+                marginBottom: "2px",
+              }}
+              onClick={showModal}
+            >
+              + Thêm địa chỉ
             </Button>
             <Modal
               title="Thêm địa chỉ"
@@ -607,20 +597,27 @@ export default function ThemKhachHang() {
             </Modal>
 
             <div className="mt-36 flex items-center justify-end gap-x-6">
-              <Link
-                to="/quan-ly-tai-khoan/khach-hang"
-                type="button"
-                className="text-sm rounded-md  font-semibold leading-6 text-gray-900"
+              <Button
+                onClick={() => navigate("/quan-ly-tai-khoan/khach-hang")}
+                style={{
+                  backgroundColor: "#1976d2",
+                  color: "#fff",
+                  marginBottom: "2px",
+                }}
               >
-                Cancel
-              </Link>
-              <button
-                type="button"
-                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                Hủy
+              </Button>
+
+              <Button
+                style={{
+                  backgroundColor: "#1976d2",
+                  color: "#fff",
+                  marginBottom: "2px",
+                }}
                 onClick={handleAdd}
               >
-                Cập nhật thông tin
-              </button>
+                Cập nhật địa chỉ
+              </Button>
             </div>
           </div>
         </div>

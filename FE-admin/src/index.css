@@ -79,6 +79,11 @@ input[type="number"] {
   transition: 0.06s;
 }
 
+.yellow-hover:hover{
+  color: #FFCD4B;
+  transition: 0.06s;
+}
+
 .ant-btn.ant-btn-sm {
   color: black;
 }
@@ -100,6 +105,4 @@ input[type="number"] {
   border: 2px solid yellow;
 }
 
-
 /* ToolTip */
-
