@@ -84,7 +84,8 @@ const INITIAL_VISIBLE_COLUMNS = [
 export default function App() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
-
+  const [totalPages, setTotalPages] = React.useState(1);
+  
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);

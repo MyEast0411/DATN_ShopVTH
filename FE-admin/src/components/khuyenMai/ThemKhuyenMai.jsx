@@ -46,8 +46,7 @@ export default function ThemKhuyenMai() {
   const handleNgayKetThucChange = (e) => {
     const newValue = e.target.value;
     console.log("Ngày kết thúc input: " + newValue);
-    setNgayBatDau(newValue);
-    setSelectedEndDate(newValue);
+    setNgayKetThuc(newValue);
   };
 
   const minDate = `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}`;
@@ -129,7 +128,7 @@ export default function ThemKhuyenMai() {
             backgroundColor: "white",
             padding: "10px",
             borderRadius: "5px",
-            boxShadow: " 0 0 5px 2px #ccc",
+            boxShadow: " 0 0 5px 1px #ccc",
             height: "100%",
             textOverflow: "none",
           }}
