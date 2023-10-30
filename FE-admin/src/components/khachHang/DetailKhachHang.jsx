@@ -133,6 +133,9 @@ export default function ThemKhachHang() {
                 setValueTP(item.code);
             }
         }); 
+        // getDistricts(valueTP).then((data) => {
+        //     setDistricts(data);
+        // });
         console.log(khachHangData.ngaySinh);
         setBackgroundImage(khachHangData.anhNguoiDung);
         setKhachHang({

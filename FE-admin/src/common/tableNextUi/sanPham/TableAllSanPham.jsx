@@ -22,17 +22,18 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  TableCell as TableCellMui
 } from "@mui/material";
 import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
 import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
 import { ChevronDownIcon } from "../../tableNextUi/khuyenMai/ChevronDownIcon";
 import { capitalize } from "../../tableNextUi/khuyenMai/utils";
-import { DateTime } from "luxon";
-import { Settings } from "luxon";
+import { Tooltip } from "antd";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { MdDeleteOutline } from "react-icons/md";
+import { LiaEyeSolid } from "react-icons/lia";
 const url = "http://localhost:8080/chi-tiet-san-pham";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -196,25 +197,32 @@ export default function App() {
         );
       case "hanhDong":
         return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>
-                <Link to={`/edit-san-pham/${sanPham.ma}`} style={{display:"block"}} className="button-link group relative">
-                  Chi tiết
-                </Link>
-                </DropdownItem>
-                <DropdownItem onClick={() => handleDelete(sanPham.ma)}>
-                  Xóa
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
+          <TableCellMui style={{textDecoration : "none", border:"none"}}>
+          <div className="flex w-10 h-3">
+            <Link to={`/edit-san-pham/${sanPham.ma}`} style={{display:"block"}} className="button-link group relative">
+                <Tooltip
+                  title="Chi tiết"
+                >
+                  <LiaEyeSolid
+                    description="Chi tiết"
+                    className="cursor-pointer text-xl blue-hover mr-4" 
+                    />
+                </Tooltip>
+            </Link>
+            <div className="group relative" style={{position : "relative"}}>
+              <Tooltip
+                  title="Xóa"
+                >
+                  <MdDeleteOutline
+                  className="cursor-pointer text-xl delete-hover relative"
+                  onClick={() => 
+                  handleDelete(sanPham.ma)}
+                />
+                </Tooltip>
+              {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
+            </div>
+         </div>
+        </TableCellMui>
         );
       default:
         return cellValue;
@@ -256,8 +264,8 @@ export default function App() {
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
+        <div className="flex justify-end gap-3 items-end">
+          {/* <Input
             isClearable
             className="w-full sm:max-w-[30%]"
             placeholder="Tìm kiếm bất kỳ..."
@@ -265,10 +273,8 @@ export default function App() {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
-          />
-          {/* <Input type="datetime-local" label="Từ ngày" />
-          <Input type="datetime-local" label="Đến ngày"/> */}
-          <div className="flex gap-3">
+          /> */}
+          <div className="flex gap-3 items-end">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button

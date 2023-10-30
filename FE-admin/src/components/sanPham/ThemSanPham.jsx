@@ -15,14 +15,17 @@ import {
 //icon
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdDeleteOutline } from "react-icons/md";
-import { Button, Modal, Table } from "antd";
+import { Button, Modal, Table, Tooltip} from "antd";
+import { Table as TableImg} from "antd";
 import Badge from "@mui/material/Badge";
+import { PlusIcon } from "../../common/tableNextUi/khuyenMai/PlusIcon";
 
 export default function ThemSanPham() {
   let navigate = useNavigate();
   const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [tables, setTables] = useState([]);
+  const [tableImg, setTableImg] = useState([]);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
@@ -35,6 +38,9 @@ export default function ThemSanPham() {
   const [deGiay, setDeGiay] = useState([]);
   const [kichCo, setKichCo] = useState([]);
   const [nhanHieu, setNhanHieu] = useState([]);
+  const customText = {
+    emptyText: 'Không có hình ảnh'
+  };
   const [sanPham, setSanPham] = useState({
     ma: "",
     ten: "",
@@ -154,6 +160,30 @@ export default function ThemSanPham() {
       title: "Ảnh",
       dataIndex: "hinhAnh",
       key: "hinhAnh",
+      render: (text, record, index) => {
+        return {
+          children: (
+            <Tooltip
+              title="Click để thêm ảnh sản phẩm"
+            >
+              <PlusIcon 
+              style={{cursor : "pointer",
+              marginLeft : "100px",
+              marginTop : "-50px"
+              }}
+              />
+            </Tooltip>
+          ),
+          props: {
+            rowSpan: index,
+            style: {
+              justifyContent: "center",
+              alignItems: "center",
+            },
+          },
+        };
+      },
+      align: "center",
     }
   ];
   
@@ -332,6 +362,7 @@ export default function ThemSanPham() {
       }));
     }
   };
+
   useEffect(() => {
     groupProductsByColor();
   }, [selectedColors,selectedKichCo]);
@@ -662,6 +693,7 @@ export default function ThemSanPham() {
                           key={index}
                           onClick={() => handleRemoveColor(item)}
                         >
+                          <Tooltip title={mauSac.find((x) => x.maMau === item)?.ten || ''}>
                           <div
                             style={{
                               backgroundColor: item,
@@ -672,6 +704,7 @@ export default function ThemSanPham() {
                               height: "35px",
                             }}
                           ></div>
+                          </Tooltip>
                         </Badge>
                       ))
                     }
@@ -922,8 +955,15 @@ export default function ThemSanPham() {
                 pagination={false}
                 scroll={{ y: 2000 }}
               />
+              <TableImg
+                  dataSource={tableImg}
+                  pagination={false}
+                  scroll={{ y: 2000 }}
+                  locale={customText}
+              />
             </div>
           ))}
+          
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <Link
               to="/quan-ly-san-pham/san-pham"
