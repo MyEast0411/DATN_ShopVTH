@@ -26,20 +26,19 @@ export default function ThemKhachHang() {
     const [selectedProvince, setSelectedProvince] = useState('');
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
-  const handleAdd = () => {
-    setDeleteConfirmationOpen(true);
-  };
+    const handleAdd = () => {
+        setDeleteConfirmationOpen(true);
+    };
 
-  const cancelAdd = () => {
-    setDeleteConfirmationOpen(false);
-  };
+    const cancelAdd = () => {
+        setDeleteConfirmationOpen(false);
+    };
     useEffect(() => {
         getProvinces().then((data) => {
           setProvinces(data);
         });
       }, []);
     const handleProvinceChange = (provinceCode) => {
-        console.log(provinceCode);
         provinces.map((item) => {
             if(item.code == provinceCode) {
                 setKhachHang((prevKhachHang) => ({
@@ -48,14 +47,12 @@ export default function ThemKhachHang() {
                 }));
             }
         })
-        console.log(khachHang);
         getDistricts(provinceCode).then((data) => {
           setDistricts(data);
         });
     };
     
     const handleDistrictChange = (districtCode) => {
-        console.log(districtCode);
         districts.map((item) => {
             if(item.code == districtCode) {
                 setKhachHang((prevKhachHang) => ({
@@ -64,14 +61,12 @@ export default function ThemKhachHang() {
                 }));
             }
         })
-        console.log(khachHang);
         getWards(districtCode).then((data) => {
           setWards(data);
         });
     };
 
     const handleWardsChange = (wardsCode) => {
-        console.log(wardsCode);
         wards.map((item) => {
             if(item.code == wardsCode) {
                 setKhachHang((prevKhachHang) => ({
@@ -80,7 +75,6 @@ export default function ThemKhachHang() {
                 }));
             }
         })
-        console.log(khachHang);
     };
     const [khachHang, setKhachHang] = useState({
         ma: "",
@@ -167,9 +161,9 @@ export default function ThemKhachHang() {
         if (file) {
           const reader = new FileReader();
           reader.onload = (e) => {
-            console.log(file.name);
+            console.log(file);
             const imageUrl = e.target.result;
-            setKhachHang({ ...khachHang, anhNguoiDung: imgLink+file.name });
+            setKhachHang({ ...khachHang, anhNguoiDung: file.name });
             console.log(khachHang);
             imgDivRef.current.style.backgroundImage = `url(${imageUrl})`;
             imgDivRef.current.style.backgroundSize = 'cover';

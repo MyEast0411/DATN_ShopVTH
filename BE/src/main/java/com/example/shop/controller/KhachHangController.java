@@ -4,6 +4,7 @@ import com.example.shop.entity.DiaChi;
 import com.example.shop.entity.KhachHang;
 import com.example.shop.repositories.DiaChiRepository;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.util.err.UploadAnh;
 import com.example.shop.viewmodel.KhachHangVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,7 +54,6 @@ public class KhachHangController {
         Random random = new Random();
         int number = random.nextInt(seconds + 1);
         String threeNumbers = String.valueOf(number).substring(0, 3);
-        System.out.println(khachHang);
         DiaChi diaChi = new DiaChi();
         diaChi.setDuong(khachHang.getSoNha());
         diaChi.setThanhPho(khachHang.getThanhPho());
@@ -63,11 +63,12 @@ public class KhachHangController {
         DiaChi dc = diaChiRepository.save(diaChi);
         try {
             KhachHang kh = new KhachHang();
+            String urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
+            kh.setAnhNguoiDung(urlImg);
             kh.setMa("KH"+threeNumbers);
             kh.setCccd(khachHang.getCccd());
             kh.setTen(khachHang.getTen());
             kh.setEmail(khachHang.getEmail());
-            kh.setAnhNguoiDung(khachHang.getAnhNguoiDung());
             kh.setGioiTinh(khachHang.getGioi_tinh());
             kh.setNgaySinh(dateFormat.parse(khachHang.getNgay_sinh()));
             kh.setId_dia_chi(dc);
