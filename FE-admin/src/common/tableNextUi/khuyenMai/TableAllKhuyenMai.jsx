@@ -138,11 +138,11 @@ export default function App() {
           stt: index + 1,
           ngayBatDau: format(
             new Date(khuyenMai.ngayBatDau),
-            "yyyy-MM-dd HH:mm"
+            "dd-MM-yyyy HH:mm"
           ),
           ngayKetThuc: format(
             new Date(khuyenMai.ngayKetThuc),
-            "yyyy-MM-dd HH:mm"
+            "dd-MM-yyyy HH:mm"
           ),
         }));
         setKhuyenMais(khuyenMaisFormatted);
