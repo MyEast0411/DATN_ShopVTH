@@ -1,4 +1,4 @@
-package com.example.shop.util.err;
+package com.example.shop.util;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;

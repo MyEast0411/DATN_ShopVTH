@@ -161,7 +161,7 @@ export default function ThemKhachHang() {
         if (file) {
           const reader = new FileReader();
           reader.onload = (e) => {
-            console.log(file);
+            console.log(file.name);
             const imageUrl = e.target.result;
             setKhachHang({ ...khachHang, anhNguoiDung: file.name });
             console.log(khachHang);
