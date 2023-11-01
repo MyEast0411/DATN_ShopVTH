@@ -24,6 +24,9 @@ public class HinhAnh {
     @Column(name = "ten")
     private String ten;
 
+    @Column(name = "mau_sac")
+    private String mauSac;
+
     @Column(name = "ngay_tao")
     private Date ngayTao = new Date();
 

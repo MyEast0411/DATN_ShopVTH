@@ -43,6 +43,8 @@ public class SanPhamController {
     ThuongHieuRepository thuongHieuRepository;
     @Autowired
     NhanHieuRepository nhanHieuRepository;
+    @Autowired
+    HinhAnhRepository hinhAnhRepository;
 
     @GetMapping("/")
     List<SanPhamChiTiet> getAll(){
@@ -87,6 +89,10 @@ public class SanPhamController {
     @GetMapping("/getAllNH")
     List<NhanHieu> getAllNH(){
         return nhanHieuRepository.findAll();
+    }
+    @GetMapping("/getAllHA")
+    List<HinhAnh> getAllHA(){
+        return hinhAnhRepository.findAll();
     }
     public SanPhamVM convertToSanPhamVM(Object[] row) {
         SanPhamVM sanPhamVM = new SanPhamVM();
