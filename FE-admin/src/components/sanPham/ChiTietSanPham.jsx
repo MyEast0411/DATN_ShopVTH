@@ -8,7 +8,7 @@ import { Button } from "antd";
 import { Link } from "react-router-dom";
 
 //table
-import DataTableCTSP from "../../small-component/Table/DataTableCTSP";
+import TableSanPhamChiTiet from "../../common/table/sanPham/TableSanPhamChiTiet";
 
 //icon
 import { BiFilterAlt } from "react-icons/bi";
@@ -81,7 +81,7 @@ export default function ChiTietSanPham() {
             </Button>
           </Link>
         </div>
-        <DataTableCTSP />
+        <TableSanPhamChiTiet />
       </div>
     </>
   )

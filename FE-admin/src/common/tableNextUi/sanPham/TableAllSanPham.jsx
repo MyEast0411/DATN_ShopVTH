@@ -95,7 +95,7 @@ export default function App() {
       cancelDelete();
     }
   };
-
+  const sizes = ["md"]
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -361,15 +361,31 @@ export default function App() {
             ? "Đã chọn tất cả"
             : `${selectedKeys.size} khyến mại đã được chọn`}
         </span> */}
-        <Pagination
+        {/* <Pagination
           isCompact
           showControls
           showShadow
           color="primary"
           page={page}
           total={totalPages}
+          initialPage={1}
+          style={{paddingLeft : "730px"}}
           onChange={setPage}
-        />
+        /> */}
+        <div className="flex flex-wrap gap-4 items-center">
+      {sizes.map((size) => (
+        <Pagination
+         isCompact
+         showControls
+         key={size}
+         style={{paddingLeft : "710px"}}
+         total={totalPages+1} 
+         initialPage={1} 
+         size={size}
+         page={page}
+         onChange={setPage} />
+      ))}
+    </div>
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
             isDisabled={pages === 1}
