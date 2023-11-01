@@ -23,11 +23,11 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { PlusIcon } from "../../tableNextUi/khuyenMai/PlusIcon";
-import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
-import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
-import { ChevronDownIcon } from "../../tableNextUi/khuyenMai/ChevronDownIcon";
-import { capitalize } from "../../tableNextUi/khuyenMai/utils";
+import { PlusIcon } from "../../otherComponents/PlusIcon";
+import { VerticalDotsIcon } from "../../otherComponents/VerticalDotsIcon";
+import { SearchIcon } from "../../otherComponents/SearchIcon";
+import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
+import { capitalize } from "../../otherComponents/utils";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import { toast } from "react-toastify";

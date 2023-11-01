@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { InputNumber } from "antd";
 import { TableCell } from "@mui/material";
 import {
-  Button as ButtonMaterial, 
+  Button as ButtonMaterial,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,10 +15,10 @@ import {
 //icon
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdDeleteOutline } from "react-icons/md";
-import { Button, Modal, Table, Tooltip} from "antd";
-import { Table as TableImg} from "antd";
+import { Button, Modal, Table, Tooltip } from "antd";
+import { Table as TableImg } from "antd";
 import Badge from "@mui/material/Badge";
-import { PlusIcon } from "../../common/tableNextUi/khuyenMai/PlusIcon";
+import { PlusIcon } from "../../common/otherComponents/PlusIcon";
 
 export default function ThemSanPham() {
   let navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function ThemSanPham() {
   const [kichCo, setKichCo] = useState([]);
   const [nhanHieu, setNhanHieu] = useState([]);
   const customText = {
-    emptyText: 'Không có hình ảnh'
+    emptyText: "Không có hình ảnh",
   };
   const [sanPham, setSanPham] = useState({
     ma: "",
@@ -56,19 +56,15 @@ export default function ThemSanPham() {
     id_thuong_hieu: "",
     id_nhan_hieu: "",
   });
-  const [deGiayModal,setDeGiayModal] = useState({
-    tenDeGiay : ""
+  const [deGiayModal, setDeGiayModal] = useState({
+    tenDeGiay: "",
   });
-  const {
-    tenDeGiay
-  } = deGiayModal;
+  const { tenDeGiay } = deGiayModal;
 
-  const [kichCoModal,setKichCoModal] = useState({
-    tenKichCo : ""
+  const [kichCoModal, setKichCoModal] = useState({
+    tenKichCo: "",
   });
-  const {
-    tenKichCo
-  } = kichCoModal;
+  const { tenKichCo } = kichCoModal;
 
   const {
     ma,
@@ -117,7 +113,8 @@ export default function ThemSanPham() {
       title: "Số lượng",
       dataIndex: "soLuongTon",
       sorter: (a, b) => a.soLuongTon - b.soLuongTon,
-      sortOrder: sortedInfo.columnKey === "soLuongTon" ? sortedInfo.order : null,
+      sortOrder:
+        sortedInfo.columnKey === "soLuongTon" ? sortedInfo.order : null,
       ellipsis: true,
       render: (text, record) => (
         <InputNumber
@@ -148,10 +145,11 @@ export default function ThemSanPham() {
           <div className="group relative">
             <MdDeleteOutline
               className="cursor-pointer text-xl delete-hover relative"
-              onClick={() => {
-              }}
+              onClick={() => {}}
             />
-            <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span>
+            <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">
+              Xóa
+            </span>
           </div>
         </div>
       ),
@@ -163,14 +161,13 @@ export default function ThemSanPham() {
       render: (text, record, index) => {
         return {
           children: (
-            <Tooltip
-              title="Click để thêm ảnh sản phẩm"
-            >
-              <PlusIcon 
-              style={{cursor : "pointer",
-              marginLeft : "100px",
-              marginTop : "-50px"
-              }}
+            <Tooltip title="Click để thêm ảnh sản phẩm">
+              <PlusIcon
+                style={{
+                  cursor: "pointer",
+                  marginLeft: "100px",
+                  marginTop: "-50px",
+                }}
               />
             </Tooltip>
           ),
@@ -184,11 +181,11 @@ export default function ThemSanPham() {
         };
       },
       align: "center",
-    }
+    },
   ];
-  
+
   const paginationOptions = {
-    defaultPageSize: 5
+    defaultPageSize: 5,
   };
 
   const handleSoLuongChange = (key, value) => {
@@ -202,7 +199,7 @@ export default function ThemSanPham() {
     // Cập nhật dữ liệu
     //setDataSource(updatedData);
   };
-  
+
   const handleGiaBanChange = (key, value) => {
     // Tìm dòng dữ liệu theo key và cập nhật giá trị giaBan
     const updatedData = dataSource.map((item) => {
@@ -214,9 +211,8 @@ export default function ThemSanPham() {
     // Cập nhật dữ liệu
     //setDataSource(updatedData);
   };
-  
-// -------------------------end table data-------------------------
 
+  // -------------------------end table data-------------------------
 
   // ------------------------modal mau sac-------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -245,7 +241,7 @@ export default function ThemSanPham() {
   const showModalKC = () => {
     setIsModalOpenKC(true);
   };
-  const handleOkKC =async () => {
+  const handleOkKC = async () => {
     await axios
       .post("http://localhost:8080/addKichCo", kichCoModal)
       .then((response) => {
@@ -266,7 +262,7 @@ export default function ThemSanPham() {
     setIsModalOpenKC(false);
   };
   const onChangeKC = (e) => {
-    setKichCoModal({[e.target.name]: e.target.value });
+    setKichCoModal({ [e.target.name]: e.target.value });
   };
 
   // ------------------------modal de giay-------------------------
@@ -274,7 +270,7 @@ export default function ThemSanPham() {
   const showModalDG = () => {
     setIsModalOpenDG(true);
   };
-  const handleOkDG =async () => {
+  const handleOkDG = async () => {
     console.log(deGiayModal);
     await axios
       .post("http://localhost:8080/addDeGiay", deGiayModal)
@@ -296,7 +292,7 @@ export default function ThemSanPham() {
     setIsModalOpenDG(false);
   };
   const onChangeDG = (e) => {
-    setDeGiayModal({[e.target.name]: e.target.value });
+    setDeGiayModal({ [e.target.name]: e.target.value });
   };
   // --------------------------comfirm-------------------------------
   const handleOpenAddConfirmation = () => {
@@ -320,7 +316,9 @@ export default function ThemSanPham() {
       for (const kichCo of selectedKichCo) {
         const sanPhamItem = {
           ten: sanPham.ten,
-          tenSanPham: `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ''} ]`,
+          tenSanPham: `${sanPham.ten} [ ${kichCo} - ${
+            mauSac.find((item) => item.maMau === mau)?.ten || ""
+          } ]`,
           soLuongTon: 1,
           khoiLuong: 1,
           moTa: sanPham.moTa,
@@ -333,7 +331,7 @@ export default function ThemSanPham() {
           id_chat_lieu: sanPham.id_chat_lieu,
           id_de_giay: sanPham.id_de_giay,
         };
-        
+
         tableData.push(sanPhamItem);
       }
     }
@@ -341,9 +339,11 @@ export default function ThemSanPham() {
 
     for (const mau of selectedColors) {
       const spByColor = selectedKichCo.map((kichCo) => ({
-        id: index+=1,
+        id: (index += 1),
         ten: sanPham.ten,
-        tenSanPham: `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ''} ]`,
+        tenSanPham: `${sanPham.ten} [ ${kichCo} - ${
+          mauSac.find((item) => item.maMau === mau)?.ten || ""
+        } ]`,
         soLuongTon: 1,
         khoiLuong: 1,
         moTa: sanPham.moTa,
@@ -365,15 +365,15 @@ export default function ThemSanPham() {
 
   useEffect(() => {
     groupProductsByColor();
-  }, [selectedColors,selectedKichCo]);
+  }, [selectedColors, selectedKichCo]);
 
   useEffect(() => {
     getAllDG();
-  },[deGiay])
+  }, [deGiay]);
 
   useEffect(() => {
     getAllKC();
-  },[kichCo])
+  }, [kichCo]);
 
   useEffect(() => {
     getAllNH();
@@ -419,28 +419,38 @@ export default function ThemSanPham() {
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = tableData.map((sp) => [
-      sp.id, sp.ten, sp.tenSanPham, sp.soLuongTon, sp.khoiLuong,
-      sp.moTa, sp.giaNhap, sp.giaBan, sp.id_mau_sac, sp.id_kich_co,
-      sp.id_thuong_hieu,sp.id_nhan_hieu,
-      sp.id_chat_lieu,sp.id_de_giay
-      ]);
-      console.log(data);
+      sp.id,
+      sp.ten,
+      sp.tenSanPham,
+      sp.soLuongTon,
+      sp.khoiLuong,
+      sp.moTa,
+      sp.giaNhap,
+      sp.giaBan,
+      sp.id_mau_sac,
+      sp.id_kich_co,
+      sp.id_thuong_hieu,
+      sp.id_nhan_hieu,
+      sp.id_chat_lieu,
+      sp.id_de_giay,
+    ]);
+    console.log(data);
     if (isConfirmed) {
-    await axios
-      .post("http://localhost:8080/san-pham/add", data)
-      .then((response) => {
-        toast.success(`Thêm thành công`, {
-          position: "top-right",
-          autoClose: 2000,
+      await axios
+        .post("http://localhost:8080/san-pham/add", data)
+        .then((response) => {
+          toast.success(`Thêm thành công`, {
+            position: "top-right",
+            autoClose: 2000,
+          });
+          navigate("/quan-ly-san-pham/san-pham");
+        })
+        .catch((error) => {
+          toast.error(`Thêm thất bại`, {
+            position: "top-right",
+            autoClose: 2000,
+          });
         });
-        navigate("/quan-ly-san-pham/san-pham");
-      })
-      .catch((error) => {
-        toast.error(`Thêm thất bại`, {
-          position: "top-right",
-          autoClose: 2000,
-        });
-      });
     }
   };
 
@@ -539,12 +549,15 @@ export default function ThemSanPham() {
                         </option>
                       ))}
                     </select>
-                    <div className="p-2" style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}>
+                    <div
+                      className="p-2"
+                      style={{
+                        backgroundColor: "#00C5CD",
+                        borderRadius: "5px",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                    >
                       <AiOutlinePlus />
                     </div>
                   </div>
@@ -572,12 +585,15 @@ export default function ThemSanPham() {
                         </option>
                       ))}
                     </select>
-                    <div className="p-2" style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}>
+                    <div
+                      className="p-2"
+                      style={{
+                        backgroundColor: "#00C5CD",
+                        borderRadius: "5px",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                    >
                       <AiOutlinePlus />
                     </div>
                   </div>
@@ -607,12 +623,15 @@ export default function ThemSanPham() {
                         </option>
                       ))}
                     </select>
-                    <div className="p-2" style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}>
+                    <div
+                      className="p-2"
+                      style={{
+                        backgroundColor: "#00C5CD",
+                        borderRadius: "5px",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                    >
                       <AiOutlinePlus />
                     </div>
                   </div>
@@ -639,13 +658,16 @@ export default function ThemSanPham() {
                         </option>
                       ))}
                     </select>
-                    <div className="p-2" style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}>
-                      <AiOutlinePlus onClick={showModalDG}/>
+                    <div
+                      className="p-2"
+                      style={{
+                        backgroundColor: "#00C5CD",
+                        borderRadius: "5px",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <AiOutlinePlus onClick={showModalDG} />
                     </div>
                     <Modal
                       title="Thêm đế giày"
@@ -656,23 +678,23 @@ export default function ThemSanPham() {
                       okText="Thêm"
                       style={{ position: "relative" }}
                     >
-                    <div>
-                      <label
-                      htmlFor="country"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                       Tên đế giày
-                      </label>
-                      <input
-                        type="text"
-                        name="tenDeGiay"
-                        value={tenDeGiay}
-                        className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="Nhập tên đế giày"
-                        onChange={(e) => onChangeDG(e)}
-                        style={{borderRadius:"5px"}}
-                      />
-                    </div>
+                      <div>
+                        <label
+                          htmlFor="country"
+                          className="block text-sm font-medium leading-6 text-gray-900"
+                        >
+                          Tên đế giày
+                        </label>
+                        <input
+                          type="text"
+                          name="tenDeGiay"
+                          value={tenDeGiay}
+                          className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                          placeholder="Nhập tên đế giày"
+                          onChange={(e) => onChangeDG(e)}
+                          style={{ borderRadius: "5px" }}
+                        />
+                      </div>
                     </Modal>
                   </div>
                 </div>
@@ -684,16 +706,19 @@ export default function ThemSanPham() {
                     Màu sắc
                   </label>
                   <div className="mt-2 space-x-3 flex">
-                    {
-                      selectedColors.map((item,index) => (
-                        <Badge
-                          className="cursor-pointer"
-                          badgeContent={"--"}
-                          color="error"
-                          key={index}
-                          onClick={() => handleRemoveColor(item)}
+                    {selectedColors.map((item, index) => (
+                      <Badge
+                        className="cursor-pointer"
+                        badgeContent={"--"}
+                        color="error"
+                        key={index}
+                        onClick={() => handleRemoveColor(item)}
+                      >
+                        <Tooltip
+                          title={
+                            mauSac.find((x) => x.maMau === item)?.ten || ""
+                          }
                         >
-                          <Tooltip title={mauSac.find((x) => x.maMau === item)?.ten || ''}>
                           <div
                             style={{
                               backgroundColor: item,
@@ -704,10 +729,9 @@ export default function ThemSanPham() {
                               height: "35px",
                             }}
                           ></div>
-                          </Tooltip>
-                        </Badge>
-                      ))
-                    }
+                        </Tooltip>
+                      </Badge>
+                    ))}
                     <div
                       className="inline-block "
                       style={{
@@ -731,41 +755,46 @@ export default function ThemSanPham() {
                       okText="Thêm"
                       style={{ position: "relative" }}
                     >
-                      <div style={{ display: "flex", flexWrap: "wrap"}}>
-                      {
-                        mauSac.map((item) => (
+                      <div style={{ display: "flex", flexWrap: "wrap" }}>
+                        {mauSac.map((item) => (
                           <div
-                          key={item.id}
-                          className={`flex justify-center text-white cursor-pointer ${
-                            selectedColors.includes(item.maMau) ? "border-2" : "border-none"
-                          }`}
-                          style={{
-                            width: "20%",
-                            height: "25px",
-                            backgroundColor: item.maMau,
-                            borderRadius: "5px",
-                            alignItems: "center",
-                            marginTop: "35px",
-                            borderColor: "yellow",
-                            marginRight: "5px"
-                          }}
-                          onClick={() => {
-                            if (selectedColors.includes(item.maMau)) {
-                              setSelectedColors((prevSelected) =>
-                                prevSelected.filter((color) => color !== item.maMau)
-                              );
-                            } else {
-                              if (selectedColors.length < 3) {
-                                setSelectedColors((prevSelected) => [...prevSelected, item.maMau]);
+                            key={item.id}
+                            className={`flex justify-center text-white cursor-pointer ${
+                              selectedColors.includes(item.maMau)
+                                ? "border-2"
+                                : "border-none"
+                            }`}
+                            style={{
+                              width: "20%",
+                              height: "25px",
+                              backgroundColor: item.maMau,
+                              borderRadius: "5px",
+                              alignItems: "center",
+                              marginTop: "35px",
+                              borderColor: "yellow",
+                              marginRight: "5px",
+                            }}
+                            onClick={() => {
+                              if (selectedColors.includes(item.maMau)) {
+                                setSelectedColors((prevSelected) =>
+                                  prevSelected.filter(
+                                    (color) => color !== item.maMau
+                                  )
+                                );
+                              } else {
+                                if (selectedColors.length < 3) {
+                                  setSelectedColors((prevSelected) => [
+                                    ...prevSelected,
+                                    item.maMau,
+                                  ]);
+                                }
                               }
-                            }
-                            console.log(selectedColors);
-                          }}>
-                          {item.maMau}
+                              console.log(selectedColors);
+                            }}
+                          >
+                            {item.maMau}
                           </div>
-                        ))
-                      }
-                      
+                        ))}
                       </div>
                       <div>
                         <Button
@@ -798,33 +827,33 @@ export default function ThemSanPham() {
                     Kích cỡ
                   </label>
                   <div className="mt-2 space-x-3 flex">
-                    {
-                      selectedKichCo.map((item,index) => (
-                        <Badge
-                          className="cursor-pointer"
-                          badgeContent={"--"}
-                          color="error"
-                          key={index}
-                          onClick={() => handleRemoveKichCo(item)}
+                    {selectedKichCo.map((item, index) => (
+                      <Badge
+                        className="cursor-pointer"
+                        badgeContent={"--"}
+                        color="error"
+                        key={index}
+                        onClick={() => handleRemoveKichCo(item)}
+                      >
+                        <div
+                          style={{
+                            border: "1px solid #ccc",
+                            borderRadius: "5px",
+                            padding: "5px 7px",
+                            width: "35px",
+                            height: "35px",
+                            color: "black",
+                          }}
                         >
-                          <div
-                            style={{
-                              border: "1px solid #ccc",
-                              borderRadius: "5px",
-                              padding: "5px 7px",
-                              width: "35px",
-                              height: "35px",
-                              color: "black"
-                            }}
-                          >{item}</div>
-                        </Badge>
-                      ))
-                    }
+                          {item}
+                        </div>
+                      </Badge>
+                    ))}
                     <div
                       className="inline-block "
                       style={{
                         borderRadius: "5px",
-                        backgroundColor : "#00C5CD",
+                        backgroundColor: "#00C5CD",
                         color: "black",
                         cursor: "pointer",
                         width: "35px",
@@ -832,7 +861,7 @@ export default function ThemSanPham() {
                         padding: "9px",
                       }}
                     >
-                      <AiOutlinePlus onClick={showModal1}/>
+                      <AiOutlinePlus onClick={showModal1} />
                     </div>
                     <Modal
                       title="Chọn kích cỡ"
@@ -844,40 +873,46 @@ export default function ThemSanPham() {
                       style={{ position: "relative" }}
                       className=""
                     >
-                      <div style={{ display: "flex", flexWrap: "wrap"}}>
-                      {
-                        kichCo.map((item) => (
+                      <div style={{ display: "flex", flexWrap: "wrap" }}>
+                        {kichCo.map((item) => (
                           <div
-                          key={item.id}
-                          className={`flex justify-center text-white cursor-pointer ${
-                            selectedKichCo.includes(item.ten) ? "selectedKichCo" : "border-none"
-                          }`}
-                          style={{
-                            width: "70px",
-                            height: "35px",
-                            borderRadius: "5px",
-                            alignItems: "center",
-                            marginTop: "35px",
-                            borderColor: "yellow",
-                            marginRight: "5px",
-                            color:"black",
-                          }}
-                          onClick={() => {
-                            if (selectedKichCo.includes(item.ten)) {
-                              setSelectedKichCo((prevSelected) =>
-                                prevSelected.filter((kichCo) => kichCo !== item.ten)
-                              );
-                            } else {
-                              if (selectedKichCo.length < 3) {
-                                setSelectedKichCo((prevSelected) => [...prevSelected, item.ten]);
+                            key={item.id}
+                            className={`flex justify-center text-white cursor-pointer ${
+                              selectedKichCo.includes(item.ten)
+                                ? "selectedKichCo"
+                                : "border-none"
+                            }`}
+                            style={{
+                              width: "70px",
+                              height: "35px",
+                              borderRadius: "5px",
+                              alignItems: "center",
+                              marginTop: "35px",
+                              borderColor: "yellow",
+                              marginRight: "5px",
+                              color: "black",
+                            }}
+                            onClick={() => {
+                              if (selectedKichCo.includes(item.ten)) {
+                                setSelectedKichCo((prevSelected) =>
+                                  prevSelected.filter(
+                                    (kichCo) => kichCo !== item.ten
+                                  )
+                                );
+                              } else {
+                                if (selectedKichCo.length < 3) {
+                                  setSelectedKichCo((prevSelected) => [
+                                    ...prevSelected,
+                                    item.ten,
+                                  ]);
+                                }
                               }
-                            }
-                            console.log(selectedKichCo);
-                          }}>
-                          {item.ten}
+                              console.log(selectedKichCo);
+                            }}
+                          >
+                            {item.ten}
                           </div>
-                        ))
-                      }
+                        ))}
                       </div>
 
                       <div>
@@ -897,10 +932,9 @@ export default function ThemSanPham() {
                           onClick={() => {
                             // handleCancel1();
                             showModalKC();
-                            }}
+                          }}
                         >
-                          <AiOutlinePlus className="mr-2"
-                           />
+                          <AiOutlinePlus className="mr-2" />
                           Thêm kích cỡ
                         </Button>
                       </div>
@@ -914,23 +948,23 @@ export default function ThemSanPham() {
                       okText="Thêm"
                       style={{ position: "relative" }}
                     >
-                    <div>
-                      <label
-                      htmlFor="country"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                       Tên đế giày
-                      </label>
-                      <input
-                        type="text"
-                        name="tenKichCo"
-                        value={tenKichCo}
-                        className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="Nhập tên đế giày"
-                        onChange={(e) => onChangeKC(e)}
-                        style={{borderRadius:"5px"}}
-                      />
-                    </div>
+                      <div>
+                        <label
+                          htmlFor="country"
+                          className="block text-sm font-medium leading-6 text-gray-900"
+                        >
+                          Tên đế giày
+                        </label>
+                        <input
+                          type="text"
+                          name="tenKichCo"
+                          value={tenKichCo}
+                          className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                          placeholder="Nhập tên đế giày"
+                          onChange={(e) => onChangeKC(e)}
+                          style={{ borderRadius: "5px" }}
+                        />
+                      </div>
                     </Modal>
                   </div>
                 </div>
@@ -939,7 +973,7 @@ export default function ThemSanPham() {
           </div>
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <button
-            type="button"
+              type="button"
               className="rounded-md mb-5 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               onClick={groupProductsByColor}
             >
@@ -948,7 +982,10 @@ export default function ThemSanPham() {
           </div>
           {selectedColors.map((mau) => (
             <div key={mau}>
-              <h2>Sản phẩm theo : {mauSac.find((item) => item.maMau === mau)?.ten || ''} </h2>
+              <h2>
+                Sản phẩm theo :{" "}
+                {mauSac.find((item) => item.maMau === mau)?.ten || ""}{" "}
+              </h2>
               <Table
                 columns={columns}
                 dataSource={tables[mau]}
@@ -956,14 +993,14 @@ export default function ThemSanPham() {
                 scroll={{ y: 2000 }}
               />
               <TableImg
-                  dataSource={tableImg}
-                  pagination={false}
-                  scroll={{ y: 2000 }}
-                  locale={customText}
+                dataSource={tableImg}
+                pagination={false}
+                scroll={{ y: 2000 }}
+                locale={customText}
               />
             </div>
           ))}
-          
+
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <Link
               to="/quan-ly-san-pham/san-pham"
@@ -974,38 +1011,44 @@ export default function ThemSanPham() {
             </Link>
 
             <button
-               type="button"
+              type="button"
               className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              onClick={handleOpenAddConfirmation} 
+              onClick={handleOpenAddConfirmation}
             >
               Thêm sản phẩm
             </button>
           </div>
         </form>
         <div>
-        <Dialog open={addConfirmationOpen} onClose={handleCloseAddConfirmation}>
-          <DialogTitle>Xác nhận thêm</DialogTitle>
+          <Dialog
+            open={addConfirmationOpen}
+            onClose={handleCloseAddConfirmation}
+          >
+            <DialogTitle>Xác nhận thêm</DialogTitle>
             <DialogContent>
               <DialogContentText>
                 Bạn có chắc muốn thêm sản phẩm này?
               </DialogContentText>
             </DialogContent>
-          <DialogActions>
-            <ButtonMaterial onClick={handleCloseAddConfirmation} color="primary">
-               Hủy
-            </ButtonMaterial>
-            <ButtonMaterial
-            onClick={(e) => {
-              setIsConfirmed(true);
-              onSubmit(e);
-              handleCloseAddConfirmation();
-            }}
-            color="primary"
-            >
-              Vẫn thêm
-            </ButtonMaterial>
+            <DialogActions>
+              <ButtonMaterial
+                onClick={handleCloseAddConfirmation}
+                color="primary"
+              >
+                Hủy
+              </ButtonMaterial>
+              <ButtonMaterial
+                onClick={(e) => {
+                  setIsConfirmed(true);
+                  onSubmit(e);
+                  handleCloseAddConfirmation();
+                }}
+                color="primary"
+              >
+                Vẫn thêm
+              </ButtonMaterial>
             </DialogActions>
-        </Dialog>
+          </Dialog>
         </div>
       </div>
     </>
