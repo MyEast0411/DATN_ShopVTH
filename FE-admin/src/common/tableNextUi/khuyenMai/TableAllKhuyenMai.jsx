@@ -34,9 +34,16 @@ import {
 } from "../../../api/khuyenMai/KhuyenMaiApi";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
+import { Tooltip } from "antd";
 import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
 import { format } from "date-fns";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEye,
+  faPencilAlt,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons"; // Import the FontAwesome icons
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 const columns = [
@@ -54,6 +61,7 @@ const statusOptions = [
   { name: "Đang diễn ra", uid: "Đang diễn ra" },
   { name: "Đã kết thúc", uid: "Đã kết thúc" },
   { name: "Sắp diễn ra", uid: "Sắp diễn ra" },
+  { name: "Chưa diễn ra", uid: "Chưa diễn ra" },
 ];
 
 const formateDateVietNam = (dateTimeStr) => {
@@ -65,10 +73,12 @@ const statusColorMap = {
   active: "success",
   paused: "danger",
   incoming: "warning",
+  notStarted: "primary",
 };
 statusColorMap["Sắp diễn ra"] = "warning";
 statusColorMap["Đang diễn ra"] = "success";
 statusColorMap["Đã kết thúc"] = "danger";
+statusColorMap["Chưa diễn ra"] = "primary";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
@@ -84,6 +94,30 @@ const INITIAL_VISIBLE_COLUMNS = [
 export default function App() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
+  const [totalPages, setTotalPages] = React.useState(1);
+
+  const iconStyle = {
+    cursor: "pointer",
+    padding: "5px",
+  };
+
+  const labelStyle = {
+    display: "none",
+    position: "absolute",
+    top: "100%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    color: "white",
+    padding: "3px 6px",
+    borderRadius: "4px",
+    zIndex: "1",
+  };
+
+  const containerStyle = {
+    position: "relative",
+    display: "inline-block",
+  };
 
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
@@ -137,11 +171,11 @@ export default function App() {
           stt: index + 1,
           ngayBatDau: format(
             new Date(khuyenMai.ngayBatDau),
-            "yyyy-MM-dd HH:mm"
+            "dd-MM-yyyy HH:mm"
           ),
           ngayKetThuc: format(
             new Date(khuyenMai.ngayKetThuc),
-            "yyyy-MM-dd HH:mm"
+            "dd-MM-yyyy HH:mm"
           ),
         }));
         setKhuyenMais(khuyenMaisFormatted);
@@ -219,30 +253,46 @@ export default function App() {
         );
       case "hanhDong":
         return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>Xem</DropdownItem>
-                <DropdownItem>
-                  <Link
-                    to={`/them-khuyen-mai/${khuyenMai.id}`}
-                    style={{ display: "block" }}
-                  >
-                    Chỉnh sửa
-                  </Link>
-                </DropdownItem>
-                <DropdownItem onClick={() => handleDelete(khuyenMai.id)}>
-                  Xóa
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+          <div className="relative flex items-center gap-2">
+            <Tooltip title="Xem">
+              <FontAwesomeIcon
+                icon={faEye}
+                style={{
+                  cursor: "pointer",
+                  paddingRight: "5px",
+                  fontSize: "15px",
+                }}
+                className="cursor-pointer blue-hover"
+              />
+            </Tooltip>
+            <Tooltip title="Chỉnh sửa">
+              <Link
+                to={`/them-khuyen-mai/${khuyenMai.id}`}
+                style={{ display: "block" }}
+              >
+                <FontAwesomeIcon
+                  icon={faPencilAlt}
+                  style={{
+                    cursor: "pointer",
+                    padding: "5px",
+                    fontSize: "15px",
+                  }}
+                  className="cursor-pointer yellow-hover"
+                />
+              </Link>
+            </Tooltip>
+
+            <Tooltip title="Xóa">
+              <FontAwesomeIcon
+                onClick={() => handleDelete(khuyenMai.id)}
+                icon={faTrashCan}
+                style={{ cursor: "pointer", padding: "5px", fontSize: "15px" }}
+                className="cursor-pointer delete-hover"
+              />
+            </Tooltip>
           </div>
         );
+
       default:
         return cellValue;
     }
@@ -377,7 +427,8 @@ export default function App() {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
-          Tổng khuyến mại : <span className="font-medium text-gray-950">{khuyenMais.length}</span>
+          Tổng số khuyến mại :{" "}
+          <span className="font-medium text-gray-950">{khuyenMais.length}</span>
         </span>
         <Pagination
           isCompact

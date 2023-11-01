@@ -12,7 +12,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Button as NextuiButton } from "@nextui-org/button";
-import { TbInfoTriangle } from "react-icons/tb";
+import { BiSolidMessageAltAdd } from "react-icons/bi";
+
 import TableAllSanPham from "../../common/tableNextUi/khuyenMai/TableAllSanPham";
 import TableAllChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiTietSP";
 import { useParams } from "react-router-dom";
@@ -46,8 +47,7 @@ export default function ThemKhuyenMai() {
   const handleNgayKetThucChange = (e) => {
     const newValue = e.target.value;
     console.log("Ngày kết thúc input: " + newValue);
-    setNgayBatDau(newValue);
-    setSelectedEndDate(newValue);
+    setNgayKetThuc(newValue);
   };
 
   const minDate = `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}`;
@@ -129,7 +129,7 @@ export default function ThemKhuyenMai() {
             backgroundColor: "white",
             padding: "10px",
             borderRadius: "5px",
-            boxShadow: " 0 0 5px 2px #ccc",
+            boxShadow: " 0 0 5px 1px #ccc",
             height: "100%",
             textOverflow: "none",
           }}
@@ -284,11 +284,11 @@ export default function ThemKhuyenMai() {
                 paddingBottom: "15px",
               }}
             >
-              <TbInfoTriangle
+              <BiSolidMessageAltAdd
                 className="mr-2"
                 style={{
-                  color: "red",
-                  fontSize: "25px",
+                  color: "#00A9FF",
+                  fontSize: "35px",
                 }}
               />
               <span>Xác nhận thêm</span>
