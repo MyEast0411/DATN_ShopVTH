@@ -38,6 +38,9 @@ export default function ThemSanPham() {
   const [deGiay, setDeGiay] = useState([]);
   const [kichCo, setKichCo] = useState([]);
   const [nhanHieu, setNhanHieu] = useState([]);
+  const [isChecked, setIsChecked] = useState(false);
+  const [checkboxStates, setCheckboxStates] = useState([false, false, false]);
+
   const customText = {
     emptyText: 'Không có hình ảnh'
   };
@@ -93,6 +96,30 @@ export default function ThemSanPham() {
     setSortedInfo(sorter);
   };
 
+  const columnImg = [
+    {
+      title : "Hình ảnh",
+      dataIndex: 'imageUrl', 
+      key: 'imageUrl',
+      align : "center",
+      render: (text, record, index) => {
+        return {
+          children: (
+            <div key={index} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <img src={record} alt="Hình ảnh" style={{ width: '100px', height: '100px' }} />
+            </div>
+          ),
+          props: {
+            rowSpan: 3,
+            style: {
+              justifyContent: "center",
+              alignItems: "center",
+            }
+          }
+        };
+      },
+    }
+  ];
   const columns = [
     {
       title: "STT",
@@ -157,7 +184,7 @@ export default function ThemSanPham() {
       ),
     },
     {
-      title: "Ảnh",
+      title: "Thêm ảnh",
       dataIndex: "hinhAnh",
       key: "hinhAnh",
       render: (text, record, index) => {
@@ -169,7 +196,11 @@ export default function ThemSanPham() {
               <PlusIcon 
               style={{cursor : "pointer",
               marginLeft : "100px",
-              marginTop : "-50px"
+              marginTop : "-50px",
+              }}
+              onClick={() => {
+                console.log(record.tenSanPham);
+                showModalHA();
               }}
               />
             </Tooltip>
@@ -217,7 +248,43 @@ export default function ThemSanPham() {
   
 // -------------------------end table data-------------------------
 
+  // ------------------------modal hinh anh-------------------------
+  const [isModalOpenHA, setIsModalOpenHA] = useState(false);
+  const showModalHA = () => {
+    setIsModalOpenHA(true);
+  };
+  const handleOkHA = () => {
+    setIsModalOpenHA(false);
+  };
+  const handleCancelHA = () => {
+    setIsModalOpenHA(false);
+    console.log(tableImg);
+  };
+  // useEffect(() => {
+    
+  // }, [tableImg]);
+  const maxSelectedImages = 3;
+  const handleCheckboxChange = (e) => {
+    let index = e.target.id;
+    const updatedStates = [...checkboxStates];
+    updatedStates[index] = !updatedStates[index];
+    setCheckboxStates(updatedStates);
+    const imageUrl = e.target.nextElementSibling.src;
+    console.log(e.target.checked);
 
+    if (e.target.checked) {
+      if (tableImg.length < maxSelectedImages) {
+        setTableImg((prevTableImg) => [...prevTableImg, imageUrl]);
+      } else {
+        e.target.checked = false; 
+      }
+    } else {
+      console.log("đã vào đây");
+      const updatedTableImg = tableImg.filter((img) => img !== imageUrl);
+      setTableImg(updatedTableImg);
+      console.log(tableImg);
+    }
+  };
   // ------------------------modal mau sac-------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -332,6 +399,7 @@ export default function ThemSanPham() {
           id_nhan_hieu: sanPham.id_nhan_hieu,
           id_chat_lieu: sanPham.id_chat_lieu,
           id_de_giay: sanPham.id_de_giay,
+          hinhAnh : tableImg,
         };
         
         tableData.push(sanPhamItem);
@@ -674,6 +742,63 @@ export default function ThemSanPham() {
                       />
                     </div>
                     </Modal>
+                    <Modal
+                      title="Thêm hình ảnh"
+                      open={isModalOpenHA}
+                      onOk={handleOkHA}
+                      onCancel={handleCancelHA}
+                      cancelText="Hủy"
+                      okText="Hoàn tất"
+                      style={{ position: "relative"}}
+                      width={800}
+                    >
+                    <div>
+                      <label
+                      htmlFor="country"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                      >
+                       Tất cả hình ảnh 
+                      </label>
+                      <div className="flex ">
+                        <div className="w-1/3">
+                          <div className="relative w-60 h-56 bg-gray-300 mt-10">
+                            <input
+                              type="checkbox"
+                              id="0"
+                              checked={checkboxStates[0]}
+                              onChange={(e) => handleCheckboxChange(e)}
+                              className="absolute top-2 right-2 z-10"
+                            />
+                            <img src="https://i.ibb.co/Lk2fpns/AIR-JORDAN-1-MID-INVERT-BLACK-WHITE.webp" alt="Load Image" className="w-full h-full object-cover" />
+                          </div>
+                        </div>
+                        <div className="w-1/3">
+                          <div className="relative w-60 h-56 bg-gray-300 mt-10">
+                            <input
+                              type= "checkbox"
+                              id="1"
+                              checked={checkboxStates[1]}
+                              onChange={(e) => handleCheckboxChange(e)}
+                              className="absolute top-2 right-2 z-10"
+                            />
+                            <img src="https://i.ibb.co/zHdF8fK/AIR-JORDAN-1-MID-LIGHT-MULBERRY.webp" alt="Load Image" className="w-full h-full object-cover" />
+                          </div>
+                        </div>
+                        <div className="w-1/3">
+                          <div className="relative w-60 h-56 bg-gray-300 mt-10">
+                            <input
+                              type="checkbox"
+                              id="2"
+                              checked={checkboxStates[2]}
+                              onChange={(e) => handleCheckboxChange(e)}
+                              className="absolute top-2 right-2 z-10"
+                            />
+                            <img src="https://i.ibb.co/cCw0nZp/AIR-JORDAN-1-MID-ELEPHANT-PRINT.webp" alt="Load Image" className="w-full h-full object-cover" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    </Modal>
                   </div>
                 </div>
                 <div className="sm:col-span-3">
@@ -956,6 +1081,7 @@ export default function ThemSanPham() {
                 scroll={{ y: 2000 }}
               />
               <TableImg
+                  columns={columnImg}
                   dataSource={tableImg}
                   pagination={false}
                   scroll={{ y: 2000 }}
