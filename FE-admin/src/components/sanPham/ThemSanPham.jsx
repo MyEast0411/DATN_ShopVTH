@@ -18,7 +18,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { Button, Modal, Table, Tooltip} from "antd";
 import { Table as TableImg} from "antd";
 import Badge from "@mui/material/Badge";
-import { PlusIcon } from "../../common/tableNextUi/khuyenMai/PlusIcon";
+import { PlusIcon } from "../../common/otherComponents/PlusIcon";
 
 export default function ThemSanPham() {
   let navigate = useNavigate();

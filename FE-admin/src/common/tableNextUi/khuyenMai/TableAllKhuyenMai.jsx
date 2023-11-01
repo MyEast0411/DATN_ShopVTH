@@ -14,6 +14,8 @@ import {
   DropdownMenu,
   DropdownItem,
   Chip,
+  Tooltip,
+  getKeyValue,
   Pagination,
 } from "@nextui-org/react";
 import {
@@ -24,17 +26,17 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { SearchIcon } from "../../otherComponents/SearchIcon";
-import { VerticalDotsIcon } from "../../otherComponents/VerticalDotsIcon";
-
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
+import { EditIcon } from "../../otherComponents/EditIcon";
+import { DeleteIcon } from "../../otherComponents/DeleteIcon";
+import { EyeIcon } from "../../otherComponents/EyeIcon";
 import {
   getAllKhuyenMai,
   deleteKhuyenMai,
 } from "../../../api/khuyenMai/KhuyenMaiApi";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
-import { Tooltip } from "antd";
 import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
 import { format } from "date-fns";
@@ -254,41 +256,22 @@ export default function App() {
       case "hanhDong":
         return (
           <div className="relative flex items-center gap-2">
-            <Tooltip title="Xem">
-              <FontAwesomeIcon
-                icon={faEye}
-                style={{
-                  cursor: "pointer",
-                  paddingRight: "5px",
-                  fontSize: "15px",
-                }}
-                className="cursor-pointer blue-hover"
-              />
+            <Tooltip content="Xem">
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <EyeIcon />
+              </span>
             </Tooltip>
-            <Tooltip title="Chỉnh sửa">
-              <Link
-                to={`/them-khuyen-mai/${khuyenMai.id}`}
-                style={{ display: "block" }}
-              >
-                <FontAwesomeIcon
-                  icon={faPencilAlt}
-                  style={{
-                    cursor: "pointer",
-                    padding: "5px",
-                    fontSize: "15px",
-                  }}
-                  className="cursor-pointer yellow-hover"
-                />
-              </Link>
+            <Tooltip content="Chỉnh sửa">
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <Link to={`/them-khuyen-mai/${khuyenMai.id}`}>
+                  <EditIcon />
+                </Link>
+              </span>
             </Tooltip>
-
-            <Tooltip title="Xóa">
-              <FontAwesomeIcon
-                onClick={() => handleDelete(khuyenMai.id)}
-                icon={faTrashCan}
-                style={{ cursor: "pointer", padding: "5px", fontSize: "15px" }}
-                className="cursor-pointer delete-hover"
-              />
+            <Tooltip color="danger" content="Xóa">
+              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                <DeleteIcon onClick={() => handleDelete(khuyenMai.id)} />
+              </span>
             </Tooltip>
           </div>
         );
