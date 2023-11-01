@@ -24,10 +24,8 @@ import {
   DialogTitle,
   TableCell as TableCellMui
 } from "@mui/material";
-import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
-import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
-import { ChevronDownIcon } from "../../tableNextUi/khuyenMai/ChevronDownIcon";
-import { capitalize } from "../../tableNextUi/khuyenMai/utils";
+import { ChevronDownIcon } from "../../../common/otherComponents/ChevronDownIcon";
+import { capitalize } from "../../../common/otherComponents/utils";
 import { Tooltip } from "antd";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";

@@ -23,11 +23,11 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { PlusIcon } from "../../../common/tableNextUi/khuyenMai/PlusIcon";
-import { VerticalDotsIcon } from "../../../common/tableNextUi/khuyenMai/VerticalDotsIcon";
-import { SearchIcon } from "../../../common/tableNextUi/khuyenMai/SearchIcon";
-import { ChevronDownIcon } from "../../../common/tableNextUi/khuyenMai/ChevronDownIcon";
-import { capitalize } from "../../../common/tableNextUi/khuyenMai/utils";
+import { SearchIcon } from "../../otherComponents/SearchIcon";
+import { VerticalDotsIcon } from "../../otherComponents/VerticalDotsIcon";
+
+import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
+import { capitalize } from "../../otherComponents/utils";
 import {
   getAllKhuyenMai,
   deleteKhuyenMai,

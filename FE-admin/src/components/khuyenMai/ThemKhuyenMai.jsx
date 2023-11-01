@@ -19,7 +19,7 @@ import TableAllChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllC
 import { useParams } from "react-router-dom";
 import { getKhuyenMaiById } from "../../api/khuyenMai/KhuyenMaiApi";
 
-export default function ThemKhuyenMai() {
+export default function idkmKhuyenMai() {
   const { idKM } = useParams();
   const [ten, setTen] = useState("");
   const [giaTriPhanTram, setGiaTriPhanTram] = useState(1);
