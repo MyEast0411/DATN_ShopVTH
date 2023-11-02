@@ -18,7 +18,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { Button, Modal, Table, Tooltip} from "antd";
 import { Table as TableImg} from "antd";
 import Badge from "@mui/material/Badge";
-import { PlusIcon } from "../../common/tableNextUi/khuyenMai/PlusIcon";
+import { PlusIcon } from "../../common/otherComponents/PlusIcon";
 
 export default function ThemSanPham() {
   let navigate = useNavigate();
@@ -31,7 +31,7 @@ export default function ThemSanPham() {
   const [sortedInfo, setSortedInfo] = useState({});
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedKichCo, setSelectedKichCo] = useState([]);
-  const [isBlur, setIsBlur] = useState(false);
+  const [img, setImg] = useState([]);
   const [mauSac, setMauSac] = useState([]);
   const [thuongHieu, setThuongHieu] = useState([]);
   const [chatLieu, setChatLieu] = useState([]);
@@ -40,7 +40,21 @@ export default function ThemSanPham() {
   const [nhanHieu, setNhanHieu] = useState([]);
   const [isChecked, setIsChecked] = useState(false);
   const [checkboxStates, setCheckboxStates] = useState([false, false, false]);
+  const initialProductTableData = {};
+  const initialImageTableData = [];
+  const [productTableData, setProductTableData] = useState(initialProductTableData);
+  const [imageTableData, setImageTableData] = useState(initialImageTableData);
 
+  const addImageToProductTable = (imageUrl) => {
+    const mauData = tables[mau]; // Lấy dữ liệu từ tables[mau]
+    return { ...prevData, [mau]: [...mauData, imageUrl] };
+  }
+  
+  // Hàm để thêm ảnh vào bảng hình ảnh
+  const addImageToImageTable = (imageUrl) => {
+    setImageTableData((prevData) => [...prevData, imageUrl]);
+  }
+  
   const customText = {
     emptyText: 'Không có hình ảnh'
   };
@@ -87,6 +101,7 @@ export default function ThemSanPham() {
     id_kich_co,
     id_mau_sac,
     id_nhan_hieu,
+    hinhAnh
   } = sanPham;
 
   //table data
@@ -199,8 +214,8 @@ export default function ThemSanPham() {
               marginTop : "-50px",
               }}
               onClick={() => {
-                console.log(record.tenSanPham);
-                showModalHA();
+                let tenSP = mauSac.find((x) => x.maMau === record.id_mau_sac)?.ten || '';
+                showModalHA(tenSP);
               }}
               />
             </Tooltip>
@@ -250,7 +265,7 @@ export default function ThemSanPham() {
 
   // ------------------------modal hinh anh-------------------------
   const [isModalOpenHA, setIsModalOpenHA] = useState(false);
-  const showModalHA = () => {
+  const showModalHA = (text) => {
     setIsModalOpenHA(true);
   };
   const handleOkHA = () => {
@@ -260,31 +275,33 @@ export default function ThemSanPham() {
     setIsModalOpenHA(false);
     console.log(tableImg);
   };
-  // useEffect(() => {
-    
-  // }, [tableImg]);
+
   const maxSelectedImages = 3;
   const handleCheckboxChange = (e) => {
     let index = e.target.id;
     const updatedStates = [...checkboxStates];
     updatedStates[index] = !updatedStates[index];
     setCheckboxStates(updatedStates);
+  
     const imageUrl = e.target.nextElementSibling.src;
-    console.log(e.target.checked);
-
+  
+    const checkedCount = updatedStates.filter((state) => state).length;
+    
     if (e.target.checked) {
-      if (tableImg.length < maxSelectedImages) {
+      if (checkedCount <= maxSelectedImages) {
         setTableImg((prevTableImg) => [...prevTableImg, imageUrl]);
       } else {
-        e.target.checked = false; 
+        // Nếu đã chọn quá giới hạn, bạn có thể thông báo lỗi ở đây.
+        toast.error("😢 Chỉ được chọn 3 ảnh !");
+        updatedStates[e.target.id] = false;
       }
     } else {
-      console.log("đã vào đây");
       const updatedTableImg = tableImg.filter((img) => img !== imageUrl);
       setTableImg(updatedTableImg);
-      console.log(tableImg);
     }
+    console.log(tableImg);
   };
+  
   // ------------------------modal mau sac-------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -379,11 +396,13 @@ export default function ThemSanPham() {
   const onChange = (e) => {
     setSanPham({ ...sanPham, [e.target.name]: e.target.value });
   };
+  const tableDataa = [];
+  const mauTableData = {};
 
   const groupProductsByColor = () => {
     let index = 0;
-    const tableData = [];
     for (const mau of selectedColors) {
+      mauTableData[mau] = [];
       for (const kichCo of selectedKichCo) {
         const sanPhamItem = {
           ten: sanPham.ten,
@@ -399,13 +418,15 @@ export default function ThemSanPham() {
           id_nhan_hieu: sanPham.id_nhan_hieu,
           id_chat_lieu: sanPham.id_chat_lieu,
           id_de_giay: sanPham.id_de_giay,
-          hinhAnh : tableImg,
         };
-        
-        tableData.push(sanPhamItem);
+        tableDataa.push(sanPhamItem);
+        mauTableData[mau].push(sanPhamItem);
       }
+      mauTableData[mau].push(tableImg);
+      console.log(mauTableData[mau]);
     }
-    setTableData(tableData);
+    console.log(mauTableData);
+    setTableData(tableDataa);
 
     for (const mau of selectedColors) {
       const spByColor = selectedKichCo.map((kichCo) => ({
@@ -423,17 +444,21 @@ export default function ThemSanPham() {
         id_nhan_hieu: sanPham.id_nhan_hieu,
         id_chat_lieu: sanPham.id_chat_lieu,
         id_de_giay: sanPham.id_de_giay,
+        hinhAnh : mauTableData[mau]
       }));
+      console.log(spByColor);
       setTables((prevTables) => ({
         ...prevTables,
         [mau]: spByColor,
+        [`${mau}-hinhAnh`]: spByColor[id_mau_sac]
       }));
     }
   };
 
   useEffect(() => {
     groupProductsByColor();
-  }, [selectedColors,selectedKichCo]);
+    console.log(tables);
+  }, [selectedColors,selectedKichCo,tableImg]);
 
   useEffect(() => {
     getAllDG();
@@ -448,7 +473,14 @@ export default function ThemSanPham() {
     getAllMS();
     getAllCL();
     getAllTH();
+    getAllHA();
   }, []);
+
+  const getAllHA = async () => {
+    await axios.get("http://localhost:8080/getAllHA").then((response) => {
+      setImg(response.data);
+    });
+  };
   const getAllNH = async () => {
     await axios.get("http://localhost:8080/getAllNH").then((response) => {
       setNhanHieu(response.data);
@@ -749,7 +781,7 @@ export default function ThemSanPham() {
                       onCancel={handleCancelHA}
                       cancelText="Hủy"
                       okText="Hoàn tất"
-                      style={{ position: "relative"}}
+                      style={{ position: "relative", top: "5px", left: "100px" }}
                       width={800}
                     >
                     <div>
@@ -757,22 +789,32 @@ export default function ThemSanPham() {
                       htmlFor="country"
                       className="block text-sm font-medium leading-6 text-gray-900"
                       >
-                       Tất cả hình ảnh 
+                       Tất cả hình ảnh
                       </label>
-                      <div className="flex ">
-                        <div className="w-1/3">
-                          <div className="relative w-60 h-56 bg-gray-300 mt-10">
-                            <input
-                              type="checkbox"
-                              id="0"
-                              checked={checkboxStates[0]}
-                              onChange={(e) => handleCheckboxChange(e)}
-                              className="absolute top-2 right-2 z-10"
-                            />
-                            <img src="https://i.ibb.co/Lk2fpns/AIR-JORDAN-1-MID-INVERT-BLACK-WHITE.webp" alt="Load Image" className="w-full h-full object-cover" />
+                      <div className="flex flex-wrap">
+                        {img.map((x, index) => (
+                          <div key={index} className="w-1/3 p-2 cursor-pointer">
+                            <div className="relative w-60 h-56 bg-gray-300 mt-10">
+                              <input
+                                type="checkbox"
+                                id={index}
+                                checked={checkboxStates[index]}
+                                onChange={(e) => handleCheckboxChange(e, index)}
+                                className="absolute top-2 right-2 z-10"
+                              />
+                              <img src={x.ten} alt="Load Image" className="w-full h-full object-cover"
+                              onClick={() => {
+                                const checkbox = document.getElementById(index);
+                                if (checkbox) {
+                                  checkbox.click();
+                                }
+                              }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="w-1/3">
+                        ))}
+                      </div>
+                        {/* <div className="w-1/3">
                           <div className="relative w-60 h-56 bg-gray-300 mt-10">
                             <input
                               type= "checkbox"
@@ -783,8 +825,8 @@ export default function ThemSanPham() {
                             />
                             <img src="https://i.ibb.co/zHdF8fK/AIR-JORDAN-1-MID-LIGHT-MULBERRY.webp" alt="Load Image" className="w-full h-full object-cover" />
                           </div>
-                        </div>
-                        <div className="w-1/3">
+                        </div> */}
+                        {/* <div className="w-1/3">
                           <div className="relative w-60 h-56 bg-gray-300 mt-10">
                             <input
                               type="checkbox"
@@ -795,8 +837,8 @@ export default function ThemSanPham() {
                             />
                             <img src="https://i.ibb.co/cCw0nZp/AIR-JORDAN-1-MID-ELEPHANT-PRINT.webp" alt="Load Image" className="w-full h-full object-cover" />
                           </div>
-                        </div>
-                      </div>
+                        </div> */}
+                      {/* </div> */}
                     </div>
                     </Modal>
                   </div>
@@ -884,7 +926,6 @@ export default function ThemSanPham() {
                                 setSelectedColors((prevSelected) => [...prevSelected, item.maMau]);
                               }
                             }
-                            console.log(selectedColors);
                           }}>
                           {item.maMau}
                           </div>
@@ -997,7 +1038,6 @@ export default function ThemSanPham() {
                                 setSelectedKichCo((prevSelected) => [...prevSelected, item.ten]);
                               }
                             }
-                            console.log(selectedKichCo);
                           }}>
                           {item.ten}
                           </div>
@@ -1076,7 +1116,7 @@ export default function ThemSanPham() {
               <h2>Sản phẩm theo : {mauSac.find((item) => item.maMau === mau)?.ten || ''} </h2>
               <Table
                 columns={columns}
-                dataSource={tables[mau]}
+                dataSource={tables[mau] || []}
                 pagination={false}
                 scroll={{ y: 2000 }}
               />
@@ -1086,6 +1126,9 @@ export default function ThemSanPham() {
                   pagination={false}
                   scroll={{ y: 2000 }}
                   locale={customText}
+                  onClick={() => {
+                    console.log("hi")
+                  }}
               />
             </div>
           ))}
