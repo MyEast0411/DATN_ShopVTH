@@ -61,7 +61,7 @@ statusColorMap["Ngừng bán"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = ["stt", "ma", "ten", "trangThai", "hanhDong"];
 
-export default function App() {
+export default function TableAllSanPham({ onSelectedMaValuesChange }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -76,7 +76,7 @@ export default function App() {
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
   const [selectedMaValues, setSelectedMaValues] = useState([]);
-  
+
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
@@ -96,18 +96,11 @@ export default function App() {
     }
     fetchChiTietSanPham();
   }, [sanPhams]);
-
-  const handleSelectionChange = (selectedKeys) => {
-    setSelectedKeys(selectedKeys);
-
-    const selectedMa = sanPhams
-      .filter((sanPham, index) => selectedKeys.has(index))
-      .map((selectedSanPham) => selectedSanPham.ma);
-
-    setSelectedMaValues(selectedMa);
-
-    console.log("Selected Mã values:", selectedMa);
-  };
+  
+  const idToMaMap = {};
+  sanPhams.forEach((sanPham) => {
+    idToMaMap[sanPham.id] = sanPham.ma;
+  });
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -329,7 +322,7 @@ export default function App() {
         <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
+            : `${selectedKeys.size} sản phẩm đã được chọn`}
         </span>
         <Pagination
           isCompact
@@ -378,9 +371,20 @@ export default function App() {
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
-        data-selected={(key) => alert(`Opening item ${key}...`)}
         onSortChange={setSortDescriptor}
+        onSelectionChange={(selectedKeys) => {
+          let selectedMaValues = [];
+          if (selectedKeys === "all") {
+            selectedMaValues = sanPhams.map((sanPham) => sanPham.ma);
+          } else {
+            selectedMaValues = Array.from(selectedKeys).map(
+              (id) => idToMaMap[id]
+            );
+          }
+          onSelectedMaValuesChange(selectedMaValues);
+          setSelectedKeys(selectedKeys);
+          setSelectedMaValues(selectedMaValues);
+        }}
       >
         <TableHeader columns={headerColumns}>
           {(column) => (

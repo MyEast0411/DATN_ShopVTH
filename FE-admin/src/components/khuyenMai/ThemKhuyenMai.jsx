@@ -15,11 +15,11 @@ import { Button as NextuiButton } from "@nextui-org/button";
 import { BiSolidMessageAltAdd } from "react-icons/bi";
 
 import TableAllSanPham from "../../common/tableNextUi/khuyenMai/TableAllSanPham";
-import TableAllChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiTietSP";
+import TableChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiTietSP";
 import { useParams } from "react-router-dom";
 import { getKhuyenMaiById } from "../../api/khuyenMai/KhuyenMaiApi";
 
-export default function idkmKhuyenMai() {
+export default function ThemKhuyenMai() {
   const { idKM } = useParams();
   const [ten, setTen] = useState("");
   const [giaTriPhanTram, setGiaTriPhanTram] = useState(1);
@@ -28,7 +28,6 @@ export default function idkmKhuyenMai() {
   const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
 
   const chuyenTrang = useNavigate();
-  // Tạo một mảng giá trị phần trăm từ 1 đến 90
   const percentValues = Array.from({ length: 90 }, (_, index) => index + 1);
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
@@ -37,16 +36,18 @@ export default function idkmKhuyenMai() {
   const currentHour = currentDate.getHours().toString().padStart(2, "0");
   const currentMinute = currentDate.getMinutes().toString().padStart(2, "0");
   const [selectedStartDate, setSelectedStartDate] = useState("");
-  const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [selectedMaValues, setSelectedMaValues] = useState([]);
+  const handleSelectedMaValuesChange = (newSelectedMaValues) => {
+    setSelectedMaValues(newSelectedMaValues);
+  };
+
   const handleNgayBatDauChange = (e) => {
     const newValue = e.target.value;
-    console.log("Ngày bắt đầu input: " + newValue);
     setNgayBatDau(newValue);
     setSelectedStartDate(newValue);
   };
   const handleNgayKetThucChange = (e) => {
     const newValue = e.target.value;
-    console.log("Ngày kết thúc input: " + newValue);
     setNgayKetThuc(newValue);
   };
 
@@ -66,7 +67,6 @@ export default function idkmKhuyenMai() {
         const data = response;
         setTen(data.ten);
         setGiaTriPhanTram(data.giaTriPhanTram);
-        console.log("Data:", data);
       } catch (error) {
         console.error("Error fetching KhuyenMai by ID:", error);
       }
@@ -257,7 +257,9 @@ export default function idkmKhuyenMai() {
               boxShadow: " 0 0 5px 2px #ccc",
             }}
           >
-            <TableAllSanPham />
+            <TableAllSanPham
+              onSelectedMaValuesChange={handleSelectedMaValuesChange}
+            />
           </div>
           <h2 className="text-xl mt-7 mb-1 mr-5 font-bold text-gray-800">
             Chi tiết sản phẩm
@@ -271,7 +273,7 @@ export default function idkmKhuyenMai() {
               boxShadow: " 0 0 5px 2px #ccc",
             }}
           >
-            <TableAllChiTietSanPham />
+            <TableChiTietSanPham selectedMaValues={selectedMaValues} />
           </div>
         </div>
 

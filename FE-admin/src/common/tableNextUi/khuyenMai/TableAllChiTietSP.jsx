@@ -35,13 +35,13 @@ import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
-const url = "http://localhost:8080/chi-tiet-san-pham";
+const url = "http://localhost:8080/";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
   { name: "Ảnh", uid: "anh" },
   { name: "Tên", uid: "ma", sortable: true },
   { name: "Kích thước", uid: "kichThuoc", sortable: true },
-  { name: "Màu", uid: "mau" },
+  { name: "Màu sắc", uid: "mauSac" },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Tình trạng", uid: "tinhTrang" },
 ];
@@ -69,12 +69,12 @@ const INITIAL_VISIBLE_COLUMNS = [
   "anh",
   "ten",
   "kichThuoc",
-  "mau",
+  "mauSac",
   "trangThai",
   "tinhTrang",
 ];
 
-export default function App() {
+export default function TableChiTietSanPham({ selectedMaValues }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -88,26 +88,34 @@ export default function App() {
   });
   const [page, setPage] = React.useState(1);
   const [chiTietSanPhams, setChiTietSanPhams] = React.useState([]);
+  const [detailedProducts, setDetailedProducts] = useState([]);
+  React.useEffect(() => {
+    async function fetchChiTietSanPham() {
+      const url = "http://localhost:8080/get-chiTietSP-by-ListMa";
+      const params = {
+        ma: selectedMaValues,
+      };
 
-  //   React.useEffect(() => {
-  //     async function fetchChiTietSanPham() {
-  //       try {
-  //         const response = await axios.get(url);
-  //         const updatedRows = response.data.map((item, index) => ({
-  //           id: index + 1,
-  //           stt: index + 1,
-  //           ma: item.ma,
-  //           ten: item.ten_san_pham,
-  //           soLuongTon: item.so_luong_ton,
-  //           trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
-  //         }));
-  //         setSanPhams(updatedRows);
-  //       } catch (error) {
-  //         console.error("Lỗi khi gọi API: ", error);
-  //       }
-  //     }
-  //     fetchChiTietSanPham();
-  //   }, [sanPhams]);
+      try {
+        const response = await axios.get(url, { params });
+        const updatedRows = response.data.map((item, index) => ({
+          id: index + 1,
+          stt: index + 1,
+          anh: item.giaNhap,
+          // ten: item.ten,
+          // kichThuoc: item.id_kich_thuoc,
+          // mauSac: item.mauSac.ten,
+          // tinhTrang: item.tinhTrang,
+          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
+        }));
+        setChiTietSanPhams(updatedRows);
+      } catch (error) {
+        console.error("Lỗi khi gọi API: ", error);
+      }
+    }
+    fetchChiTietSanPham();
+  }, [selectedMaValues]);
+  console.log(selectedMaValues);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -326,7 +334,7 @@ export default function App() {
         <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
+            : `${selectedKeys.size} sản phẩm chi tiết đã được chọn`}
         </span>
         <Pagination
           isCompact
