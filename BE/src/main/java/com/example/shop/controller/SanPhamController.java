@@ -94,6 +94,10 @@ public class SanPhamController {
     List<HinhAnh> getAllHA(){
         return hinhAnhRepository.findAll();
     }
+    @GetMapping("getHinhAnhByMau/{mauSac}")
+    public List<HinhAnh> getHinhAnhByMau(@PathVariable String mauSac) {
+        return hinhAnhRepository.getHinhAnhByMau(mauSac);
+    }
     public SanPhamVM convertToSanPhamVM(Object[] row) {
         SanPhamVM sanPhamVM = new SanPhamVM();
         sanPhamVM.setMa((String) row[0]);
