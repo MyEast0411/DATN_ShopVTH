@@ -91,31 +91,35 @@ export default function TableChiTietSanPham({ selectedMaValues }) {
   const [detailedProducts, setDetailedProducts] = useState([]);
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
-      const url = "http://localhost:8080/get-chiTietSP-by-ListMa";
       const params = {
         ma: selectedMaValues,
       };
+      console.log(selectedMaValues);
+      const url = `http://localhost:8080/get-chiTietSP-by-ListMa/${selectedMaValues}`;
 
       try {
-        const response = await axios.get(url, { params });
-        const updatedRows = response.data.map((item, index) => ({
-          id: index + 1,
-          stt: index + 1,
-          anh: item.giaNhap,
-          // ten: item.ten,
-          // kichThuoc: item.id_kich_thuoc,
-          // mauSac: item.mauSac.ten,
-          // tinhTrang: item.tinhTrang,
-          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
-        }));
-        setChiTietSanPhams(updatedRows);
+        if (selectedMaValues.length === 0) {
+          setChiTietSanPhams([]);
+        } else {
+          const response = await axios.get(url);
+          console.log(response.data);
+          const updatedRows = response.data.map((item, index) => ({
+            id: index + 1,
+            stt: index + 1,
+            anh: item.giaNhap,
+            kichThuoc: item.id_kich_co.ten,
+            mauSac: item.id_mau_sac.ten,
+            // tinhTrang: item.tinhTrang,
+            trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+          }));
+          setChiTietSanPhams(updatedRows);
+        }
       } catch (error) {
         console.error("Lỗi khi gọi API: ", error);
       }
     }
     fetchChiTietSanPham();
   }, [selectedMaValues]);
-  console.log(selectedMaValues);
 
   const hasSearchFilter = Boolean(filterValue);
 
