@@ -59,3 +59,4 @@ export const deleteKhuyenMai = async (id) => {
     throw error;
   }
 };
+

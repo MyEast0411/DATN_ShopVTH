@@ -7,9 +7,11 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,6 +24,11 @@ public class KhuyenMaiService {
 
     public List<KhuyenMai> findAll() {
         return khuyenMaiRepo.findAll();
+    }
+
+    @Query("SELECT k FROM KhuyenMai k WHERE (:ngayBatDau BETWEEN k.ngayBatDau AND k.ngayKetThuc OR :ngayKetThuc BETWEEN k.ngayBatDau AND k.ngayKetThuc) AND k.deleted = 0")
+    public List<KhuyenMai> findOverlappingPromotions(Date ngayBatDau, Date ngayKetThuc) {
+        return khuyenMaiRepo.findOverlappingPromotions(ngayBatDau, ngayKetThuc);
     }
 
     public KhuyenMai findByMa(String ma) {

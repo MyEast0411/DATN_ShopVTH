@@ -17,7 +17,9 @@ import { BiSolidMessageAltAdd } from "react-icons/bi";
 import TableAllSanPham from "../../common/tableNextUi/khuyenMai/TableAllSanPham";
 import TableChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiTietSP";
 import { useParams } from "react-router-dom";
-import { getKhuyenMaiById } from "../../api/khuyenMai/KhuyenMaiApi";
+import {
+  getKhuyenMaiById,
+} from "../../api/khuyenMai/KhuyenMaiApi";
 
 export default function ThemKhuyenMai() {
   const { idKM } = useParams();
@@ -37,6 +39,7 @@ export default function ThemKhuyenMai() {
   const currentMinute = currentDate.getMinutes().toString().padStart(2, "0");
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedMaValues, setSelectedMaValues] = useState([]);
+
   const handleSelectedMaValuesChange = (newSelectedMaValues) => {
     setSelectedMaValues(newSelectedMaValues);
   };
@@ -74,6 +77,19 @@ export default function ThemKhuyenMai() {
     fetchKhuyenMaiById();
   }, [idKM]);
 
+  function hasTimeOverlap(existingPromotion, newPromotion) {
+    const existingStartDate = new Date(existingPromotion.ngayBatDau);
+    const existingEndDate = new Date(existingPromotion.ngayKetThuc);
+    const newStartDate = new Date(newPromotion.ngayBatDau);
+    const newEndDate = new Date(newPromotion.ngayKetThuc);
+  
+    return (
+      (newStartDate >= existingStartDate && newStartDate <= existingEndDate) ||
+      (newEndDate >= existingStartDate && newEndDate <= existingEndDate) ||
+      (newStartDate <= existingStartDate && newEndDate >= existingEndDate)
+    );
+  }
+  
   const confirmAdd = async () => {
     try {
       if (ten === "") {
@@ -114,7 +130,7 @@ export default function ThemKhuyenMai() {
       chuyenTrang("/khuyen-mai");
     } catch (error) {
       console.error("Error adding KhuyenMai:", error);
-      toast.error("Thêm thất bại.");
+      toast.error("Khuyến mãi trùng thời gian với khuyến mãi khác.");
       handleCloseAddConfirmation();
     }
   };
@@ -130,7 +146,7 @@ export default function ThemKhuyenMai() {
             padding: "10px",
             borderRadius: "5px",
             boxShadow: " 0 0 5px 1px #ccc",
-            height: "100%",
+            height: "710px",
             textOverflow: "none",
           }}
         >
@@ -139,7 +155,7 @@ export default function ThemKhuyenMai() {
               Thêm khuyến mại
             </h2>
             <div className="grid gap-6 mb-6 md:grid-cols-1">
-              <div>
+              <div className="mb-5">
                 <label
                   htmlFor="phone"
                   className="block mb-2 text-sm font-medium text-gray-900"
@@ -156,7 +172,7 @@ export default function ThemKhuyenMai() {
                 />
               </div>
 
-              <div>
+              <div className="mb-5">
                 <label
                   htmlFor="phone"
                   className="block mb-2 text-sm font-medium text-gray-900"
@@ -200,6 +216,7 @@ export default function ThemKhuyenMai() {
                   border: "1.5px solid #e1e1e1",
                   borderRadius: "5px",
                 }}
+                className="mb-5"
               />
 
               <label
@@ -221,6 +238,7 @@ export default function ThemKhuyenMai() {
                   border: "1.5px solid #e1e1e1",
                   borderRadius: "5px",
                 }}
+                className="mb-5"
               />
             </div>
             <div className="flex justify-center">
