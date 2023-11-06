@@ -108,7 +108,7 @@ export default function ThemSanPham() {
         return {
           children: (
             <div key={index} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <img src={record} alt="Hình ảnh" style={{ width: '100px', height: '100px' }} />
+              <img src={record} alt="Hình ảnh" style={{ width: '130px', height: '100px' }} />
             </div>
           ),
           props: {
@@ -237,18 +237,20 @@ export default function ThemSanPham() {
                             onChange={(e) => handleCheckboxChange(e, x.id)}
                             className="absolute top-2 right-2 z-10"
                           />
-                          <img src={x.ten} alt="Load Image" className="w-full h-full object-cover"
+                          <img src={x.ten} alt="Load Image" style={{objectFit: "contain"}} className="w-full h-full object-cover"
                           onClick={() => {
                             const checkbox = document.getElementById(x.id);
+                            console.log(selectedImages);
+                            console.log(checkbox);
                             if (checkbox) {
                               checkbox.click();
                             }
                             if (selectedImages.includes(x.id)) {
-                              setSelectedImages(selectedImages.filter((id) => id !== x.id));
+                              setSelectedImages(selectedImages.filter((id) => id != x.id));
                             } else {
-                              if (selectedImages.length < 3) {
+                              // if (selectedImages.length < 3) {
                                 setSelectedImages([...selectedImages, x.id]);
-                              }
+                              // }
                             }
                           }}
                           />
@@ -261,7 +263,7 @@ export default function ThemSanPham() {
             </Tooltip>
           ),
           props: {
-            rowSpan: index,
+            rowSpan: index ,
             style: {
               justifyContent: "center",
               alignItems: "center",
@@ -567,8 +569,9 @@ export default function ThemSanPham() {
       sp.id, sp.ten, sp.tenSanPham, sp.soLuongTon, sp.khoiLuong,
       sp.moTa, sp.giaNhap, sp.giaBan, sp.id_mau_sac, sp.id_kich_co,
       sp.id_thuong_hieu,sp.id_nhan_hieu,
-      sp.id_chat_lieu,sp.id_de_giay
+      sp.id_chat_lieu,sp.id_de_giay,tableImg
       ]);
+    console.log(data);
     if (isConfirmed) {
     await axios
       .post("http://localhost:8080/san-pham/add", data)

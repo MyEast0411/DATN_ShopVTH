@@ -12,13 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import java.util.Map;
+
+import java.util.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RestController
@@ -46,7 +45,7 @@ public class SanPhamController {
     @Autowired
     HinhAnhRepository hinhAnhRepository;
 
-    @GetMapping("/")
+    @GetMapping("/getAllSanPham")
     List<SanPhamChiTiet> getAll(){
         System.out.println("Mau sac");
         mauSacRepository.findAll().forEach(x-> System.out.println(x.getId()));
@@ -117,6 +116,11 @@ public class SanPhamController {
     }
     @PostMapping("/san-pham/add")
     ResponseEntity add(@RequestBody List<Object[]> sanPham) {
+        String hinhAnh = "";
+        List<HinhAnh> listHinhAnh = new ArrayList<>();
+        for (Object[] item : sanPham) {
+            hinhAnh = item[14].toString();
+        }
 
         List<ChiTietSanPhamVM> list = new ArrayList<>();
         List<SanPhamChiTiet> lst = new ArrayList<>();
@@ -149,14 +153,15 @@ public class SanPhamController {
         }
         for (ChiTietSanPhamVM x:
              list) {
-            int seconds = (int) System.currentTimeMillis() / 1000;
+            int seconds = (int) (System.currentTimeMillis() / 1000);
             Random random = new Random();
-            int number = random.nextInt(seconds + 1);
+            int number = random.nextInt(Math.max(seconds + 1, 1));
             String threeNumbers = String.valueOf(number).substring(0, 3);
 
             SanPhamChiTiet spct = new SanPhamChiTiet();
-            Integer maMax = Integer.parseInt(repo.findMaxMa().replace("SPCT", ""));
             spct.setMa("SPCT"+threeNumbers);
+            String uuid = UUID.randomUUID().toString();
+            spct.setId(uuid);
             spct.setId_san_pham(sanPhamRepository.findById(sp.getId()).get());
             spct.setId_mau_sac(mauSacRepository.findByMaMau(x.getId_mau_sac()));
             spct.setId_de_giay(deGiayRepository.findById(x.getId_de_giay()).get());
@@ -172,9 +177,30 @@ public class SanPhamController {
             spct.setSoLuongTon(1);
             spct.setTrangThai("1");
             lst.add(spct);
+
+            Pattern pattern = Pattern.compile("(Màu [^=]+)=\\[([^\\]]+)]");
+            Matcher matcher = pattern.matcher(hinhAnh);
+            while (matcher.find()) {
+                String colorName = matcher.group(1);
+                String links = matcher.group(2);
+                String[] linkArray = links.split(", ");
+                for (String link : linkArray) {
+                    if(mauSacRepository.findIdByMauSac(colorName).equals(spct.getId_mau_sac().getId())) {
+                        HinhAnh anh = new HinhAnh();
+                        anh.setNguoiTao("Đông");
+                        anh.setMauSac(colorName);
+                        anh.setTen(link);
+                        anh.setId_san_pham_chi_tiet(spct);
+                        listHinhAnh.add(anh);
+                    }
+                }
+            }
         }
         try {
+            listHinhAnh.forEach( x -> System.out.println(x));
+
             repo.saveAll(lst);
+            hinhAnhRepository.saveAll(listHinhAnh);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
