@@ -26,7 +26,10 @@ public class KhuyenMaiService {
         return khuyenMaiRepo.findAll();
     }
 
-    @Query("SELECT k FROM KhuyenMai k WHERE (:ngayBatDau BETWEEN k.ngayBatDau AND k.ngayKetThuc OR :ngayKetThuc BETWEEN k.ngayBatDau AND k.ngayKetThuc) AND k.deleted = 0")
+    @Query(value = "SELECT * FROM khuyen_mai k " +
+            "WHERE (:ngayBatDau BETWEEN k.ngay_bat_dau AND k.ngay_ket_thuc " +
+            "OR :ngayKetThuc BETWEEN k.ngay_bat_dau AND k.ngay_ket_thuc) " +
+            "AND k.deleted = 0", nativeQuery = true)
     public List<KhuyenMai> findOverlappingPromotions(Date ngayBatDau, Date ngayKetThuc) {
         return khuyenMaiRepo.findOverlappingPromotions(ngayBatDau, ngayKetThuc);
     }

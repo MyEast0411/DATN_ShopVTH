@@ -39,12 +39,12 @@ Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 const url = "http://localhost:8080/";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
+  { name: "Mã", uid: "ma", sortable: true },
   { name: "Ảnh", uid: "anh" },
-  { name: "Tên", uid: "ma", sortable: true },
+  // { name: "Tên", uid: "ten", sortable: true },
   { name: "Kích thước", uid: "kichThuoc", sortable: true },
   { name: "Màu sắc", uid: "mauSac" },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
-  // { name: "Tình trạng", uid: "tinhTrang" },
 ];
 
 const statusOptions = [
@@ -75,7 +75,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   // "tinhTrang",
 ];
 
-export default function TableChiTietSanPham({ selectedMaValues }) {
+export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValuesChange }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -90,6 +90,9 @@ export default function TableChiTietSanPham({ selectedMaValues }) {
   const [page, setPage] = React.useState(1);
   const [chiTietSanPhams, setChiTietSanPhams] = React.useState([]);
   const [detailedProducts, setDetailedProducts] = useState([]);
+  const [selectedMaCTSP, setSelectedMaCTSP] = useState([]);
+  
+
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       const params = {
@@ -108,6 +111,7 @@ export default function TableChiTietSanPham({ selectedMaValues }) {
           const updatedRows = response.data.map((item, index) => ({
             id: index + 1,
             stt: index + 1,
+            ma: item.ma,
             anh: "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/24750e81-85ed-4b0e-8cd8-becf0cd97b2f/air-jordan-1-mid-shoes-7cdjgS.png",
             kichThuoc: item.id_kich_co.ten,
             mauSac: item.id_mau_sac.ten,
@@ -122,6 +126,11 @@ export default function TableChiTietSanPham({ selectedMaValues }) {
     }
     fetchChiTietSanPham();
   }, [selectedMaValues]);
+
+  const idToMaMap = {};
+  chiTietSanPhams.forEach((sanPham) => {
+    idToMaMap[sanPham.id] = sanPham.ma;
+  });
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -398,8 +407,21 @@ export default function TableChiTietSanPham({ selectedMaValues }) {
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
         onSortChange={setSortDescriptor}
+        onSelectionChange={(selectedKeys) => {
+          let selectedMaCTSP = [];
+          if (selectedKeys === "all") {
+            selectedMaCTSP = chiTietSanPhams.map((chiTietSanPham) => chiTietSanPham.ma);
+          } else {
+            selectedMaCTSP = Array.from(selectedKeys).map(
+              (id) => idToMaMap[id]
+              );
+            }
+            onSelectedMaValuesChange(selectedMaCTSP);
+            setSelectedKeys(selectedKeys);
+            setSelectedMaCTSP(selectedMaCTSP);
+            // console.log(selectedMaCTSP);
+        }}
       >
         <TableHeader columns={headerColumns}>
           {(column) => (

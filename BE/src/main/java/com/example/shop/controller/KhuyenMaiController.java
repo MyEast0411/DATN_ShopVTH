@@ -2,6 +2,10 @@ package com.example.shop.controller;
 
 import com.example.shop.entity.DeGiay;
 import com.example.shop.entity.KhuyenMai;
+import com.example.shop.entity.KhuyenMaiSanPhamChiTiet;
+import com.example.shop.entity.SanPhamChiTiet;
+import com.example.shop.repositories.ChiTietSanPhamRepository;
+import com.example.shop.repositories.KhuyenMaiSanPhamChiTietRepository;
 import com.example.shop.services.KhuyenMaiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +24,12 @@ public class KhuyenMaiController {
     @Autowired
     private KhuyenMaiService khuyenMaiService;
 
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSPRepo;
+
+    @Autowired
+    private KhuyenMaiSanPhamChiTietRepository kmspctrepo;
+
     private String generateUniqueMaKhuyenMai() {
         String maKhuyenMai;
         do {
@@ -30,11 +40,17 @@ public class KhuyenMaiController {
 
     @GetMapping
     public List<KhuyenMai> findAll() {
+        System.out.println("dsadsdsdsd: "+kmspctrepo.findKmspctByActiveKhuyenMai());
         return khuyenMaiService.findAllByDeleted(0);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai) {
+    @PostMapping("/add/{listMaCTSP}")
+    public ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai, @PathVariable List<String> listMaCTSP) {
+        System.out.println(listMaCTSP);
+
+        List<SanPhamChiTiet> listSPCT = chiTietSPRepo.getSPCTByMaSPCT(listMaCTSP);
+//        KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
+
         try {
             if (khuyenMai.getId() != null) {
                 Optional<KhuyenMai> existingKhuyenMai = khuyenMaiService.findById(khuyenMai.getId());
@@ -46,6 +62,20 @@ public class KhuyenMaiController {
                     existing.setGiaTriPhanTram(khuyenMai.getGiaTriPhanTram());
                     existing.setDeleted(0);
                     khuyenMaiService.save(existing);
+
+                    for (String maCTSP : listMaCTSP) {
+                        List<SanPhamChiTiet> spctList = chiTietSPRepo.getSPCTByMaSPCT(Collections.singletonList(maCTSP));
+                        if (!spctList.isEmpty()) {
+                            for (SanPhamChiTiet spct : spctList) {
+                                KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
+                                kmspct.setId_khuyen_mai(existing);
+                                kmspct.setId_chi_tiet_san_pham(spct);
+                                // Set other properties for kmspct if needed
+
+                                kmspctrepo.save(kmspct);
+                            }
+                        }
+                    }
                     return ResponseEntity.ok("Cập nhật thành công");
                 } else {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khuyến mãi không tồn tại");
@@ -62,7 +92,19 @@ public class KhuyenMaiController {
                 khuyenMai.setNgayTao(new Date());
                 khuyenMai.setDeleted(0);
                 khuyenMaiService.save(khuyenMai);
-                System.out.println(khuyenMai.getMa());
+                for (String maCTSP : listMaCTSP) {
+                    List<SanPhamChiTiet> spctList = chiTietSPRepo.getSPCTByMaSPCT(Collections.singletonList(maCTSP));
+                    if (!spctList.isEmpty()) {
+                        for (SanPhamChiTiet spct : spctList) {
+                            KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
+                            kmspct.setId_khuyen_mai(khuyenMai);
+                            kmspct.setId_chi_tiet_san_pham(spct);
+                            // Set other properties for kmspct if needed
+                            kmspctrepo.save(kmspct);
+                        }
+                    }
+                }
+
                 return ResponseEntity.ok("Thêm mới thành công");
             }
         } catch (Exception e) {

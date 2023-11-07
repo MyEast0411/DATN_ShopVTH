@@ -12,17 +12,18 @@ export const getAllKhuyenMai = async () => {
   }
 };
 // add
-export const addKhuyenMai = async (khuyenMai) => {
+export const addKhuyenMai = async (khuyenMai, selectedMaCTSP) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/khuyen-mai/add`,
-      khuyenMai
+      `${API_BASE_URL}/khuyen-mai/add/${selectedMaCTSP}`,
+      khuyenMai 
     );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
+
 // get by id
 export const getKhuyenMaiById = async (id) => {
   try {

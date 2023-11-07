@@ -17,9 +17,7 @@ import { BiSolidMessageAltAdd } from "react-icons/bi";
 import TableAllSanPham from "../../common/tableNextUi/khuyenMai/TableAllSanPham";
 import TableChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiTietSP";
 import { useParams } from "react-router-dom";
-import {
-  getKhuyenMaiById,
-} from "../../api/khuyenMai/KhuyenMaiApi";
+import { getKhuyenMaiById } from "../../api/khuyenMai/KhuyenMaiApi";
 
 export default function ThemKhuyenMai() {
   const { idKM } = useParams();
@@ -39,10 +37,15 @@ export default function ThemKhuyenMai() {
   const currentMinute = currentDate.getMinutes().toString().padStart(2, "0");
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedMaValues, setSelectedMaValues] = useState([]);
+  const [selectedMaCTSPValues, setSelectedMaCTSPValues] = useState([]);
 
   const handleSelectedMaValuesChange = (newSelectedMaValues) => {
     setSelectedMaValues(newSelectedMaValues);
   };
+  const handleOnchangeMaCTSP = (newSelectedMaValues) => {
+    setSelectedMaCTSPValues(newSelectedMaValues);
+  };
+  console.log(selectedMaCTSPValues);
 
   const handleNgayBatDauChange = (e) => {
     const newValue = e.target.value;
@@ -82,14 +85,14 @@ export default function ThemKhuyenMai() {
     const existingEndDate = new Date(existingPromotion.ngayKetThuc);
     const newStartDate = new Date(newPromotion.ngayBatDau);
     const newEndDate = new Date(newPromotion.ngayKetThuc);
-  
+
     return (
       (newStartDate >= existingStartDate && newStartDate <= existingEndDate) ||
       (newEndDate >= existingStartDate && newEndDate <= existingEndDate) ||
       (newStartDate <= existingStartDate && newEndDate >= existingEndDate)
     );
   }
-  
+
   const confirmAdd = async () => {
     try {
       if (ten === "") {
@@ -118,8 +121,7 @@ export default function ThemKhuyenMai() {
         ngayBatDau: new Date(ngayBatDau).toISOString(),
         ngayKetThuc: new Date(ngayKetThuc).toISOString(),
       };
-      console.log(khuyenMai.ngayBatDau);
-      const response = await addKhuyenMai(khuyenMai);
+      const response = await addKhuyenMai(khuyenMai, selectedMaCTSPValues);
 
       setTen("");
       setGiaTriPhanTram(1);
@@ -130,7 +132,7 @@ export default function ThemKhuyenMai() {
       chuyenTrang("/khuyen-mai");
     } catch (error) {
       console.error("Error adding KhuyenMai:", error);
-      toast.error("Khuyến mãi trùng thời gian với khuyến mãi khác.");
+      toast.error("Khuyến mãi trùng thời gian với khuyến mãi khác!");
       handleCloseAddConfirmation();
     }
   };
@@ -291,7 +293,10 @@ export default function ThemKhuyenMai() {
               boxShadow: " 0 0 5px 2px #ccc",
             }}
           >
-            <TableChiTietSanPham selectedMaValues={selectedMaValues} />
+            <TableChiTietSanPham
+              selectedMaValues={selectedMaValues}
+              onSelectedMaValuesChange={handleOnchangeMaCTSP}
+            />
           </div>
         </div>
 
