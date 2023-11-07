@@ -26,7 +26,7 @@ import {
   TableCell as TableCellMui
 } from "@mui/material";
 // import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
-// import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
+import { SearchIcon } from "../../otherComponents/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
 import { Tooltip } from "antd";
@@ -107,7 +107,7 @@ export default function App() {
   };
   useEffect(() => {
     getAllHA();
-  },[hinhAnh]);
+  },[]);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -128,7 +128,6 @@ export default function App() {
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(url);
-        console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
           id: index + 1,
           stt: index + 1,
@@ -198,7 +197,7 @@ export default function App() {
 
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
-    console.log(sanPham);
+    // console.log(sanPham);
     switch (columnKey) {
       case "hinhAnh" : 
       const hinhAnhURL = sanPham.hinhAnh;
@@ -317,6 +316,7 @@ export default function App() {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
+            style={{margin : "100px 500px"}}
           /> */}
           <div className="flex gap-3 items-end">
             <Dropdown>
