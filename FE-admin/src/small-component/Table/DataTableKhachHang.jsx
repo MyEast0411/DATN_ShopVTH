@@ -169,6 +169,7 @@ export default function DataTable() {
     } 
     fetchChiTietSanPham();
   }, []);
+  
   return (
     <div className="text-center" style={{ height: 371, width: "100%" }}>
       <DataGrid

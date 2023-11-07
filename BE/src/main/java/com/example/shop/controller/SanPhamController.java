@@ -285,4 +285,12 @@ public class SanPhamController {
         }
 
     }
+
+    //-------------Hội-----------------
+    @GetMapping("/get-chiTietSP-by-ListMa/{maList}")
+    public ResponseEntity<List<SanPhamChiTiet>> getByListMa(@PathVariable List<String> maList) {
+        List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaList(maList);
+        return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
+    }
+    //-------------Hội-----------------
 }

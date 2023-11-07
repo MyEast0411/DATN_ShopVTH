@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { QrReader } from "react-qr-reader";
-import { Modal } from "antd";
+import { Modal, Select, Switch } from "antd";
+const { Option } = Select;
 import {
   FormControl,
   FormLabel,
@@ -28,18 +29,26 @@ export default function ThemKhachHang() {
   let navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
+  const [district, setDistrict] = useState([]);
   const [wards, setWards] = useState([]);
+  const [ward, setWard] = useState([]);
   const [value, setValue] = useState("");
-  const [valueTP, setValueTP] = useState("");
-  const [valueHuyen, setValueHuyen] = useState("");
-  const [valueXa, setValueXa] = useState("");
+  const [codeHuyen, setCodeHuyen] = useState("");
+  const [codeXa, setCodeXa] = useState("");
+  const [valueTP, setValueTP] = useState([]);
+  const [valueHuyen, setValueHuyen] = useState([]);
+  const [valueXa, setValueXa] = useState([]);
   const [showScanner, setShowScanner] = useState(false);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
-  const defaultContent =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
 
+  const [isOn, setIsOn] = useState(false); // Khởi tạo trạng thái ban đầu là "off"
+
+  const handleSwitchChange = checked => {
+    setIsOn(checked); // Cập nhật trạng thái khi nút chuyển đổi được bật/tắt
+  };
+  
   const handleAdd = () => {
     setDeleteConfirmationOpen(true);
   };
@@ -52,6 +61,23 @@ export default function ThemKhachHang() {
       setProvinces(data);
     });
   }, []);
+  useEffect(() => {
+    const names = provinces.map(item => item.name);
+    setValueTP(names);
+    const provinceCode = provinces.find((x) => x.name === khachHang.thanhPho)?.code || 1;
+    getDistricts(provinceCode).then((data) => {
+      setDistrict(data);
+    });
+    const valueH = district.map(item => item.name);
+    setValueHuyen(valueH);
+
+    const districtCode = district.find((x) => x.name === khachHang.huyen)?.code || 1;
+    getWards(districtCode).then((data) => {
+      setWard(data);
+    });
+    const valueXa = ward.map(item => item.name);
+    setValueXa(valueXa);
+  }, [provinces,district]);
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
       if (item.code == provinceCode) {
@@ -141,15 +167,10 @@ export default function ThemKhachHang() {
       `http://localhost:8080/khach-hang/findByMa/${maKH}`
     );
     const khachHangData = result.data; // Dữ liệu khách hàng từ phản hồi API
-    provinces.map((item) => {
-      if (item.name == khachHangData.id_dia_chi.thanhPho) {
-        setValueTP(item.code);
-      }
-    });
+    
     // getDistricts(valueTP).then((data) => {
     //     setDistricts(data);
     // });
-    console.log(khachHangData.ngaySinh);
     setBackgroundImage(khachHangData.anhNguoiDung);
     setKhachHang({
       id: khachHangData.id,
@@ -167,13 +188,12 @@ export default function ThemKhachHang() {
       soNha: khachHangData.id_dia_chi.duong,
     });
   };
-
   const setBackgroundImage = (url) => {
     imgDivRef.current.style.backgroundImage = `url(${url})`;
   };
   useEffect(() => {
     getKhachHang();
-  }, [valueTP, khachHang]);
+  }, []);
 
   const onChange = (e) => {
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
@@ -229,6 +249,45 @@ export default function ThemKhachHang() {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleChangeTP = (value) => {
+    setKhachHang((prevKhachHang) => ({
+      ...prevKhachHang,
+      thanhPho: value
+    }));
+  };
+
+  const handleChangeHuyen = (value) => {
+    setKhachHang((prevKhachHang) => ({
+      ...prevKhachHang,
+      huyen: value
+    }));
+  };
+
+  const handleChangeXa = (value) => {
+    setKhachHang((prevKhachHang) => ({
+      ...prevKhachHang,
+      xa: value
+    }));
+  };
+
+  const options = valueTP.map(name => (
+    <Option key={name} value={name}>
+      {name}
+    </Option>
+  ));
+
+  const optionHuyen = valueHuyen.map(name => (
+    <Option key={name} value={name}>
+      {name}
+    </Option>
+  ));
+
+  const optionXa = valueXa.map(name => (
+    <Option key={name} value={name}>
+      {name}
+    </Option>
+  ));
 
   const onSubmit = async () => {
     await axios
@@ -448,11 +507,62 @@ export default function ThemKhachHang() {
               title="Địa chỉ 1"
             >
               <div>
-                <label>Thành phố</label>
-                <input type="text" />
+              <Select
+                placeholder="Thành phố"
+                onChange={handleChangeTP}
+                value={khachHang.thanhPho}
+                style={{width : "20%", marginRight : "10px"}}
+              >
+                {options}
+              </Select>
+
+              <Select
+                placeholder="Thành phố"
+                onChange={handleChangeHuyen}
+                value={khachHang.huyen}
+                style={{width : "21%", marginRight : "15px"}}
+              >
+                {optionHuyen}
+              </Select>
+
+              <Select
+                placeholder="Thành phố"
+                onChange={handleChangeXa}
+                value={khachHang.xa}
+                style={{width : "23%", marginRight : "10px"}}
+              >
+                {optionXa}
+              </Select>
+
+              <input
+                  type="text"
+                  name="soNha"
+                  value={soNha}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                    w-2/3 p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                    dark:focus:ring-blue-500 mt-4 dark:focus:border-blue-500"
+                  placeholder="Số nhà/Ngõ/Đường"
+                  required
+                  onChange={(e) => {
+                    onChange(e);
+                  }}
+              />
+                <div className="flex mt-10">
+                  <p className="mr-5">Địa chỉ mặc định</p>
+                  <Switch
+                    checked={isOn}
+                    onChange={handleSwitchChange}
+                    className={`${
+                      isOn
+                        ? 'bg-green-500 hover:bg-green-700'
+                        : 'bg-gray-800'
+                    }`}
+                  />
+                </div>
               </div>
             </AccordionItem>
-            <AccordionItem
+            {/* <AccordionItem
               key="2"
               aria-label="Địa chỉ 2"
               startContent={
@@ -467,8 +577,8 @@ export default function ThemKhachHang() {
               title="Địa chỉ 2"
             >
               {defaultContent}
-            </AccordionItem>
-            <AccordionItem
+            </AccordionItem> */}
+            {/* <AccordionItem
               key="3"
               aria-label="Địa chỉ 3"
               startContent={
@@ -483,7 +593,7 @@ export default function ThemKhachHang() {
               title="Địa chỉ 3"
             >
               {defaultContent}
-            </AccordionItem>
+            </AccordionItem> */}
           </Accordion>
           <div className="">
             <Button
@@ -519,7 +629,6 @@ export default function ThemKhachHang() {
                     onChange={(e) => {
                       handleProvinceChange(e.target.value);
                     }}
-                    value={valueTP}
                   >
                     <option value="">Chọn thành phố</option>
                     {provinces.map((province) => (
@@ -540,7 +649,6 @@ export default function ThemKhachHang() {
                     id="District"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => handleDistrictChange(e.target.value)}
-                    value={valueHuyen}
                   >
                     <option value="">Chọn huyện</option>
                     {districts.map((district) => (
@@ -561,7 +669,6 @@ export default function ThemKhachHang() {
                     id="wards"
                     onChange={(e) => handleWardsChange(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    value={valueXa}
                   >
                     <option value="">Chọn xã phường</option>
                     {wards.map((ward) => (
@@ -616,7 +723,7 @@ export default function ThemKhachHang() {
                 }}
                 onClick={handleAdd}
               >
-                Cập nhật địa chỉ
+                Cập nhật
               </Button>
             </div>
           </div>
