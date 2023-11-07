@@ -40,7 +40,6 @@ public class KhuyenMaiController {
 
     @GetMapping
     public List<KhuyenMai> findAll() {
-        System.out.println("dsadsdsdsd: "+kmspctrepo.findKmspctByActiveKhuyenMai());
         return khuyenMaiService.findAllByDeleted(0);
     }
 

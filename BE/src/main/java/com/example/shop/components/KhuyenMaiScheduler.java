@@ -6,6 +6,7 @@ import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.ChiTietSanPhamRepository;
 import com.example.shop.repositories.KhuyenMaiSanPhamChiTietRepository;
 import com.example.shop.services.KhuyenMaiService;
+import com.example.shop.viewmodel.SanPhamVM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,47 +60,88 @@ public class KhuyenMaiScheduler {
     }
 
 
-//    @Scheduled(fixedRate = 1000) // Cập nhật mỗi giây (1000 milliseconds)
-//    public void RunKhuyenMaiIsActive() {
-//        try {
-//            Date currentDate = new Date();
-//            List<KhuyenMai> khuyenMaiList = khuyenMaiService.findAllByDeleted(0);
-//
-//            for (KhuyenMai khuyenMai : khuyenMaiList) {
-//                if (khuyenMai.getNgayBatDau().before(currentDate) &&
-//                        khuyenMai.getNgayKetThuc().after(currentDate)) {
-//                    applyDiscounts();
-//                }
-//            }
-//        } catch (Exception e) {
-//            // Handle exceptions
-//        }
-//    }
-//    private static final Logger logger = LoggerFactory.getLogger(KhuyenMaiScheduler.class);
-//
-//    @Scheduled(fixedRate = 1000)
-//    public void applyDiscounts() {
-//        try {
-//            List<KhuyenMaiSanPhamChiTiet> kmspcts = kmspctRepo.findKmspctByActiveKhuyenMai();
-//            logger.info("KMSPCT: {}", kmspcts);
-//
-//            for (KhuyenMaiSanPhamChiTiet kmspct : kmspcts) {
-//                SanPhamChiTiet spct = kmspct.getId_chi_tiet_san_pham();
-//                Float discountPercentage = kmspct.getId_khuyen_mai().getGiaTriPhanTram();
-//
-//                BigDecimal originalPrice = spct.getGiaBan();
-//                BigDecimal discountedPrice = originalPrice.multiply(BigDecimal.valueOf(1 - (discountPercentage / 100)));
-//
-//                spct.setGiaBan(discountedPrice);
-//                spct.setNgaySua(new Date());
-//
-//                sanPhamChiTietService.save(spct);
-//            }
-//        } catch (Exception e) {
-//            // Handle exceptions and log the error
-//            logger.error("An error occurred during applyDiscounts: {}", e.getMessage(), e);
-//        }
-//    }
+    @Scheduled(fixedRate = 1000) // Cập nhật mỗi giây (1000 milliseconds)
+    public void RunKhuyenMaiIsActive() {
+        try {
+            Date currentDate = new Date();
+            List<KhuyenMai> khuyenMaiList = khuyenMaiService.findAllByDeleted(0);
+
+            for (KhuyenMai khuyenMai : khuyenMaiList) {
+                if (khuyenMai.getNgayBatDau().before(currentDate) &&
+                        khuyenMai.getNgayKetThuc().after(currentDate)) {
+                    applyDiscounts();
+                }
+            }
+        } catch (Exception e) {
+            // Handle exceptions
+        }
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(KhuyenMaiScheduler.class);
+
+    public KhuyenMaiSanPhamChiTiet convertToKMSPCT(Object[] row) {
+        KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
+        kmspct.setId_chi_tiet_san_pham(sanPhamChiTietService.findById((String) row[0]).get());
+        kmspct.setId_khuyen_mai(khuyenMaiService.findById((String) row[1]).get());
+
+        return kmspct;
+    }
+
+    @Scheduled(fixedRate = 1000)
+    public void applyDiscounts() {
+        try {
+            List<Object[]> kmspcts = kmspctRepo.findKmspctByActiveKhuyenMai();
+
+            for (Object[] kmspct : kmspcts) {
+                KhuyenMaiSanPhamChiTiet sanPhamVM = convertToKMSPCT(kmspct);
+
+                SanPhamChiTiet spct = sanPhamVM.getId_chi_tiet_san_pham();
+                Float discountPercentage = sanPhamVM.getId_khuyen_mai().getGiaTriPhanTram();
+
+                // Kiểm tra xem khuyến mãi đã hết hạn hay chưa
+                KhuyenMai khuyenMai = sanPhamVM.getId_khuyen_mai();
+                Date currentDate = new Date();
+                Date endDate = khuyenMai.getNgayKetThuc();
+                System.out.println("EndATE: " + endDate);
+                System.out.println("CurrentDate: "+currentDate);
+                if (endDate != null && currentDate.after(endDate)) {
+                    // Khuyến mãi đã hết hạn, trả lại giá ban đầu
+                    if (spct.getGiaNhap() != null) {
+                        spct.setGiaBan(spct.getGiaNhap());
+                        spct.setNgaySua(currentDate);
+//                        spct.setOnSale(false);
+                        sanPhamChiTietService.save(spct);
+                    }
+                }
+                else {
+                    // Kiểm tra xem giá ban đầu đã được lưu trữ
+                    if (spct.getGiaNhap() == null) {
+                        // Lưu giá ban đầu
+                        spct.setGiaNhap(spct.getGiaBan());
+                    }
+
+                    // Kiểm tra xem giảm giá đã được áp dụng
+                    if (spct.getGiaBan().compareTo(spct.getGiaNhap()) != 0) {
+                        // Giảm giá đã được áp dụng, không cần xử lý lại
+                        continue;
+                    }
+
+                    // Áp dụng giảm giá
+                    BigDecimal originalPrice = spct.getGiaBan();
+                    BigDecimal discountedPrice = originalPrice.multiply(BigDecimal.valueOf(1 - (discountPercentage / 100)));
+
+                    spct.setGiaBan(discountedPrice);
+                    spct.setNgaySua(currentDate);
+//                    spct.setOnSale(true);
+                    sanPhamChiTietService.save(spct);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("An error occurred during applyDiscounts: {}", e.getMessage(), e);
+        }
+    }
+
+
 
 
 }
