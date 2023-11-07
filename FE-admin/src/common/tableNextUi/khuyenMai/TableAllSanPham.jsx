@@ -14,6 +14,8 @@ import {
   DropdownMenu,
   DropdownItem,
   Chip,
+  Tooltip,
+  getKeyValue,
   Pagination,
 } from "@nextui-org/react";
 import {
@@ -27,8 +29,10 @@ import { VerticalDotsIcon } from "../../otherComponents/VerticalDotsIcon";
 import { SearchIcon } from "../../otherComponents/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
+import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import { toast } from "react-toastify";
+import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
@@ -57,15 +61,9 @@ statusColorMap["Ngừng bán"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = ["stt", "ma", "ten", "trangThai", "hanhDong"];
 
-export default function App() {
+export default function TableAllSanPham({ onSelectedMaValuesChange }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [selectedProductIds, setSelectedProductIds] = React.useState([]);
-  const [rowData, setRowData] = React.useState([]);
-  const handleRowData = (item) => {
-    setRowData(item);
-  };
-
   const [visibleColumns, setVisibleColumns] = React.useState(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
@@ -77,6 +75,7 @@ export default function App() {
   });
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
+  const [selectedMaValues, setSelectedMaValues] = useState([]);
 
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
@@ -97,23 +96,11 @@ export default function App() {
     }
     fetchChiTietSanPham();
   }, [sanPhams]);
-
-  const handleSelectionChange = (newSelectedKeys) => {
-    setSelectedKeys(newSelectedKeys);
-
-    const selectedProductIds = Array.from(newSelectedKeys).map(
-      (selectedKey) => {
-        const selectedProduct = sanPhams.find(
-          (sanPham) => sanPham.id === selectedKey
-        );
-        return selectedProduct ? selectedProduct.id : null;
-      }
-    );
-
-    setSelectedProductIds(selectedProductIds);
-
-    console.log(selectedProductIds);
-  };
+  
+  const idToMaMap = {};
+  sanPhams.forEach((sanPham) => {
+    idToMaMap[sanPham.id] = sanPham.ma;
+  });
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -335,7 +322,7 @@ export default function App() {
         <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
+            : `${selectedKeys.size} sản phẩm đã được chọn`}
         </span>
         <Pagination
           isCompact
@@ -371,7 +358,7 @@ export default function App() {
   return (
     <>
       <Table
-        style={{ height: "382px" }}
+        style={{ height: "300px" }}
         aria-label="Example table with custom cells, pagination and sorting"
         isHeaderSticky
         bottomContent={bottomContent}
@@ -384,8 +371,20 @@ export default function App() {
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
-        onSelectionChange={handleSelectionChange}
         onSortChange={setSortDescriptor}
+        onSelectionChange={(selectedKeys) => {
+          let selectedMaValues = [];
+          if (selectedKeys === "all") {
+            selectedMaValues = sanPhams.map((sanPham) => sanPham.ma);
+          } else {
+            selectedMaValues = Array.from(selectedKeys).map(
+              (id) => idToMaMap[id]
+            );
+          }
+          onSelectedMaValuesChange(selectedMaValues);
+          setSelectedKeys(selectedKeys);
+          setSelectedMaValues(selectedMaValues);
+        }}
       >
         <TableHeader columns={headerColumns}>
           {(column) => (
@@ -403,7 +402,7 @@ export default function App() {
           items={sortedItems}
         >
           {(item) => (
-            <TableRow key={item.id} onChange={handleRowData(item)}>
+            <TableRow key={item.id}>
               {(columnKey) => (
                 <TableCell>{renderCell(item, columnKey)}</TableCell>
               )}

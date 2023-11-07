@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
+
 public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, String> {
     @Query(value = "SELECT b.ma,b.ten AS ten_san_pham, SUM(a.so_luong_ton) AS so_luong_ton,a.trang_thai\n" +
             "FROM san_pham_chi_tiet a\n" +
@@ -28,4 +29,11 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query(value = "select MAX(ma) from san_pham_chi_tiet",nativeQuery = true)
     String findMaxMa();
+
+
+    //---------------Hội----------------//
+    @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList")
+    List<SanPhamChiTiet> getSanPhamChiTietByMaList(@Param("maList") List<String> maList);
+    //---------------Hội----------------//
+
 }

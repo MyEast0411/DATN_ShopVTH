@@ -51,6 +51,13 @@ public class KhuyenMaiController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khuyến mãi không tồn tại");
                 }
             } else {
+                List<KhuyenMai> overlappingPromotions = khuyenMaiService.findOverlappingPromotions(
+                        khuyenMai.getNgayBatDau(),
+                        khuyenMai.getNgayKetThuc()
+                );
+                if (!overlappingPromotions.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khuyến mãi trùng thời gian với khuyến mãi khác.");
+                }
                 khuyenMai.setMa(generateUniqueMaKhuyenMai());
                 khuyenMai.setNgayTao(new Date());
                 khuyenMai.setDeleted(0);
@@ -96,5 +103,6 @@ public class KhuyenMaiController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
 }

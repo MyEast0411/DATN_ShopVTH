@@ -15,6 +15,7 @@ import {
   DropdownItem,
   Chip,
   Pagination,
+  Image,
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -35,15 +36,15 @@ import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
-const url = "http://localhost:8080/chi-tiet-san-pham";
+const url = "http://localhost:8080/";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
   { name: "Ảnh", uid: "anh" },
   { name: "Tên", uid: "ma", sortable: true },
   { name: "Kích thước", uid: "kichThuoc", sortable: true },
-  { name: "Màu", uid: "mau" },
+  { name: "Màu sắc", uid: "mauSac" },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
-  { name: "Tình trạng", uid: "tinhTrang" },
+  // { name: "Tình trạng", uid: "tinhTrang" },
 ];
 
 const statusOptions = [
@@ -69,12 +70,12 @@ const INITIAL_VISIBLE_COLUMNS = [
   "anh",
   "ten",
   "kichThuoc",
-  "mau",
+  "mauSac",
   "trangThai",
-  "tinhTrang",
+  // "tinhTrang",
 ];
 
-export default function App() {
+export default function TableChiTietSanPham({ selectedMaValues }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -88,26 +89,39 @@ export default function App() {
   });
   const [page, setPage] = React.useState(1);
   const [chiTietSanPhams, setChiTietSanPhams] = React.useState([]);
+  const [detailedProducts, setDetailedProducts] = useState([]);
+  React.useEffect(() => {
+    async function fetchChiTietSanPham() {
+      const params = {
+        ma: selectedMaValues,
+      };
+      // console.log(selectedMaValues);
+      const url = `http://localhost:8080/get-chiTietSP-by-ListMa/${selectedMaValues}`;
+      // const urlHinhAnh = "http://localhost:8080/getAllHA"
 
-  //   React.useEffect(() => {
-  //     async function fetchChiTietSanPham() {
-  //       try {
-  //         const response = await axios.get(url);
-  //         const updatedRows = response.data.map((item, index) => ({
-  //           id: index + 1,
-  //           stt: index + 1,
-  //           ma: item.ma,
-  //           ten: item.ten_san_pham,
-  //           soLuongTon: item.so_luong_ton,
-  //           trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
-  //         }));
-  //         setSanPhams(updatedRows);
-  //       } catch (error) {
-  //         console.error("Lỗi khi gọi API: ", error);
-  //       }
-  //     }
-  //     fetchChiTietSanPham();
-  //   }, [sanPhams]);
+      try {
+        if (selectedMaValues.length === 0) {
+          setChiTietSanPhams([]);
+        } else {
+          const response = await axios.get(url);
+          // console.log(response.data);
+          const updatedRows = response.data.map((item, index) => ({
+            id: index + 1,
+            stt: index + 1,
+            anh: "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/24750e81-85ed-4b0e-8cd8-becf0cd97b2f/air-jordan-1-mid-shoes-7cdjgS.png",
+            kichThuoc: item.id_kich_co.ten,
+            mauSac: item.id_mau_sac.ten,
+            // tinhTrang: item.tinhTrang,
+            trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+          }));
+          setChiTietSanPhams(updatedRows);
+        }
+      } catch (error) {
+        console.error("Lỗi khi gọi API: ", error);
+      }
+    }
+    fetchChiTietSanPham();
+  }, [selectedMaValues]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -164,6 +178,15 @@ export default function App() {
     const cellValue = chiTietSanPham[columnKey];
 
     switch (columnKey) {
+      case "anh":
+        const hinhAnhURL = chiTietSanPham.anh;
+        return (
+          <Image
+            width={70}
+            src={hinhAnhURL}
+            alt={chiTietSanPham.ten || "Ảnh sản phẩm"}
+          />
+        );
       case "trangThai":
         return (
           <Chip
@@ -326,7 +349,7 @@ export default function App() {
         <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
+            : `${selectedKeys.size} sản phẩm chi tiết đã được chọn`}
         </span>
         <Pagination
           isCompact
@@ -362,7 +385,7 @@ export default function App() {
   return (
     <>
       <Table
-        style={{ height: "382px" }}
+        // style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
         isHeaderSticky
         bottomContent={bottomContent}

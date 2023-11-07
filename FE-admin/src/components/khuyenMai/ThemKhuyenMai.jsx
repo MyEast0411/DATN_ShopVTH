@@ -15,11 +15,13 @@ import { Button as NextuiButton } from "@nextui-org/button";
 import { BiSolidMessageAltAdd } from "react-icons/bi";
 
 import TableAllSanPham from "../../common/tableNextUi/khuyenMai/TableAllSanPham";
-import TableAllChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiTietSP";
+import TableChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiTietSP";
 import { useParams } from "react-router-dom";
-import { getKhuyenMaiById } from "../../api/khuyenMai/KhuyenMaiApi";
+import {
+  getKhuyenMaiById,
+} from "../../api/khuyenMai/KhuyenMaiApi";
 
-export default function idkmKhuyenMai() {
+export default function ThemKhuyenMai() {
   const { idKM } = useParams();
   const [ten, setTen] = useState("");
   const [giaTriPhanTram, setGiaTriPhanTram] = useState(1);
@@ -28,7 +30,6 @@ export default function idkmKhuyenMai() {
   const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
 
   const chuyenTrang = useNavigate();
-  // Tạo một mảng giá trị phần trăm từ 1 đến 90
   const percentValues = Array.from({ length: 90 }, (_, index) => index + 1);
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
@@ -37,16 +38,19 @@ export default function idkmKhuyenMai() {
   const currentHour = currentDate.getHours().toString().padStart(2, "0");
   const currentMinute = currentDate.getMinutes().toString().padStart(2, "0");
   const [selectedStartDate, setSelectedStartDate] = useState("");
-  const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [selectedMaValues, setSelectedMaValues] = useState([]);
+
+  const handleSelectedMaValuesChange = (newSelectedMaValues) => {
+    setSelectedMaValues(newSelectedMaValues);
+  };
+
   const handleNgayBatDauChange = (e) => {
     const newValue = e.target.value;
-    console.log("Ngày bắt đầu input: " + newValue);
     setNgayBatDau(newValue);
     setSelectedStartDate(newValue);
   };
   const handleNgayKetThucChange = (e) => {
     const newValue = e.target.value;
-    console.log("Ngày kết thúc input: " + newValue);
     setNgayKetThuc(newValue);
   };
 
@@ -66,7 +70,6 @@ export default function idkmKhuyenMai() {
         const data = response;
         setTen(data.ten);
         setGiaTriPhanTram(data.giaTriPhanTram);
-        console.log("Data:", data);
       } catch (error) {
         console.error("Error fetching KhuyenMai by ID:", error);
       }
@@ -74,6 +77,19 @@ export default function idkmKhuyenMai() {
     fetchKhuyenMaiById();
   }, [idKM]);
 
+  function hasTimeOverlap(existingPromotion, newPromotion) {
+    const existingStartDate = new Date(existingPromotion.ngayBatDau);
+    const existingEndDate = new Date(existingPromotion.ngayKetThuc);
+    const newStartDate = new Date(newPromotion.ngayBatDau);
+    const newEndDate = new Date(newPromotion.ngayKetThuc);
+  
+    return (
+      (newStartDate >= existingStartDate && newStartDate <= existingEndDate) ||
+      (newEndDate >= existingStartDate && newEndDate <= existingEndDate) ||
+      (newStartDate <= existingStartDate && newEndDate >= existingEndDate)
+    );
+  }
+  
   const confirmAdd = async () => {
     try {
       if (ten === "") {
@@ -114,7 +130,7 @@ export default function idkmKhuyenMai() {
       chuyenTrang("/khuyen-mai");
     } catch (error) {
       console.error("Error adding KhuyenMai:", error);
-      toast.error("Thêm thất bại.");
+      toast.error("Khuyến mãi trùng thời gian với khuyến mãi khác.");
       handleCloseAddConfirmation();
     }
   };
@@ -130,7 +146,7 @@ export default function idkmKhuyenMai() {
             padding: "10px",
             borderRadius: "5px",
             boxShadow: " 0 0 5px 1px #ccc",
-            height: "100%",
+            height: "710px",
             textOverflow: "none",
           }}
         >
@@ -139,7 +155,7 @@ export default function idkmKhuyenMai() {
               Thêm khuyến mại
             </h2>
             <div className="grid gap-6 mb-6 md:grid-cols-1">
-              <div>
+              <div className="mb-5">
                 <label
                   htmlFor="phone"
                   className="block mb-2 text-sm font-medium text-gray-900"
@@ -156,7 +172,7 @@ export default function idkmKhuyenMai() {
                 />
               </div>
 
-              <div>
+              <div className="mb-5">
                 <label
                   htmlFor="phone"
                   className="block mb-2 text-sm font-medium text-gray-900"
@@ -200,6 +216,7 @@ export default function idkmKhuyenMai() {
                   border: "1.5px solid #e1e1e1",
                   borderRadius: "5px",
                 }}
+                className="mb-5"
               />
 
               <label
@@ -221,6 +238,7 @@ export default function idkmKhuyenMai() {
                   border: "1.5px solid #e1e1e1",
                   borderRadius: "5px",
                 }}
+                className="mb-5"
               />
             </div>
             <div className="flex justify-center">
@@ -257,7 +275,9 @@ export default function idkmKhuyenMai() {
               boxShadow: " 0 0 5px 2px #ccc",
             }}
           >
-            <TableAllSanPham />
+            <TableAllSanPham
+              onSelectedMaValuesChange={handleSelectedMaValuesChange}
+            />
           </div>
           <h2 className="text-xl mt-7 mb-1 mr-5 font-bold text-gray-800">
             Chi tiết sản phẩm
@@ -271,7 +291,7 @@ export default function idkmKhuyenMai() {
               boxShadow: " 0 0 5px 2px #ccc",
             }}
           >
-            <TableAllChiTietSanPham />
+            <TableChiTietSanPham selectedMaValues={selectedMaValues} />
           </div>
         </div>
 
