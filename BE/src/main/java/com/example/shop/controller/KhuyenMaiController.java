@@ -63,8 +63,6 @@ public class KhuyenMaiController {
     @PostMapping("/add/{listMaCTSP}")
     public ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai, @PathVariable List<String> listMaCTSP) {
 
-        List<SanPhamChiTiet> listSPCT = chiTietSPRepo.getSPCTByMaSPCT(listMaCTSP);
-
         try {
             if (khuyenMai.getId() != null) {
                 Optional<KhuyenMai> existingKhuyenMai = khuyenMaiService.findById(khuyenMai.getId());
@@ -86,7 +84,6 @@ public class KhuyenMaiController {
                                 kmspct.setId_khuyen_mai(existing);
                                 kmspct.setId_chi_tiet_san_pham(spct);
                                 kmspct.setGiaCu(spct.getGiaBan());
-                                // Set other properties for kmspct if needed
 
                                 kmspctrepo.save(kmspct);
                             }
@@ -117,7 +114,6 @@ public class KhuyenMaiController {
                             kmspct.setId_khuyen_mai(khuyenMai);
                             kmspct.setId_chi_tiet_san_pham(spct);
                             kmspct.setGiaCu(spct.getGiaBan());
-                            // Set other properties for kmspct if needed
                             kmspctrepo.save(kmspct);
                         }
                     }
@@ -166,6 +162,22 @@ public class KhuyenMaiController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+
+    @PutMapping("/batTatKhuyenMai/{id}/{isSelected}")
+    public KhuyenMai batTatKhuyenMai(@PathVariable("id") KhuyenMai khuyenMai,@PathVariable String isSelected) {
+//        System.out.println(khuyenMai);
+        System.out.println(khuyenMai.getTrangThai());
+
+        if (isSelected.equals("true")) {
+            khuyenMai.setTrangThai("Đã dừng");
+        } else {
+            khuyenMai.setTrangThai("Đang diễn ra");
+        }
+            System.out.println(khuyenMaiService.save(khuyenMai));
+        return null;
+
     }
 
 

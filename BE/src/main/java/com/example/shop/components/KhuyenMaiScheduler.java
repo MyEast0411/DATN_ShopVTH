@@ -103,17 +103,12 @@ public class KhuyenMaiScheduler {
                 KhuyenMai khuyenMai = sanPhamVM.getId_khuyen_mai();
                 Date currentDate = new Date();
                 Date endDate = khuyenMai.getNgayKetThuc();
-//                System.out.println(khuyenMai);
-//                System.out.println(sanPhamVM.getId_khuyen_mai());
-//                System.out.println("Truoc khi xoa: " +khuyenMai.getDeleted());
                 if (endDate != null && currentDate.after(endDate) || khuyenMai.getDeleted()==1) {
                     // Khuyến mãi đã hết hạn hoặc bị xóa, trả lại giá ban đầu
                     if (sanPhamVM.getGiaCu() != null) {
                         spct.setGiaBan(sanPhamVM.getGiaCu());
                         spct.setNgaySua(currentDate);
                         sanPhamChiTietService.save(spct);
-//                        System.out.println("Sau khi xoa: " + khuyenMai.getDeleted());
-
                     }
                 } else if (currentDate.after(khuyenMai.getNgayBatDau())) {
                     // Khuyến mãi đang diễn ra, áp dụng giảm giá
