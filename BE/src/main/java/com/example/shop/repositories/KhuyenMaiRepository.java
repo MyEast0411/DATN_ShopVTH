@@ -13,7 +13,10 @@ import java.util.List;
 public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, String> {
     List<KhuyenMai> findAll();
     KhuyenMai findByMa(String ma);
-    List<KhuyenMai> findAllByDeleted(int deleted);
+
+    @Query(value = "SELECT * FROM khuyen_mai k WHERE k.deleted = 0 ORDER BY k.trang_thai = 'Đang diễn ra' DESC, k.ngay_sua DESC", nativeQuery = true)
+    List<KhuyenMai> findAllByDeleted();
+
 
     @Query(value = "SELECT * FROM khuyen_mai k " +
             "WHERE (:ngayBatDau BETWEEN k.ngay_bat_dau AND k.ngay_ket_thuc " +

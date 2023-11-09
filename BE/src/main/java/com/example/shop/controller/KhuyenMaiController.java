@@ -7,14 +7,17 @@ import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.ChiTietSanPhamRepository;
 import com.example.shop.repositories.KhuyenMaiSanPhamChiTietRepository;
 import com.example.shop.services.KhuyenMaiService;
+import com.example.shop.viewmodel.KhuyenMaiSPCTViewmodel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -40,15 +43,27 @@ public class KhuyenMaiController {
 
     @GetMapping
     public List<KhuyenMai> findAll() {
-        return khuyenMaiService.findAllByDeleted(0);
+        return khuyenMaiService.findAllByDeleted();
+    }
+
+
+    @GetMapping("/getAllKMSPCT")
+    public List<KhuyenMaiSanPhamChiTiet> findAllKMSPCT() {
+        List<KhuyenMaiSanPhamChiTiet> listKMSPCT = new ArrayList<>();
+        for (KhuyenMaiSanPhamChiTiet x : kmspctrepo.findKmspctByActiveKhuyenMaiViewModel()) {
+            KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
+            kmspct.setId_chi_tiet_san_pham(x.getId_chi_tiet_san_pham());
+            kmspct.setId_khuyen_mai(x.getId_khuyen_mai());
+            listKMSPCT.add(kmspct);
+        }
+        return listKMSPCT;
+
     }
 
     @PostMapping("/add/{listMaCTSP}")
     public ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai, @PathVariable List<String> listMaCTSP) {
-        System.out.println(listMaCTSP);
 
         List<SanPhamChiTiet> listSPCT = chiTietSPRepo.getSPCTByMaSPCT(listMaCTSP);
-//        KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
 
         try {
             if (khuyenMai.getId() != null) {
@@ -59,6 +74,7 @@ public class KhuyenMaiController {
                     existing.setNgayBatDau(khuyenMai.getNgayBatDau());
                     existing.setNgayKetThuc(khuyenMai.getNgayKetThuc());
                     existing.setGiaTriPhanTram(khuyenMai.getGiaTriPhanTram());
+                    existing.setNgaySua(new Date());
                     existing.setDeleted(0);
                     khuyenMaiService.save(existing);
 
@@ -69,6 +85,7 @@ public class KhuyenMaiController {
                                 KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
                                 kmspct.setId_khuyen_mai(existing);
                                 kmspct.setId_chi_tiet_san_pham(spct);
+                                kmspct.setGiaCu(spct.getGiaBan());
                                 // Set other properties for kmspct if needed
 
                                 kmspctrepo.save(kmspct);
@@ -89,6 +106,7 @@ public class KhuyenMaiController {
                 }
                 khuyenMai.setMa(generateUniqueMaKhuyenMai());
                 khuyenMai.setNgayTao(new Date());
+                khuyenMai.setNgaySua(new Date());
                 khuyenMai.setDeleted(0);
                 khuyenMaiService.save(khuyenMai);
                 for (String maCTSP : listMaCTSP) {
@@ -98,6 +116,7 @@ public class KhuyenMaiController {
                             KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
                             kmspct.setId_khuyen_mai(khuyenMai);
                             kmspct.setId_chi_tiet_san_pham(spct);
+                            kmspct.setGiaCu(spct.getGiaBan());
                             // Set other properties for kmspct if needed
                             kmspctrepo.save(kmspct);
                         }
@@ -135,7 +154,11 @@ public class KhuyenMaiController {
     @DeleteMapping("/soft-delete/{id}")
     public ResponseEntity<String> softDeleteKhuyenMai(@PathVariable String id) {
         Optional<KhuyenMai> khuyenMai = khuyenMaiService.findById(id);
-
+        List<KhuyenMaiSanPhamChiTiet> kmspct = kmspctrepo.findKmspctNotByDeleted(khuyenMai.get().getId());
+        for (KhuyenMaiSanPhamChiTiet n : kmspct) {
+            SanPhamChiTiet spct = chiTietSPRepo.findById(n.getId_chi_tiet_san_pham().getId()).get();
+            spct.setGiaBan(n.getGiaCu());
+        }
         if (khuyenMai.isPresent()) {
             khuyenMai.get().setDeleted(1);
             khuyenMaiService.save(khuyenMai.get());

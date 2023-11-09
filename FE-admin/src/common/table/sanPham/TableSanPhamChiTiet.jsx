@@ -35,6 +35,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { MdDeleteOutline } from "react-icons/md";
 import { LiaEyeSolid } from "react-icons/lia";
+import {getAllKMSPCT} from "../../../api/khuyenMai/KhuyenMaiApi"
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -107,6 +108,16 @@ export default function App() {
   useEffect(() => {
     getAllHA();
   }, [hinhAnh]);
+
+  const [kmspcts, setKmspcts] = useState([]);
+  const fetchKMSPCT = async () => {
+    const data = await getAllKMSPCT();
+    setKmspcts(data)
+    console.log(data)
+  };
+  useEffect(() => {
+    fetchKMSPCT();
+  }, [kmspcts]);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -138,8 +149,9 @@ export default function App() {
           kichThuoc: item.id_kich_co.ten,
           soLuongTon: item.soLuongTon,
           trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: item.giaBan,
+          giaGiam: kmspcts.find((x)=>x.id_chi_tiet_san_pham.id == item.id)?.id_khuyen_mai.giaTriPhanTram,
         }));
+        // console.log(giaGiam)
         setSanPhams(updatedRows);
       } catch (error) {
         console.error("Lỗi khi gọi API: ", error);
@@ -198,16 +210,22 @@ export default function App() {
     });
   }, [sortDescriptor, items]);
 
-  const DiscountTag = ({ discount }) => (
-    <div className="discount-tag">{discount}% OFF</div>
-  );
+  const DiscountTag = ({ discount }) => {
+    if (discount === undefined) {
+      return null; 
+    }
+  
+    return (
+      <div className="discount-tag">
+        {`${discount}% OFF`}
+      </div>
+    );
+  };
+  
 
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
-    // console.log(sanPham);
     const giaGiam = sanPham.giaGiam;
-    console.log(giaGiam);
-    // const discount = calculateDiscount(giaBan);
     switch (columnKey) {
       case "hinhAnh":
         const hinhAnhURL = sanPham.hinhAnh;

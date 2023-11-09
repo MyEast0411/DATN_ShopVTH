@@ -64,7 +64,7 @@ public class KhuyenMaiScheduler {
     public void RunKhuyenMaiIsActive() {
         try {
             Date currentDate = new Date();
-            List<KhuyenMai> khuyenMaiList = khuyenMaiService.findAllByDeleted(0);
+            List<KhuyenMai> khuyenMaiList = khuyenMaiService.findAllByDeleted();
 
             for (KhuyenMai khuyenMai : khuyenMaiList) {
                 if (khuyenMai.getNgayBatDau().before(currentDate) &&
@@ -83,6 +83,7 @@ public class KhuyenMaiScheduler {
         KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
         kmspct.setId_chi_tiet_san_pham(sanPhamChiTietService.findById((String) row[0]).get());
         kmspct.setId_khuyen_mai(khuyenMaiService.findById((String) row[1]).get());
+        kmspct.setGiaCu((BigDecimal) row[3]);
 
         return kmspct;
     }
@@ -102,26 +103,27 @@ public class KhuyenMaiScheduler {
                 KhuyenMai khuyenMai = sanPhamVM.getId_khuyen_mai();
                 Date currentDate = new Date();
                 Date endDate = khuyenMai.getNgayKetThuc();
-                System.out.println("EndATE: " + endDate);
-                System.out.println("CurrentDate: "+currentDate);
-                if (endDate != null && currentDate.after(endDate)) {
-                    // Khuyến mãi đã hết hạn, trả lại giá ban đầu
-                    if (spct.getGiaNhap() != null) {
-                        spct.setGiaBan(spct.getGiaNhap());
+//                System.out.println(khuyenMai);
+//                System.out.println(sanPhamVM.getId_khuyen_mai());
+//                System.out.println("Truoc khi xoa: " +khuyenMai.getDeleted());
+                if (endDate != null && currentDate.after(endDate) || khuyenMai.getDeleted()==1) {
+                    // Khuyến mãi đã hết hạn hoặc bị xóa, trả lại giá ban đầu
+                    if (sanPhamVM.getGiaCu() != null) {
+                        spct.setGiaBan(sanPhamVM.getGiaCu());
                         spct.setNgaySua(currentDate);
-//                        spct.setOnSale(false);
                         sanPhamChiTietService.save(spct);
+//                        System.out.println("Sau khi xoa: " + khuyenMai.getDeleted());
+
                     }
-                }
-                else {
-                    // Kiểm tra xem giá ban đầu đã được lưu trữ
-                    if (spct.getGiaNhap() == null) {
+                } else if (currentDate.after(khuyenMai.getNgayBatDau())) {
+                    // Khuyến mãi đang diễn ra, áp dụng giảm giá
+                    if (sanPhamVM.getGiaCu() == null) {
                         // Lưu giá ban đầu
-                        spct.setGiaNhap(spct.getGiaBan());
+                        sanPhamVM.setGiaCu(spct.getGiaBan());
                     }
 
                     // Kiểm tra xem giảm giá đã được áp dụng
-                    if (spct.getGiaBan().compareTo(spct.getGiaNhap()) != 0) {
+                    if (spct.getGiaBan().compareTo(sanPhamVM.getGiaCu()) != 0) {
                         // Giảm giá đã được áp dụng, không cần xử lý lại
                         continue;
                     }
@@ -132,7 +134,6 @@ public class KhuyenMaiScheduler {
 
                     spct.setGiaBan(discountedPrice);
                     spct.setNgaySua(currentDate);
-//                    spct.setOnSale(true);
                     sanPhamChiTietService.save(spct);
                 }
             }
@@ -140,8 +141,6 @@ public class KhuyenMaiScheduler {
             logger.error("An error occurred during applyDiscounts: {}", e.getMessage(), e);
         }
     }
-
-
 
 
 }
