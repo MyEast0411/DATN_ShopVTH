@@ -13,13 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RestController
@@ -47,62 +45,58 @@ public class SanPhamController {
     @Autowired
     HinhAnhRepository hinhAnhRepository;
 
-    @GetMapping("/")
-    List<SanPhamChiTiet> getAll() {
+    @GetMapping("/getAllSanPham")
+    List<SanPhamChiTiet> getAll(){
         System.out.println("Mau sac");
-        mauSacRepository.findAll().forEach(x -> System.out.println(x.getId()));
+        mauSacRepository.findAll().forEach(x-> System.out.println(x.getId()));
 //        System.out.println("san pham");
 //        sanPhamRepository.findAll().forEach(x-> System.out.println(x.getId()));
         System.out.println("kich co");
-        kichCoRepository.findAll().forEach(x -> System.out.println(x.getId()));
+        kichCoRepository.findAll().forEach(x-> System.out.println(x.getId()));
         System.out.println("chat lieu");
-        chatLieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
+        chatLieuRepository.findAll().forEach(x-> System.out.println(x.getId()));
 //        System.out.println("the loai");
 //        theLoaiRepository.findAll().forEach(x-> System.out.println(x.getId()));
         System.out.println("de giay");
-        deGiayRepository.findAll().forEach(x -> System.out.println(x.getId()));
+        deGiayRepository.findAll().forEach(x-> System.out.println(x.getId()));
         System.out.println("thuong hieu");
-        thuongHieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
+        thuongHieuRepository.findAll().forEach(x-> System.out.println(x.getId()));
         System.out.println("nhan hieu");
-        nhanHieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
+        nhanHieuRepository.findAll().forEach(x-> System.out.println(x.getId()));
         return repo.findAll();
     }
-
     @GetMapping("/getAllMS")
-    List<MauSac> getAllMS() {
+    List<MauSac> getAllMS(){
         return mauSacRepository.findAll();
     }
-
     @GetMapping("/getAllTH")
-    List<ThuongHieu> getAllTH() {
+    List<ThuongHieu> getAllTH(){
         return thuongHieuRepository.findAll();
     }
-
     @GetMapping("/getAllCL")
-    List<ChatLieu> getAllCL() {
+    List<ChatLieu> getAllCL(){
         return chatLieuRepository.findAll();
     }
-
     @GetMapping("/getAllDG")
-    List<DeGiay> getAllDG() {
+    List<DeGiay> getAllDG(){
         return deGiayRepository.getListDeGiay();
     }
-
     @GetMapping("/getAllKC")
-    List<KichCo> getAllKC() {
+    List<KichCo> getAllKC(){
         return kichCoRepository.findAll();
     }
-
     @GetMapping("/getAllNH")
-    List<NhanHieu> getAllNH() {
+    List<NhanHieu> getAllNH(){
         return nhanHieuRepository.findAll();
     }
-
     @GetMapping("/getAllHA")
-    List<HinhAnh> getAllHA() {
+    List<HinhAnh> getAllHA(){
         return hinhAnhRepository.findAll();
     }
-
+    @GetMapping("getHinhAnhByMau/{mauSac}")
+    public List<HinhAnh> getHinhAnhByMau(@PathVariable String mauSac) {
+        return hinhAnhRepository.getHinhAnhByMau(mauSac);
+    }
     public SanPhamVM convertToSanPhamVM(Object[] row) {
         SanPhamVM sanPhamVM = new SanPhamVM();
         sanPhamVM.setMa((String) row[0]);
@@ -111,7 +105,6 @@ public class SanPhamController {
         sanPhamVM.setTrang_thai(Integer.parseInt(row[3].toString()));
         return sanPhamVM;
     }
-
     @GetMapping("/chi-tiet-san-pham")
     List<SanPhamVM> getAllCTSP() {
         List<SanPhamVM> sanPhamVMList = new ArrayList<>();
@@ -121,9 +114,13 @@ public class SanPhamController {
         }
         return sanPhamVMList;
     }
-
     @PostMapping("/san-pham/add")
     ResponseEntity add(@RequestBody List<Object[]> sanPham) {
+        String hinhAnh = "";
+        List<HinhAnh> listHinhAnh = new ArrayList<>();
+        for (Object[] item : sanPham) {
+            hinhAnh = item[14].toString();
+        }
 
         List<ChiTietSanPhamVM> list = new ArrayList<>();
         List<SanPhamChiTiet> lst = new ArrayList<>();
@@ -131,7 +128,7 @@ public class SanPhamController {
             ChiTietSanPhamVM x = new ChiTietSanPhamVM();
             x.setTen((String) row[1]);
             x.setMoTa((String) row[5]);
-            x.setGiaBan(BigDecimal.valueOf(Double.parseDouble(row[7].toString().replace(",", ""))));
+            x.setGiaBan(BigDecimal.valueOf(Double.parseDouble(row[7].toString().replace(",",""))));
             x.setId_mau_sac((String) row[8]);
             x.setId_kich_co((String) row[9]);
             x.setId_thuong_hieu((String) row[10]);
@@ -142,28 +139,29 @@ public class SanPhamController {
         }
         SanPham sp = new SanPham();
         Boolean check = false;
-        for (SanPham x :
-                sanPhamRepository.findAll()) {
-            if (x.getTen().equals(list.get(0).getTen())) {
+        for (SanPham x:
+             sanPhamRepository.findAll()) {
+            if(x.getTen().equals(list.get(0).getTen())) {
                 sp.setId(x.getId());
                 check = true;
             }
         }
-        if (!check) {
+        if(!check) {
             Integer maxMa = Integer.parseInt(sanPhamRepository.findMaxMa().replace("SP", ""));
             sp = new SanPham(null, "SP" + (maxMa + 1), list.get(0).getTen(), new Date(), null, "", "", 1);
             sp = sanPhamRepository.save(sp);
         }
-        for (ChiTietSanPhamVM x :
-                list) {
-            int seconds = (int) System.currentTimeMillis() / 1000;
+        for (ChiTietSanPhamVM x:
+             list) {
+            int seconds = (int) (System.currentTimeMillis() / 1000);
             Random random = new Random();
-            int number = random.nextInt(seconds + 1);
+            int number = random.nextInt(Math.max(seconds + 1, 1));
             String threeNumbers = String.valueOf(number).substring(0, 3);
 
             SanPhamChiTiet spct = new SanPhamChiTiet();
-            Integer maMax = Integer.parseInt(repo.findMaxMa().replace("SPCT", ""));
-            spct.setMa("SPCT" + threeNumbers);
+            spct.setMa("SPCT"+threeNumbers);
+            String uuid = UUID.randomUUID().toString();
+            spct.setId(uuid);
             spct.setId_san_pham(sanPhamRepository.findById(sp.getId()).get());
             spct.setId_mau_sac(mauSacRepository.findByMaMau(x.getId_mau_sac()));
             spct.setId_de_giay(deGiayRepository.findById(x.getId_de_giay()).get());
@@ -179,22 +177,41 @@ public class SanPhamController {
             spct.setSoLuongTon(1);
             spct.setTrangThai("1");
             lst.add(spct);
+
+            Pattern pattern = Pattern.compile("(Màu [^=]+)=\\[([^\\]]+)]");
+            Matcher matcher = pattern.matcher(hinhAnh);
+            while (matcher.find()) {
+                String colorName = matcher.group(1);
+                String links = matcher.group(2);
+                String[] linkArray = links.split(", ");
+                for (String link : linkArray) {
+                    if(mauSacRepository.findIdByMauSac(colorName).equals(spct.getId_mau_sac().getId())) {
+                        HinhAnh anh = new HinhAnh();
+                        anh.setNguoiTao("Đông");
+                        anh.setMauSac(colorName);
+                        anh.setTen(link);
+                        anh.setId_san_pham_chi_tiet(spct);
+                        listHinhAnh.add(anh);
+                    }
+                }
+            }
         }
         try {
+            listHinhAnh.forEach( x -> System.out.println(x));
+
             repo.saveAll(lst);
+            hinhAnhRepository.saveAll(listHinhAnh);
             return ResponseEntity.ok("Thành công");
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
     }
-
     @DeleteMapping("/delete/{ma}")
     Boolean delete(@PathVariable String ma) {
         sanPhamRepository.delete(sanPhamRepository.findByMa(ma));
         return true;
     }
-
     @PostMapping("/addNew")
     NhanHieu add(@RequestBody NhanHieu sanPham) {
         return nhanHieuRepository.save(sanPham);
@@ -220,18 +237,18 @@ public class SanPhamController {
         try {
             repo.save(sanPham);
             return ResponseEntity.ok("Cập nhật thành công");
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cập nhật thất bại!");
         }
     }
 
     @DeleteMapping("/deleteSPCT/{ma}")
-    ResponseEntity deleteSPCT(@PathVariable String ma) {
+    ResponseEntity deleteSPCT (@PathVariable String ma) {
         try {
             repo.delete(repo.findByMa(ma));
             return ResponseEntity.ok("Xóa thành công");
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Xóa thất bại!");
         }
@@ -244,7 +261,7 @@ public class SanPhamController {
         Random random = new Random();
         int number = random.nextInt(seconds + 1);
         String threeNumbers = String.valueOf(number).substring(0, 3);
-        deGiay.setMa("DG" + threeNumbers);
+        deGiay.setMa("DG"+threeNumbers);
         deGiay.setTen(request.getTenDeGiay());
         deGiay.setDeleted(1);
         return deGiayRepository.save(deGiay);
@@ -258,17 +275,16 @@ public class SanPhamController {
             Random random = new Random();
             int number = random.nextInt(seconds + 1);
             String threeNumbers = String.valueOf(number).substring(0, 3);
-            kichCo.setMa("KC" + threeNumbers);
+            kichCo.setMa("KC"+threeNumbers);
             kichCo.setTen(request.getTenKichCo());
             kichCo.setDeleted(1);
             kichCoRepository.save(kichCo);
             return ResponseEntity.ok("Thành công");
-        } catch (Exception e) {
+        }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại kích cỡ này!");
         }
 
     }
-
 
     //-------------Hội-----------------
     @GetMapping("/get-chiTietSP-by-ListMa/{maList}")

@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 
 //table
 import DataTableMa from "../small-component/Table/DataTableKhachHang";
+import TableAllKhachHang from "../common/tableNextUi/khachHang/TableAllKhachHang"
 
 //icon
 import { BiFilterAlt } from "react-icons/bi";
@@ -95,7 +96,7 @@ export default function KhachHang() {
           }}
         >
           <div>
-          <DataTableMa />
+          <TableAllKhachHang />
           </div>
         </div>
       </div>

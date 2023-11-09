@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 //table
 import TableSanPhamChiTiet from "../../common/table/sanPham/TableSanPhamChiTiet";
-
+import {Input } from "@nextui-org/react";
 //icon
 import { BiFilterAlt } from "react-icons/bi";
 import { FiRefreshCcw } from "react-icons/fi";

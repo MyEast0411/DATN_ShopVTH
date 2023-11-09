@@ -31,16 +31,18 @@ export default function ThemSanPham() {
   const [sortedInfo, setSortedInfo] = useState({});
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedKichCo, setSelectedKichCo] = useState([]);
-  const [isBlur, setIsBlur] = useState(false);
+  const [img, setImg] = useState([]);
   const [mauSac, setMauSac] = useState([]);
   const [thuongHieu, setThuongHieu] = useState([]);
   const [chatLieu, setChatLieu] = useState([]);
   const [deGiay, setDeGiay] = useState([]);
   const [kichCo, setKichCo] = useState([]);
   const [nhanHieu, setNhanHieu] = useState([]);
-  const [isChecked, setIsChecked] = useState(false);
-  const [checkboxStates, setCheckboxStates] = useState([false, false, false]);
-
+  const [selectMau, setSelectMau] = useState("");
+  const [checkboxStates, setCheckboxStates] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const initialImageTableData = [];
+  
   const customText = {
     emptyText: 'Không có hình ảnh'
   };
@@ -87,11 +89,11 @@ export default function ThemSanPham() {
     id_kich_co,
     id_mau_sac,
     id_nhan_hieu,
+    hinhAnh
   } = sanPham;
 
   //table data
   const handleChange = (pagination, filters, sorter) => {
-    console.log("Various parameters", pagination, filters, sorter);
     setFilteredInfo(filters);
     setSortedInfo(sorter);
   };
@@ -106,7 +108,7 @@ export default function ThemSanPham() {
         return {
           children: (
             <div key={index} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <img src={record} alt="Hình ảnh" style={{ width: '100px', height: '100px' }} />
+              <img src={record} alt="Hình ảnh" style={{ width: '130px', height: '100px' }} />
             </div>
           ),
           props: {
@@ -198,15 +200,70 @@ export default function ThemSanPham() {
               marginLeft : "100px",
               marginTop : "-50px",
               }}
-              onClick={() => {
-                console.log(record.tenSanPham);
+              onClick={async () => {
+                let tenSP = mauSac.find((x) => x.maMau === record.id_mau_sac)?.ten || '';
+                setSelectMau(tenSP);
+                await axios.get(`http://localhost:8080/getHinhAnhByMau/${tenSP}`).then((response) => {
+                  setImg(response.data);
+                });
                 showModalHA();
               }}
               />
+              <Modal
+                  title="Thêm hình ảnh"
+                  open={isModalOpenHA}
+                  onOk={handleOkHA}
+                  onCancel={handleCancelHA}
+                  cancelText="Hủy"
+                  okText="Hoàn tất"
+                  style={{ position: "relative", top: "5px", left: "100px" }}
+                  width={800}
+                >
+                <div>
+                  <label
+                  htmlFor="country"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Tất cả hình ảnh theo : {selectMau}
+                  </label>
+                  <div className="flex flex-wrap">
+                    {img.map((x, index) => (
+                      <div key={index} className="w-1/3 p-2 cursor-pointer">
+                        <div className="relative w-60 h-56 bg-gray-300 mt-10">
+                          <input
+                            type="checkbox"
+                            id={x.id}
+                            checked={selectedImages.includes(x.id)}
+                            onChange={(e) => handleCheckboxChange(e, x.id)}
+                            className="absolute top-2 right-2 z-10"
+                          />
+                          <img src={x.ten} alt="Load Image" style={{objectFit: "contain"}} className="w-full h-full object-cover"
+                          onClick={() => {
+                            const checkbox = document.getElementById(x.id);
+                            console.log(selectedImages);
+                            console.log(checkbox);
+                            if (checkbox) {
+                              checkbox.click();
+                            }
+                            if (selectedImages.includes(x.id)) {
+                              setSelectedImages(selectedImages.filter((id) => id != x.id));
+                            } else {
+                              // if (selectedImages.length < 3) {
+                                setSelectedImages([...selectedImages, x.id]);
+                              // }
+                            }
+                          }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Modal>
             </Tooltip>
           ),
           props: {
-            rowSpan: index,
+            rowSpan: index ,
             style: {
               justifyContent: "center",
               alignItems: "center",
@@ -258,33 +315,44 @@ export default function ThemSanPham() {
   };
   const handleCancelHA = () => {
     setIsModalOpenHA(false);
-    console.log(tableImg);
   };
-  // useEffect(() => {
-    
-  // }, [tableImg]);
+
   const maxSelectedImages = 3;
-  const handleCheckboxChange = (e) => {
-    let index = e.target.id;
+  const removeImageByColor = (mau, imgUrl) => {
+    setTableImg((prevTableImg) => {
+      const updatedTableImg = { ...prevTableImg };
+      if (updatedTableImg[mau]) {
+        updatedTableImg[mau] = updatedTableImg[mau].filter((imageUrl) => imageUrl !== imgUrl);
+        if (updatedTableImg[mau].length === 0) {
+          delete updatedTableImg[mau];
+        }
+      }
+      return updatedTableImg;
+    });
+  };
+  
+  const handleCheckboxChange = (e, id) => {
     const updatedStates = [...checkboxStates];
-    updatedStates[index] = !updatedStates[index];
+    updatedStates[id] = !updatedStates[id];
     setCheckboxStates(updatedStates);
     const imageUrl = e.target.nextElementSibling.src;
-    console.log(e.target.checked);
-
+    const checkedCount = updatedStates.filter((state) => state).length;
     if (e.target.checked) {
-      if (tableImg.length < maxSelectedImages) {
-        setTableImg((prevTableImg) => [...prevTableImg, imageUrl]);
+      if (checkedCount <= maxSelectedImages) {
+        setTableImg((prevTableImg) => ({
+          ...prevTableImg,
+          [selectMau]: [...(prevTableImg[selectMau] || []), imageUrl],
+        }));
       } else {
-        e.target.checked = false; 
+        // Nếu đã chọn quá giới hạn, bạn có thể thông báo lỗi ở đây.
+        toast.error("😢 Chỉ được chọn 3 ảnh !");
+        updatedStates[id] = false;
       }
     } else {
-      console.log("đã vào đây");
-      const updatedTableImg = tableImg.filter((img) => img !== imageUrl);
-      setTableImg(updatedTableImg);
-      console.log(tableImg);
-    }
+      removeImageByColor(selectMau,imageUrl);
+    };
   };
+  
   // ------------------------modal mau sac-------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -342,7 +410,6 @@ export default function ThemSanPham() {
     setIsModalOpenDG(true);
   };
   const handleOkDG =async () => {
-    console.log(deGiayModal);
     await axios
       .post("http://localhost:8080/addDeGiay", deGiayModal)
       .then((response) => {
@@ -379,11 +446,13 @@ export default function ThemSanPham() {
   const onChange = (e) => {
     setSanPham({ ...sanPham, [e.target.name]: e.target.value });
   };
+  const tableDataa = [];
+  const mauTableData = {};
 
   const groupProductsByColor = () => {
     let index = 0;
-    const tableData = [];
     for (const mau of selectedColors) {
+      mauTableData[mau] = [];
       for (const kichCo of selectedKichCo) {
         const sanPhamItem = {
           ten: sanPham.ten,
@@ -399,13 +468,15 @@ export default function ThemSanPham() {
           id_nhan_hieu: sanPham.id_nhan_hieu,
           id_chat_lieu: sanPham.id_chat_lieu,
           id_de_giay: sanPham.id_de_giay,
-          hinhAnh : tableImg,
         };
-        
-        tableData.push(sanPhamItem);
+        tableDataa.push(sanPhamItem);
+        // mauTableData[mau].push(sanPhamItem);
+      }
+      if(selectMau == mauSac.find((item) => item.maMau === mau)?.ten || '') {
+        mauTableData[mau].push(tableImg);
       }
     }
-    setTableData(tableData);
+    setTableData(tableDataa);
 
     for (const mau of selectedColors) {
       const spByColor = selectedKichCo.map((kichCo) => ({
@@ -423,17 +494,18 @@ export default function ThemSanPham() {
         id_nhan_hieu: sanPham.id_nhan_hieu,
         id_chat_lieu: sanPham.id_chat_lieu,
         id_de_giay: sanPham.id_de_giay,
+        hinhAnh : mauTableData[mau]
       }));
       setTables((prevTables) => ({
         ...prevTables,
-        [mau]: spByColor,
+        [mau]: spByColor
       }));
     }
   };
 
   useEffect(() => {
     groupProductsByColor();
-  }, [selectedColors,selectedKichCo]);
+  }, [selectedColors,selectedKichCo,tableImg]);
 
   useEffect(() => {
     getAllDG();
@@ -448,7 +520,14 @@ export default function ThemSanPham() {
     getAllMS();
     getAllCL();
     getAllTH();
+    // getAllHA();
   }, []);
+
+  const getAllHA = async () => {
+    await axios.get("http://localhost:8080/getAllHA").then((response) => {
+      setImg(response.data);
+    });
+  };
   const getAllNH = async () => {
     await axios.get("http://localhost:8080/getAllNH").then((response) => {
       setNhanHieu(response.data);
@@ -490,9 +569,9 @@ export default function ThemSanPham() {
       sp.id, sp.ten, sp.tenSanPham, sp.soLuongTon, sp.khoiLuong,
       sp.moTa, sp.giaNhap, sp.giaBan, sp.id_mau_sac, sp.id_kich_co,
       sp.id_thuong_hieu,sp.id_nhan_hieu,
-      sp.id_chat_lieu,sp.id_de_giay
+      sp.id_chat_lieu,sp.id_de_giay,tableImg
       ]);
-      console.log(data);
+    console.log(data);
     if (isConfirmed) {
     await axios
       .post("http://localhost:8080/san-pham/add", data)
@@ -742,14 +821,14 @@ export default function ThemSanPham() {
                       />
                     </div>
                     </Modal>
-                    <Modal
+                    {/* <Modal
                       title="Thêm hình ảnh"
                       open={isModalOpenHA}
                       onOk={handleOkHA}
                       onCancel={handleCancelHA}
                       cancelText="Hủy"
                       okText="Hoàn tất"
-                      style={{ position: "relative"}}
+                      style={{ position: "relative", top: "5px", left: "100px" }}
                       width={800}
                     >
                     <div>
@@ -757,48 +836,33 @@ export default function ThemSanPham() {
                       htmlFor="country"
                       className="block text-sm font-medium leading-6 text-gray-900"
                       >
-                       Tất cả hình ảnh 
+                       Tất cả hình ảnh
                       </label>
-                      <div className="flex ">
-                        <div className="w-1/3">
-                          <div className="relative w-60 h-56 bg-gray-300 mt-10">
-                            <input
-                              type="checkbox"
-                              id="0"
-                              checked={checkboxStates[0]}
-                              onChange={(e) => handleCheckboxChange(e)}
-                              className="absolute top-2 right-2 z-10"
-                            />
-                            <img src="https://i.ibb.co/Lk2fpns/AIR-JORDAN-1-MID-INVERT-BLACK-WHITE.webp" alt="Load Image" className="w-full h-full object-cover" />
+                      <div className="flex flex-wrap">
+                        {img.map((x, index) => (
+                          <div key={index} className="w-1/3 p-2 cursor-pointer">
+                            <div className="relative w-60 h-56 bg-gray-300 mt-10">
+                              <input
+                                type="checkbox"
+                                id={index}
+                                checked={checkboxStates[index]}
+                                onChange={(e) => handleCheckboxChange(e, index)}
+                                className="absolute top-2 right-2 z-10"
+                              />
+                              <img src={x.ten} alt="Load Image" className="w-full h-full object-cover"
+                              onClick={() => {
+                                const checkbox = document.getElementById(index);
+                                if (checkbox) {
+                                  checkbox.click();
+                                }
+                              }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="w-1/3">
-                          <div className="relative w-60 h-56 bg-gray-300 mt-10">
-                            <input
-                              type= "checkbox"
-                              id="1"
-                              checked={checkboxStates[1]}
-                              onChange={(e) => handleCheckboxChange(e)}
-                              className="absolute top-2 right-2 z-10"
-                            />
-                            <img src="https://i.ibb.co/zHdF8fK/AIR-JORDAN-1-MID-LIGHT-MULBERRY.webp" alt="Load Image" className="w-full h-full object-cover" />
-                          </div>
-                        </div>
-                        <div className="w-1/3">
-                          <div className="relative w-60 h-56 bg-gray-300 mt-10">
-                            <input
-                              type="checkbox"
-                              id="2"
-                              checked={checkboxStates[2]}
-                              onChange={(e) => handleCheckboxChange(e)}
-                              className="absolute top-2 right-2 z-10"
-                            />
-                            <img src="https://i.ibb.co/cCw0nZp/AIR-JORDAN-1-MID-ELEPHANT-PRINT.webp" alt="Load Image" className="w-full h-full object-cover" />
-                          </div>
-                        </div>
+                        ))}
                       </div>
                     </div>
-                    </Modal>
+                    </Modal> */}
                   </div>
                 </div>
                 <div className="sm:col-span-3">
@@ -884,7 +948,6 @@ export default function ThemSanPham() {
                                 setSelectedColors((prevSelected) => [...prevSelected, item.maMau]);
                               }
                             }
-                            console.log(selectedColors);
                           }}>
                           {item.maMau}
                           </div>
@@ -997,7 +1060,6 @@ export default function ThemSanPham() {
                                 setSelectedKichCo((prevSelected) => [...prevSelected, item.ten]);
                               }
                             }
-                            console.log(selectedKichCo);
                           }}>
                           {item.ten}
                           </div>
@@ -1076,13 +1138,13 @@ export default function ThemSanPham() {
               <h2>Sản phẩm theo : {mauSac.find((item) => item.maMau === mau)?.ten || ''} </h2>
               <Table
                 columns={columns}
-                dataSource={tables[mau]}
+                dataSource={tables[mau] || []}
                 pagination={false}
                 scroll={{ y: 2000 }}
               />
               <TableImg
                   columns={columnImg}
-                  dataSource={tableImg}
+                  dataSource={tableImg[mauSac.find((item) => item.maMau === mau)?.ten || '']}
                   pagination={false}
                   scroll={{ y: 2000 }}
                   locale={customText}
