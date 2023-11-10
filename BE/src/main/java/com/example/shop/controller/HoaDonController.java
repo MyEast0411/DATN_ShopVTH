@@ -75,7 +75,7 @@ public class HoaDonController {
         try{
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null){
-                hoaDon.setIds(hoaDon.getIds());
+                hoaDon.setId(hoaDon.getId());
                 HoaDon updateHoaDon = hoaDonService.updateHoaDon(hoaDon);
                 return new ResponseEntity<>(updateHoaDon , HttpStatus.CREATED);
             }else{

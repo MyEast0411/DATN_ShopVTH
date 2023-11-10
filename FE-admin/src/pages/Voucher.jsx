@@ -24,6 +24,7 @@ import {
   TableCell,
   Pagination,
   getKeyValue,
+  Spinner,
 } from "@nextui-org/react";
 // import { users } from "./data";
 
@@ -233,7 +234,7 @@ export default function Voucher() {
       {loading ? (
         <div className="relative">
           <div className="absolute top-50 start-50 translate-middle">
-            <Spin size="large" />
+          <Spinner color="white" size="sm" />
           </div>
         </div>
       ) : (

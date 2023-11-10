@@ -3,7 +3,7 @@ package com.example.shop.service.impl;
 
 import com.example.shop.entity.ThanhToan;
 
-import com.example.shop.repository.ThanhToanRepository;
+import com.example.shop.repositories.ThanhToanRepository;
 import com.example.shop.service.ThanhToanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

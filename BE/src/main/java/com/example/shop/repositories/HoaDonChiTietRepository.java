@@ -1,4 +1,4 @@
-package com.example.shop.repository;
+package com.example.shop.repositories;
 
 import com.example.shop.entity.HinhThucThanhToan;
 import com.example.shop.entity.HoaDonChiTiet;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 @Repository
 public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , String> {
-    @Query("select u from HoaDonChiTiet u where u.id_hoa_don.ids = ?1")
+    @Query("select u from HoaDonChiTiet u where u.id_hoa_don.id = ?1")
     List<HoaDonChiTiet> getHDCT(String idHD );
     @Modifying
     @Transactional

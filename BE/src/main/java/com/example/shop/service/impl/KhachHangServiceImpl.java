@@ -2,7 +2,7 @@ package com.example.shop.service.impl;
 
 
 import com.example.shop.entity.KhachHang;
-import com.example.shop.repository.KhachHangRepository;
+import com.example.shop.repositories.KhachHangRepository;
 import com.example.shop.service.KhachHangService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

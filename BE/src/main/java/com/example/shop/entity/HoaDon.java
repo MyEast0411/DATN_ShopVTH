@@ -27,6 +27,15 @@ public class HoaDon {
     @Column(name = "dia_chi")
     private String diaChi;
 
+    @Column(name = "ma")
+    private String ma;
+
+    @Column(name = "ho_ten")
+    private String tenKhachHang;
+
+    @Column(name = "tien_giam")
+    private String tienGiam;
+
     @Column(name = "tong_tien")
     private BigDecimal tongTien;
 

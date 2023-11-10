@@ -237,6 +237,7 @@ export default function DetailHoaDon() {
       tongTien: data.tongTien + data.tienShip,
     });
     setInfo(data);
+    console.log(data);
   };
 
   return (
@@ -378,12 +379,12 @@ export default function DetailHoaDon() {
                       <p>
                         <span className="font-bold">Mã Nhân Viên : </span>
                         &nbsp;&nbsp;
-                        {item.id_hoa_don.nhanVien.ma}
+                        {item.id_hoa_don.id_nhan_vien.ma}
                       </p>
                       <p>
                         <span className="font-bold">Tên Nhân Viên : </span>
                         &nbsp;&nbsp;
-                        {item.id_hoa_don.nhanVien.ten}
+                        {item.id_hoa_don.id_nhan_vien.ten}
                       </p>
                       <p>
                         <span className="font-bold">Thoi gian : </span>

@@ -30,11 +30,7 @@ import { capitalize } from "../../../common/otherComponents/utils";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { MdDeleteOutline } from "react-icons/md";
-import { LiaEyeSolid } from "react-icons/lia";
 
-import { SearchIcon } from "../../otherComponents/SearchIcon";
-import { EditIcon } from "../../otherComponents/EditIcon";
 import { DeleteIcon } from "../../otherComponents/DeleteIcon";
 import { EyeIcon } from "../../otherComponents/EyeIcon";
 

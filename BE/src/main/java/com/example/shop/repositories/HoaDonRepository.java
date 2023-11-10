@@ -1,4 +1,4 @@
-package com.example.shop.repository;
+package com.example.shop.repositories;
 
 import com.example.shop.entity.HoaDon;
 import org.springframework.data.domain.Page;

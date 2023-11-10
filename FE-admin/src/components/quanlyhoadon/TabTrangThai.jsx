@@ -29,7 +29,9 @@ export default function TabTrangThai() {
         return {
           ...item,
           id: index + 1,
-          nhanVien: item.nhanVien.ten,
+          ids : item.id,
+          nhanVien: item.id_nhan_vien
+          .ten,
         };
       })
     );
@@ -44,8 +46,9 @@ export default function TabTrangThai() {
       data.map((item, index) => {
         return {
           ...item,
-          id: index + 1,
-          nhanVien: item.nhanVien.ten,
+          ids : item.id,
+          nhanVien: item.id_nhan_vien
+          .ten,
         };
       })
     );

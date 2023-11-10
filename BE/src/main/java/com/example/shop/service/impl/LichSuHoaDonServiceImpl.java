@@ -2,7 +2,7 @@ package com.example.shop.service.impl;
 
 
 import com.example.shop.entity.LichSuHoaDon;
-import com.example.shop.repository.LichSuHoaDonRepository;
+import com.example.shop.repositories.LichSuHoaDonRepository;
 import com.example.shop.service.LichSuHoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;

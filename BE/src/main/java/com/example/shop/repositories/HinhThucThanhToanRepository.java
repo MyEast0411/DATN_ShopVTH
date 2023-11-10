@@ -1,4 +1,4 @@
-package com.example.shop.repository;
+package com.example.shop.repositories;
 
 import com.example.shop.entity.HinhThucThanhToan;
 import com.example.shop.entity.HoaDon;
@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface HinhThucThanhToanRepository extends JpaRepository<HinhThucThanhToan, String> {
 
-    @Query("select u from HinhThucThanhToan u where u.id_hoa_don.ids = ?1")
+    @Query("select u from HinhThucThanhToan u where u.id_hoa_don.id = ?1")
     List<HinhThucThanhToan> getHTTH(String idHD );
 
 

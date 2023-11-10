@@ -13,7 +13,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "khach_hang_voucher")
 @Builder
 @Table(name = "khach_hang_voucer")
 @IdClass(KhachHangVoucherId.class)

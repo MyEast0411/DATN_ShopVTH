@@ -1,9 +1,7 @@
 package com.example.shop.service.impl;
 
-import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.HoaDonChiTiet;
-import com.example.shop.repository.HoaDonChiTietRepository;
-import com.example.shop.repository.HoaDonRepository;
+import com.example.shop.repositories.HoaDonChiTietRepository;
 import com.example.shop.service.HoaDonChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

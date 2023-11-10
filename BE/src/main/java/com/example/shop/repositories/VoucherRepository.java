@@ -1,4 +1,4 @@
-package com.example.shop.repository;
+package com.example.shop.repositories;
 
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.entity.Voucher;
@@ -21,9 +21,9 @@ public interface VoucherRepository extends JpaRepository<Voucher , String> {
 //            "JOIN san_pham b ON a.id_san_pham = b.id\n" +
 //            "where b.ma = :ma", nativeQuery = true)
 //    List<SanPhamChiTiet> getByMa(@Param("ma") String ma);
-    @Query(
-            value = "select * from voucher vc where vc.ngay_ket_thuc = :date" ,
-            nativeQuery = true
-    )
-    List<Voucher> voucherByNgayKT(@Param("date")Date date);
+//    @Query(
+//            value = "select * from voucher vc where vc.ngay_ket_thuc = :date" ,
+//            nativeQuery = true
+//    )
+//    List<Voucher> voucherByNgayKT(@Param("date")Date date);
 }

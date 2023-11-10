@@ -1,4 +1,4 @@
-package com.example.shop.repository;
+package com.example.shop.repositories;
 
 import com.example.shop.entity.ThanhToan;
 import org.springframework.data.jpa.repository.JpaRepository;

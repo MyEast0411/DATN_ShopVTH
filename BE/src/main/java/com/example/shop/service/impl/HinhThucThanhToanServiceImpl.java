@@ -1,7 +1,7 @@
 package com.example.shop.service.impl;
 
 import com.example.shop.entity.HinhThucThanhToan;
-import com.example.shop.repository.HinhThucThanhToanRepository;
+import com.example.shop.repositories.HinhThucThanhToanRepository;
 import com.example.shop.service.HinhThucThanhToanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
