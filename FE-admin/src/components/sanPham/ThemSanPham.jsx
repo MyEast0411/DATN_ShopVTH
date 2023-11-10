@@ -201,7 +201,7 @@ export default function ThemSanPham() {
       render: (text, record) => (
         <InputNumber
           value={record.soLuongTon}
-          onChange={(value) => handleSoLuongChange(record.key, value)}
+          onChange={(value) => handleSoLuongChange(record.id, value, record.id_mau_sac)}
         />
       ),
     },
@@ -366,13 +366,15 @@ export default function ThemSanPham() {
     defaultPageSize: 5
   };
 
-  const handleSoLuongChange = (key, value) => {
-    const updatedData = dataSource.map((item) => {
-      if (item.key === key) {
-        return { ...item, soLuong: value };
-      }
-      return item;
-    });
+  const handleSoLuongChange = (key, value,mauSac) => {
+    let index = key - 1;
+    // console.log(key + "  " + value);
+    // tables[mauSac][index].soLuongTon = value;
+    // console.log(tables[mauSac][index]);
+    const updatedTableData = [...tableData];
+    updatedTableData[index].soLuongTon = value;
+    setTableData(updatedTableData);
+    console.log(tableData);
   };
   
   const handleGiaBanChange = (key, value) => {
@@ -544,7 +546,7 @@ export default function ThemSanPham() {
         const sanPhamItem = {
           ten: sanPham.ten,
           tenSanPham: `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ''} ]`,
-          soLuongTon: 1,
+          // soLuongTon: sanPham.soLuongTon,
           khoiLuong: 1,
           moTa: sanPham.moTa,
           giaNhap: "100,000",
@@ -570,7 +572,7 @@ export default function ThemSanPham() {
         id: index+=1,
         ten: sanPham.ten,
         tenSanPham: `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ''} ]`,
-        soLuongTon: 1,
+        // soLuongTon: sanPham.soLuongTon,
         khoiLuong: 1,
         moTa: sanPham.moTa,
         giaNhap: "100,000",
@@ -612,7 +614,6 @@ export default function ThemSanPham() {
 
   const getAllHA = async () => {
     await axios.get(`http://localhost:8080/getHinhAnhByMau/${selectMau}`).then((response) => {
-      console.log(response.data);
       setImg(response.data);
     });
   };
