@@ -232,8 +232,9 @@ export default function App() {
         return (
           <div className="image-container">
             <Image
-              width={100}
-              src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/1f3586ce-7b81-45c6-9405-c2116a5ec967/air-jordan-1-mid-shoes-86f1ZW.png"
+              width={150}
+              height={100}
+              src={hinhAnhURL}
               alt={sanPham.ten || "Ảnh sản phẩm"}
               classNames="m-5 relative"
             />
