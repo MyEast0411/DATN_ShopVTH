@@ -6,6 +6,8 @@ import MauSac from "./MauSac";
 import DeGiay from "./DeGiay";
 import NhanVien from "./NhanVien";
 import KhachHang from "./KhachHang";
+import KhuyenMai from "./KhuyenMai";
+import Voucher from "./Voucher";
 
 const Build = () => {
   const { bID } = useParams();
@@ -24,7 +26,11 @@ const Build = () => {
         return <NhanVien />;
       case "khach-hang":
         return <KhachHang />;
-      
+      case "khuyen-mai":
+        return <KhuyenMai />;
+      case "voucher":
+        return <Voucher />;
+
       default:
         return null;
     }

@@ -86,6 +86,13 @@ const Sidebar = () => {
       mainTitle: "Quản lý tài khoản",
     },
     {
+      name: "giam-gia",
+      icon: HiOutlineDatabase,
+      menus: ["khuyen-mai", "voucher"],
+      subTitles: ["Khuyến mại", "Voucher"],
+      mainTitle: "Giảm giá",
+    },
+    {
       name: "settings",
       icon: AiOutlineSetting,
       menus: ["dang-ky", "dang-nhap", "dang-xuat"],
@@ -110,10 +117,10 @@ const Sidebar = () => {
         className="text-gray shadow-xl z-[999] max-w-[16rem]  w-[16rem] 
             overflow-hidden md:relative fixed
          h-screen "
-         style={{
+        style={{
           backgroundColor: "white",
-          borderRight: "2px solid #ccc"
-         }}
+          borderRight: "2px solid #ccc",
+        }}
       >
         <div className="flex items-center font-medium border-b border-slate-300">
           <img src={logo} width={120} alt="Ảnh logo" />
@@ -135,13 +142,7 @@ const Sidebar = () => {
             <li>
               <NavLink to={"/quan-ly-hoa-don"} className="link">
                 <TbReportAnalytics size={23} className="min-w-max" />
-                Quản Lý Hóa Đơn
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to={"/khuyen-mai"} className="link">
-                <HiOutlineDatabase size={23} className="min-w-max" />
-                Khuyến mại
+                Quản Lý Thu Chi
               </NavLink>
             </li>
 
@@ -154,12 +155,6 @@ const Sidebar = () => {
                 ))}
               </div>
             )}
-            <li>
-              <NavLink to={"/voucher"} className="link">
-                <CiDiscount1 size={23} className="min-w-max" />
-                Voucher
-              </NavLink>
-            </li>
           </ul>
 
           <li className="link">

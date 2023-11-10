@@ -360,7 +360,7 @@ export default function TableAllSanPham({ onSelectedMaValuesChange }) {
       <Table
         style={{ height: "300px" }}
         aria-label="Example table with custom cells, pagination and sorting"
-        isHeaderSticky
+        // isHeaderSticky
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{
