@@ -6,10 +6,7 @@ const TableAntd = (props) => {
     <div>
       <Divider />
       <Table
-        rowSelection={{
-          type: "checkbox",
-          ...props.rowSelection,
-        }}
+        rowSelection={props.rowSelection}
         columns={props.columns}
         dataSource={props.dataSource}
         pagination={{ pageSize: props.size }}

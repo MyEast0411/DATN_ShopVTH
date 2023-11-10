@@ -51,13 +51,6 @@ const App = () => {
             <Route path="khach-hang" />
           </Route>
         </Route>
-
-        <Route path="/quan-ly-tai-khoan" element={<Build />}>
-          <Route path=":bID">
-            <Route path="nhan-vien" />
-            <Route path="khach-hang" />
-          </Route>
-        </Route>
       </Routes>
 
       <ToastContainer position="top-right" autoClose={3000} />

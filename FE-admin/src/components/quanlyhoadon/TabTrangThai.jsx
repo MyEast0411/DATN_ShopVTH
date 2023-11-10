@@ -66,14 +66,7 @@ export default function TabTrangThai() {
       key: index,
       label: items[index],
       // children: <TableCommon dataSource={list} />,
-      children: (
-        <TableCommon
-          pageSize={5}
-          pageSizeOptions={[5, 10]}
-          rows={list}
-          columns={columns}
-        />
-      ),
+      children: <TableCommon data={list} />,
     };
 
     data.push(item);
@@ -82,14 +75,7 @@ export default function TabTrangThai() {
     key: -1,
     label: `Tất cả`,
     // children: <TableCommon dataSource={list} />,
-    children: (
-      <TableCommon
-        rows={list}
-        pageSize={5}
-        pageSizeOptions={[5, 10]}
-        columns={columns}
-      />
-    ),
+    children: <TableCommon data={list} />,
   });
 
   return (
@@ -101,102 +87,3 @@ export default function TabTrangThai() {
     />
   );
 }
-const columns = [
-  {
-    field: "id",
-    headerName: "STT",
-    hideable: true,
-    width: 20,
-  },
-  {
-    field: "ma",
-    headerName: "Mã",
-    hideable: true,
-  },
-  {
-    field: "ten",
-    headerName: "Tên Khách Hàng",
-    width: 200,
-
-    valueFormatter: ({ value }) => `Lee Lan`,
-  },
-  {
-    field: "nhanVien",
-    headerName: "Mã Nhân Viên",
-    width: 150,
-  },
-  {
-    field: "loaiHd",
-
-    headerName: "Loại HD",
-    width: 100,
-    renderCell: (params) =>
-      params.row.loaiHd === 1 ? (
-        <Tag color="red">Tại quầy</Tag>
-      ) : (
-        <Tag color="green">Online</Tag>
-      ),
-  },
-
-  {
-    field: "ngayTao",
-    headerName: "Ngày Tạo",
-    width: 200,
-
-    valueFormatter: (params) =>
-      format(new Date(params.value), " hh:mm ,   dd-MM-yyyy"),
-  },
-
-  {
-    field: "tienGiam",
-    headerName: `Tiền Giảm `,
-    width: 150,
-    renderCell: (params) => (
-      <TableCell>
-        <span style={{ color: "red" }}>
-          {Intl.NumberFormat().format(params.value)}&nbsp;₫
-        </span>
-      </TableCell>
-    ),
-  },
-  {
-    field: "tongTien",
-    headerName: "Tổng Tiền",
-    width: 150,
-    renderCell: (params) => (
-      <TableCell>
-        <span style={{ color: "red" }}>
-          {Intl.NumberFormat().format(params.value)}&nbsp;₫
-        </span>
-      </TableCell>
-    ),
-  },
-  {
-    headerName: "Chức Năng",
-    headerClassName: "super-app-theme--header",
-    // headerAlign: "center",
-
-    // width: 160,
-    renderCell: (params) => (
-      <TableCell>
-        <div className="flex items-center">
-          <Tooltip title="Xem chi tiết" color="green">
-            <Link
-              to={`/detail-hoa-don/${params.row.ids}`}
-              className="button-link group relative"
-            >
-              <BsEye
-                description="Chi tiết"
-                className="cursor-pointer text-xl blue-hover mr-4"
-                style={{ color: "green" }}
-              />
-              {/* <div className="text invisible group-hover:visible absolute -top-2 left-16 border border-gray-500 p-2">
-              Chỉnh sửa
-            </div> */}
-            </Link>
-          </Tooltip>
-        </div>
-      </TableCell>
-    ),
-  },
-];

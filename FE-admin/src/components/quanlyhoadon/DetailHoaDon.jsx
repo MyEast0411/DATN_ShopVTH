@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import axios from "axios";
@@ -9,6 +9,12 @@ import { GiConfirmed, GiReceiveMoney } from "react-icons/gi";
 import { LuPackageCheck } from "react-icons/lu";
 import { FaShippingFast, FaFileInvoice } from "react-icons/fa";
 import { TbPackages } from "react-icons/tb";
+import {
+  exportComponentAsJPEG,
+  exportComponentAsPDF,
+  exportComponentAsPNG,
+} from "react-component-export-image";
+import ComponentToPrint from "./InHoaDon";
 
 export default function DetailHoaDon() {
   const { id } = useParams();
@@ -31,6 +37,23 @@ export default function DetailHoaDon() {
   const [messageApi, contextHolder] = message.useMessage();
   // const [isModalOpen, setIsModalOpen] = useState(false);
   const [openTimeLine, setOpenTimeLine] = useState(false);
+
+  //  modal xuất hóa đơn
+  const componentRef = useRef();
+
+  const [isModalOpenHD, setIsModalOpenHD] = useState(false);
+  const showModalHD = () => {
+    setIsModalOpenHD(true);
+  };
+  const handleOkHD = () => {
+    exportComponentAsPNG(componentRef, {
+      fileName: `billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`,
+    });
+    setIsModalOpenHD(false);
+  };
+  const handleCancelHD = () => {
+    setIsModalOpenHD(false);
+  };
 
   const showModal = () => {
     setOpenTimeLine(true);
@@ -59,7 +82,7 @@ export default function DetailHoaDon() {
 
   const addLichSuHoaDon = async () => {
     await axios
-      .post(`http://localhost:8080/lich_su_thanh_toan/add/${id}`, {
+      .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
         moTaHoaDon: listTitleTimline[currentTimeLine].title,
         deleted: 0,
         nguoiTao: "Cam",
@@ -164,7 +187,7 @@ export default function DetailHoaDon() {
   };
   const getDataLichSu = async () => {
     await axios
-      .get(`http://localhost:8080/lich_su_thanh_toan/getLichSuHoaDons/${id}`)
+      .get(`http://localhost:8080/lich_su_hoa_don/getLichSuHoaDons/${id}`)
       .then((res) => {
         const data = res.data;
         console.log(res.data);
@@ -223,7 +246,7 @@ export default function DetailHoaDon() {
       <div className="conatiner mx-auto space-y-5">
         <div className="row timeline bg-white">
           <div className="row timeline justify-center" style={{ height: 300 }}>
-            {info.loaiHd === 1 ? (
+            {info.loaiHd === 0 ? (
               <Timeline minEvents={5} placeholder>
                 {listTimeLineOnline.map((item) => (
                   <TimelineEvent
@@ -285,11 +308,45 @@ export default function DetailHoaDon() {
                 <Input.TextArea
                   rows={4}
                   placeholder="Ghi chu ...."
-                  maxLength={6}
+                  // maxLength={}
                 />
               </Modal>
 
-              <Button className="me-4" color="green">
+              {/* modal in hoa đơn */}
+
+              <Modal
+                title="Xuất Hóa Đơn"
+                open={isModalOpenHD}
+                onOk={handleOkHD}
+                onCancel={handleCancelHD}
+                width={700}
+                style={{ top: 10 }}
+                footer={[
+                  <Button
+                    key="back"
+                    onClick={handleCancelHD}
+                    className="me-3 "
+                    style={{ backgroundColor: "blue" }}
+                  >
+                    Cancel
+                  </Button>,
+                  <Button
+                    key="submit"
+                    type="primary"
+                    onClick={handleOkHD}
+                    style={{ backgroundColor: "red" }}
+                  >
+                    In Hóa Đơn
+                  </Button>,
+                ]}
+              >
+                <ComponentToPrint
+                  ref={componentRef}
+                  data={dataSource}
+                  columns={columns}
+                />
+              </Modal>
+              <Button className="me-4" color="green" onClick={showModalHD}>
                 Xuất hoá đơn
               </Button>
             </div>
@@ -303,6 +360,7 @@ export default function DetailHoaDon() {
                 title="Lịch Sử Hóa Đơn"
                 onOk={handleOkLichSu}
                 onCancel={handleCancelLichSu}
+                style={{ top: 20 }}
                 footer={() => (
                   <>
                     <Button onClick={handleCancelLichSu}>OK</Button>
@@ -592,5 +650,38 @@ const columnsThanhToan = [
     title: "Người xác Nhận",
     width: 200,
     dataIndex: "nguoiXacNhan",
+  },
+];
+
+const dataSource = [
+  {
+    key: "1",
+    name: "Mike",
+    age: 32,
+    address: "10 Downing Street",
+  },
+  {
+    key: "2",
+    name: "John",
+    age: 42,
+    address: "10 Downing Street",
+  },
+];
+
+const columns = [
+  {
+    title: "Name",
+    dataIndex: "name",
+    key: "name",
+  },
+  {
+    title: "Age",
+    dataIndex: "age",
+    key: "age",
+  },
+  {
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
   },
 ];
