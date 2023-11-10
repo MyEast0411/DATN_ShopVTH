@@ -12,7 +12,6 @@ export const getAllKhuyenMai = async () => {
   }
 };
 
-
 // Get all khuyen mai san pham chi tiet
 export const getAllKMSPCT = async () => {
   try {
@@ -27,7 +26,19 @@ export const addKhuyenMai = async (khuyenMai, selectedMaCTSP) => {
   try {
     const response = await axios.post(
       `${API_BASE_URL}/khuyen-mai/add/${selectedMaCTSP}`,
-      khuyenMai 
+      khuyenMai
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// searchByDate
+export const searchByDate = async (ngayBatDau, ngayKetThuc) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/khuyen-mai/add/${ngayBatDau}/${ngayKetThuc}`
     );
     return response.data;
   } catch (error) {
@@ -71,4 +82,3 @@ export const deleteKhuyenMai = async (id) => {
     throw error;
   }
 };
-

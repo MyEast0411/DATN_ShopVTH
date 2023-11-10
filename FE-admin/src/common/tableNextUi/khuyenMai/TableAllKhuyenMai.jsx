@@ -79,7 +79,6 @@ const statusColorMap = {
   paused: "danger",
   incoming: "warning",
   notStarted: "primary",
-
 };
 statusColorMap["Sắp diễn ra"] = "warning";
 statusColorMap["Đang diễn ra"] = "success";
@@ -254,12 +253,15 @@ export default function App() {
           return (
             <Chip
               // className="capitalize"
-              color={khuyenMai.switchKM==="Đã dừng" ? "danger" : statusColorMap[khuyenMai.trangThai]}
-              // color={statusColorMap[khuyenMai.switchKM]}
+              color={
+                khuyenMai.switchKM === "Đã dừng"
+                  ? "danger"
+                  : statusColorMap[khuyenMai.trangThai]
+              }
               size="sm"
               variant="flat"
             >
-              {khuyenMai.switchKM==="Đã dừng" ? "Đã dừng" : cellValue} 
+              {khuyenMai.switchKM === "Đã dừng" ? "Đã dừng" : cellValue}
             </Chip>
           );
         case "hanhDong":
@@ -282,25 +284,31 @@ export default function App() {
                   <DeleteIcon onClick={() => handleDelete(khuyenMai.id)} />
                 </span>
               </Tooltip>
-              {(khuyenMai.trangThai === "Đang diễn ra" || khuyenMai.switchKM === "Đã dừng" )&& (
+              {(khuyenMai.trangThai === "Đang diễn ra" ||
+                khuyenMai.switchKM === "Đã dừng") && (
                 <Tooltip
                   showArrow={true}
                   content={isSelected ? "Tắt khuyến mại" : "Bật khuyến mại"}
                 >
                   <span className="text-lg inline-block  text-danger cursor-pointer active:opacity-50">
                     <Switch
-                      defaultSelected={khuyenMai.switchKM === "Đã dừng" ? false : true}
+                      defaultSelected={
+                        khuyenMai.switchKM === "Đã dừng" ? false : true
+                      }
                       size="sm"
                       color="success"
                       className="inline-block"
                       checked={isSelected}
                       onChange={async () => {
                         setIsSelected(!isSelected);
-                        await axios.put(
-                          `http://localhost:8080/khuyen-mai/batTatKhuyenMai/${khuyenMai.id}/${isSelected}`,khuyenMai
-                        ).then((response) => {
-                          fetchKhuyenMais();
-                        });
+                        await axios
+                          .put(
+                            `http://localhost:8080/khuyen-mai/batTatKhuyenMai/${khuyenMai.id}/${isSelected}`,
+                            khuyenMai
+                          )
+                          .then((response) => {
+                            fetchKhuyenMais();
+                          });
                       }}
                     />
                   </span>
@@ -351,7 +359,7 @@ export default function App() {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-end">
-          <Input
+          {/* <Input
             isClearable
             className="w-full sm:max-w-[30%]"
             placeholder="Tìm kiếm bất kỳ..."
@@ -359,10 +367,11 @@ export default function App() {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
-          />
+          /> */}
           {/* <Input type="datetime-local" label="Từ ngày" />
           <Input type="datetime-local" label="Đến ngày"/> */}
-          <div className="flex gap-3">
+          
+          <div className="flex flex-end gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button

@@ -167,13 +167,9 @@ public class KhuyenMaiController {
 
 
     @PutMapping("/batTatKhuyenMai/{id}/{isSelected}")
-    public KhuyenMai batTatKhuyenMai(@PathVariable("id") KhuyenMai khuyenMai,@PathVariable String isSelected) {
-//        System.out.println(khuyenMai);
-//        System.out.println(khuyenMai.getTrangThai());
-        System.out.println(isSelected);
+    public KhuyenMai batTatKhuyenMai(@PathVariable("id") KhuyenMai khuyenMai, @PathVariable String isSelected) {
         if (isSelected.equals("true")) {
             khuyenMai.setSwitchKM("Đã dừng");
-            System.out.println("Đã dừng");
         } else {
             khuyenMai.setSwitchKM("Đang diễn ra");
             System.out.println("Đang diễn ra");
@@ -182,5 +178,19 @@ public class KhuyenMaiController {
 
     }
 
+    @GetMapping("/searchByDate/{ngayBatDau}/{ngayKetThuc}")
+    public List<KhuyenMai> searchByDate(@PathVariable String ngayBatDau, @PathVariable String ngayKetThuc) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = dateFormat.parse(ngayBatDau);
+            Date endDate = dateFormat.parse(ngayKetThuc);
+
+            return khuyenMaiService.searchByDate(startDate, endDate);
+        } catch (ParseException e) {
+            // Handle parsing exception
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }
