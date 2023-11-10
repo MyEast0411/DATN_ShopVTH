@@ -12,6 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "voucher")
 public class Voucher {
     @Id
@@ -39,8 +40,8 @@ public class Voucher {
     @Column(name = "ngay_bat_dau")
     private Date ngayBatDau;
 
-    @Column(name = "nguoi_ket_thuc")
-    private String ngayKetThuc;
+    @Column(name = "ngay_ket_thuc")
+    private Date ngayKetThuc;
 
     @Column(name = "ngay_tao")
     private Date ngayTao = new Date();
@@ -56,6 +57,9 @@ public class Voucher {
 
     @Column(name = "deleted")
     private Integer deleted;
+
+    @Column(name = "trang_thai")
+    private Integer trangThai;
 
     @ManyToOne
     @JoinColumn(name = "id_hoa_don")

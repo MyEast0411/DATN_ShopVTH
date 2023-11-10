@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
+import java.io.Serializable;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class KhachHangVoucherId {
+@NoArgsConstructor
+public class KhachHangVoucherId implements Serializable {
+
     private String id_voucher;
 
     private String id_khach_hang;

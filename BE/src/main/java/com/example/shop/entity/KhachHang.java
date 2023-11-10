@@ -3,6 +3,7 @@ package com.example.shop.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,9 +14,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 @Table(name = "khach_hang")
 public class KhachHang {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -61,5 +62,4 @@ public class KhachHang {
 
     @Column(name = "deleted")
     private Integer deleted;
-
 }

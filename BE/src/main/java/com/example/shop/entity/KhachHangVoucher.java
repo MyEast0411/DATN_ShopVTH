@@ -3,6 +3,7 @@ package com.example.shop.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Table(name = "khach_hang_voucher")
+@Builder
+@Table(name = "khach_hang_voucer")
 @IdClass(KhachHangVoucherId.class)
 public class KhachHangVoucher {
     @Id

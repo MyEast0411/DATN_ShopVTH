@@ -5,15 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 @Table(name = "san_pham_chi_tiet")
 public class SanPhamChiTiet implements Serializable {
     @Id
@@ -90,10 +90,4 @@ public class SanPhamChiTiet implements Serializable {
     @ManyToOne
     @JoinColumn(name = "id_nhan_hieu")
     private NhanHieu id_nhan_hieu;
-
-    //-----------Hội------------------
-//    @Column(name = "is_on_sale", nullable = false)
-//    private boolean isOnSale = false; // Default value is false
-
-    // -----------Hội------------------
 }
