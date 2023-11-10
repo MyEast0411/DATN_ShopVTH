@@ -15,6 +15,7 @@ import {
   DropdownItem,
   Chip,
   Pagination,
+  Tooltip,
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -26,12 +27,17 @@ import {
 } from "@mui/material";
 import { ChevronDownIcon } from "../../../common/otherComponents/ChevronDownIcon";
 import { capitalize } from "../../../common/otherComponents/utils";
-import { Tooltip } from "antd";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MdDeleteOutline } from "react-icons/md";
 import { LiaEyeSolid } from "react-icons/lia";
+
+import { SearchIcon } from "../../otherComponents/SearchIcon";
+import { EditIcon } from "../../otherComponents/EditIcon";
+import { DeleteIcon } from "../../otherComponents/DeleteIcon";
+import { EyeIcon } from "../../otherComponents/EyeIcon";
+
 const url = "http://localhost:8080/chi-tiet-san-pham";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -80,7 +86,7 @@ export default function App() {
     setDeleteConfirmationOpen(false);
   };
 
-  const confirmDelete =async () => {
+  const confirmDelete = async () => {
     if (idToDelete) {
       await axios.delete(`http://localhost:8080/delete/${idToDelete}`)
         .then((response) => {
@@ -195,38 +201,30 @@ export default function App() {
         );
       case "hanhDong":
         return (
-          <TableCellMui style={{textDecoration : "none", border:"none"}}>
-          <div className="flex w-10 h-3">
-            <Link to={`/edit-san-pham/${sanPham.ma}`} style={{display:"block"}} className="button-link group relative">
-                <Tooltip
-                  title="Chi tiết"
-                >
-                  <LiaEyeSolid
-                    description="Chi tiết"
-                    className="cursor-pointer text-xl blue-hover mr-4" 
-                    />
-                </Tooltip>
+          <div className="relative flex items-center gap-4">
+            <Link to={`/edit-san-pham/${sanPham.ma}`} style={{ display: "block" }} className="button-link group relative">
+              <Tooltip content="Chi tiết" showArrow={true}>
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Tooltip>
             </Link>
-            <div className="group relative" style={{position : "relative"}}>
-              <Tooltip
-                  title="Xóa"
-                >
-                  <MdDeleteOutline
-                  className="cursor-pointer text-xl delete-hover relative"
-                  onClick={() => 
-                  handleDelete(sanPham.ma)}
-                />
-                </Tooltip>
+            <div className="group relative" style={{ position: "relative" }}>
+              <Tooltip color="danger" content="Xóa" showArrow={true}>
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <DeleteIcon onClick={() =>
+                    handleDelete(sanPham.ma)} />
+                </span>
+              </Tooltip>
               {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
             </div>
-         </div>
-        </TableCellMui>
+          </div>
         );
       default:
         return cellValue;
     }
   }, []);
-  
+
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
@@ -371,19 +369,19 @@ export default function App() {
           onChange={setPage}
         /> */}
         <div className="flex flex-wrap gap-4 items-center">
-      {sizes.map((size) => (
-        <Pagination
-         isCompact
-         showControls
-         key={size}
-         style={{paddingLeft : "710px"}}
-         total={totalPages+1} 
-         initialPage={1} 
-         size={size}
-         page={page}
-         onChange={setPage} />
-      ))}
-    </div>
+          {sizes.map((size) => (
+            <Pagination
+              isCompact
+              showControls
+              key={size}
+              style={{ paddingLeft: "710px" }}
+              total={totalPages + 1}
+              initialPage={1}
+              size={size}
+              page={page}
+              onChange={setPage} />
+          ))}
+        </div>
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
             isDisabled={pages === 1}

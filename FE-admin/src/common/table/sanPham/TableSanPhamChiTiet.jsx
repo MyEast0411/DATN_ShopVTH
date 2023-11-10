@@ -16,6 +16,7 @@ import {
   Chip,
   Pagination,
   Image,
+  Tooltip,
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -29,13 +30,14 @@ import {
 import { SearchIcon } from "../../otherComponents/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
-import { Tooltip } from "antd";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MdDeleteOutline } from "react-icons/md";
 import { LiaEyeSolid } from "react-icons/lia";
-import {getAllKMSPCT} from "../../../api/khuyenMai/KhuyenMaiApi"
+import { getAllKMSPCT } from "../../../api/khuyenMai/KhuyenMaiApi"
+import { DeleteIcon } from "../../otherComponents/DeleteIcon";
+import { EyeIcon } from "../../otherComponents/EyeIcon";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -149,7 +151,7 @@ export default function App() {
           kichThuoc: item.id_kich_co.ten,
           soLuongTon: item.soLuongTon,
           trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x)=>x.id_chi_tiet_san_pham.id == item.id)?.id_khuyen_mai.giaTriPhanTram,
+          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)?.id_khuyen_mai.giaTriPhanTram,
         }));
         // console.log(giaGiam)
         setSanPhams(updatedRows);
@@ -212,16 +214,16 @@ export default function App() {
 
   const DiscountTag = ({ discount }) => {
     if (discount === undefined) {
-      return null; 
+      return null;
     }
-  
+
     return (
       <div className="discount-tag">
         {`${discount}% OFF`}
       </div>
     );
   };
-  
+
 
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
@@ -230,13 +232,19 @@ export default function App() {
       case "hinhAnh":
         const hinhAnhURL = sanPham.hinhAnh;
         return (
-          <div className="image-container">
+          <div style={{
+            display: 'inline-block'
+          }}>
             <Image
               width={150}
               height={100}
               src={hinhAnhURL}
               alt={sanPham.ten || "Ảnh sản phẩm"}
               classNames="m-5 relative"
+              style={{
+                border: '1px solid #D8D9DA',
+                padding: '10px'
+              }}
             />
             <DiscountTag discount={giaGiam} />
           </div>
@@ -272,31 +280,27 @@ export default function App() {
         );
       case "hanhDong":
         return (
-          <TableCellMui style={{ textDecoration: "none", border: "none" }}>
-            <div className="flex w-10 h-3">
-              <Link
-                to={`/edit-san-pham/${sanPham.ma}`}
-                style={{ display: "block" }}
-                className="button-link group relative"
-              >
-                <Tooltip title="Chi tiết">
-                  <LiaEyeSolid
-                    description="Chi tiết"
-                    className="cursor-pointer text-xl blue-hover mr-4"
-                  />
-                </Tooltip>
-              </Link>
-              <div className="group relative" style={{ position: "relative" }}>
-                <Tooltip title="Xóa">
-                  <MdDeleteOutline
-                    className="cursor-pointer text-xl delete-hover relative"
-                    onClick={() => handleDelete(sanPham.ma)}
-                  />
-                </Tooltip>
-                {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
-              </div>
+          <div className="relative flex items-center gap-4">
+            <Link
+              to={`/edit-san-pham/${sanPham.ma}`}
+              style={{ display: "block" }}
+              className="button-link group relative"
+            >
+              <Tooltip content="Chi tiết" showArrow={true}>
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Tooltip>
+            </Link>
+            <div className="group relative" style={{ position: "relative" }}>
+              <Tooltip color="danger" content="Xóa" showArrow={true}>
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <DeleteIcon onClick={() => handleDelete(sanPham.ma)} />
+                </span>
+              </Tooltip>
+              {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
             </div>
-          </TableCellMui>
+          </div>
         );
       default:
         return cellValue;
