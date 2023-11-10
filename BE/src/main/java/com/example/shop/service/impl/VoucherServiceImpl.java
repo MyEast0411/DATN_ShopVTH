@@ -11,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -56,5 +59,14 @@ public class VoucherServiceImpl implements VoucherService {
             exception.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public List<Voucher> voucherByNgayKT() {
+//        SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//        String date = sdf3.format(timestamp);
+//        return voucherRepository.voucherByNgayKT(date);
+        return new ArrayList<>();
     }
 }

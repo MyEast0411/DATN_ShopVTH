@@ -1,13 +1,10 @@
 package com.example.shop.service.impl;
 
 
-import com.example.shop.entity.Voucher;
-
-import com.example.shop.repository.VoucherRepository;
-import com.example.shop.service.VoucherService;
+import com.example.shop.entity.KhachHang;
+import com.example.shop.repository.KhachHangRepository;
+import com.example.shop.service.KhachHangService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,42 +12,42 @@ import java.util.List;
 
 @Service
 @Transactional
-public class VoucherServiceImpl implements VoucherService {
+public class KhachHangServiceImpl implements KhachHangService {
 
     @Autowired
-    private VoucherRepository voucherRepository;
+    private KhachHangRepository khachHangRepository;
 
 
     @Override
-    public List<Voucher> getVouchers() {
-        return voucherRepository.findAll();
+    public List<KhachHang> getKhachHangs() {
+        return khachHangRepository.findAll();
     }
 
     @Override
-    public List<Voucher> getVouchers(int deleted) {
-        return voucherRepository.getVoucherByDeleted(0);
+    public List<KhachHang> getKhachHangs(int deleted) {
+        return khachHangRepository.findAllByDeleted(0);
     }
 
     @Override
-    public Voucher getVoucher(String id) {
-        return voucherRepository.findById(id).orElse(null);
+    public KhachHang getKhachHang(String id) {
+        return khachHangRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Voucher addVoucher(Voucher voucher) {
-        return voucherRepository.save(voucher);
+    public KhachHang addKhachHang(KhachHang khachHang) {
+        return khachHangRepository.save(khachHang);
     }
 
     @Override
-    public Voucher updateVoucher(Voucher voucher) {
-        return voucherRepository.save(voucher);
+    public KhachHang updateKhachHang(KhachHang khachHang) {
+        return khachHangRepository.save(khachHang);
     }
 
 
     @Override
-    public Boolean deleteVoucher(Voucher voucher) {
+    public Boolean deleteKhachHang(KhachHang khachHang) {
         try {
-            voucherRepository.delete(voucher);
+            khachHangRepository.delete(khachHang);
             return true;
         }catch (Exception exception){
             exception.printStackTrace();

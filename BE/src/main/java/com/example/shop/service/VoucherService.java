@@ -16,4 +16,5 @@ public interface VoucherService {
     Voucher updateVoucher(Voucher voucher);
 
     Boolean deleteVoucher(Voucher voucher);
+    List<Voucher> voucherByNgayKT();
 }

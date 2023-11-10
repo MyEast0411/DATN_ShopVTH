@@ -1,7 +1,12 @@
 package com.example.shop.controller;
 
+import com.example.shop.entity.KhachHang;
+import com.example.shop.entity.KhachHangVoucher;
 import com.example.shop.entity.Voucher;
+import com.example.shop.service.KhachHangService;
+import com.example.shop.service.KhachHangVoucherService;
 import com.example.shop.service.VoucherService;
+import com.example.shop.viewmodel.DataReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.data.domain.Page;
@@ -9,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +26,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -31,6 +40,10 @@ public class VoucherController {
 
     @Autowired
     private VoucherService voucherService;
+    @Autowired
+    private KhachHangVoucherService khachHangVoucherService;
+    @Autowired
+    private KhachHangService khachHangService;
     @GetMapping("getVouchers")
     public ResponseEntity<List<Voucher>> getVouchers(
             @RequestParam(name = "page" , defaultValue = "0")Integer numPage
@@ -47,10 +60,56 @@ public class VoucherController {
     }
 
 
-    @PostMapping("add")
-    public ResponseEntity<Voucher> addVoucher( @RequestBody Voucher voucher){
-        Voucher voucherAdd = voucherService.addVoucher(voucher);
-        return new ResponseEntity<>(voucherAdd , HttpStatus.CREATED);
+    @PostMapping("add-voucher")
+    public ResponseEntity<List<KhachHangVoucher>> addVoucher(
+            @RequestBody DataReq object
+
+    ){
+        List<KhachHangVoucher>   listVCKH = new ArrayList<>();
+        List<KhachHang> listKhachHangData = object.getListKhachHang();
+        List<KhachHangVoucher>   listVCKHReturn = new ArrayList<>();
+        Voucher voucherData = object.getVoucher();
+        voucherData.setMa("VC"+new Date().getTime());
+        voucherData.setNguoiTao("ADMIN");
+        if (listKhachHangData.size() == 0){
+          Voucher voucherSaved =  voucherService.addVoucher(voucherData);
+            List<KhachHang> listKhachHang = khachHangService.getKhachHangs(0);
+            for (KhachHang khachHang :
+                    listKhachHang) {
+                KhachHangVoucher voucher =
+                        KhachHangVoucher
+                        .builder()
+                        .id_voucher(voucherSaved)
+                        .id_khach_hang(khachHang)
+                         .deleted(0)
+                         .nguoiTao("cam")
+                         .trangThai(1)
+                         .ngayTao(new Date())
+                         .build();
+                listVCKH.add(voucher);
+            }
+            listVCKHReturn=  khachHangVoucherService.saveAll(listVCKH);
+        }else{
+            voucherData.setSoLuong(listKhachHangData.size());
+            Voucher voucherSaved =  voucherService.addVoucher(voucherData);
+            for (KhachHang khachHang :
+                    listKhachHangData) {
+                KhachHangVoucher voucher =
+                        KhachHangVoucher
+                                .builder()
+                                .id_voucher(voucherSaved)
+                                .id_khach_hang(khachHang)
+                                .deleted(0)
+                                .nguoiTao("cam")
+                                .trangThai(1)
+                                .build();
+                listVCKH.add(voucher);
+            }
+            listVCKHReturn=   khachHangVoucherService.saveAll(listVCKH);
+        }
+
+
+        return new ResponseEntity<>(listVCKHReturn , HttpStatus.CREATED);
     }
 
     @PutMapping("update/{id}")
@@ -108,5 +167,26 @@ public class VoucherController {
             return new ResponseEntity(null , HttpStatus.NOT_FOUND);
         }
 //        return new ResponseEntity(null , HttpStatus.OK);
+    }
+
+
+    @Scheduled(fixedRate  = 1000)
+    public void scheduleFixedDelayTask() {
+        SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        List<Voucher> vouchers = voucherService.voucherByNgayKT();
+        System.out.println(vouchers);
+
+        for (Voucher voucher: voucherService.getVouchers()
+        ) {
+
+            if (sdf3.format(timestamp).equals(sdf3.format(voucher.getNgayKetThuc()))){
+               voucher.setTrangThai(0);
+                voucherService.updateVoucher(voucher);
+
+            }
+
+        }
+
     }
 }

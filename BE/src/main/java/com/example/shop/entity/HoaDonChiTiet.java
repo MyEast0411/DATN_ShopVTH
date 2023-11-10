@@ -2,6 +2,7 @@ package com.example.shop.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "hoa_don_chi_tiet")
 @IdClass(HoaDonChiTietId.class)
 public class HoaDonChiTiet {

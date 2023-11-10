@@ -2,6 +2,7 @@ package com.example.shop.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.Date;
 @Entity
 @Table(name = "gio_hang_chi_tiet")
 @IdClass(GioHangChiTiepSanPhamId.class)
+@Builder
 public class GioHangChiTiet {
     @Id
     @ManyToOne

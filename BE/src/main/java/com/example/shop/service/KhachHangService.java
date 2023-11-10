@@ -1,19 +1,17 @@
 package com.example.shop.service;
 
-import com.example.shop.entity.Voucher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.example.shop.entity.KhachHang;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public interface VoucherService {
-    List<Voucher> getVouchers();
-    List<Voucher> getVouchers(int deleted);
-    Voucher getVoucher(String id);
-    Voucher addVoucher(Voucher voucher);
-    Voucher updateVoucher(Voucher voucher);
+public interface KhachHangService {
+    List<KhachHang> getKhachHangs();
+    List<KhachHang> getKhachHangs(int deleted);
+    KhachHang getKhachHang(String id);
+    KhachHang addKhachHang(KhachHang khachHang);
+    KhachHang updateKhachHang(KhachHang khachHang);
 
-    Boolean deleteVoucher(Voucher voucher);
+    Boolean deleteKhachHang(KhachHang khachHang);
 }
