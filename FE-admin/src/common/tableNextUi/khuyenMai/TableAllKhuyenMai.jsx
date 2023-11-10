@@ -79,11 +79,13 @@ const statusColorMap = {
   paused: "danger",
   incoming: "warning",
   notStarted: "primary",
+
 };
 statusColorMap["Sắp diễn ra"] = "warning";
 statusColorMap["Đang diễn ra"] = "success";
 statusColorMap["Đã kết thúc"] = "danger";
 statusColorMap["Chưa diễn ra"] = "primary";
+statusColorMap["Đã dừng"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
@@ -252,11 +254,12 @@ export default function App() {
           return (
             <Chip
               // className="capitalize"
-              color={statusColorMap[khuyenMai.trangThai]}
+              color={khuyenMai.switchKM==="Đã dừng" ? "danger" : statusColorMap[khuyenMai.trangThai]}
+              // color={statusColorMap[khuyenMai.switchKM]}
               size="sm"
               variant="flat"
             >
-              {cellValue}
+              {khuyenMai.switchKM==="Đã dừng" ? "Đã dừng" : cellValue} 
             </Chip>
           );
         case "hanhDong":
@@ -279,14 +282,14 @@ export default function App() {
                   <DeleteIcon onClick={() => handleDelete(khuyenMai.id)} />
                 </span>
               </Tooltip>
-              {khuyenMai.trangThai === "Đang diễn ra" && (
+              {(khuyenMai.trangThai === "Đang diễn ra" || khuyenMai.switchKM === "Đã dừng" )&& (
                 <Tooltip
                   showArrow={true}
                   content={isSelected ? "Tắt khuyến mại" : "Bật khuyến mại"}
                 >
                   <span className="text-lg inline-block  text-danger cursor-pointer active:opacity-50">
                     <Switch
-                      defaultSelected
+                      defaultSelected={khuyenMai.switchKM === "Đã dừng" ? false : true}
                       size="sm"
                       color="success"
                       className="inline-block"
@@ -481,7 +484,7 @@ export default function App() {
       <Table
         style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
-        isHeaderSticky
+        // isHeaderSticky
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{

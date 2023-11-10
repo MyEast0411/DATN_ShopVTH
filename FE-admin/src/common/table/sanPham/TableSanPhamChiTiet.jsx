@@ -35,7 +35,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { MdDeleteOutline } from "react-icons/md";
 import { LiaEyeSolid } from "react-icons/lia";
-import {getAllKMSPCT} from "../../../api/khuyenMai/KhuyenMaiApi"
+import { getAllKMSPCT } from "../../../api/khuyenMai/KhuyenMaiApi";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -112,8 +112,7 @@ export default function App() {
   const [kmspcts, setKmspcts] = useState([]);
   const fetchKMSPCT = async () => {
     const data = await getAllKMSPCT();
-    setKmspcts(data)
-    console.log(data)
+    setKmspcts(data);
   };
   useEffect(() => {
     fetchKMSPCT();
@@ -149,7 +148,8 @@ export default function App() {
           kichThuoc: item.id_kich_co.ten,
           soLuongTon: item.soLuongTon,
           trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x)=>x.id_chi_tiet_san_pham.id == item.id)?.id_khuyen_mai.giaTriPhanTram,
+          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+            ?.id_khuyen_mai.giaTriPhanTram,
         }));
         // console.log(giaGiam)
         setSanPhams(updatedRows);
@@ -212,16 +212,11 @@ export default function App() {
 
   const DiscountTag = ({ discount }) => {
     if (discount === undefined) {
-      return null; 
+      return null;
     }
-  
-    return (
-      <div className="discount-tag">
-        {`${discount}% OFF`}
-      </div>
-    );
+
+    return <div className="discount-tag">{`${discount}% OFF`}</div>;
   };
-  
 
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
@@ -230,16 +225,18 @@ export default function App() {
       case "hinhAnh":
         const hinhAnhURL = sanPham.hinhAnh;
         return (
-          <div className="image-container">
-            <Image
-              width={150}
-              height={100}
-              src={hinhAnhURL}
-              alt={sanPham.ten || "Ảnh sản phẩm"}
-              classNames="m-5 relative"
-            />
-            <DiscountTag discount={giaGiam} />
-          </div>
+          <>
+            <div style={{ display: "inline-block" }}>
+              <Image
+                width={150}
+                height={100}
+                src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/1f3586ce-7b81-45c6-9405-c2116a5ec967/air-jordan-1-mid-shoes-86f1ZW.png"
+                alt={sanPham.ten || "Ảnh sản phẩm"}
+                classNames="m-5 relative"
+              />
+              <DiscountTag discount={giaGiam} />
+            </div>
+          </>
         );
       case "trangThai":
         return (

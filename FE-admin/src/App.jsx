@@ -15,7 +15,7 @@ import ThemKhachHang from "./components/khachHang/ThemKhachHang";
 import ThemSanPham from "./components/sanPham/ThemSanPham";
 import ChiTietSanPham from "./components/sanPham/ChiTietSanPham";
 import DetailSanPham from "./components/sanPham/DetailSanPham";
-import DetailKhachHang from "./components/khachHang/DetailKhachHang"
+import DetailKhachHang from "./components/khachHang/DetailKhachHang";
 const App = () => {
   return (
     <NextUIProvider>
@@ -35,6 +35,7 @@ const App = () => {
           <Route path="/edit-san-pham/:ma" element={<ChiTietSanPham />} />
           <Route path="/update-san-pham/:maSP" element={<DetailSanPham />} />
           <Route path="/edit-khach-hang/:maKH" element={<DetailKhachHang />} />
+
           <Route path="/quan-ly-san-pham" element={<Build />}>
             <Route path=":bID">
               <Route path="product" />
@@ -48,6 +49,13 @@ const App = () => {
             <Route path=":bID">
               <Route path="nhan-vien" />
               <Route path="khach-hang" />
+            </Route>
+          </Route>
+
+          <Route path="/giam-gia" element={<Build />}>
+            <Route path=":bID">
+              <Route path="khuyen-mai" />
+              <Route path="voucher" />
             </Route>
           </Route>
 

@@ -105,6 +105,7 @@ public class KhuyenMaiController {
                 khuyenMai.setNgayTao(new Date());
                 khuyenMai.setNgaySua(new Date());
                 khuyenMai.setDeleted(0);
+                khuyenMai.setSwitchKM("Đang diễn ra");
                 khuyenMaiService.save(khuyenMai);
                 for (String maCTSP : listMaCTSP) {
                     List<SanPhamChiTiet> spctList = chiTietSPRepo.getSPCTByMaSPCT(Collections.singletonList(maCTSP));
@@ -168,15 +169,16 @@ public class KhuyenMaiController {
     @PutMapping("/batTatKhuyenMai/{id}/{isSelected}")
     public KhuyenMai batTatKhuyenMai(@PathVariable("id") KhuyenMai khuyenMai,@PathVariable String isSelected) {
 //        System.out.println(khuyenMai);
-        System.out.println(khuyenMai.getTrangThai());
-
+//        System.out.println(khuyenMai.getTrangThai());
+        System.out.println(isSelected);
         if (isSelected.equals("true")) {
-            khuyenMai.setTrangThai("Đã dừng");
+            khuyenMai.setSwitchKM("Đã dừng");
+            System.out.println("Đã dừng");
         } else {
-            khuyenMai.setTrangThai("Đang diễn ra");
+            khuyenMai.setSwitchKM("Đang diễn ra");
+            System.out.println("Đang diễn ra");
         }
-            System.out.println(khuyenMaiService.save(khuyenMai));
-        return null;
+        return khuyenMaiService.save(khuyenMai);
 
     }
 

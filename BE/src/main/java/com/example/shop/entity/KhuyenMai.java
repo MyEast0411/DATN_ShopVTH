@@ -54,4 +54,7 @@ public class KhuyenMai {
 
     @Column(name = "deleted")
     private Integer deleted;
+
+    @Column(name = "switchKM")
+    private String switchKM;
 }
