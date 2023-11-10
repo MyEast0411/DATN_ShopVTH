@@ -92,14 +92,14 @@ export default function App() {
 
   const confirmDelete =async () => {
     if (idToDelete) {
-    //   await axios.delete(`http://localhost:8080/delete/${idToDelete}`)
-    //     .then((response) => {
-    //       toast("🎉 Xóa thành công");
-    //       cancelDelete();
-    //     })
-    //     .catch((error) => {
-    //       toast("😢 Xóa thất bại");
-    //     });
+      await axios.delete(`http://localhost:8080/khach-hang/delete/${idToDelete}`)
+        .then((response) => {
+          toast("🎉 Xóa thành công");
+          cancelDelete();
+        })
+        .catch((error) => {
+          toast("😢 Xóa thất bại");
+        });
       cancelDelete();
     }
   };
@@ -124,7 +124,7 @@ export default function App() {
         const response = await axios.get("http://localhost:8080/khach-hang/getAll");
         console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
-          id: index + 1,
+          id: item.id,
           stt: index + 1,
           maKH : item.ma,
           anh: item.anhNguoiDung,
@@ -143,7 +143,7 @@ export default function App() {
       }
     } 
     fetchChiTietSanPham();
-  }, []);
+  }, [sanPhams]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -241,7 +241,7 @@ export default function App() {
                   <MdDeleteOutline
                   className="cursor-pointer text-xl delete-hover relative"
                   onClick={() => 
-                  handleDelete(sanPham.ma)}
+                  handleDelete(sanPham.id)}
                 />
                 </Tooltip>
               {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
@@ -352,7 +352,7 @@ export default function App() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Tổng {sanPhams.length} sản phẩm
+            Tổng {sanPhams.length} khách hàng
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:

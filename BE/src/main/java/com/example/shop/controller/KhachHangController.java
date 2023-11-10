@@ -42,6 +42,11 @@ public class KhachHangController {
         return khachHangRepository.findByMa(ma);
     }
 
+    @GetMapping("/dia-chi/findByMa/{ma}")
+    public List<DiaChi> findDiaChiByMa(@PathVariable String ma) {
+        return diaChiRepository.findDiaChiByMa(ma);
+    }
+
     @DeleteMapping("/khach-hang/delete/{id}")
     public void delete(@PathVariable("id") String id) {
         khachHangRepository.delete(khachHangRepository.findById(id).get());
@@ -49,40 +54,62 @@ public class KhachHangController {
 
     @PostMapping("/khach-hang/add")
     public ResponseEntity add(@RequestBody KhachHangVM khachHang) {
+        System.out.println(khachHang);
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
-        int seconds = (int) System.currentTimeMillis() / 1000;
-        Random random = new Random();
-        int number = random.nextInt(seconds + 1);
-        String threeNumbers = String.valueOf(number).substring(0, 3);
-        DiaChi diaChi = new DiaChi();
-        diaChi.setDuong(khachHang.getSoNha());
-        diaChi.setThanhPho(khachHang.getThanhPho());
-        diaChi.setHuyen(khachHang.getHuyen());
-        diaChi.setXa(khachHang.getXa());
-        diaChi.setQuocGia("Việt Nam");
-        DiaChi dc = diaChiRepository.save(diaChi);
+        Integer maxMa = Integer.parseInt(khachHangRepository.findMaxMa());
+
         try {
             KhachHang kh = new KhachHang();
             String urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
             kh.setAnhNguoiDung(urlImg);
-            kh.setMa("KH"+threeNumbers);
+            kh.setMa("KH"+(maxMa + 1));
             kh.setCccd(khachHang.getCccd());
             kh.setTen(khachHang.getTen());
             kh.setEmail(khachHang.getEmail());
             kh.setGioiTinh(khachHang.getGioi_tinh());
             kh.setNgaySinh(dateFormat.parse(khachHang.getNgay_sinh()));
-            kh.setId_dia_chi(dc);
             kh.setSdt(khachHang.getSdt());
             kh.setTrangThai(1);
             System.out.println(kh);
-            khachHangRepository.save(kh);
+            KhachHang khNew = khachHangRepository.save(kh);
+
+            DiaChi diaChi = new DiaChi();
+            diaChi.setDuong(khachHang.getSoNha());
+            diaChi.setTrangThai(1);
+            diaChi.setThanhPho(khachHang.getThanhPho());
+            diaChi.setHuyen(khachHang.getHuyen());
+            diaChi.setXa(khachHang.getXa());
+            diaChi.setQuocGia("Việt Nam");
+            diaChi.setId_khach_hang(khNew);
+            diaChiRepository.save(diaChi);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
     }
+    @PostMapping("/dia-chi/add")
+    public ResponseEntity addDiaChi(@RequestBody KhachHangVM khachHang) {
 
+        try {
+            KhachHang kh = khachHangRepository.findById(khachHang.getId()).get();
+            if(diaChiRepository.findDiaChiByMa(kh.getMa()).size() >= 3 ) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khách hàng chỉ có thể có 3 địa chỉ !!!");
+            }
+            DiaChi diaChi = new DiaChi();
+            diaChi.setDuong(khachHang.getSoNha());
+            diaChi.setThanhPho(khachHang.getThanhPho());
+            diaChi.setHuyen(khachHang.getHuyen());
+            diaChi.setXa(khachHang.getXa());
+            diaChi.setTrangThai(2);
+            diaChi.setQuocGia("Việt Nam");
+            diaChi.setId_khach_hang(khachHangRepository.findById(khachHang.getId()).get());
+            diaChiRepository.save(diaChi);
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Thêm thất bại");
+        }
+    }
     @PutMapping("/khach-hang/update/{ids}")
     public KhachHang update(@RequestBody KhachHang khachHang, @PathVariable String ids) {
         khachHang.setId(ids);

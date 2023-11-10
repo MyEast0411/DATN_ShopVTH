@@ -5,7 +5,9 @@ import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.requests.DeGiayRequest;
 import com.example.shop.requests.KichCoRequest;
+import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.ChiTietSanPhamVM;
+import com.example.shop.viewmodel.HinhAnhVM;
 import com.example.shop.viewmodel.SanPhamVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,11 +93,33 @@ public class SanPhamController {
     }
     @GetMapping("/getAllHA")
     List<HinhAnh> getAllHA(){
+        return hinhAnhRepository.getAll();
+    }
+    @GetMapping("/getAllHinhAnh")
+    List<HinhAnh> getAllHinhAnh(){
         return hinhAnhRepository.findAll();
     }
     @GetMapping("getHinhAnhByMau/{mauSac}")
     public List<HinhAnh> getHinhAnhByMau(@PathVariable String mauSac) {
         return hinhAnhRepository.getHinhAnhByMau(mauSac);
+    }
+    @PostMapping("/addHinhAnh")
+    public ResponseEntity addHinhAnh(@RequestBody HinhAnhVM hinhAnhVM) {
+        System.out.println(hinhAnhVM);
+        try {
+            HinhAnh hinhAnh = new HinhAnh();
+            Integer maxMa = Integer.parseInt(hinhAnhRepository.getMaxMa());
+            String anh = UploadAnh.upload(hinhAnhVM.getImgUrl());
+            hinhAnh.setMa("HA"+(maxMa + 1));
+            hinhAnh.setMauSac(hinhAnhVM.getMauSac());
+            hinhAnh.setTen(anh);
+            hinhAnh.setNguoiTao("Đông");
+            hinhAnhRepository.save(hinhAnh);
+            return  ResponseEntity.ok("Thêm thành công");
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+
     }
     public SanPhamVM convertToSanPhamVM(Object[] row) {
         SanPhamVM sanPhamVM = new SanPhamVM();
@@ -197,8 +221,6 @@ public class SanPhamController {
             }
         }
         try {
-            listHinhAnh.forEach( x -> System.out.println(x));
-
             repo.saveAll(lst);
             hinhAnhRepository.saveAll(listHinhAnh);
             return ResponseEntity.ok("Thành công");

@@ -42,12 +42,23 @@ export default function ThemKhachHang() {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
-
+  const [listDiaChi, setListDiaChi] = useState([]);
   const [isOn, setIsOn] = useState(false); // Khởi tạo trạng thái ban đầu là "off"
 
-  const handleSwitchChange = checked => {
-    setIsOn(checked); // Cập nhật trạng thái khi nút chuyển đổi được bật/tắt
+  const handleSwitchChange = (index) => {
+    const updatedListDiaChi = [...listDiaChi];
+  
+    updatedListDiaChi[index].trangThai = 1;
+  
+    updatedListDiaChi.forEach((item, i) => {
+      if (i !== index) {
+        item.trangThai = 0;
+      }
+    });
+    setListDiaChi(updatedListDiaChi);
   };
+  
+  
   
   const handleAdd = () => {
     setDeleteConfirmationOpen(true);
@@ -81,9 +92,13 @@ export default function ThemKhachHang() {
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
       if (item.code == provinceCode) {
-        setKhachHang((prevKhachHang) => ({
-          ...prevKhachHang,
-          thanhPho: selectedProvince.name,
+        // setKhachHang((prevKhachHang) => ({
+        //   ...prevKhachHang,
+        //   thanhPho: selectedProvince.name,
+        // }));
+        setDiaChi((prevDiaChi) => ({
+          ...prevDiaChi,
+          thanhPho: item.name,
         }));
       }
     });
@@ -97,8 +112,12 @@ export default function ThemKhachHang() {
     console.log(districtCode);
     districts.map((item) => {
       if (item.code == districtCode) {
-        setKhachHang((prevKhachHang) => ({
-          ...prevKhachHang,
+        // setKhachHang((prevKhachHang) => ({
+        //   ...prevKhachHang,
+        //   huyen: item.name,
+        // }));
+        setDiaChi((prevDiaChi) => ({
+          ...prevDiaChi,
           huyen: item.name,
         }));
       }
@@ -111,8 +130,12 @@ export default function ThemKhachHang() {
   const handleWardsChange = (wardsCode) => {
     wards.map((item) => {
       if (item.code == wardsCode) {
-        setKhachHang((prevKhachHang) => ({
-          ...prevKhachHang,
+        // setKhachHang((prevKhachHang) => ({
+        //   ...prevKhachHang,
+        //   xa: item.name,
+        // }));
+        setDiaChi((prevDiaChi) => ({
+          ...prevDiaChi,
           xa: item.name,
         }));
       }
@@ -135,6 +158,19 @@ export default function ThemKhachHang() {
     thanhPho: "",
   });
 
+  const [diaChi, setDiaChi] = useState({
+    id: "",
+    soNha: "",
+    xa: "",
+    huyen: "",
+    thanhPho: "",
+  });
+  const {
+    soNha,
+    xa,
+    huyen,
+    thanhPho,
+  } = diaChi;
   const {
     ma,
     ten,
@@ -143,11 +179,7 @@ export default function ThemKhachHang() {
     sdt,
     ngay_sinh,
     email,
-    cccd,
-    soNha,
-    xa,
-    huyen,
-    thanhPho,
+    cccd
   } = khachHang;
 
   function formatDate(dateString) {
@@ -166,11 +198,8 @@ export default function ThemKhachHang() {
     const result = await axios.get(
       `http://localhost:8080/khach-hang/findByMa/${maKH}`
     );
-    const khachHangData = result.data; // Dữ liệu khách hàng từ phản hồi API
-    
-    // getDistricts(valueTP).then((data) => {
-    //     setDistricts(data);
-    // });
+    const khachHangData = result.data;
+
     setBackgroundImage(khachHangData.anhNguoiDung);
     setKhachHang({
       id: khachHangData.id,
@@ -181,28 +210,44 @@ export default function ThemKhachHang() {
       sdt: khachHangData.sdt,
       ngay_sinh: khachHangData.ngaySinh,
       email: khachHangData.email,
-      cccd: khachHangData.cccd,
-      thanhPho: khachHangData.id_dia_chi.thanhPho,
-      huyen: khachHangData.id_dia_chi.huyen,
-      xa: khachHangData.id_dia_chi.xa,
-      soNha: khachHangData.id_dia_chi.duong,
+      cccd: khachHangData.cccd
     });
+    setDiaChi((prevDiaChi) => ({
+      ...prevDiaChi,
+      id: khachHangData.id,
+    }));
+  };
+  const getDiaChi = async () => {
+    const result = await axios.get(`http://localhost:8080/dia-chi/findByMa/${maKH}`);
+    setListDiaChi(result.data);
   };
   const setBackgroundImage = (url) => {
     imgDivRef.current.style.backgroundImage = `url(${url})`;
   };
   useEffect(() => {
     getKhachHang();
+    getDiaChi();
   }, []);
 
   const onChange = (e) => {
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
+    setDiaChi({ ...diaChi, [e.target.name]: e.target.value });
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
+  const handleOk = async () => {
+    console.log(diaChi);
+    await axios.post("http://localhost:8080/dia-chi/add",diaChi)
+      .then((response) => {
+          toast.success(`🎉 Thêm thành công`)
+          getDiaChi();
+      })
+      .catch((error) => {
+        console.log(error);
+          toast.error(`${error.response.data}`)
+      });
     setIsModalOpen(false);
   };
   const handleCancel = () => {
@@ -250,27 +295,38 @@ export default function ThemKhachHang() {
     }
   };
 
-  const handleChangeTP = (value) => {
-    setKhachHang((prevKhachHang) => ({
-      ...prevKhachHang,
-      thanhPho: value
-    }));
+  const handleChangeTP = (selectedValue, index) => {
+    const updatedListDiaChi = [...listDiaChi];
+    const updatedItem = { ...updatedListDiaChi[index] };
+    updatedItem.thanhPho = selectedValue;
+    updatedListDiaChi[index] = updatedItem;
+    setListDiaChi(updatedListDiaChi);
   };
 
-  const handleChangeHuyen = (value) => {
-    setKhachHang((prevKhachHang) => ({
-      ...prevKhachHang,
-      huyen: value
-    }));
+  const handleChangeHuyen = (selectedValue, index) => {
+    const updatedListDiaChi = [...listDiaChi];
+    const updatedItem = { ...updatedListDiaChi[index] };
+    updatedItem.huyen = selectedValue;
+    updatedListDiaChi[index] = updatedItem;
+    setListDiaChi(updatedListDiaChi);
   };
 
-  const handleChangeXa = (value) => {
-    setKhachHang((prevKhachHang) => ({
-      ...prevKhachHang,
-      xa: value
-    }));
+  const handleChangeXa = (selectedValue, index) => {
+    const updatedListDiaChi = [...listDiaChi];
+    const updatedItem = { ...updatedListDiaChi[index] };
+    updatedItem.xa = selectedValue;
+    updatedListDiaChi[index] = updatedItem;
+    setListDiaChi(updatedListDiaChi);
   };
 
+  const handleDuongChange = (e, index) => {
+    const { value } = e.target;
+    const updatedListDiaChi = [...listDiaChi];
+    updatedListDiaChi[index] = { ...updatedListDiaChi[index], duong: value };
+    setListDiaChi(updatedListDiaChi);
+  };
+  
+  
   const options = valueTP.map(name => (
     <Option key={name} value={name}>
       {name}
@@ -492,8 +548,9 @@ export default function ThemKhachHang() {
 
         <div className="col-span-2 m-10">
           <Accordion selectionMode="multiple">
-            <AccordionItem
-              key="1"
+            {listDiaChi.map((item,index) => (
+              <AccordionItem
+              key={index}
               aria-label="Địa chỉ 1"
               startContent={
                 <Avatar
@@ -503,14 +560,14 @@ export default function ThemKhachHang() {
                   src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBzzKBzwgurWanjvQl4kpN9w_CEtc27ryw5A&usqp=CAU"
                 />
               }
-              subtitle="Cập nhật ngay"
-              title="Địa chỉ 1"
+              subtitle="Xem chi tiết"
+              title={"Địa chỉ "+(index + 1)}
             >
               <div>
               <Select
                 placeholder="Thành phố"
-                onChange={handleChangeTP}
-                value={khachHang.thanhPho}
+                onChange={(selectedValue) => handleChangeTP(selectedValue, index)}
+                value={item.thanhPho}
                 style={{width : "20%", marginRight : "10px"}}
               >
                 {options}
@@ -518,8 +575,8 @@ export default function ThemKhachHang() {
 
               <Select
                 placeholder="Thành phố"
-                onChange={handleChangeHuyen}
-                value={khachHang.huyen}
+                onChange={(selectedValue) => handleChangeHuyen(selectedValue, index)}
+                value={item.huyen}
                 style={{width : "21%", marginRight : "15px"}}
               >
                 {optionHuyen}
@@ -527,8 +584,8 @@ export default function ThemKhachHang() {
 
               <Select
                 placeholder="Thành phố"
-                onChange={handleChangeXa}
-                value={khachHang.xa}
+                onChange={(selectedValue) => handleChangeXa(selectedValue, index)}
+                value={item.xa}
                 style={{width : "23%", marginRight : "10px"}}
               >
                 {optionXa}
@@ -536,32 +593,44 @@ export default function ThemKhachHang() {
 
               <input
                   type="text"
-                  name="soNha"
-                  value={soNha}
+                  name={`duong-${index}`}
+                  value={item.duong}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                 rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                     w-2/3 p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                                     dark:focus:ring-blue-500 mt-4 dark:focus:border-blue-500"
                   placeholder="Số nhà/Ngõ/Đường"
                   required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
+                  onChange={(e) => handleDuongChange(e, index)}
               />
                 <div className="flex mt-10">
                   <p className="mr-5">Địa chỉ mặc định</p>
                   <Switch
-                    checked={isOn}
-                    onChange={handleSwitchChange}
+                    checked={item.trangThai === 1}
+                    onChange={() => handleSwitchChange(index)}
                     className={`${
                       isOn
-                        ? 'bg-green-500 hover:bg-green-700'
+                        ? 'bg-gray-800'
                         : 'bg-gray-800'
                     }`}
                   />
+                  <div className="flex-grow" />
+                  <Button
+                    className="justify-end"
+                    style={{
+                      backgroundColor: "#1976d2",
+                      color: "#fff",
+                      marginBottom: "2px",
+                      marginLeft: "auto"
+                    }}
+                  >
+                    Xóa địa chỉ
+                  </Button>
                 </div>
               </div>
             </AccordionItem>
+            ))}
+            
             {/* <AccordionItem
               key="2"
               aria-label="Địa chỉ 2"

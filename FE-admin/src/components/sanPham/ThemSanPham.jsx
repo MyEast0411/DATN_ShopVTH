@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { InputNumber } from "antd";
 import { TableCell } from "@mui/material";
+import ReactLoading from "react-loading";
 import {
   Button as ButtonMaterial, 
   Dialog,
@@ -19,6 +20,7 @@ import { Button, Modal, Table, Tooltip} from "antd";
 import { Table as TableImg} from "antd";
 import Badge from "@mui/material/Badge";
 import { PlusIcon } from "../../common/otherComponents/PlusIcon";
+
 
 export default function ThemSanPham() {
   let navigate = useNavigate();
@@ -41,7 +43,7 @@ export default function ThemSanPham() {
   const [selectMau, setSelectMau] = useState("");
   const [checkboxStates, setCheckboxStates] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
-  const initialImageTableData = [];
+  const [loading, setLoading] = useState(true);
   
   const customText = {
     emptyText: 'Không có hình ảnh'
@@ -71,6 +73,13 @@ export default function ThemSanPham() {
   const [kichCoModal,setKichCoModal] = useState({
     tenKichCo : ""
   });
+
+  const [hinhAnhModal,setHinhAnhModal] = useState({
+    imgUrl : "",
+    mauSac : ""
+  });
+
+
   const {
     tenKichCo
   } = kichCoModal;
@@ -91,6 +100,47 @@ export default function ThemSanPham() {
     id_nhan_hieu,
     hinhAnh
   } = sanPham;
+
+  const handleImageChange = async(event) => {
+    
+    const file = event.target.files[0];
+    if (file) {
+      const fileName = file.name;
+      setHinhAnhModal({
+        imgUrl: fileName,
+        mauSac: selectMau
+      });
+      await axios
+      .post("http://localhost:8080/addHinhAnh", {imgUrl : fileName,mauSac : selectMau})
+      .then((response) => {
+        console.log(response.data);
+        if(response.data!=null) {
+          // <Section>
+          //   <Article key={"spin"}>
+          //     <Prop>{"Đang tải ảnh"}</Prop>
+          //   </Article>
+          // </Section>
+        }
+        toast.success(`Thêm thành công`);
+      })
+      .catch((error) => {
+        toast.error(`Thêm thất bại`)
+      });
+
+      // await axios.get(`http://localhost:8080/getHinhAnhByMau/${selectMau}`).then((response) => {
+      //   setImg(response.data);
+      // });
+    }
+  };
+
+
+  const handleAddImageClick = () => {
+    const imageInput = document.getElementById("imageInput");
+    if (imageInput) {
+      imageInput.click();
+      console.log("ok");
+    }
+  };
 
   //table data
   const handleChange = (pagination, filters, sorter) => {
@@ -204,6 +254,7 @@ export default function ThemSanPham() {
                 let tenSP = mauSac.find((x) => x.maMau === record.id_mau_sac)?.ten || '';
                 setSelectMau(tenSP);
                 await axios.get(`http://localhost:8080/getHinhAnhByMau/${tenSP}`).then((response) => {
+                  setLoading(false);
                   setImg(response.data);
                 });
                 showModalHA();
@@ -227,36 +278,72 @@ export default function ThemSanPham() {
                     Tất cả hình ảnh theo : {selectMau}
                   </label>
                   <div className="flex flex-wrap">
-                    {img.map((x, index) => (
-                      <div key={index} className="w-1/3 p-2 cursor-pointer">
-                        <div className="relative w-60 h-56 bg-gray-300 mt-10">
-                          <input
-                            type="checkbox"
-                            id={x.id}
-                            checked={selectedImages.includes(x.id)}
-                            onChange={(e) => handleCheckboxChange(e, x.id)}
-                            className="absolute top-2 right-2 z-10"
-                          />
-                          <img src={x.ten} alt="Load Image" style={{objectFit: "contain"}} className="w-full h-full object-cover"
-                          onClick={() => {
-                            const checkbox = document.getElementById(x.id);
-                            console.log(selectedImages);
-                            console.log(checkbox);
-                            if (checkbox) {
-                              checkbox.click();
-                            }
-                            if (selectedImages.includes(x.id)) {
-                              setSelectedImages(selectedImages.filter((id) => id != x.id));
-                            } else {
-                              // if (selectedImages.length < 3) {
-                                setSelectedImages([...selectedImages, x.id]);
-                              // }
-                            }
-                          }}
-                          />
+                    {loading ? (
+                      <ReactLoading type={"spin"} color="#fff" />
+                    ) : (
+                      img.map((x, index) => (
+                        <div key={index} className="w-1/3 p-2 cursor-pointer">
+                          <div className="relative w-60 h-56 bg-gray-300 mt-10">
+                            <input
+                              type="checkbox"
+                              id={x.id}
+                              checked={selectedImages.includes(x.id)}
+                              onChange={(e) => handleCheckboxChange(e, x.id)}
+                              className="absolute top-2 right-2 z-10"
+                              
+                            />
+                            <img src={x.ten} alt="Load Image" style={{objectFit: "contain"}} className="w-full h-full object-cover"
+                            onClick={() => {
+                              console.log(selectedImages);
+                              if (selectedImages.length >= 3 && !selectedImages.includes(x.id)) {
+                                // Nếu đã chọn nhiều hơn 3 và không phải checkbox đã chọn, hiển thị thông báo lỗi
+                                toast.error("😢 Chỉ được chọn 3 ảnh !");
+                              } else {
+                                  const checkbox = document.getElementById(x.id);
+                                if (checkbox) {
+                                  checkbox.click();
+                                }
+                                if (selectedImages.includes(x.id)) {
+                                  setSelectedImages(selectedImages.filter((id) => id != x.id));
+                                } else {
+                                  // if (selectedImages.length < 3) {
+                                    setSelectedImages([...selectedImages, x.id]);
+                                  // }
+                                }}
+                            }}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
+                    
+                    <Button
+                          className="flex drop-shadow-lg"
+                          type="primary"
+                          style={{
+                            backgroundColor: "white",
+                            alignItems: "center",
+                            position: "absolute",
+                            right: 5,
+                            top: 50,
+                            color: "black",
+                            border: "0.5px solid #ccc",
+                            marginRight: "3.5%",
+                            marginTop : "20px"
+                          }}
+                          onClick={handleAddImageClick}
+                        >
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            style={{ display: "none" }}
+                            id="imageInput"
+                          />
+                          <AiOutlinePlus className="mr-2"
+                           />
+                          Thêm hình ảnh
+                    </Button>
                   </div>
                 </div>
               </Modal>
@@ -280,27 +367,21 @@ export default function ThemSanPham() {
   };
 
   const handleSoLuongChange = (key, value) => {
-    // Tìm dòng dữ liệu theo key và cập nhật giá trị soLuong
     const updatedData = dataSource.map((item) => {
       if (item.key === key) {
         return { ...item, soLuong: value };
       }
       return item;
     });
-    // Cập nhật dữ liệu
-    //setDataSource(updatedData);
   };
   
   const handleGiaBanChange = (key, value) => {
-    // Tìm dòng dữ liệu theo key và cập nhật giá trị giaBan
     const updatedData = dataSource.map((item) => {
       if (item.key === key) {
         return { ...item, giaBan: value };
       }
       return item;
     });
-    // Cập nhật dữ liệu
-    //setDataSource(updatedData);
   };
   
 // -------------------------end table data-------------------------
@@ -337,21 +418,27 @@ export default function ThemSanPham() {
     setCheckboxStates(updatedStates);
     const imageUrl = e.target.nextElementSibling.src;
     const checkedCount = updatedStates.filter((state) => state).length;
+    console.log(tableImg[selectMau]);
     if (e.target.checked) {
       if (checkedCount <= maxSelectedImages) {
+        updatedStates[id] = true;
+        setCheckboxStates(updatedStates);
         setTableImg((prevTableImg) => ({
           ...prevTableImg,
           [selectMau]: [...(prevTableImg[selectMau] || []), imageUrl],
         }));
       } else {
-        // Nếu đã chọn quá giới hạn, bạn có thể thông báo lỗi ở đây.
         toast.error("😢 Chỉ được chọn 3 ảnh !");
         updatedStates[id] = false;
+        setCheckboxStates(updatedStates);
       }
     } else {
-      removeImageByColor(selectMau,imageUrl);
-    };
+      updatedStates[id] = false;
+      setCheckboxStates(updatedStates);
+      removeImageByColor(selectMau, imageUrl);
+    }
   };
+  
   
   // ------------------------modal mau sac-------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -520,11 +607,12 @@ export default function ThemSanPham() {
     getAllMS();
     getAllCL();
     getAllTH();
-    // getAllHA();
-  }, []);
+    getAllHA();
+  }, [img]);
 
   const getAllHA = async () => {
-    await axios.get("http://localhost:8080/getAllHA").then((response) => {
+    await axios.get(`http://localhost:8080/getHinhAnhByMau/${selectMau}`).then((response) => {
+      console.log(response.data);
       setImg(response.data);
     });
   };
@@ -821,48 +909,7 @@ export default function ThemSanPham() {
                       />
                     </div>
                     </Modal>
-                    {/* <Modal
-                      title="Thêm hình ảnh"
-                      open={isModalOpenHA}
-                      onOk={handleOkHA}
-                      onCancel={handleCancelHA}
-                      cancelText="Hủy"
-                      okText="Hoàn tất"
-                      style={{ position: "relative", top: "5px", left: "100px" }}
-                      width={800}
-                    >
-                    <div>
-                      <label
-                      htmlFor="country"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                       Tất cả hình ảnh
-                      </label>
-                      <div className="flex flex-wrap">
-                        {img.map((x, index) => (
-                          <div key={index} className="w-1/3 p-2 cursor-pointer">
-                            <div className="relative w-60 h-56 bg-gray-300 mt-10">
-                              <input
-                                type="checkbox"
-                                id={index}
-                                checked={checkboxStates[index]}
-                                onChange={(e) => handleCheckboxChange(e, index)}
-                                className="absolute top-2 right-2 z-10"
-                              />
-                              <img src={x.ten} alt="Load Image" className="w-full h-full object-cover"
-                              onClick={() => {
-                                const checkbox = document.getElementById(index);
-                                if (checkbox) {
-                                  checkbox.click();
-                                }
-                              }}
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    </Modal> */}
+                    
                   </div>
                 </div>
                 <div className="sm:col-span-3">

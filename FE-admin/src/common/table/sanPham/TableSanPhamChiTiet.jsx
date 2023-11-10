@@ -100,7 +100,7 @@ export default function App() {
   };
   const [hinhAnh,setHinhAnh] = useState([]);
   const getAllHA = async () => {
-    await axios.get("http://localhost:8080/getAllHA").then((response) => {
+    await axios.get("http://localhost:8080/getAllHinhAnh").then((response) => {
       setHinhAnh(response.data);
       console.log(response.data);
     });
@@ -442,7 +442,7 @@ export default function App() {
       <Table
         style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
-        isHeaderSticky
+        // isHeaderSticky
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{

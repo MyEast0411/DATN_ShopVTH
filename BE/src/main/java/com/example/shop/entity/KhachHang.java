@@ -62,7 +62,4 @@ public class KhachHang {
     @Column(name = "deleted")
     private Integer deleted;
 
-    @ManyToOne
-    @JoinColumn(name = "id_dia_chi")
-    private DiaChi id_dia_chi;
 }
