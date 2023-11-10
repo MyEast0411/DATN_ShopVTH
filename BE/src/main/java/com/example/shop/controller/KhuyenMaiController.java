@@ -179,14 +179,21 @@ public class KhuyenMaiController {
     }
 
     @GetMapping("/searchByDate/{ngayBatDau}/{ngayKetThuc}")
-    public List<KhuyenMai> searchByDate(@PathVariable String ngayBatDau, @PathVariable String ngayKetThuc) {
+    public List<KhuyenMai> searchByDate(
+            @PathVariable("ngayBatDau") String ngayBatDau,
+            @PathVariable("ngayKetThuc") String ngayKetThuc
+    ) {
+        System.out.println(ngayBatDau);
+        System.out.println(ngayKetThuc);
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date startDate = dateFormat.parse(ngayBatDau);
-            Date endDate = dateFormat.parse(ngayKetThuc);
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            Date startDate = dateFormat.parse(ngayBatDau);
+//            Date endDate = dateFormat.parse(ngayKetThuc);
+//            System.out.println("Ngay bat dau: " + startDate);
+//            System.out.println("Ngay ket thuc: " + endDate);
 
-            return khuyenMaiService.searchByDate(startDate, endDate);
-        } catch (ParseException e) {
+            return khuyenMaiService.searchByDate(ngayBatDau, ngayKetThuc);
+        } catch (Exception e) {
             // Handle parsing exception
             e.printStackTrace();
             return null;

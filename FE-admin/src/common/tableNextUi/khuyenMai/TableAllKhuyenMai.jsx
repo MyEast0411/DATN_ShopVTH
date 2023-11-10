@@ -35,6 +35,7 @@ import { EyeIcon } from "../../otherComponents/EyeIcon";
 import {
   getAllKhuyenMai,
   deleteKhuyenMai,
+  searchByDate,
 } from "../../../api/khuyenMai/KhuyenMaiApi";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
@@ -98,7 +99,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App() {
+export default function TableAllKhuyenMai({ nbd, nkt }) {
+  console.log("nbd: " + nbd, "nkt: " + nkt);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -171,26 +173,53 @@ export default function App() {
 
   async function fetchKhuyenMais() {
     try {
-      const data = await getAllKhuyenMai();
-      const khuyenMaisFormatted = data.map((khuyenMai, index) => ({
-        ...khuyenMai,
-        id: khuyenMai.id,
-        stt: index + 1,
-        ngayBatDau: format(new Date(khuyenMai.ngayBatDau), "dd-MM-yyyy HH:mm"),
-        ngayKetThuc: format(
-          new Date(khuyenMai.ngayKetThuc),
-          "dd-MM-yyyy HH:mm"
-        ),
-      }));
-      setKhuyenMais(khuyenMaisFormatted);
+      // const dataSearch = await searchByDate(nbd, nkt);
+
+      // if (nbd && nkt) {
+      //   const khuyenMaisFormatted = dataSearch.map((khuyenMai, index) => ({
+      //     ...khuyenMai,
+      //     id: khuyenMai.id,
+      //     stt: index + 1,
+      //     ngayBatDau: format(
+      //       new Date(khuyenMai.ngayBatDau),
+      //       "dd-MM-yyyy HH:mm"
+      //     ),
+      //     ngayKetThuc: format(
+      //       new Date(khuyenMai.ngayKetThuc),
+      //       "dd-MM-yyyy HH:mm"
+      //     ),
+      //   }));
+      //   setKhuyenMais(khuyenMaisFormatted);
+      // } else {
+        const data = await getAllKhuyenMai();
+        const khuyenMaisFormatted = data.map((khuyenMai, index) => ({
+          ...khuyenMai,
+          id: khuyenMai.id,
+          stt: index + 1,
+          ngayBatDau: format(
+            new Date(khuyenMai.ngayBatDau),
+            "dd-MM-yyyy HH:mm"
+          ),
+          ngayKetThuc: format(
+            new Date(khuyenMai.ngayKetThuc),
+            "dd-MM-yyyy HH:mm"
+          ),
+        }));
+        setKhuyenMais(khuyenMaisFormatted);
+      // }
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
   }
 
-  useEffect(() => {
-    fetchKhuyenMais();
-  }, [khuyenMais]);
+  useEffect(
+    () => {
+      fetchKhuyenMais();
+    },
+    [khuyenMais],
+    nbd,
+    nkt
+  );
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -359,7 +388,7 @@ export default function App() {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-end">
-          {/* <Input
+          <Input
             isClearable
             className="w-full sm:max-w-[30%]"
             placeholder="Tìm kiếm bất kỳ..."
@@ -367,10 +396,10 @@ export default function App() {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
-          /> */}
+          />
           {/* <Input type="datetime-local" label="Từ ngày" />
           <Input type="datetime-local" label="Đến ngày"/> */}
-          
+
           <div className="flex flex-end gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">

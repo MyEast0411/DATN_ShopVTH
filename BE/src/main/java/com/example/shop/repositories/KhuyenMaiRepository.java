@@ -24,9 +24,9 @@ public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, String> {
             "AND k.deleted = 0", nativeQuery = true)
     List<KhuyenMai> findOverlappingPromotions(@Param("ngayBatDau") Date ngayBatDau, @Param("ngayKetThuc") Date ngayKetThuc);
 
-    @Query(value = "SELECT * FROM khuyen_mai k " +
-            "WHERE (k.ngay_bat_dau BETWEEN :ngayBatDau AND :ngayKetThuc " +
-            "OR k.ngay_ket_thuc BETWEEN :ngayBatDau AND :ngayKetThuc " +
-            "AND k.deleted = 0", nativeQuery = true)
-    List<KhuyenMai> searchByDate(@Param("ngayBatDau") Date ngayBatDau, @Param("ngayKetThuc") Date ngayKetThuc);
+    @Query(value = "   SELECT *\n" +
+            "FROM khuyen_mai k\n" +
+            "WHERE k.ngay_bat_dau >= :ngayBatDau AND k.ngay_ket_thuc <= :ngayKetThuc\n" +
+            "  AND k.deleted = 0", nativeQuery = true)
+    List<KhuyenMai> searchByDate(@Param("ngayBatDau") String ngayBatDau, @Param("ngayKetThuc") String ngayKetThuc);
 }

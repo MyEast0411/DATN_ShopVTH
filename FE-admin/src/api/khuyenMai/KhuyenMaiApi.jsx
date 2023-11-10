@@ -38,7 +38,7 @@ export const addKhuyenMai = async (khuyenMai, selectedMaCTSP) => {
 export const searchByDate = async (ngayBatDau, ngayKetThuc) => {
   try {
     const response = await axios.get(
-      `${API_BASE_URL}/khuyen-mai/add/${ngayBatDau}/${ngayKetThuc}`
+      `${API_BASE_URL}/khuyen-mai/searchByDate/${ngayBatDau}/${ngayKetThuc}`
     );
     return response.data;
   } catch (error) {

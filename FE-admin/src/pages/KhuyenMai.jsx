@@ -8,32 +8,42 @@ import { Input } from "@nextui-org/react";
 import { SearchIcon } from "../common/otherComponents/SearchIcon";
 import { DatePicker, Space } from "antd";
 import { searchByDate } from "../api/khuyenMai/KhuyenMaiApi";
+import { format, parse, parseISO, isValid } from "date-fns";
 
 const { RangePicker } = DatePicker;
 
 const KhuyenMai = () => {
-  const [ngayBatDau, setNgayBatDau] = useState([]);
-  const [ngayKetThuc, setNgayKetThuc] = useState([]);
+  const [ngayBatDau, setNgayBatDau] = useState("");
+  const [ngayKetThuc, setNgayKetThuc] = useState("");
+  
 
-  const onSearch = async () => {
+  // useEffect(
+  //   () => {
+  //     onSearch();
+  //   },
+  //   ngayBatDau,
+  //   ngayKetThuc
+  // );
+
+  const formatToYYYYMMDDHHMM = (dateString) => {
     try {
-      if (dateRange.length === 2) {
-        const [startDate, endDate] = dateRange;
-        const response = await searchByDate(
-          startDate.format(),
-          endDate.format()
-        );
-        console.log(response);
-      }
+      const parsedDate = parse(dateString, "dd-MM-yyyy HH:mm", new Date());
+      return format(parsedDate, "yyyy-MM-dd HH:mm");
     } catch (error) {
-      console.error("Error searching by date:", error);
+      console.error("Invalid date format:", dateString);
+      return "";
     }
   };
-
   const onChangeDatePicker = (value, dateString) => {
-    console.log("Selected Time: ", value);
-    console.log("Formatted Selected Time: ", dateString);
+    const nbd = formatToYYYYMMDDHHMM(dateString[0]);
+    const nkt = formatToYYYYMMDDHHMM(dateString[1]);
+    setNgayBatDau(nbd);
+    setNgayKetThuc(nkt);
+    // console.log("Ngay bat dau: " + nbd);
+    // console.log("Ngay ket thuc: " + nkt);
+
   };
+
   return (
     <>
       <div className="mb-2  border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
@@ -61,11 +71,11 @@ const KhuyenMai = () => {
           }}
         >
           <Input
-            className=""
-            isClearable
             style={{
               width: "100%",
             }}
+            className=""
+            isClearable
             radius="lg"
             placeholder="Tìm kiếm bất kỳ..."
             startContent={
@@ -123,7 +133,7 @@ const KhuyenMai = () => {
           }}
         >
           <div>
-            <TableAllKhuyenMai />
+            <TableAllKhuyenMai nbd={ngayBatDau} nkt={ngayKetThuc} />
           </div>
         </div>
       </div>
