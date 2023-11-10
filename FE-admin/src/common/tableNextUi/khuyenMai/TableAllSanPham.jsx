@@ -59,7 +59,7 @@ const statusColorMap = {
 statusColorMap["Đang bán"] = "success";
 statusColorMap["Ngừng bán"] = "danger";
 
-const INITIAL_VISIBLE_COLUMNS = ["stt", "ma", "ten", "trangThai", "hanhDong"];
+const INITIAL_VISIBLE_COLUMNS = ["stt", "ma", "ten", "trangThai","soLuongTon", "hanhDong"];
 
 export default function TableAllSanPham({ onSelectedMaValuesChange }) {
   const [filterValue, setFilterValue] = React.useState("");

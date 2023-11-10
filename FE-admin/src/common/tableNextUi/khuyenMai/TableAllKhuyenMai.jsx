@@ -17,6 +17,7 @@ import {
   Tooltip,
   getKeyValue,
   Pagination,
+  Switch,
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -46,10 +47,12 @@ import {
   faPencilAlt,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons"; // Import the FontAwesome icons
+import axios from "axios";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
+  { name: "id", uid: "id", sortable: true },
   { name: "Mã", uid: "ma", sortable: true },
   { name: "Tên", uid: "ten", sortable: true },
   { name: "Giá trị giảm (%)", uid: "giaTriPhanTram", sortable: true },
@@ -84,6 +87,7 @@ statusColorMap["Chưa diễn ra"] = "primary";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
+  // "id",
   "ma",
   "ten",
   "giaTriPhanTram",
@@ -164,27 +168,26 @@ export default function App() {
   const [page, setPage] = React.useState(1);
   const [khuyenMais, setKhuyenMais] = useState([]);
 
-  useEffect(() => {
-    async function fetchKhuyenMais() {
-      try {
-        const data = await getAllKhuyenMai();
-        const khuyenMaisFormatted = data.map((khuyenMai, index) => ({
-          ...khuyenMai,
-          stt: index + 1,
-          ngayBatDau: format(
-            new Date(khuyenMai.ngayBatDau),
-            "dd-MM-yyyy HH:mm"
-          ),
-          ngayKetThuc: format(
-            new Date(khuyenMai.ngayKetThuc),
-            "dd-MM-yyyy HH:mm"
-          ),
-        }));
-        setKhuyenMais(khuyenMaisFormatted);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
+  async function fetchKhuyenMais() {
+    try {
+      const data = await getAllKhuyenMai();
+      const khuyenMaisFormatted = data.map((khuyenMai, index) => ({
+        ...khuyenMai,
+        id: khuyenMai.id,
+        stt: index + 1,
+        ngayBatDau: format(new Date(khuyenMai.ngayBatDau), "dd-MM-yyyy HH:mm"),
+        ngayKetThuc: format(
+          new Date(khuyenMai.ngayKetThuc),
+          "dd-MM-yyyy HH:mm"
+        ),
+      }));
+      setKhuyenMais(khuyenMaisFormatted);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
     }
+  }
+
+  useEffect(() => {
     fetchKhuyenMais();
   }, [khuyenMais]);
 
@@ -238,48 +241,77 @@ export default function App() {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((khuyenMai, columnKey) => {
-    const cellValue = khuyenMai[columnKey];
+  const [isSelected, setIsSelected] = React.useState(true);
 
-    switch (columnKey) {
-      case "trangThai":
-        return (
-          <Chip
-            // className="capitalize"
-            color={statusColorMap[khuyenMai.trangThai]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "hanhDong":
-        return (
-          <div className="relative flex items-center gap-2">
-            <Tooltip content="Xem">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
-            </Tooltip>
-            <Tooltip content="Chỉnh sửa">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <Link to={`/them-khuyen-mai/${khuyenMai.id}`}>
-                  <EditIcon />
-                </Link>
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="Xóa">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon onClick={() => handleDelete(khuyenMai.id)} />
-              </span>
-            </Tooltip>
-          </div>
-        );
+  const renderCell = React.useCallback(
+    (khuyenMai, columnKey) => {
+      const cellValue = khuyenMai[columnKey];
 
-      default:
-        return cellValue;
-    }
-  }, []);
+      switch (columnKey) {
+        case "trangThai":
+          return (
+            <Chip
+              // className="capitalize"
+              color={statusColorMap[khuyenMai.trangThai]}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue}
+            </Chip>
+          );
+        case "hanhDong":
+          return (
+            <div className="relative flex items-center gap-2">
+              <Tooltip content="Xem" showArrow={true}>
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Tooltip>
+              <Tooltip content="Chỉnh sửa" showArrow={true}>
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <Link to={`/them-khuyen-mai/${khuyenMai.id}`}>
+                    <EditIcon />
+                  </Link>
+                </span>
+              </Tooltip>
+              <Tooltip color="danger" content="Xóa" showArrow={true}>
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <DeleteIcon onClick={() => handleDelete(khuyenMai.id)} />
+                </span>
+              </Tooltip>
+              {khuyenMai.trangThai === "Đang diễn ra" && (
+                <Tooltip
+                  showArrow={true}
+                  content={isSelected ? "Tắt khuyến mại" : "Bật khuyến mại"}
+                >
+                  <span className="text-lg inline-block  text-danger cursor-pointer active:opacity-50">
+                    <Switch
+                      defaultSelected
+                      size="sm"
+                      color="success"
+                      className="inline-block"
+                      checked={isSelected}
+                      onChange={async () => {
+                        setIsSelected(!isSelected);
+                        await axios.put(
+                          `http://localhost:8080/khuyen-mai/batTatKhuyenMai/${khuyenMai.id}/${isSelected}`,khuyenMai
+                        ).then((response) => {
+                          fetchKhuyenMais();
+                        });
+                      }}
+                    />
+                  </span>
+                </Tooltip>
+              )}
+            </div>
+          );
+
+        default:
+          return cellValue;
+      }
+    },
+    [isSelected]
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {

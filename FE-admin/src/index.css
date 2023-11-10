@@ -106,3 +106,16 @@ input[type="number"] {
 }
 
 /* ToolTip */
+.discount-tag {
+  position: absolute;
+  display: inline-block;
+  top: 0;
+  right: 45%;
+  z-index: 10;
+  background-color: red;
+  color: white;
+  padding: 2px 5px;
+  font-size: 12px;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+}

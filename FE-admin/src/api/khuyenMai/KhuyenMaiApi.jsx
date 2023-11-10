@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8080";
 
-// Get all
+// Get all khuyen mai
 export const getAllKhuyenMai = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/khuyen-mai`);
@@ -11,18 +11,30 @@ export const getAllKhuyenMai = async () => {
     throw error;
   }
 };
+
+
+// Get all khuyen mai san pham chi tiet
+export const getAllKMSPCT = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/khuyen-mai/getAllKMSPCT`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 // add
-export const addKhuyenMai = async (khuyenMai) => {
+export const addKhuyenMai = async (khuyenMai, selectedMaCTSP) => {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/khuyen-mai/add`,
-      khuyenMai
+      `${API_BASE_URL}/khuyen-mai/add/${selectedMaCTSP}`,
+      khuyenMai 
     );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
+
 // get by id
 export const getKhuyenMaiById = async (id) => {
   try {

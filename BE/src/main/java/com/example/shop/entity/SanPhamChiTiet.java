@@ -90,4 +90,10 @@ public class SanPhamChiTiet implements Serializable {
     @ManyToOne
     @JoinColumn(name = "id_nhan_hieu")
     private NhanHieu id_nhan_hieu;
+
+    //-----------Hội------------------
+//    @Column(name = "is_on_sale", nullable = false)
+//    private boolean isOnSale = false; // Default value is false
+
+    // -----------Hội------------------
 }
