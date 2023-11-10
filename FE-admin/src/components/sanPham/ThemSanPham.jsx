@@ -214,7 +214,7 @@ export default function ThemSanPham() {
       render: (text, record) => (
         <InputNumber
           value={record.giaBan}
-          onChange={(value) => handleGiaBanChange(record.key, value)}
+          onChange={(value) => handleGiaBanChange(record.id, value,record.giaBan)}
         />
       ),
     },
@@ -366,7 +366,7 @@ export default function ThemSanPham() {
     defaultPageSize: 5
   };
 
-  const handleSoLuongChange = (key, value,mauSac) => {
+  const handleSoLuongChange = (key, value) => {
     let index = key - 1;
     // console.log(key + "  " + value);
     // tables[mauSac][index].soLuongTon = value;
@@ -378,12 +378,13 @@ export default function ThemSanPham() {
   };
   
   const handleGiaBanChange = (key, value) => {
-    const updatedData = dataSource.map((item) => {
-      if (item.key === key) {
-        return { ...item, giaBan: value };
-      }
-      return item;
-    });
+    let index = key - 1;
+    console.log(key + "  " + value);
+    const updatedTableData = [...tableData];
+    console.log(updatedTableData);
+    updatedTableData[index].giaBan = value;
+    setTableData(updatedTableData);
+    console.log(tableData);
   };
   
 // -------------------------end table data-------------------------
@@ -550,7 +551,7 @@ export default function ThemSanPham() {
           khoiLuong: 1,
           moTa: sanPham.moTa,
           giaNhap: "100,000",
-          giaBan: "200,000",
+          // giaBan: "200,000",
           id_mau_sac: mau,
           id_kich_co: kichCo,
           id_thuong_hieu: sanPham.id_thuong_hieu,
@@ -576,7 +577,7 @@ export default function ThemSanPham() {
         khoiLuong: 1,
         moTa: sanPham.moTa,
         giaNhap: "100,000",
-        giaBan: "200,000",
+        // giaBan: "200,000",
         id_mau_sac: mau,
         id_kich_co: kichCo,
         id_thuong_hieu: sanPham.id_thuong_hieu,

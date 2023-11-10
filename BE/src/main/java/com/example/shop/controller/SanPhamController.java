@@ -175,7 +175,7 @@ public class SanPhamController {
             x.setTen((String) row[1]);
             x.setSoLuongTon((Integer) row[3]);
             x.setMoTa((String) row[5]);
-            x.setGiaBan(BigDecimal.valueOf(Double.parseDouble(row[7].toString().replace(",", ""))));
+            x.setGiaBan(BigDecimal.valueOf(Double.parseDouble(row[7].toString())));
             x.setId_mau_sac((String) row[8]);
             x.setId_kich_co((String) row[9]);
             x.setId_thuong_hieu((String) row[10]);
