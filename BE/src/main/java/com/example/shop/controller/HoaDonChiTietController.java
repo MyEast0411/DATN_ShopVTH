@@ -37,8 +37,8 @@ public class HoaDonChiTietController {
             @PathVariable("idHD") String idHD,
             @PathVariable("idSPCT") String idSPCT
     ){
-        System.out.println(idSPCT);
-        System.out.println(idHD);
+//        System.out.println(idSPCT);
+//        System.out.println(idHD);
 //        Boolean kq = true;
         try {
             serviceHDCT.deleteHDCT(idHD , idSPCT);

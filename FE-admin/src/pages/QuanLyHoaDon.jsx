@@ -55,7 +55,7 @@ export default function QuanLyHoaDon() {
             className="flex gap-4 m-10"
             style={{
               width: "100%",
-             
+              alignItems: "center",
             }}
           >
             <label
@@ -88,7 +88,10 @@ export default function QuanLyHoaDon() {
             </div>
           </div>
 
-          <div className="flex gap-4 m-10">
+          <div className="flex gap-4 m-10" style={{
+            width: "100%",
+             alignItems: "center",
+          }}>
             <label
               htmlFor="phone"
               className="block text-sm font-medium text-gray-900 "

@@ -97,7 +97,7 @@ public class HoaDonController {
             Boolean kq = hoaDonService.deleteHoaDon(hoaDon);
             mess = kq? "Delete success":"Delete fail";
         }
-        System.out.println(mess);
+//        System.out.println(mess);
         return new ResponseEntity(mess , HttpStatus.OK);
     }
 }

@@ -131,7 +131,7 @@ const KhuyenMai = () => {
           }}
         >
           <div>
-            <TableAllKhuyenMai nbd={ngayBatDau} nkt={ngayKetThuc} />
+            <TableAllKhuyenMai nbd={ngayBatDau} nkt={ngayKetThuc} searchValue={searchValue}/>
           </div>
         </div>
       </div>
