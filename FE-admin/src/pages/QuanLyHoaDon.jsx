@@ -88,10 +88,13 @@ export default function QuanLyHoaDon() {
             </div>
           </div>
 
-          <div className="flex gap-4 m-10" style={{
-            width: "100%",
-             alignItems: "center",
-          }}>
+          <div
+            className="flex gap-4 m-10"
+            style={{
+              width: "100%",
+              alignItems: "center",
+            }}
+          >
             <label
               htmlFor="phone"
               className="block text-sm font-medium text-gray-900 "
@@ -119,7 +122,6 @@ export default function QuanLyHoaDon() {
           </div>
 
           <div class="flex justify-center mx-auto gap-10">
-            
             <div>
               <Button
                 type="primary"

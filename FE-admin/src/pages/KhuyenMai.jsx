@@ -6,10 +6,10 @@ import { AiOutlineFilter } from "react-icons/ai";
 import TableAllKhuyenMai from "../common/tableNextUi/khuyenMai/TableAllKhuyenMai";
 import { Input } from "@nextui-org/react";
 import { SearchIcon } from "../common/otherComponents/SearchIcon";
-import { DatePicker, Space } from "antd";
 import { searchByDate } from "../api/khuyenMai/KhuyenMaiApi";
 import { format, parse, parseISO, isValid } from "date-fns";
 
+import { DatePicker, Space } from "antd";
 const { RangePicker } = DatePicker;
 
 const KhuyenMai = () => {

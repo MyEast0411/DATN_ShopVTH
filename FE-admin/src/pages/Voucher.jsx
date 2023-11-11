@@ -3,15 +3,16 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import React from "react";
 import { Button, Select, Option, Input } from "@material-tailwind/react";
-// import { TableCell } from "@mui/material";
 import Switch from "@mui/material/Switch";
-import { Tooltip, Tag, Modal, Spin } from "antd";
+import { Tooltip, Tag, Modal, Spin, Button as ButtonAnt } from "antd";
 import { format } from "date-fns";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { HiOutlineClipboardList } from "react-icons/hi";
+import { AiOutlineFilter } from "react-icons/ai";
+
 import { BsEye, BsTrash } from "react-icons/bs";
 const url = "http://localhost:8080/voucher/";
 
@@ -234,114 +235,178 @@ export default function Voucher() {
       {loading ? (
         <div className="relative">
           <div className="absolute top-50 start-50 translate-middle">
-          <Spinner color="white" size="sm" />
+            <Spinner color="white" size="sm" />
           </div>
         </div>
       ) : (
         <>
+          <div className="mb-2  border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
+            <AiOutlineFilter />
+            <p className="ml-2 mt-1"> Bộ lọc</p>
+          </div>
           <div
-            className="bg-white"
+            className="font-normal border-gray-500 text-lg mb-5 gap-10"
             style={{
-              fontSizfe: "8px",
-              paddingLeft: 10,
-              boxShadow: "0px 0px 3px 0px",
-              borderRadius: "5px",
+              backgroundColor: "white",
+              padding: "10px",
+              borderRadius: "8px",
+              width: "100%",
+              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+              transition: "transform 0.2s",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            <div class="container space-y-5 bg-white rounded-lg p-4 pt-5 mb-6">
-              <div className="filter">
-                <div className="header">
-                  <p className="text-2xl font-bold ">Bộ lọc</p>
-                  <hr />
+            <div
+              className="flex gap-4 flex-wrap m-3"
+              style={{
+                width: "100%",
+                alignItems: "center",
+                // justifyContent: "center",
+              }}
+            >
+              {" "}
+              <label
+                htmlFor="phone"
+                className="text-sm font-medium text-gray-900"
+                style={{
+                  display: "inline-block",
+                  justifyContent: "center",
+                }}
+              >
+                Tìm kiếm
+              </label>
+              <div class="w-2/6 ">
+                <Input label="Tìm kiếm bất kỳ" />
+              </div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-900"
+                style={{
+                  display: "inline-block",
+                }}
+              >
+                Loại
+              </label>
+              <div class="w-2/6 ">
+                <Select variant="outlined" label="Trạng Thái">
+                  <Option>Kích Hoạt </Option>
+                  <Option>Chưa Kích Hoat</Option>
+                </Select>
+              </div>
+              <div
+                className="flex gap-4 my-5"
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                }}
+              >
+                <label
+                  htmlFor="phone"
+                  className="text-sm font-medium text-gray-900 "
+                  style={{
+                    display: "inline-block",
+                  }}
+                >
+                  Ngày bắt đầu
+                </label>
+                <div class="w-2/6 ">
+                  <Input type="date" label="Ngày Bắt Đầu" />
                 </div>
-                <div className="body m-10">
-                  <form>
-                    <div class="flex ... gap-10 mb-10">
-                      <div class="w-1/6 ... font-medium text-s">Tìm kiếm</div>
-                      <div class="w-2/6 ...">
-                        <Input label="Tìm kiếm ..." />
-                      </div>
-                      <div class="w-1/6 ... font-medium text-s">Loại </div>
-                      <div class="w-2/6 ...">
-                        <Select variant="outlined" label="Trạng Thái">
-                          <Option>Kích Hoạt </Option>
-                          <Option>Chưa Kích Hoat</Option>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div class="flex ... gap-10 mb-10">
-                      <div class="w-1/6 ... font-medium text-s">
-                        Ngày Bắt Đầu
-                      </div>
-                      <div class="w-2/6 ...">
-                        <Input type="date" />
-                      </div>
-                      <div class="w-1/6 ... font-medium text-s">
-                        Ngày Kết Thúc
-                      </div>
-                      <div class="w-2/6 ...">
-                        <Input type="date" />
-                      </div>
-                    </div>
-
-                    <div class="flex ... gap-10 mb-10">
-                      <div class="w-1/6 ... font-medium text-s">
-                        Mệnh Giá Từ
-                      </div>
-                      <div class="w-2/6 ...">
-                        <Input
-                          onChange={(e) => handleChangeValue(e)}
-                          value={moneyFrom}
-                          onClick={(e) => handleClick(e)}
-                          label=" Mệnh Giá Từ"
-                          // onMouseLeave={(e) => {
-                          //   setMoneyFrom(
-                          //     `${Intl.NumberFormat().format(e.target.value)} ₫`
-                          //   );
-                          // }}
-                        />
-                      </div>
-                      <div class="w-1/6 ... font-medium text-s">
-                        Mệnh Giá Đến
-                      </div>
-                      <div class="w-2/6 ...">
-                        <Input label="Mệnh Giá Đến" />
-                      </div>
-                    </div>
-
-                    <div class="flex justify-center ...  gap-10">
-                      <div>
-                        <Button style={{ backgroundColor: "blue" }}>
-                          Tìm kiếm
-                        </Button>
-                      </div>
-                      <div>
-                        <Button style={{ backgroundColor: "red" }} type="reset">
-                          Làm Mới
-                        </Button>
-                      </div>
-                    </div>
-                  </form>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-900 "
+                  style={{
+                    display: "inline-block",
+                  }}
+                >
+                  Ngày kết thúc
+                </label>
+                <div class="w-2/6">
+                  <Input type="date" label="Ngày Kết Thúc" />
+                </div>
+              </div>
+              <div class="flex gap-10 mb-10">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-900"
+                  style={{
+                    display: "inline-block",
+                  }}
+                >
+                  Mệnh giá từ
+                </label>
+                <div class="w-2/6 ">
+                  <Input
+                    onChange={(e) => handleChangeValue(e)}
+                    value={moneyFrom}
+                    onClick={(e) => handleClick(e)}
+                    label=" Mệnh Giá Từ"
+                    // onMouseLeave={(e) => {
+                    //   setMoneyFrom(
+                    //     `${Intl.NumberFormat().format(e.target.value)} ₫`
+                    //   );
+                    // }}
+                  />
+                </div>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-900"
+                  style={{
+                    display: "inline-block",
+                  }}
+                >
+                  Mệnh giá đến
+                </label>
+                <div class="w-2/6 ">
+                  <Input label="Mệnh Giá Đến" />
                 </div>
               </div>
             </div>
+
+            <div class="bg-white rounded-lg ">
+              <div class="flex justify-center gap-10">
+                <ButtonAnt
+                  type="primary"
+                  style={{
+                    backgroundColor: "#1976d2",
+                    marginBottom: "2px",
+                  }}
+                >
+                  Làm mới
+                </ButtonAnt>
+              </div>
+            </div>
+          </div>
+          <div className="mb-2  border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
+            <HiOutlineClipboardList />
+            <p className="ml-2 mt-1"> Danh sách voucher</p>
+            <Link to={"/"} className="absolute right-0 mb-1">
+              <ButtonAnt
+                type="primary"
+                style={{
+                  backgroundColor: "#1976d2",
+                  marginBottom: "2px",
+                }}
+              >
+                + Tạo voucher
+              </ButtonAnt>
+            </Link>
           </div>
           <div
-            className="bg-white pt-3"
+            className="font-normal border-gray-500 text-lg mb-5 gap-4"
             style={{
-              fontSizfe: "8px",
-              paddingLeft: 10,
-              paddingRight: 10,
-              boxShadow: "0px 0px 3px 0px",
-              borderRadius: "5px",
+              backgroundColor: "white",
+              padding: "10px",
+              borderRadius: "8px",
+              width: "100%",
+              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+              transition: "transform 0.2s",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
             <div className="mb-5 pb-5 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
-              <div className="flex items-center">
-                <HiOutlineClipboardList />
-                <p className="ml-2 mt-1"> Danh sách</p>
-              </div>
               <div className="row">
                 <Button
                   type="primary"
