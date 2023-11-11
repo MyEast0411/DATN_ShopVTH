@@ -271,7 +271,9 @@ export default function DetailHoaDon() {
           </div>
           <div className="row button-contact p-4 grid grid-cols-2">
             <div className="row ">
-              {currentTimeLine < 5 && info.loaiHd === 0 ? (
+              {currentTimeLine < 5 &&
+              info.loaiHd === 0 &&
+              info.trangThai != 6 ? (
                 <Button
                   className="me-4"
                   color="blue"

@@ -104,8 +104,6 @@ export default function TableCommon({ data }) {
                 </span>
               </Link>
             </Tooltip>
-
-           
           </div>
         );
       default:
@@ -177,20 +175,20 @@ const columns = [
 ];
 
 const GetTrangThai = ({ tinhTrang }) => {
-  if (tinhTrang == 1)
+  if (tinhTrang == 0)
     return (
       <Tag color="#8e008e">
         <span className=" text-sm ">Chờ Xác Nhận</span>
       </Tag>
     );
-  if (tinhTrang == 2)
+  if (tinhTrang == 1)
     return (
       <Tag color="#ff8e00">
         {" "}
         <span className=" text-sm ">Xác Nhận</span>
       </Tag>
     );
-  if (tinhTrang == 0)
+  if (tinhTrang == 2)
     return (
       <Tag color="#C8D52D">
         {" "}

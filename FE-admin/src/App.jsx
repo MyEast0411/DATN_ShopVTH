@@ -45,7 +45,7 @@ const App = () => {
           <Route path="/eidt-voucher/:id" element={<EditVoucher />} />
           <Route path="/detail-voucher/:id" element={<DetailVoucher />} />
 
-          <Route path="/voucher" element={<Voucher />} />
+          <Route path="/giam-gia/voucher" element={<Voucher />} />
           <Route path="/detail-hoa-don/:id" element={<DetailHoaDon />} />
 
           <Route path="/quan-ly-san-pham" element={<Build />}>
