@@ -175,18 +175,12 @@ public class VoucherController {
         SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         List<Voucher> vouchers = voucherService.voucherByNgayKT();
-        System.out.println(vouchers);
-
         for (Voucher voucher: voucherService.getVouchers()
         ) {
-
             if (sdf3.format(timestamp).equals(sdf3.format(voucher.getNgayKetThuc()))){
                voucher.setTrangThai(0);
                 voucherService.updateVoucher(voucher);
-
             }
-
         }
-
     }
 }
