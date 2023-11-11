@@ -103,7 +103,6 @@ export default function TableCommon({ data }) {
             isCompact
             showControls
             showShadow
-            color="success"
             page={page}
             total={pages}
             onChange={(page) => setPage(page)}

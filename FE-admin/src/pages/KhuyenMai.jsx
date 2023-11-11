@@ -15,7 +15,6 @@ const { RangePicker } = DatePicker;
 const KhuyenMai = () => {
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
-  
 
   // useEffect(
   //   () => {
@@ -41,7 +40,6 @@ const KhuyenMai = () => {
     setNgayKetThuc(nkt);
     // console.log("Ngay bat dau: " + nbd);
     // console.log("Ngay ket thuc: " + nkt);
-
   };
 
   return (
