@@ -15,6 +15,7 @@ const { RangePicker } = DatePicker;
 const KhuyenMai = () => {
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
+  const [search, setSearch] = useState("");
 
   // useEffect(
   //   () => {
@@ -42,6 +43,13 @@ const KhuyenMai = () => {
     // console.log("Ngay ket thuc: " + nkt);
   };
 
+  const onSearchChange = React.useCallback((value) => {
+    if (value) {
+      setSearch(value);
+    } else {
+      setSearch("");
+    }
+  }, []);
   return (
     <>
       <div className="mb-2  border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
@@ -74,6 +82,8 @@ const KhuyenMai = () => {
             }}
             className=""
             isClearable
+            value={search}
+            onValueChange={onSearchChange}
             radius="lg"
             placeholder="Tìm kiếm bất kỳ..."
             startContent={
@@ -131,7 +141,7 @@ const KhuyenMai = () => {
           }}
         >
           <div>
-            <TableAllKhuyenMai nbd={ngayBatDau} nkt={ngayKetThuc} />
+            <TableAllKhuyenMai nbd={ngayBatDau} nkt={ngayKetThuc} search={search}/>
           </div>
         </div>
       </div>

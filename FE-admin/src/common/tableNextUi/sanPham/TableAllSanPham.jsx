@@ -182,7 +182,6 @@ export default function App() {
 
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
-
     switch (columnKey) {
       case "trangThai":
         return (

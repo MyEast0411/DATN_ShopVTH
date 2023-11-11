@@ -697,7 +697,7 @@ export default function ThemSanPham() {
       <div className="mx-5 md:mx-12">
         <form onSubmit={(e) => onSubmit(e)}>
           <div className="space-y-12">
-            <div className="border-b border-gray-900/10 pb-12">
+            <div className="border-b border-gray-900/10 pb-5">
               <h2 className="text-base font-semibold leading-7 text-gray-900">
                 Thêm mới sản phẩm
               </h2>
@@ -705,14 +705,24 @@ export default function ThemSanPham() {
                 Điền thông tin chi tiết sản phẩm
               </p>
 
+              <div
+                className="grid drop-shadow-lg grid-cols-1"
+                style={{
+                  fontSizfe: "8px",
+                  backgroundColor: "white",
+                  padding: "20px 10px",
+                  borderRadius: "8px",
+                }}
+              >
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="sm:col-span-4">
+                <div className="sm:col-span-4 ml-6">
                   <label
                     htmlFor="username"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
                     Tên sản phẩm
                   </label>
+                  
                   <div className="mt-2">
                     <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                       <input
@@ -723,10 +733,22 @@ export default function ThemSanPham() {
                         placeholder="Nhập tên sản phẩm"
                         onChange={(e) => onChange(e)}
                       />
+                      <div className="p-2" style={{
+                      backgroundColor: "#00C5CD",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                      marginRight : "-40px"
+                      }}>
+                        <AiOutlinePlus />
+                      </div>
                     </div>
+                    
                   </div>
+                  
                 </div>
-                <div className="col-span-full">
+                
+                <div className="col-span-full ml-6">
                   <label
                     htmlFor="about"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -743,14 +765,29 @@ export default function ThemSanPham() {
                       onChange={(e) => onChange(e)}
                     />
                   </div>
+                  
                   <p className="mt-3 text-sm leading-6 text-gray-600"></p>
                 </div>
               </div>
+              </div>
+              <h2 className="text-base font-semibold leading-7 mt-10 text-gray-900">
+                Thêm các thuộc tính sản phẩm
+              </h2>
             </div>
 
             <div className="border-b border-gray-900/10 pb-12">
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="sm:col-span-3">
+              
+              <div
+                className="grid drop-shadow-lg grid-cols-1"
+                style={{
+                  fontSizfe: "8px",
+                  backgroundColor: "white",
+                  padding: "20px 10px",
+                  borderRadius: "8px",
+                }}
+              >
+              <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div className="sm:col-span-3 ml-6">
                   <label
                     htmlFor="country"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -787,7 +824,7 @@ export default function ThemSanPham() {
                   </div>
                 </div>
 
-                <div className="sm:col-span-3">
+                <div className="sm:col-span-3 ml-6">
                   <label
                     htmlFor="country"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -820,7 +857,7 @@ export default function ThemSanPham() {
                   </div>
                 </div>
 
-                <div className="sm:col-span-3">
+                <div className="sm:col-span-3 ml-6">
                   <label
                     htmlFor="chatLieu"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -854,7 +891,7 @@ export default function ThemSanPham() {
                     </div>
                   </div>
                 </div>
-                <div className="sm:col-span-3">
+                <div className="sm:col-span-3 ml-6">
                   <label
                     htmlFor="deGiay"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -914,7 +951,7 @@ export default function ThemSanPham() {
                     
                   </div>
                 </div>
-                <div className="sm:col-span-3">
+                <div className="sm:col-span-3 ml-6">
                   <label
                     htmlFor="country"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -1027,7 +1064,7 @@ export default function ThemSanPham() {
                   </div>
                 </div>
 
-                <div className="sm:col-span-3">
+                <div className="sm:col-span-3 ml-6">
                   <label
                     htmlFor="country"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -1170,6 +1207,7 @@ export default function ThemSanPham() {
                     </Modal>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
           </div>

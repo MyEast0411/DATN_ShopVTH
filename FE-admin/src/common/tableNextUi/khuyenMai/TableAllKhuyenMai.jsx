@@ -99,8 +99,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function TableAllKhuyenMai({ nbd, nkt }) {
-  console.log("nbd: " + nbd, "nkt: " + nkt);
+export default function TableAllKhuyenMai({ nbd, nkt, search }) {
+  console.log(search);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -144,7 +144,6 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
         .then((response) => {
           console.log(`Delete successful for row ID: ${idToDelete}`);
           toast("🎉 Xóa thành công");
-          // Remove the deleted item from the state
           setKhuyenMais((prevKhuyenMais) =>
             prevKhuyenMais.filter((item) => item.id !== idToDelete)
           );
@@ -153,7 +152,7 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
           console.error(`Error deleting record for ID: ${idToDelete}`, error);
         });
 
-      cancelDelete(); // Close the dialog after deletion
+      cancelDelete();
     }
   };
 
@@ -173,24 +172,23 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
 
   async function fetchKhuyenMais() {
     try {
-      // const dataSearch = await searchByDate(nbd, nkt);
-
-      // if (nbd && nkt) {
-      //   const khuyenMaisFormatted = dataSearch.map((khuyenMai, index) => ({
-      //     ...khuyenMai,
-      //     id: khuyenMai.id,
-      //     stt: index + 1,
-      //     ngayBatDau: format(
-      //       new Date(khuyenMai.ngayBatDau),
-      //       "dd-MM-yyyy HH:mm"
-      //     ),
-      //     ngayKetThuc: format(
-      //       new Date(khuyenMai.ngayKetThuc),
-      //       "dd-MM-yyyy HH:mm"
-      //     ),
-      //   }));
-      //   setKhuyenMais(khuyenMaisFormatted);
-      // } else {
+      if (nbd != '' && nkt != '') {
+        const dataSearch = await searchByDate(nbd, nkt);
+        const khuyenMaisFormatted = dataSearch.map((khuyenMai, index) => ({
+          ...khuyenMai,
+          id: khuyenMai.id,
+          stt: index + 1,
+          ngayBatDau: format(
+            new Date(khuyenMai.ngayBatDau),
+            "dd-MM-yyyy HH:mm"
+          ),
+          ngayKetThuc: format(
+            new Date(khuyenMai.ngayKetThuc),
+            "dd-MM-yyyy HH:mm"
+          ),
+        }));
+        setKhuyenMais(khuyenMaisFormatted);
+      } else {
         const data = await getAllKhuyenMai();
         const khuyenMaisFormatted = data.map((khuyenMai, index) => ({
           ...khuyenMai,
@@ -206,7 +204,7 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
           ),
         }));
         setKhuyenMais(khuyenMaisFormatted);
-      // }
+       }
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
@@ -215,10 +213,9 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
   useEffect(
     () => {
       fetchKhuyenMais();
+      setFilterValue(search);
     },
-    [khuyenMais],
-    nbd,
-    nkt
+    [khuyenMais,nbd,nkt,search]
   );
 
   const hasSearchFilter = Boolean(filterValue);
