@@ -9,12 +9,13 @@ import {
   TableRow,
   TableCell,
   Pagination,
+  Tooltip,
 } from "@nextui-org/react";
 
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
-import { BsEye } from "react-icons/bs";
-import { Tooltip, Tag } from "antd";
+import { EyeIcon } from "../../common/otherComponents/EyeIcon";
+import { Tag } from "antd";
 
 // const items = [
 //   `Chờ xác nhận`,
@@ -25,6 +26,28 @@ import { Tooltip, Tag } from "antd";
 //   `Hoàn Thành`,
 //   `Hủy`,
 // ];
+const statusOptions = [
+  // { name: "Chờ xác nhận", uid: "Chờ xác nhận" },
+  // { name: "Xác Nhận", uid: "Xác Nhận" },
+  // { name: "Chờ Vận Chuyển", uid: "Chờ Vận Chuyển" },
+  // { name: "Vận Chuyển", uid: "Vận Chuyển" },
+  // { name: "Vận Chuyển", uid: "Vận Chuyển" },
+  // { name: "Thanh Toán", uid: "Thanh Toán" },
+  // { name: "Hoàn Thành", uid: "Hoàn Thành" },
+  // { name: "Hủy", uid: "Hủy" },
+  { name: "Online", uid: "Online" },
+];
+const statusColorMap = {
+  active: "success",
+  paused: "danger",
+  incoming: "warning",
+  notStarted: "primary",
+};
+statusColorMap["Sắp diễn ra"] = "warning";
+statusColorMap["Online"] = "success";
+statusColorMap["Đã kết thúc"] = "danger";
+statusColorMap["Chưa diễn ra"] = "primary";
+statusColorMap["Đã dừng"] = "danger";
 
 export default function TableCommon({ data }) {
   const [page, setPage] = useState(1);
@@ -71,21 +94,18 @@ export default function TableCommon({ data }) {
       case "actions":
         return (
           <div className="flex justify-center">
-            <Tooltip title="Xem chi tiết" color="green">
+            <Tooltip content="Xem chi tiết" showArrow={true}>
               <Link
                 to={`/detail-hoa-don/${user.ids}`}
                 className="button-link group relative"
               >
-                <BsEye
-                  description="Chi tiết"
-                  className="cursor-pointer text-xl blue-hover mr-4"
-                  style={{ color: "green" }}
-                />
-                {/* <div className="text invisible group-hover:visible absolute -top-2 left-16 border border-gray-500 p-2">
-              Chỉnh sửa
-            </div> */}
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
               </Link>
             </Tooltip>
+
+           
           </div>
         );
       default:

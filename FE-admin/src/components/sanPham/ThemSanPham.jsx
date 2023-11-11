@@ -6,7 +6,7 @@ import { InputNumber } from "antd";
 import { TableCell } from "@mui/material";
 import ReactLoading from "react-loading";
 import {
-  Button as ButtonMaterial, 
+  Button as ButtonMaterial,
   Dialog,
   DialogActions,
   DialogContent,
@@ -16,11 +16,10 @@ import {
 //icon
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdDeleteOutline } from "react-icons/md";
-import { Button, Modal, Table, Tooltip} from "antd";
-import { Table as TableImg} from "antd";
+import { Button, Modal, Table, Tooltip } from "antd";
+import { Table as TableImg } from "antd";
 import Badge from "@mui/material/Badge";
 import { PlusIcon } from "../../common/otherComponents/PlusIcon";
-
 
 export default function ThemSanPham() {
   let navigate = useNavigate();
@@ -44,9 +43,9 @@ export default function ThemSanPham() {
   const [checkboxStates, setCheckboxStates] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const customText = {
-    emptyText: 'Không có hình ảnh'
+    emptyText: "Không có hình ảnh",
   };
   const [sanPham, setSanPham] = useState({
     ma: "",
@@ -63,26 +62,21 @@ export default function ThemSanPham() {
     id_thuong_hieu: "",
     id_nhan_hieu: "",
   });
-  const [deGiayModal,setDeGiayModal] = useState({
-    tenDeGiay : ""
+  const [deGiayModal, setDeGiayModal] = useState({
+    tenDeGiay: "",
   });
-  const {
-    tenDeGiay
-  } = deGiayModal;
+  const { tenDeGiay } = deGiayModal;
 
-  const [kichCoModal,setKichCoModal] = useState({
-    tenKichCo : ""
+  const [kichCoModal, setKichCoModal] = useState({
+    tenKichCo: "",
   });
 
-  const [hinhAnhModal,setHinhAnhModal] = useState({
-    imgUrl : "",
-    mauSac : ""
+  const [hinhAnhModal, setHinhAnhModal] = useState({
+    imgUrl: "",
+    mauSac: "",
   });
 
-
-  const {
-    tenKichCo
-  } = kichCoModal;
+  const { tenKichCo } = kichCoModal;
 
   const {
     ma,
@@ -98,41 +92,42 @@ export default function ThemSanPham() {
     id_kich_co,
     id_mau_sac,
     id_nhan_hieu,
-    hinhAnh
+    hinhAnh,
   } = sanPham;
 
-  const handleImageChange = async(event) => {
-    
+  const handleImageChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const fileName = file.name;
       setHinhAnhModal({
         imgUrl: fileName,
-        mauSac: selectMau
+        mauSac: selectMau,
       });
       await axios
-      .post("http://localhost:8080/addHinhAnh", {imgUrl : fileName,mauSac : selectMau})
-      .then((response) => {
-        console.log(response.data);
-        if(response.data!=null) {
-          // <Section>
-          //   <Article key={"spin"}>
-          //     <Prop>{"Đang tải ảnh"}</Prop>
-          //   </Article>
-          // </Section>
-        }
-        toast.success(`Thêm thành công`);
-      })
-      .catch((error) => {
-        toast.error(`Thêm thất bại`)
-      });
+        .post("http://localhost:8080/addHinhAnh", {
+          imgUrl: fileName,
+          mauSac: selectMau,
+        })
+        .then((response) => {
+          console.log(response.data);
+          if (response.data != null) {
+            // <Section>
+            //   <Article key={"spin"}>
+            //     <Prop>{"Đang tải ảnh"}</Prop>
+            //   </Article>
+            // </Section>
+          }
+          toast.success(`Thêm thành công`);
+        })
+        .catch((error) => {
+          toast.error(`Thêm thất bại`);
+        });
 
       // await axios.get(`http://localhost:8080/getHinhAnhByMau/${selectMau}`).then((response) => {
       //   setImg(response.data);
       // });
     }
   };
-
 
   const handleAddImageClick = () => {
     const imageInput = document.getElementById("imageInput");
@@ -150,15 +145,26 @@ export default function ThemSanPham() {
 
   const columnImg = [
     {
-      title : "Hình ảnh",
-      dataIndex: 'imageUrl', 
-      key: 'imageUrl',
-      align : "center",
+      title: "Hình ảnh",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      align: "center",
       render: (text, record, index) => {
         return {
           children: (
-            <div key={index} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <img src={record} alt="Hình ảnh" style={{ width: '130px', height: '100px' }} />
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <img
+                src={record}
+                alt="Hình ảnh"
+                style={{ width: "130px", height: "100px" }}
+              />
             </div>
           ),
           props: {
@@ -166,11 +172,11 @@ export default function ThemSanPham() {
             style: {
               justifyContent: "center",
               alignItems: "center",
-            }
-          }
+            },
+          },
         };
       },
-    }
+    },
   ];
   const columns = [
     {
@@ -196,12 +202,15 @@ export default function ThemSanPham() {
       title: "Số lượng",
       dataIndex: "soLuongTon",
       sorter: (a, b) => a.soLuongTon - b.soLuongTon,
-      sortOrder: sortedInfo.columnKey === "soLuongTon" ? sortedInfo.order : null,
+      sortOrder:
+        sortedInfo.columnKey === "soLuongTon" ? sortedInfo.order : null,
       ellipsis: true,
       render: (text, record) => (
         <InputNumber
           value={record.soLuongTon}
-          onChange={(value) => handleSoLuongChange(record.id, value, record.id_mau_sac)}
+          onChange={(value) =>
+            handleSoLuongChange(record.id, value, record.id_mau_sac)
+          }
         />
       ),
     },
@@ -214,7 +223,9 @@ export default function ThemSanPham() {
       render: (text, record) => (
         <InputNumber
           value={record.giaBan}
-          onChange={(value) => handleGiaBanChange(record.id, value,record.giaBan)}
+          onChange={(value) =>
+            handleGiaBanChange(record.id, value, record.giaBan)
+          }
         />
       ),
     },
@@ -227,10 +238,11 @@ export default function ThemSanPham() {
           <div className="group relative">
             <MdDeleteOutline
               className="cursor-pointer text-xl delete-hover relative"
-              onClick={() => {
-              }}
+              onClick={() => {}}
             />
-            <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span>
+            <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">
+              Xóa
+            </span>
           </div>
         </div>
       ),
@@ -242,38 +254,41 @@ export default function ThemSanPham() {
       render: (text, record, index) => {
         return {
           children: (
-            <Tooltip
-              title="Click để thêm ảnh sản phẩm"
-            >
-              <PlusIcon 
-              style={{cursor : "pointer",
-              marginLeft : "100px",
-              marginTop : "-50px",
-              }}
-              onClick={async () => {
-                let tenSP = mauSac.find((x) => x.maMau === record.id_mau_sac)?.ten || '';
-                setSelectMau(tenSP);
-                await axios.get(`http://localhost:8080/getHinhAnhByMau/${tenSP}`).then((response) => {
-                  setLoading(false);
-                  setImg(response.data);
-                });
-                showModalHA();
-              }}
+            <Tooltip title="Click để thêm ảnh sản phẩm">
+              <PlusIcon
+                style={{
+                  cursor: "pointer",
+                  marginLeft: "100px",
+                  marginTop: "-50px",
+                }}
+                onClick={async () => {
+                  let tenSP =
+                    mauSac.find((x) => x.maMau === record.id_mau_sac)?.ten ||
+                    "";
+                  setSelectMau(tenSP);
+                  await axios
+                    .get(`http://localhost:8080/getHinhAnhByMau/${tenSP}`)
+                    .then((response) => {
+                      setLoading(false);
+                      setImg(response.data);
+                    });
+                  showModalHA();
+                }}
               />
               <Modal
-                  title="Thêm hình ảnh"
-                  open={isModalOpenHA}
-                  onOk={handleOkHA}
-                  onCancel={handleCancelHA}
-                  cancelText="Hủy"
-                  okText="Hoàn tất"
-                  style={{ position: "relative", top: "5px", left: "100px" }}
-                  width={800}
-                >
+                title="Thêm hình ảnh"
+                open={isModalOpenHA}
+                onOk={handleOkHA}
+                onCancel={handleCancelHA}
+                cancelText="Hủy"
+                okText="Hoàn tất"
+                style={{ position: "relative", top: "5px", left: "100px" }}
+                width={800}
+              >
                 <div>
                   <label
-                  htmlFor="country"
-                  className="block text-sm font-medium leading-6 text-gray-900"
+                    htmlFor="country"
+                    className="block text-sm font-medium leading-6 text-gray-900"
                   >
                     Tất cả hình ảnh theo : {selectMau}
                   </label>
@@ -290,59 +305,72 @@ export default function ThemSanPham() {
                               checked={selectedImages.includes(x.id)}
                               onChange={(e) => handleCheckboxChange(e, x.id)}
                               className="absolute top-2 right-2 z-10"
-                              
                             />
-                            <img src={x.ten} alt="Load Image" style={{objectFit: "contain"}} className="w-full h-full object-cover"
-                            onClick={() => {
-                              console.log(selectedImages);
-                              if (selectedImages.length >= 3 && !selectedImages.includes(x.id)) {
-                                // Nếu đã chọn nhiều hơn 3 và không phải checkbox đã chọn, hiển thị thông báo lỗi
-                                toast.error("😢 Chỉ được chọn 3 ảnh !");
-                              } else {
-                                  const checkbox = document.getElementById(x.id);
-                                if (checkbox) {
-                                  checkbox.click();
-                                }
-                                if (selectedImages.includes(x.id)) {
-                                  setSelectedImages(selectedImages.filter((id) => id != x.id));
+                            <img
+                              src={x.ten}
+                              alt="Load Image"
+                              style={{ objectFit: "contain" }}
+                              className="w-full h-full object-cover"
+                              onClick={() => {
+                                console.log(selectedImages);
+                                if (
+                                  selectedImages.length >= 3 &&
+                                  !selectedImages.includes(x.id)
+                                ) {
+                                  // Nếu đã chọn nhiều hơn 3 và không phải checkbox đã chọn, hiển thị thông báo lỗi
+                                  toast.error("😢 Chỉ được chọn 3 ảnh !");
                                 } else {
-                                  // if (selectedImages.length < 3) {
-                                    setSelectedImages([...selectedImages, x.id]);
-                                  // }
-                                }}
-                            }}
+                                  const checkbox = document.getElementById(
+                                    x.id
+                                  );
+                                  if (checkbox) {
+                                    checkbox.click();
+                                  }
+                                  if (selectedImages.includes(x.id)) {
+                                    setSelectedImages(
+                                      selectedImages.filter((id) => id != x.id)
+                                    );
+                                  } else {
+                                    // if (selectedImages.length < 3) {
+                                    setSelectedImages([
+                                      ...selectedImages,
+                                      x.id,
+                                    ]);
+                                    // }
+                                  }
+                                }
+                              }}
                             />
                           </div>
                         </div>
                       ))
                     )}
-                    
+
                     <Button
-                          className="flex drop-shadow-lg"
-                          type="primary"
-                          style={{
-                            backgroundColor: "white",
-                            alignItems: "center",
-                            position: "absolute",
-                            right: 5,
-                            top: 50,
-                            color: "black",
-                            border: "0.5px solid #ccc",
-                            marginRight: "3.5%",
-                            marginTop : "20px"
-                          }}
-                          onClick={handleAddImageClick}
-                        >
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            style={{ display: "none" }}
-                            id="imageInput"
-                          />
-                          <AiOutlinePlus className="mr-2"
-                           />
-                          Thêm hình ảnh
+                      className="flex drop-shadow-lg"
+                      type="primary"
+                      style={{
+                        backgroundColor: "white",
+                        alignItems: "center",
+                        position: "absolute",
+                        right: 5,
+                        top: 50,
+                        color: "black",
+                        border: "0.5px solid #ccc",
+                        marginRight: "3.5%",
+                        marginTop: "20px",
+                      }}
+                      onClick={handleAddImageClick}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        style={{ display: "none" }}
+                        id="imageInput"
+                      />
+                      <AiOutlinePlus className="mr-2" />
+                      Thêm hình ảnh
                     </Button>
                   </div>
                 </div>
@@ -350,7 +378,7 @@ export default function ThemSanPham() {
             </Tooltip>
           ),
           props: {
-            rowSpan: index ,
+            rowSpan: index,
             style: {
               justifyContent: "center",
               alignItems: "center",
@@ -359,11 +387,11 @@ export default function ThemSanPham() {
         };
       },
       align: "center",
-    }
+    },
   ];
-  
+
   const paginationOptions = {
-    defaultPageSize: 5
+    defaultPageSize: 5,
   };
 
   const handleSoLuongChange = (key, value) => {
@@ -376,7 +404,7 @@ export default function ThemSanPham() {
     setTableData(updatedTableData);
     console.log(tableData);
   };
-  
+
   const handleGiaBanChange = (key, value) => {
     let index = key - 1;
     console.log(key + "  " + value);
@@ -386,8 +414,8 @@ export default function ThemSanPham() {
     setTableData(updatedTableData);
     console.log(tableData);
   };
-  
-// -------------------------end table data-------------------------
+
+  // -------------------------end table data-------------------------
 
   // ------------------------modal hinh anh-------------------------
   const [isModalOpenHA, setIsModalOpenHA] = useState(false);
@@ -406,7 +434,9 @@ export default function ThemSanPham() {
     setTableImg((prevTableImg) => {
       const updatedTableImg = { ...prevTableImg };
       if (updatedTableImg[mau]) {
-        updatedTableImg[mau] = updatedTableImg[mau].filter((imageUrl) => imageUrl !== imgUrl);
+        updatedTableImg[mau] = updatedTableImg[mau].filter(
+          (imageUrl) => imageUrl !== imgUrl
+        );
         if (updatedTableImg[mau].length === 0) {
           delete updatedTableImg[mau];
         }
@@ -414,7 +444,7 @@ export default function ThemSanPham() {
       return updatedTableImg;
     });
   };
-  
+
   const handleCheckboxChange = (e, id) => {
     const updatedStates = [...checkboxStates];
     updatedStates[id] = !updatedStates[id];
@@ -441,8 +471,7 @@ export default function ThemSanPham() {
       removeImageByColor(selectMau, imageUrl);
     }
   };
-  
-  
+
   // ------------------------modal mau sac-------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -470,7 +499,7 @@ export default function ThemSanPham() {
   const showModalKC = () => {
     setIsModalOpenKC(true);
   };
-  const handleOkKC =async () => {
+  const handleOkKC = async () => {
     await axios
       .post("http://localhost:8080/addKichCo", kichCoModal)
       .then((response) => {
@@ -491,7 +520,7 @@ export default function ThemSanPham() {
     setIsModalOpenKC(false);
   };
   const onChangeKC = (e) => {
-    setKichCoModal({[e.target.name]: e.target.value });
+    setKichCoModal({ [e.target.name]: e.target.value });
   };
 
   // ------------------------modal de giay-------------------------
@@ -499,7 +528,7 @@ export default function ThemSanPham() {
   const showModalDG = () => {
     setIsModalOpenDG(true);
   };
-  const handleOkDG =async () => {
+  const handleOkDG = async () => {
     await axios
       .post("http://localhost:8080/addDeGiay", deGiayModal)
       .then((response) => {
@@ -520,7 +549,7 @@ export default function ThemSanPham() {
     setIsModalOpenDG(false);
   };
   const onChangeDG = (e) => {
-    setDeGiayModal({[e.target.name]: e.target.value });
+    setDeGiayModal({ [e.target.name]: e.target.value });
   };
   // --------------------------comfirm-------------------------------
   const handleOpenAddConfirmation = () => {
@@ -546,7 +575,9 @@ export default function ThemSanPham() {
       for (const kichCo of selectedKichCo) {
         const sanPhamItem = {
           ten: sanPham.ten,
-          tenSanPham: `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ''} ]`,
+          tenSanPham: `${sanPham.ten} [ ${kichCo} - ${
+            mauSac.find((item) => item.maMau === mau)?.ten || ""
+          } ]`,
           // soLuongTon: sanPham.soLuongTon,
           khoiLuong: 1,
           moTa: sanPham.moTa,
@@ -562,7 +593,7 @@ export default function ThemSanPham() {
         tableDataa.push(sanPhamItem);
         // mauTableData[mau].push(sanPhamItem);
       }
-      if(selectMau == mauSac.find((item) => item.maMau === mau)?.ten || '') {
+      if (selectMau == mauSac.find((item) => item.maMau === mau)?.ten || "") {
         mauTableData[mau].push(tableImg);
       }
     }
@@ -570,9 +601,11 @@ export default function ThemSanPham() {
 
     for (const mau of selectedColors) {
       const spByColor = selectedKichCo.map((kichCo) => ({
-        id: index+=1,
+        id: (index += 1),
         ten: sanPham.ten,
-        tenSanPham: `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ''} ]`,
+        tenSanPham: `${sanPham.ten} [ ${kichCo} - ${
+          mauSac.find((item) => item.maMau === mau)?.ten || ""
+        } ]`,
         // soLuongTon: sanPham.soLuongTon,
         khoiLuong: 1,
         moTa: sanPham.moTa,
@@ -584,26 +617,26 @@ export default function ThemSanPham() {
         id_nhan_hieu: sanPham.id_nhan_hieu,
         id_chat_lieu: sanPham.id_chat_lieu,
         id_de_giay: sanPham.id_de_giay,
-        hinhAnh : mauTableData[mau]
+        hinhAnh: mauTableData[mau],
       }));
       setTables((prevTables) => ({
         ...prevTables,
-        [mau]: spByColor
+        [mau]: spByColor,
       }));
     }
   };
 
   useEffect(() => {
     groupProductsByColor();
-  }, [selectedColors,selectedKichCo,tableImg]);
+  }, [selectedColors, selectedKichCo, tableImg]);
 
   useEffect(() => {
     getAllDG();
-  },[deGiay])
+  }, [deGiay]);
 
   useEffect(() => {
     getAllKC();
-  },[kichCo])
+  }, [kichCo]);
 
   useEffect(() => {
     getAllNH();
@@ -614,9 +647,11 @@ export default function ThemSanPham() {
   }, [img]);
 
   const getAllHA = async () => {
-    await axios.get(`http://localhost:8080/getHinhAnhByMau/${selectMau}`).then((response) => {
-      setImg(response.data);
-    });
+    await axios
+      .get(`http://localhost:8080/getHinhAnhByMau/${selectMau}`)
+      .then((response) => {
+        setImg(response.data);
+      });
   };
   const getAllNH = async () => {
     await axios.get("http://localhost:8080/getAllNH").then((response) => {
@@ -656,28 +691,39 @@ export default function ThemSanPham() {
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = tableData.map((sp) => [
-      sp.id, sp.ten, sp.tenSanPham, sp.soLuongTon, sp.khoiLuong,
-      sp.moTa, sp.giaNhap, sp.giaBan, sp.id_mau_sac, sp.id_kich_co,
-      sp.id_thuong_hieu,sp.id_nhan_hieu,
-      sp.id_chat_lieu,sp.id_de_giay,tableImg
-      ]);
+      sp.id,
+      sp.ten,
+      sp.tenSanPham,
+      sp.soLuongTon,
+      sp.khoiLuong,
+      sp.moTa,
+      sp.giaNhap,
+      sp.giaBan,
+      sp.id_mau_sac,
+      sp.id_kich_co,
+      sp.id_thuong_hieu,
+      sp.id_nhan_hieu,
+      sp.id_chat_lieu,
+      sp.id_de_giay,
+      tableImg,
+    ]);
     console.log(data);
     if (isConfirmed) {
-    await axios
-      .post("http://localhost:8080/san-pham/add", data)
-      .then((response) => {
-        toast.success(`Thêm thành công`, {
-          position: "top-right",
-          autoClose: 2000,
+      await axios
+        .post("http://localhost:8080/san-pham/add", data)
+        .then((response) => {
+          toast.success(`Thêm thành công`, {
+            position: "top-right",
+            autoClose: 2000,
+          });
+          navigate("/quan-ly-san-pham/san-pham");
+        })
+        .catch((error) => {
+          toast.error(`Thêm thất bại`, {
+            position: "top-right",
+            autoClose: 2000,
+          });
         });
-        navigate("/quan-ly-san-pham/san-pham");
-      })
-      .catch((error) => {
-        toast.error(`Thêm thất bại`, {
-          position: "top-right",
-          autoClose: 2000,
-        });
-      });
     }
   };
 
@@ -697,7 +743,7 @@ export default function ThemSanPham() {
       <div className="mx-5 md:mx-12">
         <form onSubmit={(e) => onSubmit(e)}>
           <div className="space-y-12">
-            <div className="border-b border-gray-900/10 pb-12">
+            <div className="border-b border-gray-900/10 pb-5">
               <h2 className="text-base font-semibold leading-7 text-gray-900">
                 Thêm mới sản phẩm
               </h2>
@@ -705,225 +751,281 @@ export default function ThemSanPham() {
                 Điền thông tin chi tiết sản phẩm
               </p>
 
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="sm:col-span-4">
-                  <label
-                    htmlFor="username"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Tên sản phẩm
-                  </label>
-                  <div className="mt-2">
-                    <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                      <input
-                        type="text"
-                        name="ten"
-                        value={ten}
-                        className="block p-2 flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="Nhập tên sản phẩm"
+              <div
+                className="grid drop-shadow-lg grid-cols-1"
+                style={{
+                  backgroundColor: "white",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  width: "100%",
+                  boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+                  transition: "transform 0.2s",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-4 ml-6">
+                    <label
+                      htmlFor="username"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Tên sản phẩm
+                    </label>
+
+                    <div className="mt-2">
+                      <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                        <input
+                          type="text"
+                          name="ten"
+                          value={ten}
+                          className="block p-2 flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                          placeholder="Nhập tên sản phẩm"
+                          onChange={(e) => onChange(e)}
+                        />
+                        <div
+                          className="p-2"
+                          style={{
+                            backgroundColor: "#00C5CD",
+                            borderRadius: "5px",
+                            color: "white",
+                            cursor: "pointer",
+                            marginRight: "-40px",
+                          }}
+                        >
+                          <AiOutlinePlus />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-span-full ml-6">
+                    <label
+                      htmlFor="about"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Mô tả
+                    </label>
+                    <div className="mt-2">
+                      <textarea
+                        id="moTa"
+                        name="moTa"
+                        placeholder=" Nhập mô tả sản phẩm"
+                        rows={4}
+                        className="block w-11/12 p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         onChange={(e) => onChange(e)}
                       />
                     </div>
+
+                    <p className="mt-3 text-sm leading-6 text-gray-600"></p>
                   </div>
-                </div>
-                <div className="col-span-full">
-                  <label
-                    htmlFor="about"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Mô tả
-                  </label>
-                  <div className="mt-2">
-                    <textarea
-                      id="moTa"
-                      name="moTa"
-                      placeholder=" Nhập mô tả sản phẩm"
-                      rows={4}
-                      className="block w-11/12 p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      onChange={(e) => onChange(e)}
-                    />
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-gray-600"></p>
                 </div>
               </div>
+              <h2 className="text-base font-semibold leading-7 mt-10 text-gray-900">
+                Thêm các thuộc tính sản phẩm
+              </h2>
             </div>
 
             <div className="border-b border-gray-900/10 pb-12">
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="sm:col-span-3">
-                  <label
-                    htmlFor="country"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Thương hiệu
-                  </label>
-                  <div className="mt-2 space-x-2 flex">
-                    <select
-                      id="thuongHieu"
-                      name="id_thuong_hieu"
-                      autoComplete="country-name"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                      onChange={(e) => onChange(e)}
-                    >
-                      <option selected>--Chọn Thương Hiệu--</option>
-                      {thuongHieu.map((x) => (
-                        <option
-                          key={x.id}
-                          value={x.id}
-                          //style={{ backgroundColor: x.maMau, color: "white" }}
-                        >
-                          {x.ten}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="p-2" style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}>
-                      <AiOutlinePlus />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label
-                    htmlFor="country"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Nhãn hiệu
-                  </label>
-                  <div className="mt-2 space-x-2 flex">
-                    <select
-                      id="nhanHieu"
-                      name="id_nhan_hieu"
-                      autoComplete="country-name"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                      onChange={(e) => onChange(e)}
-                    >
-                      <option selected>--Chọn Nhãn Hiệu--</option>
-                      {nhanHieu.map((x) => (
-                        <option key={x.id} value={x.id}>
-                          {x.ten}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="p-2" style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}>
-                      <AiOutlinePlus />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label
-                    htmlFor="chatLieu"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Chất Liệu
-                  </label>
-                  <div className="mt-2 space-x-2 flex">
-                    <select
-                      id="chatLieu"
-                      name="id_chat_lieu"
-                      onChange={(e) => onChange(e)}
-                      autoComplete="country-name"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    >
-                      <option value="" selected>
-                        --Chọn Chất Liệu--
-                      </option>
-                      {chatLieu.map((x) => (
-                        <option key={x.id} value={x.id}>
-                          {x.ten}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="p-2" style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}>
-                      <AiOutlinePlus />
-                    </div>
-                  </div>
-                </div>
-                <div className="sm:col-span-3">
-                  <label
-                    htmlFor="deGiay"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Đế giày
-                  </label>
-                  <div className="mt-2 space-x-2 flex">
-                    <select
-                      id="deGiay"
-                      name="id_de_giay"
-                      onChange={(e) => onChange(e)}
-                      autoComplete="country-name"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    >
-                      <option selected>--Chọn Đế Giày--</option>
-                      {deGiay.map((x) => (
-                        <option key={x.id} value={x.id}>
-                          {x.ten}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="p-2" style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}>
-                      <AiOutlinePlus onClick={showModalDG}/>
-                    </div>
-                    <Modal
-                      title="Thêm đế giày"
-                      open={isModalOpenDG}
-                      onOk={handleOkDG}
-                      onCancel={handleCancelDG}
-                      cancelText="Hủy"
-                      okText="Thêm"
-                      style={{ position: "relative" }}
-                    >
-                    <div>
-                      <label
+              <div
+                className="grid drop-shadow-lg grid-cols-1"
+                style={{
+                  backgroundColor: "white",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  width: "100%",
+                  boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+                  transition: "transform 0.2s",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-3 ml-6">
+                    <label
                       htmlFor="country"
                       className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Thương hiệu
+                    </label>
+                    <div className="mt-2 space-x-2 flex">
+                      <select
+                        id="thuongHieu"
+                        name="id_thuong_hieu"
+                        autoComplete="country-name"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
                       >
-                       Tên đế giày
-                      </label>
-                      <input
-                        type="text"
-                        name="tenDeGiay"
-                        value={tenDeGiay}
-                        className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="Nhập tên đế giày"
-                        onChange={(e) => onChangeDG(e)}
-                        style={{borderRadius:"5px"}}
-                      />
+                        <option selected>--Chọn Thương Hiệu--</option>
+                        {thuongHieu.map((x) => (
+                          <option
+                            key={x.id}
+                            value={x.id}
+                            //style={{ backgroundColor: x.maMau, color: "white" }}
+                          >
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                      <div
+                        className="p-2"
+                        style={{
+                          backgroundColor: "#00C5CD",
+                          borderRadius: "5px",
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <AiOutlinePlus />
+                      </div>
                     </div>
-                    </Modal>
-                    
                   </div>
-                </div>
-                <div className="sm:col-span-3">
-                  <label
-                    htmlFor="country"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Màu sắc
-                  </label>
-                  <div className="mt-2 space-x-3 flex">
-                    {
-                      selectedColors.map((item,index) => (
+
+                  <div className="sm:col-span-3 ml-6">
+                    <label
+                      htmlFor="country"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Nhãn hiệu
+                    </label>
+                    <div className="mt-2 space-x-2 flex">
+                      <select
+                        id="nhanHieu"
+                        name="id_nhan_hieu"
+                        autoComplete="country-name"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
+                      >
+                        <option selected>--Chọn Nhãn Hiệu--</option>
+                        {nhanHieu.map((x) => (
+                          <option key={x.id} value={x.id}>
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                      <div
+                        className="p-2"
+                        style={{
+                          backgroundColor: "#00C5CD",
+                          borderRadius: "5px",
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <AiOutlinePlus />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="sm:col-span-3 ml-6">
+                    <label
+                      htmlFor="chatLieu"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Chất Liệu
+                    </label>
+                    <div className="mt-2 space-x-2 flex">
+                      <select
+                        id="chatLieu"
+                        name="id_chat_lieu"
+                        onChange={(e) => onChange(e)}
+                        autoComplete="country-name"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                      >
+                        <option value="" selected>
+                          --Chọn Chất Liệu--
+                        </option>
+                        {chatLieu.map((x) => (
+                          <option key={x.id} value={x.id}>
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                      <div
+                        className="p-2"
+                        style={{
+                          backgroundColor: "#00C5CD",
+                          borderRadius: "5px",
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <AiOutlinePlus />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sm:col-span-3 ml-6">
+                    <label
+                      htmlFor="deGiay"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Đế giày
+                    </label>
+                    <div className="mt-2 space-x-2 flex">
+                      <select
+                        id="deGiay"
+                        name="id_de_giay"
+                        onChange={(e) => onChange(e)}
+                        autoComplete="country-name"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                      >
+                        <option selected>--Chọn Đế Giày--</option>
+                        {deGiay.map((x) => (
+                          <option key={x.id} value={x.id}>
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                      <div
+                        className="p-2"
+                        style={{
+                          backgroundColor: "#00C5CD",
+                          borderRadius: "5px",
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                        onClick={showModalDG}
+                      >
+                        <AiOutlinePlus />
+                      </div>
+                      <Modal
+                        title="Thêm đế giày"
+                        open={isModalOpenDG}
+                        onOk={handleOkDG}
+                        onCancel={handleCancelDG}
+                        cancelText="Hủy"
+                        okText="Thêm"
+                        style={{ position: "relative" }}
+                      >
+                        <div>
+                          <label
+                            htmlFor="country"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                          >
+                            Tên đế giày
+                          </label>
+                          <input
+                            type="text"
+                            name="tenDeGiay"
+                            value={tenDeGiay}
+                            className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                            placeholder="Nhập tên đế giày"
+                            onChange={(e) => onChangeDG(e)}
+                            style={{ borderRadius: "5px" }}
+                          />
+                        </div>
+                      </Modal>
+                    </div>
+                  </div>
+                  <div className="sm:col-span-3 ml-6">
+                    <label
+                      htmlFor="country"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Màu sắc
+                    </label>
+                    <div className="mt-2 space-x-3 flex">
+                      {selectedColors.map((item, index) => (
                         <Badge
                           className="cursor-pointer"
                           badgeContent={"--"}
@@ -931,112 +1033,120 @@ export default function ThemSanPham() {
                           key={index}
                           onClick={() => handleRemoveColor(item)}
                         >
-                          <Tooltip title={mauSac.find((x) => x.maMau === item)?.ten || ''}>
-                          <div
-                            style={{
-                              backgroundColor: item,
-                              border: "1px solid #ccc",
-                              borderRadius: "5px",
-                              padding: "5px 7px",
-                              width: "35px",
-                              height: "35px",
-                            }}
-                          ></div>
+                          <Tooltip
+                            title={
+                              mauSac.find((x) => x.maMau === item)?.ten || ""
+                            }
+                          >
+                            <div
+                              style={{
+                                backgroundColor: item,
+                                border: "1px solid #ccc",
+                                borderRadius: "5px",
+                                padding: "5px 7px",
+                                width: "35px",
+                                height: "35px",
+                              }}
+                            ></div>
                           </Tooltip>
                         </Badge>
-                      ))
-                    }
-                    <div
-                      className="inline-block "
-                      style={{
-                        backgroundColor: "#00C5CD",
-                        borderRadius: "5px",
-                        color: "white",
-                        cursor: "pointer",
-                        width: "35px",
-                        height: "35px",
-                        padding: "9px",
-                      }}
-                    >
-                      <AiOutlinePlus onClick={showModal} />
+                      ))}
+                      <div
+                        className="inline-block "
+                        style={{
+                          backgroundColor: "#00C5CD",
+                          borderRadius: "5px",
+                          color: "white",
+                          cursor: "pointer",
+                          width: "35px",
+                          height: "35px",
+                          padding: "9px",
+                        }}
+                        onClick={showModal}
+                      >
+                        <AiOutlinePlus />
+                      </div>
+                      <Modal
+                        title="Chọn màu sắc"
+                        open={isModalOpen}
+                        onOk={handleOk}
+                        onCancel={handleCancel}
+                        cancelText="Hủy"
+                        okText="Thêm"
+                        style={{ position: "relative" }}
+                      >
+                        <div style={{ display: "flex", flexWrap: "wrap" }}>
+                          {mauSac.map((item) => (
+                            <div
+                              key={item.id}
+                              className={`flex justify-center text-white cursor-pointer ${
+                                selectedColors.includes(item.maMau)
+                                  ? "border-2"
+                                  : "border-none"
+                              }`}
+                              style={{
+                                width: "20%",
+                                height: "25px",
+                                backgroundColor: item.maMau,
+                                borderRadius: "5px",
+                                alignItems: "center",
+                                marginTop: "35px",
+                                borderColor: "yellow",
+                                marginRight: "5px",
+                              }}
+                              onClick={() => {
+                                if (selectedColors.includes(item.maMau)) {
+                                  setSelectedColors((prevSelected) =>
+                                    prevSelected.filter(
+                                      (color) => color !== item.maMau
+                                    )
+                                  );
+                                } else {
+                                  if (selectedColors.length < 3) {
+                                    setSelectedColors((prevSelected) => [
+                                      ...prevSelected,
+                                      item.maMau,
+                                    ]);
+                                  }
+                                }
+                              }}
+                            >
+                              {item.maMau}
+                            </div>
+                          ))}
+                        </div>
+                        <div>
+                          <Button
+                            className="flex drop-shadow-lg"
+                            type="primary"
+                            style={{
+                              backgroundColor: "white",
+                              alignItems: "center",
+                              position: "absolute",
+                              right: 5,
+                              top: 50,
+                              color: "black",
+                              border: "0.5px solid #ccc",
+                              marginRight: "3.5%",
+                            }}
+                          >
+                            <AiOutlinePlus className="mr-2" />
+                            Thêm màu sắc
+                          </Button>
+                        </div>
+                      </Modal>
                     </div>
-                    <Modal
-                      title="Chọn màu sắc"
-                      open={isModalOpen}
-                      onOk={handleOk}
-                      onCancel={handleCancel}
-                      cancelText="Hủy"
-                      okText="Thêm"
-                      style={{ position: "relative" }}
-                    >
-                      <div style={{ display: "flex", flexWrap: "wrap"}}>
-                      {
-                        mauSac.map((item) => (
-                          <div
-                          key={item.id}
-                          className={`flex justify-center text-white cursor-pointer ${
-                            selectedColors.includes(item.maMau) ? "border-2" : "border-none"
-                          }`}
-                          style={{
-                            width: "20%",
-                            height: "25px",
-                            backgroundColor: item.maMau,
-                            borderRadius: "5px",
-                            alignItems: "center",
-                            marginTop: "35px",
-                            borderColor: "yellow",
-                            marginRight: "5px"
-                          }}
-                          onClick={() => {
-                            if (selectedColors.includes(item.maMau)) {
-                              setSelectedColors((prevSelected) =>
-                                prevSelected.filter((color) => color !== item.maMau)
-                              );
-                            } else {
-                              if (selectedColors.length < 3) {
-                                setSelectedColors((prevSelected) => [...prevSelected, item.maMau]);
-                              }
-                            }
-                          }}>
-                          {item.maMau}
-                          </div>
-                        ))
-                      }
-                      
-                      </div>
-                      <div>
-                        <Button
-                          className="flex drop-shadow-lg"
-                          type="primary"
-                          style={{
-                            backgroundColor: "white",
-                            alignItems: "center",
-                            position: "absolute",
-                            right: 5,
-                            top: 50,
-                            color: "black",
-                            border: "0.5px solid #ccc",
-                            marginRight: "3.5%",
-                          }}
-                        >
-                          <AiOutlinePlus className="mr-2" />
-                          Thêm màu sắc
-                        </Button>
-                      </div>
-                    </Modal>
                   </div>
-                </div>
 
-                <div className="sm:col-span-3">
-                  <label
-                    htmlFor="country"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Kích cỡ
-                  </label>
-                  <div className="mt-2 space-x-3 flex">
-                    {
-                      selectedKichCo.map((item,index) => (
+                  <div className="sm:col-span-3 ml-6">
+                    <label
+                      htmlFor="country"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Kích cỡ
+                    </label>
+                    <div className="mt-2 space-x-3 flex">
+                      {selectedKichCo.map((item, index) => (
                         <Badge
                           className="cursor-pointer"
                           badgeContent={"--"}
@@ -1051,123 +1161,131 @@ export default function ThemSanPham() {
                               padding: "5px 7px",
                               width: "35px",
                               height: "35px",
-                              color: "black"
+                              color: "black",
                             }}
-                          >{item}</div>
-                        </Badge>
-                      ))
-                    }
-                    <div
-                      className="inline-block "
-                      style={{
-                        borderRadius: "5px",
-                        backgroundColor : "#00C5CD",
-                        color: "black",
-                        cursor: "pointer",
-                        width: "35px",
-                        height: "35px",
-                        padding: "9px",
-                      }}
-                    >
-                      <AiOutlinePlus onClick={showModal1}/>
-                    </div>
-                    <Modal
-                      title="Chọn kích cỡ"
-                      open={isModalOpen1}
-                      onOk={handleOk1}
-                      onCancel={handleCancel1}
-                      cancelText="Hủy"
-                      okText="Thêm"
-                      style={{ position: "relative" }}
-                      className=""
-                    >
-                      <div style={{ display: "flex", flexWrap: "wrap"}}>
-                      {
-                        kichCo.map((item) => (
-                          <div
-                          key={item.id}
-                          className={`flex justify-center text-white cursor-pointer ${
-                            selectedKichCo.includes(item.ten) ? "selectedKichCo" : "border-none"
-                          }`}
-                          style={{
-                            width: "70px",
-                            height: "35px",
-                            borderRadius: "5px",
-                            alignItems: "center",
-                            marginTop: "35px",
-                            borderColor: "yellow",
-                            marginRight: "5px",
-                            color:"black",
-                          }}
-                          onClick={() => {
-                            if (selectedKichCo.includes(item.ten)) {
-                              setSelectedKichCo((prevSelected) =>
-                                prevSelected.filter((kichCo) => kichCo !== item.ten)
-                              );
-                            } else {
-                              if (selectedKichCo.length < 3) {
-                                setSelectedKichCo((prevSelected) => [...prevSelected, item.ten]);
-                              }
-                            }
-                          }}>
-                          {item.ten}
+                          >
+                            {item}
                           </div>
-                        ))
-                      }
-                      </div>
-
-                      <div>
-                        <Button
-                          className="flex drop-shadow-lg"
-                          type="primary"
-                          style={{
-                            backgroundColor: "white",
-                            alignItems: "center",
-                            position: "absolute",
-                            right: 5,
-                            top: 50,
-                            color: "black",
-                            border: "0.5px solid #ccc",
-                            marginRight: "3.5%",
-                          }}
-                          onClick={() => {
-                            // handleCancel1();
-                            showModalKC();
-                            }}
-                        >
-                          <AiOutlinePlus className="mr-2"
-                           />
-                          Thêm kích cỡ
-                        </Button>
-                      </div>
-                    </Modal>
-                    <Modal
-                      title="Thêm đế giày"
-                      open={isModalOpenKC}
-                      onOk={handleOkKC}
-                      onCancel={handleCancelKC}
-                      cancelText="Cancel"
-                      okText="Thêm"
-                      style={{ position: "relative" }}
-                    >
-                    <div>
-                      <label
-                      htmlFor="country"
-                      className="block text-sm font-medium leading-6 text-gray-900"
+                        </Badge>
+                      ))}
+                      <div
+                        className="inline-block "
+                        style={{
+                          borderRadius: "5px",
+                          backgroundColor: "#00C5CD",
+                          color: "white",
+                          cursor: "pointer",
+                          width: "35px",
+                          height: "35px",
+                          padding: "9px",
+                        }}
+                        onClick={showModal1} 
                       >
-                       Tên đế giày
-                      </label>
-                      <input
-                        type="text"
-                        name="tenKichCo"
-                        value={tenKichCo}
-                        className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="Nhập tên đế giày"
-                        onChange={(e) => onChangeKC(e)}
-                        style={{borderRadius:"5px"}}
-                      />
+                        <AiOutlinePlus />
+                      </div>
+                      <Modal
+                        title="Chọn kích cỡ"
+                        open={isModalOpen1}
+                        onOk={handleOk1}
+                        onCancel={handleCancel1}
+                        cancelText="Hủy"
+                        okText="Thêm"
+                        style={{ position: "relative" }}
+                        className=""
+                      >
+                        <div style={{ display: "flex", flexWrap: "wrap" }}>
+                          {kichCo.map((item) => (
+                            <div
+                              key={item.id}
+                              className={`flex justify-center text-white cursor-pointer ${
+                                selectedKichCo.includes(item.ten)
+                                  ? "selectedKichCo"
+                                  : "border-none"
+                              }`}
+                              style={{
+                                width: "70px",
+                                height: "35px",
+                                borderRadius: "5px",
+                                alignItems: "center",
+                                marginTop: "35px",
+                                borderColor: "yellow",
+                                marginRight: "5px",
+                                color: "black",
+                              }}
+                              onClick={() => {
+                                if (selectedKichCo.includes(item.ten)) {
+                                  setSelectedKichCo((prevSelected) =>
+                                    prevSelected.filter(
+                                      (kichCo) => kichCo !== item.ten
+                                    )
+                                  );
+                                } else {
+                                  if (selectedKichCo.length < 3) {
+                                    setSelectedKichCo((prevSelected) => [
+                                      ...prevSelected,
+                                      item.ten,
+                                    ]);
+                                  }
+                                }
+                              }}
+                            >
+                              {item.ten}
+                            </div>
+                          ))}
+                        </div>
+
+                        <div>
+                          <Button
+                            className="flex drop-shadow-lg"
+                            type="primary"
+                            style={{
+                              backgroundColor: "white",
+                              alignItems: "center",
+                              position: "absolute",
+                              right: 5,
+                              top: 50,
+                              color: "black",
+                              border: "0.5px solid #ccc",
+                              marginRight: "3.5%",
+                            }}
+                            onClick={() => {
+                              // handleCancel1();
+                              showModalKC();
+                            }}
+                          >
+                            <AiOutlinePlus className="mr-2" />
+                            Thêm kích cỡ
+                          </Button>
+                        </div>
+                      </Modal>
+                      <Modal
+                        title="Thêm đế giày"
+                        open={isModalOpenKC}
+                        onOk={handleOkKC}
+                        onCancel={handleCancelKC}
+                        cancelText="Cancel"
+                        okText="Thêm"
+                        style={{ position: "relative" }}
+                      >
+                        <div>
+                          <label
+                            htmlFor="country"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                          >
+                            Tên đế giày
+                          </label>
+                          <input
+                            type="text"
+                            name="tenKichCo"
+                            value={tenKichCo}
+                            className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                            placeholder="Nhập tên đế giày"
+                            onChange={(e) => onChangeKC(e)}
+                            style={{ borderRadius: "5px" }}
+                          />
+                        </div>
+                      </Modal>
                     </div>
-                    </Modal>
                   </div>
                 </div>
               </div>
@@ -1175,7 +1293,7 @@ export default function ThemSanPham() {
           </div>
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <button
-            type="button"
+              type="button"
               className="rounded-md mb-5 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               onClick={groupProductsByColor}
             >
@@ -1184,7 +1302,10 @@ export default function ThemSanPham() {
           </div>
           {selectedColors.map((mau) => (
             <div key={mau}>
-              <h2>Sản phẩm theo : {mauSac.find((item) => item.maMau === mau)?.ten || ''} </h2>
+              <h2>
+                Sản phẩm theo :{" "}
+                {mauSac.find((item) => item.maMau === mau)?.ten || ""}{" "}
+              </h2>
               <Table
                 columns={columns}
                 dataSource={tables[mau] || []}
@@ -1192,15 +1313,17 @@ export default function ThemSanPham() {
                 scroll={{ y: 2000 }}
               />
               <TableImg
-                  columns={columnImg}
-                  dataSource={tableImg[mauSac.find((item) => item.maMau === mau)?.ten || '']}
-                  pagination={false}
-                  scroll={{ y: 2000 }}
-                  locale={customText}
+                columns={columnImg}
+                dataSource={
+                  tableImg[mauSac.find((item) => item.maMau === mau)?.ten || ""]
+                }
+                pagination={false}
+                scroll={{ y: 2000 }}
+                locale={customText}
               />
             </div>
           ))}
-          
+
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <Link
               to="/quan-ly-san-pham/san-pham"
@@ -1211,38 +1334,44 @@ export default function ThemSanPham() {
             </Link>
 
             <button
-               type="button"
+              type="button"
               className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              onClick={handleOpenAddConfirmation} 
+              onClick={handleOpenAddConfirmation}
             >
               Thêm sản phẩm
             </button>
           </div>
         </form>
         <div>
-        <Dialog open={addConfirmationOpen} onClose={handleCloseAddConfirmation}>
-          <DialogTitle>Xác nhận thêm</DialogTitle>
+          <Dialog
+            open={addConfirmationOpen}
+            onClose={handleCloseAddConfirmation}
+          >
+            <DialogTitle>Xác nhận thêm</DialogTitle>
             <DialogContent>
               <DialogContentText>
                 Bạn có chắc muốn thêm sản phẩm này?
               </DialogContentText>
             </DialogContent>
-          <DialogActions>
-            <ButtonMaterial onClick={handleCloseAddConfirmation} color="primary">
-               Hủy
-            </ButtonMaterial>
-            <ButtonMaterial
-            onClick={(e) => {
-              setIsConfirmed(true);
-              onSubmit(e);
-              handleCloseAddConfirmation();
-            }}
-            color="primary"
-            >
-              Vẫn thêm
-            </ButtonMaterial>
+            <DialogActions>
+              <ButtonMaterial
+                onClick={handleCloseAddConfirmation}
+                color="primary"
+              >
+                Hủy
+              </ButtonMaterial>
+              <ButtonMaterial
+                onClick={(e) => {
+                  setIsConfirmed(true);
+                  onSubmit(e);
+                  handleCloseAddConfirmation();
+                }}
+                color="primary"
+              >
+                Vẫn thêm
+              </ButtonMaterial>
             </DialogActions>
-        </Dialog>
+          </Dialog>
         </div>
       </div>
     </>

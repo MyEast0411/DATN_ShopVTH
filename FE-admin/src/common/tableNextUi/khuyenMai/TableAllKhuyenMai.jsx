@@ -99,8 +99,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function TableAllKhuyenMai({ nbd, nkt }) {
-  setFilterValue(searchValue);
+export default function TableAllKhuyenMai({ nbd, nkt, search }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -144,7 +143,6 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
         .then((response) => {
           console.log(`Delete successful for row ID: ${idToDelete}`);
           toast("🎉 Xóa thành công");
-          // Remove the deleted item from the state
           setKhuyenMais((prevKhuyenMais) =>
             prevKhuyenMais.filter((item) => item.id !== idToDelete)
           );
@@ -153,7 +151,7 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
           console.error(`Error deleting record for ID: ${idToDelete}`, error);
         });
 
-      cancelDelete(); // Close the dialog after deletion
+      cancelDelete();
     }
   };
 
@@ -211,10 +209,13 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
     }
   }
 
-  useEffect(() => {
-    fetchKhuyenMais();
-    
-  }, [khuyenMais, nbd, nkt]);
+  useEffect(
+    () => {
+      fetchKhuyenMais();
+      setFilterValue(search);
+    },
+    [khuyenMais,nbd,nkt,search]
+  );
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -248,7 +249,7 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
   }, [khuyenMais, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
-
+ 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
@@ -362,6 +363,7 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
 
   const onRowsPerPageChange = React.useCallback((e) => {
     setRowsPerPage(Number(e.target.value));
+    setTotalPages(Math.ceil(filteredItems.length / Number(e.target.value)));
     setPage(1);
   }, []);
 
@@ -487,7 +489,7 @@ export default function TableAllKhuyenMai({ nbd, nkt }) {
           showShadow
           color="primary"
           page={page}
-          total={pages}
+          total={totalPages}
           onChange={setPage}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">

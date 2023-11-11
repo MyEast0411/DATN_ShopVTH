@@ -250,9 +250,9 @@ export default function ThemKhuyenMai() {
                   backgroundColor: "#1976d2",
                   marginBottom: "2px",
                 }}
-                onClick={handleOpenAddConfirmation} // Open confirmation dialog
+                onClick={handleOpenAddConfirmation}
               >
-                Cập nhật
+                Hoàn tất
               </Button>
             </div>
           </form>

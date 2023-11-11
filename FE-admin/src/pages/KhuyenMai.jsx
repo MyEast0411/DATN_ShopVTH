@@ -15,6 +15,7 @@ const { RangePicker } = DatePicker;
 const KhuyenMai = () => {
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
+  const [search, setSearch] = useState("");
 
   // useEffect(
   //   () => {
@@ -42,6 +43,13 @@ const KhuyenMai = () => {
     // console.log("Ngay ket thuc: " + nkt);
   };
 
+  const onSearchChange = React.useCallback((value) => {
+    if (value) {
+      setSearch(value);
+    } else {
+      setSearch("");
+    }
+  }, []);
   return (
     <>
       <div className="mb-2  border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
@@ -67,6 +75,7 @@ const KhuyenMai = () => {
           style={{
             width: "40%",
           }}
+          className="ml-10"
         >
           <Input
             style={{
@@ -74,6 +83,8 @@ const KhuyenMai = () => {
             }}
             className=""
             isClearable
+            value={search}
+            onValueChange={onSearchChange}
             radius="lg"
             placeholder="Tìm kiếm bất kỳ..."
             startContent={
@@ -81,12 +92,20 @@ const KhuyenMai = () => {
             }
           />
         </div>
-        <div>
+        <div
+          className="mr-10 flex"
+          style={{
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
           <label
             htmlFor="phone"
-            className="block -mb-4 mt-1 text-sm font-medium text-gray-900 col-end-7 col-span-2"
+            className="text-sm font-medium text-gray-900"
             style={{
               display: "inline-block",
+              justifyContent: "center",
+              width: "25%",
             }}
           >
             Tìm kiếm theo ngày
@@ -131,7 +150,11 @@ const KhuyenMai = () => {
           }}
         >
           <div>
-            <TableAllKhuyenMai nbd={ngayBatDau} nkt={ngayKetThuc} searchValue={searchValue}/>
+            <TableAllKhuyenMai
+              nbd={ngayBatDau}
+              nkt={ngayKetThuc}
+              search={search}
+            />
           </div>
         </div>
       </div>
