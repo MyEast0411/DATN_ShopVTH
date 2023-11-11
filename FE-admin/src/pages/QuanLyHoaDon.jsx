@@ -119,18 +119,7 @@ export default function QuanLyHoaDon() {
           </div>
 
           <div class="flex justify-center mx-auto gap-10">
-            <div>
-              <Button
-                type="primary"
-                style={{
-                  backgroundColor: "#1976d2",
-                  marginBottom: "2px",
-                  justifyContent: "center",
-                }}
-              >
-                Tìm kiếm
-              </Button>
-            </div>
+            
             <div>
               <Button
                 type="primary"

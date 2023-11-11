@@ -317,9 +317,7 @@ export default function App() {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Tổng {sanPhams.length} sản phẩm
-          </span>
+         
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
             <select
@@ -347,6 +345,9 @@ export default function App() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
+         <span className="text-default-400 text-small">
+            Tổng {sanPhams.length} sản phẩm
+          </span>
         {/* <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"

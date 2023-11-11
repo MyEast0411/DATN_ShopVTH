@@ -338,7 +338,7 @@ export default function SanPham() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Tổng {sanPhams.length} sản phẩm
+            {/* Tổng {khuyenMais.length} khuyến mại */}
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
@@ -367,6 +367,9 @@ export default function SanPham() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
+        <span className="w-[30%] text-small text-default-400">
+          Tổng {sanPhams.length} sản phẩm
+        </span>
         {/* <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
@@ -389,7 +392,7 @@ export default function SanPham() {
               isCompact
               showControls
               key={size}
-              style={{ paddingLeft: "710px" }}
+              // style={{ paddingLeft: "710px" }}
               total={totalPages + 1}
               initialPage={1}
               size={size}

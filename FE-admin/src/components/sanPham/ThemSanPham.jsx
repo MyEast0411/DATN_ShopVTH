@@ -1179,7 +1179,7 @@ export default function ThemSanPham() {
                           height: "35px",
                           padding: "9px",
                         }}
-                        onClick={showModal1} 
+                        onClick={showModal1}
                       >
                         <AiOutlinePlus />
                       </div>
@@ -1292,13 +1292,16 @@ export default function ThemSanPham() {
             </div>
           </div>
           <div className="mt-6 flex items-center justify-end gap-x-6">
-            <button
-              type="button"
-              className="rounded-md mb-5 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: "#1976d2",
+                marginBottom: "2px",
+              }}
               onClick={groupProductsByColor}
             >
               Hoàn tất
-            </button>
+            </Button>
           </div>
           {selectedColors.map((mau) => (
             <div key={mau}>
@@ -1325,21 +1328,33 @@ export default function ThemSanPham() {
           ))}
 
           <div className="mt-6 flex items-center justify-end gap-x-6">
-            <Link
-              to="/quan-ly-san-pham/san-pham"
-              type="button"
-              className="text-sm rounded-md  font-semibold leading-6 text-gray-900"
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: "#1976d2",
+                marginBottom: "2px",
+              }}
+              onClick={groupProductsByColor}
             >
-              Cancel
-            </Link>
+              <Link
+                to="/quan-ly-san-pham/san-pham"
+                type="button"
+                className="text-sm rounded-md  font-semibold leading-6 text-gray-900"
+              >
+                Cancel
+              </Link>
+            </Button>
 
-            <button
-              type="button"
-              className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: "#1976d2",
+                marginBottom: "2px",
+              }}
               onClick={handleOpenAddConfirmation}
             >
               Thêm sản phẩm
-            </button>
+            </Button>
           </div>
         </form>
         <div>
