@@ -16,6 +16,12 @@ import ThemSanPham from "./components/sanPham/ThemSanPham";
 import ChiTietSanPham from "./components/sanPham/ChiTietSanPham";
 import DetailSanPham from "./components/sanPham/DetailSanPham";
 import DetailKhachHang from "./components/khachHang/DetailKhachHang";
+
+import EditVoucher from "./components/voucher/EditVoucher";
+import DetailHoaDon from "./components/quanlyhoadon/DetailHoaDon";
+import DetailVoucher from "./components/voucher/DetailVoucher";
+import AddVoucher from "./components/voucher/AddVoucher";
+
 const App = () => {
   return (
     <NextUIProvider>
@@ -24,7 +30,6 @@ const App = () => {
           <Route path="/" element={<BanHangTaiQuay />} />
           <Route path="/quan-ly-hoa-don" element={<QuanLyHoaDon />} />
           <Route path="/khuyen-mai" element={<KhuyenMai />} />
-          <Route path="/voucher" element={<Voucher />} />
           <Route path="/profile" element={<Profile />} />
 
           <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
@@ -35,6 +40,13 @@ const App = () => {
           <Route path="/edit-san-pham/:ma" element={<ChiTietSanPham />} />
           <Route path="/update-san-pham/:maSP" element={<DetailSanPham />} />
           <Route path="/edit-khach-hang/:maKH" element={<DetailKhachHang />} />
+
+          <Route path="/add-voucher" element={<AddVoucher />} />
+          <Route path="/eidt-voucher/:id" element={<EditVoucher />} />
+          <Route path="/detail-voucher/:id" element={<DetailVoucher />} />
+
+          <Route path="/voucher" element={<Voucher />} />
+          <Route path="/detail-hoa-don/:id" element={<DetailHoaDon />} />
 
           <Route path="/quan-ly-san-pham" element={<Build />}>
             <Route path=":bID">

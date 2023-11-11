@@ -16,7 +16,8 @@ const columns = [
       <TableCell>
         <div
           style={{
-            backgroundColor: params.value === "Đang hoạt động" ? "#79AC78" : "#FF6969",
+            backgroundColor:
+              params.value === "Đang hoạt động" ? "#79AC78" : "#FF6969",
             color: "white",
             fontSize: "12px",
             textAlign: "center",

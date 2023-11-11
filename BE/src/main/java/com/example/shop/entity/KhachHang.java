@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -15,7 +14,6 @@ import java.util.UUID;
 @Data
 @Table(name = "khach_hang")
 public class KhachHang {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -61,5 +59,4 @@ public class KhachHang {
 
     @Column(name = "deleted")
     private Integer deleted;
-
 }

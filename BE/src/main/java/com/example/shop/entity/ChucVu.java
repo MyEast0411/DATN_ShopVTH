@@ -2,6 +2,7 @@ package com.example.shop.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Table(name = "chuc_vu")
+@Builder
 public class ChucVu {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

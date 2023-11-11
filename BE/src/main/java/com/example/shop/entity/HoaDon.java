@@ -2,6 +2,7 @@ package com.example.shop.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "hoa_don")
 public class HoaDon {
     @Id
@@ -24,6 +26,15 @@ public class HoaDon {
 
     @Column(name = "dia_chi")
     private String diaChi;
+
+    @Column(name = "ma")
+    private String ma;
+
+    @Column(name = "ho_ten")
+    private String tenKhachHang;
+
+    @Column(name = "tien_giam")
+    private String tienGiam;
 
     @Column(name = "tong_tien")
     private BigDecimal tongTien;
