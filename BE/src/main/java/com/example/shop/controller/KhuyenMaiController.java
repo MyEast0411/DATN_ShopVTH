@@ -183,8 +183,8 @@ public class KhuyenMaiController {
             @PathVariable("ngayBatDau") String ngayBatDau,
             @PathVariable("ngayKetThuc") String ngayKetThuc
     ) {
-        System.out.println(ngayBatDau);
-        System.out.println(ngayKetThuc);
+//        System.out.println(ngayBatDau);
+//        System.out.println(ngayKetThuc);
         try {
 //            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //            Date startDate = dateFormat.parse(ngayBatDau);
