@@ -82,3 +82,14 @@ export const deleteKhuyenMai = async (id) => {
     throw error;
   }
 };
+
+export const findKmspctByKhuyenMaiId = async (id) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/khuyen-mai/findKMSPCT-by-khuyenMaiId/${id}`
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

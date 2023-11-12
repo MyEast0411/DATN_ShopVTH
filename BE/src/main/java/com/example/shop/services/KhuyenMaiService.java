@@ -43,6 +43,8 @@ public class KhuyenMaiService {
         return khuyenMaiRepo.searchByDate(ngayBatDau, ngayKetThuc);
     }
 
+
+
     public KhuyenMai findByMa(String ma) {
         return khuyenMaiRepo.findByMa(ma);
     }

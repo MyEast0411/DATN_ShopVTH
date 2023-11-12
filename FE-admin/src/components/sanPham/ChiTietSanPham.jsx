@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 
 //filter
 import FilterMa from "../../small-component/Filter/FilterMa";
 import FilterTrangThai from "../../small-component/Filter/FilterTrangThai";
-import Slider from '../../common/filter/sanPham/Slider';
+import Slider from "../../common/filter/sanPham/Slider";
 
-import { Button as ButtonAntd} from "antd";
+import { Button as ButtonAntd } from "antd";
 import { Link, useParams } from "react-router-dom";
 
 //table
@@ -36,7 +36,6 @@ import {
   TableCell as TableCellMui,
 } from "@mui/material";
 
-
 //icon
 import { BiFilterAlt } from "react-icons/bi";
 import { ChevronDownIcon } from "../../common/otherComponents/ChevronDownIcon";
@@ -50,8 +49,7 @@ import { capitalize } from "../../common/otherComponents/utils";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { getAllKMSPCT } from "../../api/khuyenMai/KhuyenMaiApi";
-import numeral from 'numeral';
-
+import numeral from "numeral";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -60,7 +58,7 @@ const columns = [
   { name: "Màu sắc", uid: "mauSac", sortable: true },
   { name: "Đế giày", uid: "deGiay", sortable: true },
   { name: "Đơn giá", uid: "donGia", sortable: true },
-  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align : "center" },
+  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center" },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Hành Động", uid: "hanhDong" },
 ];
@@ -90,7 +88,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 export default function ChiTietSanPham() {
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] =
+    React.useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
 
@@ -131,8 +130,8 @@ export default function ChiTietSanPham() {
   const [kmspcts, setKmspcts] = useState([]);
   const fetchKMSPCT = async () => {
     const data = await getAllKMSPCT();
-    setKmspcts(data)
-    console.log(data)
+    setKmspcts(data);
+    console.log(data);
   };
   useEffect(() => {
     fetchKMSPCT();
@@ -168,10 +167,11 @@ export default function ChiTietSanPham() {
           mauSac: item.id_mau_sac.maMau,
           kichThuoc: item.id_kich_co.ten,
           soLuongTon: item.soLuongTon,
-          deGiay : item.id_de_giay.ten,
-          donGia : numeral(item.giaBan).format('0,0 VND') + " VND",
+          deGiay: item.id_de_giay.ten,
+          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
           trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)?.id_khuyen_mai.giaTriPhanTram,
+          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+            ?.id_khuyen_mai.giaTriPhanTram,
         }));
         // console.log(giaGiam)
         setSanPhams(updatedRows);
@@ -237,11 +237,7 @@ export default function ChiTietSanPham() {
       return null;
     }
 
-    return (
-      <div className="discount-tag">
-        {`${discount}% OFF`}
-      </div>
-    );
+    return <div className="discount-tag">{`${discount}% OFF`}</div>;
   };
 
   const renderCell = React.useCallback((sanPham, columnKey) => {
@@ -251,9 +247,11 @@ export default function ChiTietSanPham() {
       case "hinhAnh":
         const hinhAnhURL = sanPham.hinhAnh;
         return (
-          <div style={{
-            display: 'inline-block'
-          }}>
+          <div
+            style={{
+              display: "inline-block",
+            }}
+          >
             <Image
               width={150}
               height={100}
@@ -261,8 +259,8 @@ export default function ChiTietSanPham() {
               alt={sanPham.ten || "Ảnh sản phẩm"}
               classNames="m-5 relative"
               style={{
-                border: '1px solid #D8D9DA',
-                padding: '10px'
+                border: "1px solid #D8D9DA",
+                padding: "10px",
               }}
             />
             <DiscountTag discount={giaGiam} />
@@ -504,16 +502,16 @@ export default function ChiTietSanPham() {
         </div>
 
         <div
-            className="grid drop-shadow-lg grid-cols-1 md:grid-cols-3 gap-4"
-            style={{
-              fontSizfe: "8px",
-              backgroundColor: "white",
-              padding: "20px 10px",
-              borderRadius: "8px",
-            }}
-          >
-            <div className="p-5 ml-32">
-              <Input
+          className="grid drop-shadow-lg grid-cols-1 md:grid-cols-3 gap-4"
+          style={{
+            fontSizfe: "8px",
+            backgroundColor: "white",
+            padding: "20px 10px",
+            borderRadius: "8px",
+          }}
+        >
+          <div className="p-5 ml-32">
+            <Input
               isClearable
               className="w-full "
               placeholder="Tìm kiếm bất kỳ..."
@@ -521,33 +519,32 @@ export default function ChiTietSanPham() {
               value={filterValue}
               onClear={() => onClear()}
               onValueChange={onSearchChange}
-              />
-            </div>
-            <div className="p-5">
-              <div className="flex items-center">
-                <span className="pr-2">Trạng thái:</span>
-                <FilterTrangThai
-                  style={{ width: "100%" }}
-                />
-                </div>
-            </div>
-            <div className="p-5">
-              <Slider style={{ width: "100%" }} />
-            </div>
-            <div className="p-5 text-center mt-4">
-              <Button
-                type="primary"
-                style={{
-                  backgroundColor: "#1976d2",
-                  marginBottom: "2px",
-                  marginLeft: "150%",
-                }}
-              >
-                Làm mới
-              </Button>
+            />
+          </div>
+          <div className="p-5">
+            <div className="flex items-center">
+              <span className="pr-2">Trạng thái:</span>
+              <FilterTrangThai style={{ width: "100%" }} />
             </div>
           </div>
-        
+          <div className="p-5">
+            <Slider style={{ width: "100%" }} />
+          </div>
+          <div className="p-5 text-center mt-4">
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: "#1976d2",
+                marginBottom: "2px",
+                marginLeft: "150%",
+                color: "#fff",
+              }}
+            >
+              Làm mới
+            </Button>
+          </div>
+        </div>
+
         <div className="mb-2 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
           <div className="flex items-center">
             <HiOutlineClipboardList />
@@ -559,6 +556,7 @@ export default function ChiTietSanPham() {
               style={{
                 backgroundColor: "#1976d2",
                 marginBottom: "2px",
+                color: "#fff",
               }}
             >
               Quay lại
@@ -566,79 +564,79 @@ export default function ChiTietSanPham() {
           </Link>
         </div>
         <Table
-        style={{ height: "382px" }}
-        aria-label="Example table with custom cells, pagination and sorting"
-        // isHeaderSticky
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        classNames={{
-          wrapper: "max-h-[382px]",
-        }}
-        selectedKeys={selectedKeys}
-        sortDescriptor={sortDescriptor}
-        topContent={topContent}
-        topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader columns={headerColumns}>
-          {(column) => (
-            <TableColumn
-              key={column.uid}
-              align={column.uid === "hanhDong" ? "center" : "start"}
-              allowsSorting={column.sortable}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody
-          emptyContent={"Không tìm thấy sản phẩm nào!"}
-          items={sortedItems}
+          style={{ height: "382px" }}
+          aria-label="Example table with custom cells, pagination and sorting"
+          // isHeaderSticky
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
+          classNames={{
+            wrapper: "max-h-[382px]",
+          }}
+          selectedKeys={selectedKeys}
+          sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          topContentPlacement="outside"
+          onSelectionChange={setSelectedKeys}
+          onSortChange={setSortDescriptor}
         >
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
-        <DialogTitle>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "15px",
-            }}
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                align={column.uid === "hanhDong" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody
+            emptyContent={"Không tìm thấy sản phẩm nào!"}
+            items={sortedItems}
           >
-            <TbInfoTriangle
-              className="mr-2"
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => (
+                  <TableCell>{renderCell(item, columnKey)}</TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+        <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
+          <DialogTitle>
+            <div
               style={{
-                color: "red",
-                fontSize: "25px",
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: "15px",
               }}
-            />
-            <span>Xác nhận xóa</span>
-          </div>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn xóa Sản phẩm này?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} color="warning">
-            Hủy
-          </Button>
-          <Button color="primary" onClick={confirmDelete}>
-            Vẫn xóa
-          </Button>
-        </DialogActions>
-      </Dialog>
+            >
+              <TbInfoTriangle
+                className="mr-2"
+                style={{
+                  color: "red",
+                  fontSize: "25px",
+                }}
+              />
+              <span>Xác nhận xóa</span>
+            </div>
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Bạn có chắc muốn xóa Sản phẩm này?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={cancelDelete} color="warning">
+              Hủy
+            </Button>
+            <Button color="primary" onClick={confirmDelete}>
+              Vẫn xóa
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </>
-  )
+  );
 }

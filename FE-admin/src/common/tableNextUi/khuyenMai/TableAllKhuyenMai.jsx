@@ -18,6 +18,12 @@ import {
   getKeyValue,
   Pagination,
   Switch,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -26,6 +32,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+
 import { SearchIcon } from "../../otherComponents/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
@@ -36,18 +43,13 @@ import {
   getAllKhuyenMai,
   deleteKhuyenMai,
   searchByDate,
+  findKmspctByKhuyenMaiId,
 } from "../../../api/khuyenMai/KhuyenMaiApi";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
 import { format } from "date-fns";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faPencilAlt,
-  faTrashCan,
-} from "@fortawesome/free-solid-svg-icons"; // Import the FontAwesome icons
 import axios from "axios";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
@@ -69,11 +71,6 @@ const statusOptions = [
   { name: "Sắp diễn ra", uid: "Sắp diễn ra" },
   { name: "Chưa diễn ra", uid: "Chưa diễn ra" },
 ];
-
-const formateDateVietNam = (dateTimeStr) => {
-  const vietNamTime = DateTime.fromISO(dateTimeStr, { zone: "utc" });
-  return vietNamTime.toFormat("dd/MM/yyyy HH:mm");
-};
 
 const statusColorMap = {
   active: "success",
@@ -103,28 +100,18 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
+  const [khuyenMaiSPCT, setKhuyenMaiSPCT] = useState([]);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const iconStyle = {
-    cursor: "pointer",
-    padding: "5px",
-  };
-
-  const labelStyle = {
-    display: "none",
-    position: "absolute",
-    top: "100%",
-    left: "50%",
-    transform: "translateX(-50%)",
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
-    color: "white",
-    padding: "3px 6px",
-    borderRadius: "4px",
-    zIndex: "1",
-  };
-
-  const containerStyle = {
-    position: "relative",
-    display: "inline-block",
+  const handleViewDetails = async (id) => {
+    onOpen();
+    try {
+      const response = await findKmspctByKhuyenMaiId(id);
+      console.log(response);
+      setKhuyenMaiSPCT(response);
+    } catch (error) {
+      console.error("Error fetching khuyenMaiSPCT details:", error);
+    }
   };
 
   const handleDelete = (idToDelete) => {
@@ -209,13 +196,10 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     }
   }
 
-  useEffect(
-    () => {
-      fetchKhuyenMais();
-      setFilterValue(search);
-    },
-    [khuyenMais,nbd,nkt,search]
-  );
+  useEffect(() => {
+    fetchKhuyenMais();
+    setFilterValue(search);
+  }, [khuyenMais, nbd, nkt, search]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -249,7 +233,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
   }, [khuyenMais, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
- 
+
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
@@ -294,7 +278,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
             <div className="relative flex items-center gap-2">
               <Tooltip content="Xem" showArrow={true}>
                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon />
+                  <EyeIcon onClick={() => handleViewDetails(khuyenMai.id)} />
                 </span>
               </Tooltip>
               <Tooltip content="Chỉnh sửa" showArrow={true}>
@@ -521,6 +505,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
         aria-label="Example table with custom cells, pagination and sorting"
         // isHeaderSticky
         bottomContent={bottomContent}
+        selectionMode="single" 
         bottomContentPlacement="outside"
         classNames={{
           wrapper: "max-h-[382px]",
@@ -590,6 +575,34 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
           </Button>
         </DialogActions>
       </Dialog>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false}   size={"5xl"} >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Thông tin khuyến mại
+              </ModalHeader>
+              <ModalBody>
+                {khuyenMaiSPCT.map((item, index) => (
+                  <div key={index} className="mx-auto">
+                    <p>Mã sản phẩm: <span className="font-medium">{item.id_chi_tiet_san_pham.ma}</span></p>
+                    <p>Tên sản phẩm: <span className="font-medium">{item.id_chi_tiet_san_pham.ten}</span></p>
+                    <p>Giá sản phẩm: <span className="font-medium">{item.id_chi_tiet_san_pham.giaBan}</span></p>
+                  </div>
+                ))}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Đóng
+                </Button>
+                {/* <Button color="primary" onPress={onClose}>
+                  Ok
+                </Button> */}
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

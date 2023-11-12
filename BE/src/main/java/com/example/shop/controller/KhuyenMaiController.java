@@ -183,21 +183,22 @@ public class KhuyenMaiController {
             @PathVariable("ngayBatDau") String ngayBatDau,
             @PathVariable("ngayKetThuc") String ngayKetThuc
     ) {
-//        System.out.println(ngayBatDau);
-//        System.out.println(ngayKetThuc);
         try {
-//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            Date startDate = dateFormat.parse(ngayBatDau);
-//            Date endDate = dateFormat.parse(ngayKetThuc);
-//            System.out.println("Ngay bat dau: " + startDate);
-//            System.out.println("Ngay ket thuc: " + endDate);
-
             return khuyenMaiService.searchByDate(ngayBatDau, ngayKetThuc);
         } catch (Exception e) {
-            // Handle parsing exception
             e.printStackTrace();
             return null;
         }
+    }
+
+    @GetMapping("/findKMSPCT-by-khuyenMaiId/{id}")
+    public List<KhuyenMaiSanPhamChiTiet> findKmspctByKhuyenMaiId(@PathVariable String id) {
+        try {
+            return kmspctrepo.findKmspctByKhuyenMaiId(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

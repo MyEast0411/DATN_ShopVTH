@@ -32,4 +32,11 @@ public interface KhuyenMaiSanPhamChiTietRepository extends JpaRepository<KhuyenM
             "            WHERE km.trang_thai = 'Đang diễn ra' AND km.deleted = '0' AND km.switchKM = 'Đang diễn ra'", nativeQuery = true)
     List<KhuyenMaiSanPhamChiTiet> findKmspctByActiveKhuyenMaiViewModel();
 
+    @Query(value = "SELECT kmspct.* " +
+            "FROM khuyen_mai_spct kmspct " +
+            "JOIN khuyen_mai km ON kmspct.id_khuyen_mai = km.id " +
+            "WHERE km.id = :id", nativeQuery = true)
+    List<KhuyenMaiSanPhamChiTiet> findKmspctByKhuyenMaiId(@Param("id") String id);
+
+
 }
