@@ -64,7 +64,7 @@ public class HoaDonController {
             @RequestBody HoaDon hoaDon
     ){
         HoaDon hoaDonSave = hoaDonService.addHoaDon(hoaDon);
-        return new ResponseEntity<>( hoaDonSave, HttpStatus.CREATED);
+        return new ResponseEntity<>(hoaDonSave, HttpStatus.CREATED);
     }
 
     @PutMapping("update/{id}")

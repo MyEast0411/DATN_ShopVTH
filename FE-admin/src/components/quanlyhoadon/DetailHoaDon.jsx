@@ -15,6 +15,7 @@ import {
   exportComponentAsPNG,
 } from "react-component-export-image";
 import ComponentToPrint from "./InHoaDon";
+import { toast } from "react-toastify";
 
 export default function DetailHoaDon() {
   const { id } = useParams();
@@ -89,7 +90,8 @@ export default function DetailHoaDon() {
       })
       .then((response) => {
         setCurrentTimeLine(currentTimeLine + 1);
-        success(`${listTitleTimline[currentTimeLine].title} thành công`);
+        toast.success(`${listTitleTimline[currentTimeLine].title} thành công`);
+        // success(`${listTitleTimline[currentTimeLine].title} thành công`);
         hideModal();
         getDataLichSu();
       });

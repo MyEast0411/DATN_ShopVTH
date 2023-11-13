@@ -93,7 +93,7 @@ export default function AddVoucher() {
                 position: "top-right",
                 autoClose: 2000,
               });
-              navigate("/voucher");
+              navigate("/giam-gia/voucher");
             })
             .catch((e) =>
               toast.error(`Thêm  thất bại`, {

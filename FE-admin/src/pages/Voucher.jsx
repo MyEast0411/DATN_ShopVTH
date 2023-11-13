@@ -1118,7 +1118,7 @@ export default function App() {
                 marginBottom: "2px",
               }}
             >
-              <Link to={"/them-san-pham"}>+ Tạo sản phẩm</Link>
+              <Link to={"/add-voucher"}>+ Tạo voucher</Link>
             </ButtonAntd>
           </div>
           <div
@@ -1164,7 +1164,7 @@ export default function App() {
                   )}
                 </TableHeader>
                 <TableBody
-                  emptyContent={"Không tìm thấy sản phẩm nào!"}
+                  emptyContent={"Không tìm thấy voucher nào!"}
                   items={sortedItems}
                 >
                   {(item) => (

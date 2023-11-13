@@ -180,7 +180,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong }) => {
         </div>
 
         <div className="flex justify-between mt-5 mb-3">
-          <span className="poppins-font normal-case h-10 text-lg text-lg font-bold uppercase ">
+          <span className="poppins-font h-10 text-lg font-bold uppercase">
             Tài khoản{" "}
           </span>
           <Modal
@@ -274,7 +274,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong }) => {
           }}
         />
         <div className="flex justify-between mt-5 mb-3">
-          <span className="poppins-font normal-case h-10 text-lg text-lg font-bold uppercase ">
+          <span className="poppins-font h-10 text-lg font-bold uppercase ">
             Khách Hàng{" "}
           </span>
         </div>

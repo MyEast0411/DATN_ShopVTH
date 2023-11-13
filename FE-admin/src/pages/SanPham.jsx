@@ -214,17 +214,18 @@ export default function SanPham() {
       case "hanhDong":
         return (
           <div className="relative flex items-center gap-4">
-            <Link
-              to={`/edit-san-pham/${sanPham.ma}`}
-              style={{ display: "block" }}
-              className="button-link group relative"
-            >
-              <Tooltip content="Chi tiết" showArrow={true}>
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon />
-                </span>
-              </Tooltip>
-            </Link>
+            <Tooltip content="Chi tiết" showArrow={true}>
+              <Link
+                to={`/edit-san-pham/${sanPham.ma}`}
+                style={{ display: "block" }}
+                className="button-link group relative"
+              >
+                  <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                    <EyeIcon />
+                  </span>
+              </Link>
+            </Tooltip>
+
             <div className="group relative" style={{ position: "relative" }}>
               <Tooltip color="danger" content="Xóa" showArrow={true}>
                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
@@ -462,7 +463,7 @@ export default function SanPham() {
               </div>
             </div>
             <div className="p-5">
-              <Slider style={{ width: "100%" }} />
+              <Slider style={{ width: "100%" }} searchValue={0} maxValue={Math.max(...sanPhams.map(sanPham => sanPham.soLuongTon))}/>
             </div>
             <div className="p-5 text-center mt-4">
               <ButtonAntd

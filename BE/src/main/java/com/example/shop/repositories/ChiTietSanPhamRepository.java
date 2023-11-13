@@ -11,10 +11,12 @@ import java.util.UUID;
 
 
 public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, String> {
-    @Query(value = "SELECT b.ma,b.ten AS ten_san_pham, SUM(a.so_luong_ton) AS so_luong_ton,a.trang_thai\n" +
+    @Query(value = "SELECT b.ma, b.ten AS ten_san_pham, SUM(a.so_luong_ton) AS so_luong_ton, a.trang_thai\n" +
             "FROM san_pham_chi_tiet a\n" +
             "JOIN san_pham b ON a.id_san_pham = b.id\n" +
-            "GROUP BY b.ten,b.ma,a.trang_thai", nativeQuery = true)
+            "GROUP BY b.ma, b.ten, a.trang_thai\n" +
+            "ORDER BY MAX(b.ngay_tao) DESC\n" +
+            "LIMIT 0, 1000", nativeQuery = true)
     List<Object[]> loadTable();
 
     @Query(value = "select a.*\n" +
