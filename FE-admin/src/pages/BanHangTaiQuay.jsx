@@ -1,4 +1,5 @@
 import TabBanHang from "../components/ban_hang/TabBanHang";
+import TabsComponent from "../small-component/Tabs";
 
 const BanHangTaiQuay = () => {
   return (

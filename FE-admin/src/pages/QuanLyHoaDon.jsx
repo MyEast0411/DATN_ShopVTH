@@ -33,8 +33,9 @@ export default function QuanLyHoaDon() {
   // }, []);
   return (
     <>
-      <div class="bg-white rounded-lg">
-        <div className="mb-2  border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
+      <div>
+      <div class="bg-white rounded-lg" >
+        <div className="mb-2 border-b-[1px] font-normal relative border-gray-500 text-lg flex items-center">
           <AiOutlineFilter />
           <p className="ml-2 mt-1"> Bộ lọc</p>
         </div>
@@ -137,7 +138,7 @@ export default function QuanLyHoaDon() {
         </div>
       </div>
       <div>
-        <div className="mb-2  border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
+        <div className="mb-2 border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
           <HiOutlineClipboardList />
           <p className="ml-2 mt-1"> Danh sách hóa đơn</p>
           <Link to={"/"} className="absolute right-0 mb-1">
@@ -167,6 +168,7 @@ export default function QuanLyHoaDon() {
             <TabTrangThai />
           </div>
         </div>
+      </div>
       </div>
     </>
   );

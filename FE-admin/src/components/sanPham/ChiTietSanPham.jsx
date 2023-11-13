@@ -7,7 +7,7 @@ import Slider from "../../common/filter/sanPham/Slider";
 
 import { Button as ButtonAntd } from "antd";
 import { Link, useParams } from "react-router-dom";
-
+import { InputNumber } from 'antd';
 //table
 import {
   Table,
@@ -57,8 +57,8 @@ const columns = [
   { name: "Kích thước", uid: "kichThuoc", sortable: true },
   { name: "Màu sắc", uid: "mauSac", sortable: true },
   { name: "Đế giày", uid: "deGiay", sortable: true },
+  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center"},
   { name: "Đơn giá", uid: "donGia", sortable: true },
-  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center" },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Hành Động", uid: "hanhDong" },
 ];
@@ -82,8 +82,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "kichThuoc",
   "mauSac",
   "deGiay",
-  "donGia",
   "soLuongTon",
+  "donGia",
   "trangThai",
   "hanhDong",
 ];
@@ -92,7 +92,7 @@ export default function ChiTietSanPham() {
     React.useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
-
+  const [selectedCTSP, setSelectedCTSP] = useState([]);
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);
@@ -131,7 +131,6 @@ export default function ChiTietSanPham() {
   const fetchKMSPCT = async () => {
     const data = await getAllKMSPCT();
     setKmspcts(data);
-    console.log(data);
   };
   useEffect(() => {
     fetchKMSPCT();
@@ -243,7 +242,26 @@ export default function ChiTietSanPham() {
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
     const giaGiam = sanPham.giaGiam;
+    const isSanPhamSelected = selectedKeys === "all" || selectedCTSP.some((selectedItem) => selectedItem.id === sanPham.id);
     switch (columnKey) {
+      case "soLuongTon":
+        return isSanPhamSelected ? (
+          <InputNumber
+            value={sanPham.soLuongTon}
+            // onChange={handleInputChange}
+          />
+        ) : (
+          sanPham.soLuongTon
+        );
+      case "donGia":
+      return isSanPhamSelected ? (
+        <InputNumber
+          value={sanPham.donGia}
+          // onChange={handleInputChange}
+        />
+      ) : (
+        sanPham.donGia
+      );
       case "hinhAnh":
         const hinhAnhURL = sanPham.hinhAnh;
         return (
@@ -282,8 +300,8 @@ export default function ChiTietSanPham() {
           <Chip
             color="white"
             style={{
-              backgroundColor: sanPham.mauSac, // Sử dụng giá trị từ statusColorMap làm màu nền
-              color: "white", // Màu văn bản trắng
+              backgroundColor: sanPham.mauSac,
+              color: "white",
               fontSize: "13px",
               textAlign: "center",
               padding: "1px 6px",
@@ -323,7 +341,7 @@ export default function ChiTietSanPham() {
       default:
         return cellValue;
     }
-  }, []);
+  }, [selectedCTSP]);
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -361,15 +379,6 @@ export default function ChiTietSanPham() {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-end gap-3 items-end">
-          {/* <Input
-            isClearable
-            className="w-full sm:max-w-[30%]"
-            placeholder="Tìm kiếm bất kỳ..."
-            startContent={<SearchIcon />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          /> */}
           <div className="flex gap-3 items-end">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -425,7 +434,7 @@ export default function ChiTietSanPham() {
           <span className="text-default-400 text-small">
             Tổng {sanPhams.length} sản phẩm
           </span>
-          <label className="flex items-center text-default-400 text-small">
+          {/* <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
             <select
               className="bg-transparent outline-none text-default-400 text-small"
@@ -435,7 +444,16 @@ export default function ChiTietSanPham() {
               <option value="10">10</option>
               <option value="15">15</option>
             </select>
-          </label>
+          </label> */}
+          <ButtonAntd
+              type="primary"
+              style={{
+                backgroundColor: "#1976d2",
+                marginBottom: "2px",
+              }}
+            >
+              📝 Cập nhật sản phẩm
+            </ButtonAntd>
         </div>
       </div>
     );
@@ -452,11 +470,11 @@ export default function ChiTietSanPham() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        {/* <span className="w-[30%] text-small text-default-400">
+        <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
-            ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
-        </span> */}
+            ? ""
+            : ``}
+        </span>
         <Pagination
           isCompact
           showControls
@@ -465,7 +483,7 @@ export default function ChiTietSanPham() {
           page={page}
           total={totalPages}
           onChange={setPage}
-          style={{ paddingLeft: "730px" }}
+          // style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -550,8 +568,7 @@ export default function ChiTietSanPham() {
             <HiOutlineClipboardList />
             <p className="ml-2 mt-1"> Danh sách chi tiết sản phẩm</p>
           </div>
-          <Link to={"/quan-ly-san-pham/san-pham"}>
-            <Button
+            <ButtonAntd
               type="primary"
               style={{
                 backgroundColor: "#1976d2",
@@ -559,25 +576,42 @@ export default function ChiTietSanPham() {
                 color: "#fff",
               }}
             >
+            <Link to={"/quan-ly-san-pham/san-pham"}>
               Quay lại
-            </Button>
-          </Link>
+            </Link>
+            </ButtonAntd>
         </div>
         <Table
           style={{ height: "382px" }}
           aria-label="Example table with custom cells, pagination and sorting"
-          // isHeaderSticky
           bottomContent={bottomContent}
           bottomContentPlacement="outside"
           classNames={{
             wrapper: "max-h-[382px]",
           }}
           selectedKeys={selectedKeys}
+          selectionMode="multiple"
+          rowSelection={{
+            columnTitle: 'Chọn',
+            fixed: false,
+            checkStrictly: true,
+          }}
           sortDescriptor={sortDescriptor}
           topContent={topContent}
           topContentPlacement="outside"
-          onSelectionChange={setSelectedKeys}
+          // onSelectionChange={setSelectedKeys}
           onSortChange={setSortDescriptor}
+          onSelectionChange={(selectedKeys) => {
+            let selectedCTSP = [];
+            setSelectedKeys(selectedKeys);
+            if (selectedKeys === "all") {
+              selectedCTSP = sanPhams;
+            } else {
+            selectedCTSP = Array.from(selectedKeys).map(
+              (id) => sanPhams[id-1]
+            );}
+            setSelectedCTSP(selectedCTSP);
+          }}
         >
           <TableHeader columns={headerColumns}>
             {(column) => (
