@@ -17,4 +17,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
     @Query("select u from HoaDon u where u.deleted = 0")
     List<HoaDon> getPageDeleted( );
+
+    HoaDon getHoaDonByMa(String ma);
 }

@@ -88,8 +88,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 export default function ChiTietSanPham() {
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] =
-    React.useState(false);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
   const [selectedCTSP, setSelectedCTSP] = useState([]);
@@ -120,7 +119,6 @@ export default function ChiTietSanPham() {
   const getAllHA = async () => {
     await axios.get("http://localhost:8080/getAllHinhAnh").then((response) => {
       setHinhAnh(response.data);
-      // console.log(response.data);
     });
   };
   useEffect(() => {
@@ -637,6 +635,7 @@ export default function ChiTietSanPham() {
             )}
           </TableBody>
         </Table>
+        
         <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
           <DialogTitle>
             <div

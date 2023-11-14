@@ -6,8 +6,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Tooltip
 } from "@nextui-org/react";
-
+import { Table as TableAntd } from "antd";
 import {
   Button,
   Input,
@@ -17,7 +18,7 @@ import {
 // import "./GioHang";
 import { QrReader } from "react-qr-reader";
 import { Modal, Tag } from "antd";
-
+import TableSanPhamChiTiet from "../common/table/sanPham/TableSanPhamChiTiet";
 // icons
 import { BsQrCodeScan } from "react-icons/bs";
 import CartItem from "./CartItem";
@@ -26,13 +27,68 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { MdPayments } from "react-icons/md";
 import { IoAddCircle } from "react-icons/io5";
+import { DeleteIcon } from "../common/otherComponents/DeleteIcon";
+
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenThem, setIsModalOpenThem] = useState(false);
+  const [isModalOpenTT, setIsModalOpenTT] = useState(false);
   const [isModalOpenVoucher, setIsModalOpenVoucher] = useState(false);
   const [isModalOpenTK, setIsModalOpenTK] = useState(false);
-  const history = useNavigate();
+  const [khachHang, setKhachHang] = useState([]);
+  const [tienKhachDua, setTienKhachDua] = useState("");
+  const [tongTien, setTongTien] = useState("");
+  const [tienThua, setTienThua] = useState("");
+  const column = [
+    {
+      title: "STT",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "Mã giao dịch",
+      dataIndex: "maGiaoDich",
+      key: "maGiaoDich"
+    },
+    {
+      title: "Số tiền",
+      dataIndex: "soTien"
+    },
+    {
+      title: "Phương thức",
+      dataIndex: "phuongThuc"
+    },
+    {
+      dataIndex: "hanhDong",
+      title: "Hành động",
+      render: (params) => (
+        <div className="flex items-center">
+        <Tooltip color="danger" content="Xóa" showArrow={true}>
+          <span className="text-lg text-danger cursor-pointer active:opacity-50">
+            <DeleteIcon onClick={() => {}} />
+          </span>
+        </Tooltip>
+        </div>
+      ),
+    }
+  ];
+  const [inputValue, setInputValue] = useState(null);
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+  //modal nhap tien khach dua
+  const showModalTT = () => {
+    setIsModalOpenTT(true);
+  };
+  const handleOkTT = () => {
+    setIsModalOpenTT(false);
+  };
+  const handleCancelTT = () => {
+    setIsModalOpenTT(false);
+  };
   // modal thêm sản phẩm
   const showModalThem = () => {
     setIsModalOpenThem(true);
@@ -93,21 +149,136 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong }) => {
       handleOkQR();
     }
   };
-
   const handleErrorQR = (error) => {
     console.error(error);
   };
+  const thanhToanTienMat = () => {
+    if(inputValue > tongTien) {
+      setTienThua(inputValue - tongTien);
+      setTienKhachDua(tongTien);
+    }else {
+      setTienKhachDua(inputValue);
+    }
+  };
+  const tinhTongTien = (dataArray) => {
+    const tongTien = dataArray.reduce((tong, item) => {
+      const giaTien = Number(item.giaTien) || 0;
+      const soLuong = Number(item.soLuong) || 0;
+  
+      return tong + giaTien * soLuong;
+    }, 0);
+  
+    return tongTien;
+  };
 
+
+  const [list, setList] = useState([]);
+
+  const getData = async () => {
+    await axios
+      .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
+      .then((response) => {
+        setList(response.data);
+        console.log(response.data);
+        setKhachHang({
+          tenKhachHang : response.data[0]?.id_hoa_don
+          .tenKhachHang,
+          sdt : response.data[0]?.id_hoa_don
+          .sdt
+        })
+        console.log(khachHang);
+          
+        // Gọi hàm tính tổng tiền với mảng data
+        const tongTien = tinhTongTien(response.data);
+        
+        setTongTien(tongTien);
+      });
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
   return (
     <>
-      <div className=" p-5">
+      <div className="p-5">
         <div className="flex items-center gap-4">
           <Modal
             onOk={handleOkThem}
             onCancel={handleCancelThem}
             open={isModalOpenThem}
+            width={1500}
+            footer={[]}
           >
-            <p>Hello</p>
+            <div className="mt-5">
+              <TableSanPhamChiTiet gioHang={activeKey}/>
+            </div>
+          </Modal>
+          <Modal
+            onOk={handleOkTT}
+            onCancel={handleCancelTT}
+            open={isModalOpenTT}
+            width={700}
+            okText="Xác nhận"
+          >
+            <div className="mt-3">
+              <p style={{ fontSize: "17px" }}>Thanh toán</p>
+              <div className="flex mt-3">
+                <b className="mt-2">Số tiền</b>
+                <div style={{ marginLeft: "50px" }}>
+                  <Input 
+                  value={inputValue}
+                  onChange={handleInputChange} 
+                  style={{ width: '450px', fontSize: '19px' }}
+                  placeholder="Vui lòng nhập số tiền"/>
+                </div>
+              </div>
+              <div className="flex mt-3 space-x-3">
+                <button className="w-48 px-4 py-2 bg-pink-300 hover:bg-pink-500 text-white font-semibold rounded-full"
+                  onClick={thanhToanTienMat}
+                >
+                  Tiền mặt
+                </button>
+                <button className="w-48 px-4 py-2 bg-pink-300 hover:bg-pink-500 text-white font-semibold rounded-full"
+                
+                >
+                  Chuyển khoản
+                </button>
+                <button className="w-48 px-4 py-2 bg-pink-300 hover:bg-pink-500 text-white font-semibold rounded-full"
+                
+                >
+                  Thẻ
+                </button>
+              </div>
+              <div className="flex justify-between mt-5">
+                <span className="poppins-font normal-case h-10 font-bold">
+                  Khách cần trả : {""}
+                </span>
+                <span style={{fontSize : "20px", color : "#FF1493"}} className="poppins-font normal-case h-10 ms-5 font-bold">
+                {Intl.NumberFormat().format(tongTien)}&nbsp;₫
+                </span>
+              </div>
+              <TableAntd
+                columns={column}
+                dataSource={[]}
+                pagination={true}
+              />
+              <div className="flex justify-between mt-5">
+                <span className="poppins-font normal-case h-10 font-bold">
+                  Khách thanh toán : {""}
+                </span>
+                <span style={{fontSize : "20px", color : "#FF1493"}} className="poppins-font normal-case h-10 ms-5 font-bold">
+                {Intl.NumberFormat().format(tienKhachDua)}&nbsp;₫
+                </span>
+              </div>
+              <div className="flex justify-between mt-5">
+                <span className="poppins-font normal-case h-10 font-bold">
+                  Tiền thừa : {""}
+                </span>
+                <span style={{fontSize : "20px", color : "blue"}} className="poppins-font normal-case h-10 ms-5 font-bold">
+                {Intl.NumberFormat().format(tienThua)}&nbsp;₫
+                </span>
+              </div>
+            </div>
           </Modal>
           <MaterialButton
             variant="gradient"
@@ -145,13 +316,13 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong }) => {
                     }
                     const result = splitString(data.text);
                     console.log(result);
-                    setKhachHang({
-                      ...khachHang,
-                      ten: result[2],
-                      cccd: result[0],
-                      ngay_sinh: result[3],
-                      gioi_tinh: result[4],
-                    });
+                    // setKhachHang({
+                    //   ...khachHang,
+                    //   ten: result[2],
+                    //   cccd: result[0],
+                    //   ngay_sinh: result[3],
+                    //   gioi_tinh: result[4],
+                    // });
                   }
                 }}
                 onError={handleErrorQR}
@@ -172,11 +343,11 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong }) => {
           </Link>
         </div>
         <div className="pt-4">
-          <CartItem
-            users={users}
+            <CartItem
+            users={list}
             columns={columns}
             updateSoLuong={updateSoLuong}
-          />
+            />
         </div>
 
         <div className="flex justify-between mt-5 mb-3">
@@ -258,13 +429,19 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong }) => {
             backgroundColor: "#232D3F",
           }}
         />
-        <div className="flex justify-between mt-5 mb-3">
-          <span className="poppins-font normal-case h-10  ms-5 font-bold">
-            Tên khách hàng :{" "}
+        <div className="flex flex-col mt-5 mb-3">
+          <div className="poppins-font normal-case h-10 ms-5 font-bold">
+            <span style={{ marginRight: '5px' }}>Tên khách hàng : </span>
             <Tag color="magenta" style={{ fontSize: 15 }}>
-              Khách lẻ
+              {khachHang?.tenKhachHang || "Khách lẻ"}
             </Tag>
-          </span>
+          </div>
+          <div className="poppins-font normal-case h-10 ms-5 font-bold">
+            <span style={{ marginRight: '5px' }}>Số điện thoại : </span>
+            <Tag color="magenta" style={{ fontSize: 15 }}>
+              {khachHang.sdt}
+            </Tag>
+          </div>
         </div>
         <p
           style={{
@@ -279,25 +456,33 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong }) => {
           </span>
         </div>
 
-        <div class="flex justify-end ... ">
+        <div class="flex justify-end">
           <div className="w-6/12 space-y-8">
-            <p className="font-bold text-lg text-center">
-              <span>Thông tin thanh toán</span>{" "}
+            <p className="font-bold text-lg">
+              <span>💝 Thông tin thanh toán</span>{" "}
             </p>
 
-            <div class="flex ... gap-20">
-              <div class="w-4/6 ... font-medium text-s ">Khách thanh toán</div>
-              <div class="w-2/6 ...">
-                <span style={{ color: "red", fontWeight: "bold" }}>
+            <div class="flex gap-20">
+              <div class="w-2/6 font-medium text-s">Khách thanh toán</div>
+              
+              <div class="w-1/6">
+                <Tooltip content="Nhập tiền khách đưa" showArrow={true}>
+                  <div onClick={showModalTT} style={{ cursor : "pointer", width: '50px', height: '40px', border: '1px solid #000', borderRadius : "5px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGHAoC6gqoEDXMUDn7BY1F6qvi2ZEVWGV2RA&usqp=CAU" alt="Mô tả hình ảnh" style={{ maxWidth: '50%', maxHeight: '100%' }} />
+                  </div>
+                </Tooltip>
+              </div>
+              <div class="w-2/6">
+                <span style={{ color: "red", fontWeight: "bold", fontSize : "20px" }}>
                   {" "}
-                  {Intl.NumberFormat().format(700000)}&nbsp;₫
+                  {Intl.NumberFormat().format(tienKhachDua)}&nbsp;₫
                 </span>
               </div>
             </div>
 
-            <div class="flex ... gap-6">
-              <div class="w-4/6 ... font-">
-                <Input label="mời nhập mã" />
+            <div class="flex gap-6">
+              <div class="w-4/6 font-">
+                <Input label="Mời nhập mã" />
               </div>
               <Modal
                 onOk={handleOkVoucher}
@@ -387,31 +572,31 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong }) => {
             <div class="flex ... gap-20">
               <div class="w-4/6 ... font-medium text-s">Tiền hàng</div>
               <div class="w-2/6 ...">
-                <span style={{ color: "red", fontWeight: "bold" }}>
+                <span style={{ color: "red", fontWeight: "bold", fontSize : "20px"  }}>
                   {" "}
-                  {Intl.NumberFormat().format(700000)}&nbsp;₫
+                  {Intl.NumberFormat().format(tongTien)}&nbsp;₫
                 </span>
               </div>
             </div>
             <div class="flex ... gap-20">
               <div class="w-4/6 ... font-medium text-s">Giảm giá </div>
               <div class="w-2/6 ...">
-                <span style={{ color: "red", fontWeight: "bold" }}>
+                <span style={{ color: "red", fontWeight: "bold", fontSize : "15px"  }}>
                   {" "}
-                  {Intl.NumberFormat().format(0)}&nbsp;₫
+                  {Intl.NumberFormat().format(-0)}&nbsp;₫
                 </span>
               </div>
             </div>
-            <div class="flex ... gap-20">
-              <div class="w-4/6 ... font-medium text-s">Tổng tiền</div>
-              <div class="w-2/6 ...">
-                <span style={{ color: "red", fontWeight: "bold" }}>
+            <div class="flex gap-20">
+              <div class="w-4/6 font-medium text-s">Tổng tiền</div>
+              <div class="w-2/6">
+                <span style={{ color: "red", fontWeight: "bold", fontSize : "20px" }}>
                   {" "}
-                  {Intl.NumberFormat().format(700000)}&nbsp;₫
+                  {Intl.NumberFormat().format(tongTien)}&nbsp;₫
                 </span>
               </div>
             </div>
-            <div class="flex ... justify-center">
+            <div class="flex justify-center">
               <Button>Thanh Toán</Button>
             </div>
           </div>

@@ -27,6 +27,7 @@ import {
   TableCell as TableCellMui,
 } from "@mui/material";
 // import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
+import { AiOutlinePlus } from "react-icons/ai";
 import { SearchIcon } from "../../otherComponents/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
@@ -38,13 +39,18 @@ import { LiaEyeSolid } from "react-icons/lia";
 import { getAllKMSPCT } from "../../../api/khuyenMai/KhuyenMaiApi"
 import { DeleteIcon } from "../../otherComponents/DeleteIcon";
 import { EyeIcon } from "../../otherComponents/EyeIcon";
+import numeral from "numeral";
+import { InputNumber } from "antd";
+import { Modal } from 'antd';
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
   { name: "Ảnh", uid: "hinhAnh", sortable: true },
   { name: "Kích thước", uid: "kichThuoc", sortable: true },
   { name: "Màu sắc", uid: "mauSac", sortable: true },
-  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true },
+  { name: "Đế giày", uid: "deGiay", sortable: true },
+  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center"},
+  { name: "Đơn giá", uid: "donGia", sortable: true },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Hành Động", uid: "hanhDong" },
 ];
@@ -67,15 +73,49 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hinhAnh",
   "kichThuoc",
   "mauSac",
+  "deGiay",
   "soLuongTon",
+  "donGia",
   "trangThai",
   "hanhDong",
 ];
 
-export default function App() {
+export default function App({ gioHang }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
+  const [soLuongSP, setSoLuongSP] = useState({});
+  const [soLuongDat, setSoLuongDat] = useState("");
+  const [isModalOpenThemSL, setIsModalOpenThemSL] = useState(false);
+
+  const showModalThemSL = () => {
+    setIsModalOpenThemSL(true);
+  };
+  const handleOkThemSL = async () => {
+    // localStorage.setItem("gioHang"+gioHang,soLuongSP.id)
+    // localStorage.setItem("soLuongDat",soLuongDat)
+    console.log(gioHang);
+    console.log(soLuongSP.id);
+    console.log(soLuongDat);
+
+    await axios.post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
+      id_hoa_don : gioHang,
+      id_san_pham : soLuongSP.id,
+      so_luong : soLuongDat
+    })
+      .then((response) => {
+        toast("🎉 Thêm thành công");
+        cancelDelete();
+      })
+      .catch((error) => {
+        toast(error.response.data);
+      });
+    cancelDelete();
+    setIsModalOpenThemSL(false);
+  };
+  const handleCancelThemSL = () => {
+    setIsModalOpenThemSL(false);
+  };
 
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
@@ -109,13 +149,12 @@ export default function App() {
   };
   useEffect(() => {
     getAllHA();
-  }, [hinhAnh]);
+  }, []);
 
   const [kmspcts, setKmspcts] = useState([]);
   const fetchKMSPCT = async () => {
     const data = await getAllKMSPCT();
     setKmspcts(data)
-    console.log(data)
   };
   useEffect(() => {
     fetchKMSPCT();
@@ -135,14 +174,14 @@ export default function App() {
   const [sanPhams, setSanPhams] = React.useState([]);
   const { ma } = useParams();
 
-  const url = `http://localhost:8080/findByMa/${ma}`;
+  const url = `http://localhost:8080/getAllSPCT`;
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(url);
         // console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
-          id: index + 1,
+          id: item.id,
           stt: index + 1,
           hinhAnh:
             hinhAnh.find((x) => x.id_san_pham_chi_tiet.id == item.id)?.ten ||
@@ -150,8 +189,11 @@ export default function App() {
           mauSac: item.id_mau_sac.maMau,
           kichThuoc: item.id_kich_co.ten,
           soLuongTon: item.soLuongTon,
+          deGiay: item.id_de_giay.ten,
+          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
           trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)?.id_khuyen_mai.giaTriPhanTram,
+          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+            ?.id_khuyen_mai.giaTriPhanTram,
         }));
         // console.log(giaGiam)
         setSanPhams(updatedRows);
@@ -228,13 +270,16 @@ export default function App() {
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
     const giaGiam = sanPham.giaGiam;
+    
     switch (columnKey) {
       case "hinhAnh":
+        
         const hinhAnhURL = sanPham.hinhAnh;
         return (
           <div style={{
             display: 'inline-block'
           }}>
+            
             <Image
               width={150}
               height={100}
@@ -247,6 +292,7 @@ export default function App() {
               }}
             />
             <DiscountTag discount={giaGiam} />
+            
           </div>
         );
       case "trangThai":
@@ -259,6 +305,7 @@ export default function App() {
           >
             {cellValue}
           </Chip>
+          
         );
       case "mauSac":
         return (
@@ -280,33 +327,30 @@ export default function App() {
         );
       case "hanhDong":
         return (
-          <div className="relative flex items-center gap-4">
-            <Tooltip content="Chi tiết" showArrow={true}>
-              <Link
-                to={`/edit-san-pham/${sanPham.ma}`}
-                style={{ display: "block" }}
-                className="button-link group relative"
-              >
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon />
+          <div className="relative flex gap-4">
+            <Tooltip content="Thêm sản phẩm" showArrow={true}>
+                <span className="cursor-pointer active:opacity-50 w-20 text-center">
+                  <div
+                    className="p-2"
+                    style={{
+                      backgroundColor: "#00C5CD",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {showModalThemSL();setSoLuongSP({id : sanPham.id , soLuongTon : sanPham.soLuongTon})}}
+                  >
+                    Chọn
+                  </div>
+                  
                 </span>
-              </Link>
             </Tooltip>
-
-            <div className="group relative" style={{ position: "relative" }}>
-              <Tooltip color="danger" content="Xóa" showArrow={true}>
-                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <DeleteIcon onClick={() => handleDelete(sanPham.ma)} />
-                </span>
-              </Tooltip>
-              {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
-            </div>
           </div>
         );
       default:
         return cellValue;
     }
-  }, []);
+  }, [isModalOpenThemSL]);
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -343,8 +387,10 @@ export default function App() {
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <div className="flex justify-end gap-3 items-end">
-          {/* <Input
+        <h1>Các sản phẩm đang có</h1>
+
+        <div className="flex justify-between gap-3 items-end">
+          <Input
             isClearable
             className="w-full sm:max-w-[30%]"
             placeholder="Tìm kiếm bất kỳ..."
@@ -352,8 +398,8 @@ export default function App() {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
-            style={{margin : "100px 500px"}}
-          /> */}
+            // style={{margin : "100px 500px"}}
+          />
           <div className="flex gap-3 items-end">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -447,7 +493,7 @@ export default function App() {
           showShadow
           color="primary"
           page={page}
-          total={totalPages}
+          total={pages}
           onChange={setPage}
           style={{ paddingLeft: "730px" }}
         />
@@ -515,6 +561,21 @@ export default function App() {
           )}
         </TableBody>
       </Table>
+      <Modal
+        onOk={handleOkThemSL}
+        onCancel={handleCancelThemSL}
+        open={isModalOpenThemSL}
+        width={350}
+        okText="Đặt hàng"
+        >
+        <div className="mt-5">
+          <h2>Số lượng tồn sản phẩm : {soLuongSP.soLuongTon}</h2>
+          <br />
+          <p>Nhập số lượng sản phẩm  
+          </p>
+          <InputNumber onChange={(value) => {setSoLuongDat(value)}} max={soLuongSP.soLuongTon}/>
+        </div>
+      </Modal>
       <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
         <DialogTitle>
           <div

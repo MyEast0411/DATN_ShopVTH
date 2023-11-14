@@ -108,6 +108,11 @@ public class SanPhamController {
         return hinhAnhRepository.findAll();
     }
 
+    @GetMapping("/getAllSPCT")
+    List<SanPhamChiTiet> getAllSPCT() {
+        return repo.findAll();
+    }
+
     @GetMapping("getHinhAnhByMau/{mauSac}")
     public List<HinhAnh> getHinhAnhByMau(@PathVariable String mauSac) {
         return hinhAnhRepository.getHinhAnhByMau(mauSac);
