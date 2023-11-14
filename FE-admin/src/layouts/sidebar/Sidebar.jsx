@@ -4,13 +4,13 @@ import SubMenu from "./SubMenu";
 import { motion } from "framer-motion";
 
 // * React icons
-import { AiOutlineSetting } from "react-icons/ai";
+import { AiFillPieChart, AiOutlineSetting } from "react-icons/ai";
 import { CiDiscount1 } from "react-icons/ci";
 import { IoIosArrowBack } from "react-icons/io";
 import { AiOutlineAppstore } from "react-icons/ai";
 import { BsPerson } from "react-icons/bs";
 import { HiOutlineDatabase } from "react-icons/hi";
-import { TbReportAnalytics } from "react-icons/tb";
+import { TbChartHistogram, TbReportAnalytics } from "react-icons/tb";
 import { RiBuilding3Line } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 import { MdMenu } from "react-icons/md";
@@ -93,7 +93,7 @@ const Sidebar = () => {
       mainTitle: "Giảm giá",
     },
     {
-      name: "settings",
+      name: "thong-ke",
       icon: AiOutlineSetting,
       menus: ["dang-ky", "dang-nhap", "dang-xuat"],
       subTitles: ["Đăng ký", "Đăng nhập", "Đăng xuất"],
@@ -155,6 +155,13 @@ const Sidebar = () => {
                 ))}
               </div>
             )}
+
+            <li>
+              <NavLink to={"/thong-ke"} className="link">
+                <TbChartHistogram size={23} className="min-w-max" />
+                Thống kê
+              </NavLink>
+            </li>
           </ul>
 
           <li className="link">
