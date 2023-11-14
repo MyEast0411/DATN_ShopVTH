@@ -7,7 +7,7 @@ import { Accordion, AccordionItem } from "@nextui-org/react";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { Checkbox } from "@nextui-org/react";
 import ProductList from "../components/ProductList";
-import { IoFilter } from "react-icons/io5";
+import { CiSliderHorizontal } from "react-icons/ci";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 
@@ -59,7 +59,7 @@ export default function Shop() {
             }}
           >
             <p className="mr-3">Hide Filters</p>
-            <IoFilter
+            <CiSliderHorizontal
               className="mt-0.5"
               style={{
                 fontSize: "20px",

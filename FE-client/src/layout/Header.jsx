@@ -58,10 +58,10 @@ export default function Header() {
 
         <AiOutlineHeart className="heart" />
         <div className="icon-container">
-          <div className="relative">
+          <Link to="/cart" className="relative">
             <BsBagDash className="bag" />
             <div className="badge">5</div>
-          </div>
+          </Link>
         </div>
       </div>
     </>
