@@ -114,6 +114,7 @@ export default function TableCommon({ data }) {
   return (
     <Table
       aria-label="Example table with dynamic content"
+      style={{ height: "382px" }}
       className="pb-4"
       bottomContent={
         <div className="flex w-full justify-center ">

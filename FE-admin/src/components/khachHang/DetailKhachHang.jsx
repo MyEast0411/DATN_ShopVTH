@@ -44,10 +44,10 @@ export default function ThemKhachHang() {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
   const [listDiaChi, setListDiaChi] = useState([]);
   const [isOn, setIsOn] = useState(false); // Khởi tạo trạng thái ban đầu là "off"
-
+  const [idToDelete, setIdToDelete] = useState("");
   const handleSwitchChange = (index) => {
     const updatedListDiaChi = [...listDiaChi];
-  
+    
     updatedListDiaChi[index].trangThai = 1;
   
     updatedListDiaChi.forEach((item, i) => {
@@ -58,8 +58,12 @@ export default function ThemKhachHang() {
     setListDiaChi(updatedListDiaChi);
   };
   
-  
-  
+  const handleDelete = () => {
+    setDeleteConfirmationOpen(true);
+  };
+  const cancelDelete = () => {
+    setDeleteConfirmationOpen(false);
+  };
   const handleAdd = () => {
     setDeleteConfirmationOpen(true);
   };
@@ -227,7 +231,7 @@ export default function ThemKhachHang() {
   useEffect(() => {
     getKhachHang();
     getDiaChi();
-  }, []);
+  }, [listDiaChi,khachHang]);
 
   const onChange = (e) => {
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
@@ -252,13 +256,6 @@ export default function ThemKhachHang() {
   };
   const handleCancel = () => {
     setIsModalOpen(false);
-  };
-  const handleStartScanning = () => {
-    setShowScanner(true);
-  };
-
-  const handleEndScanning = () => {
-    setShowScanner(false);
   };
 
   const handleScan = (data) => {
@@ -548,6 +545,124 @@ export default function ThemKhachHang() {
 
         <div className="col-span-2 m-10">
           <Accordion selectionMode="multiple">
+            <AccordionItem
+              key="2"
+              aria-label="+ Thêm mới địa chỉ"
+              startContent={
+                <Avatar
+                  isBordered
+                  color="success"
+                  radius="lg"
+                  src="https://as1.ftcdn.net/v2/jpg/02/43/68/08/1000_F_243680848_4OlSv4lr4t3ljl3ikjG6v9vawqtqcbDW.jpg"
+                />
+              }
+              subtitle="Thêm địa chỉ cho khách hàng"
+              title="Thêm mới địa chỉ"
+            >
+              <div className="">
+                <div className="mb-8">
+                  <label
+                    htmlFor="city"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Chọn thành phố
+                  </label>
+                  <select
+                    id="city"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(e) => {
+                      handleProvinceChange(e.target.value);
+                    }}
+                  >
+                    <option value="">Chọn thành phố</option>
+                    {provinces.map((province) => (
+                      <option key={province.code} value={province.code}>
+                        {province.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="District"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Chọn huyện
+                  </label>
+                  <select
+                    id="District"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(e) => handleDistrictChange(e.target.value)}
+                  >
+                    <option value="">Chọn huyện</option>
+                    {districts.map((district) => (
+                      <option key={district.code} value={district.code}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="wards"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Chọn xã phường
+                  </label>
+                  <select
+                    id="wards"
+                    onChange={(e) => handleWardsChange(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  >
+                    <option value="">Chọn xã phường</option>
+                    {wards.map((ward) => (
+                      <option key={ward.code} value={ward.code}>
+                        {ward.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="mb-8">
+                <label
+                  htmlFor="phone"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Số nhà/Ngõ/Đường
+                </label>
+                <input
+                  type="text"
+                  name="soNha"
+                  value={soNha}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                    w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                    dark:focus:ring-blue-500 mt-4 dark:focus:border-blue-500"
+                  placeholder="Số nhà/Ngõ/Đường"
+                  required
+                  onChange={(e) => {
+                    onChange(e);
+                  }}
+                />
+              </div>
+              <Button 
+                onClick={async() => {
+                  await axios.post("http://localhost:8080/dia-chi/add",diaChi)
+                  .then((response) => {
+                      toast.success(`🎉 Thêm thành công`)
+                      getDiaChi();
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                      toast.error(`${error.response.data}`)
+                  });
+                }}
+              >
+                Thêm địa chỉ
+              </Button>
+            </AccordionItem>
+          </Accordion>
+          <Accordion selectionMode="multiple">
             {listDiaChi.map((item,index) => (
               <AccordionItem
               key={index}
@@ -562,7 +677,7 @@ export default function ThemKhachHang() {
               }
               subtitle="Xem chi tiết"
               title={"Địa chỉ "+(index + 1)}
-            >
+              >
               <div>
               <Select
                 placeholder="Thành phố"
@@ -623,6 +738,10 @@ export default function ThemKhachHang() {
                       marginBottom: "2px",
                       marginLeft: "auto"
                     }}
+                    onClick={() => {
+                      setIdToDelete(item.id);
+                      handleDelete();
+                    }}
                   >
                     Xóa địa chỉ
                   </Button>
@@ -676,7 +795,7 @@ export default function ThemKhachHang() {
             >
               + Thêm địa chỉ
             </Button>
-            <Modal
+            {/* <Modal
               title="Thêm địa chỉ"
               open={isModalOpen}
               onOk={handleOk}
@@ -770,7 +889,7 @@ export default function ThemKhachHang() {
                   }}
                 />
               </div>
-            </Modal>
+            </Modal> */}
 
             <div className="mt-36 flex items-center justify-end gap-x-6">
               <Button
@@ -828,6 +947,55 @@ export default function ThemKhachHang() {
           </Button>
           <Button color="primary" onClick={onSubmit}>
             Vẫn sửa
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={deleteConfirmationOpen}
+        onClose={cancelDelete}
+        fullWidth
+      >
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận xóa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn xóa địa chỉ này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="warning">
+            Hủy
+          </Button>
+          <Button color="primary" onClick={async() => {
+            console.log(idToDelete);
+            await axios
+            .delete(`http://localhost:8080/dia-chi/delete/${idToDelete}`)
+            .then((response) => {
+              toast("🎉 Xóa thành công");
+              cancelDelete();
+            })
+            .catch((error) => {
+              toast("😿 "+error.response.data);
+            });
+            cancelDelete();
+          }}>
+            Vẫn xóa
           </Button>
         </DialogActions>
       </Dialog>

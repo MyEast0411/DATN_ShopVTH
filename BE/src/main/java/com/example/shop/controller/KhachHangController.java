@@ -52,6 +52,19 @@ public class KhachHangController {
         khachHangRepository.delete(khachHangRepository.findById(id).get());
     }
 
+    @DeleteMapping("/dia-chi/delete/{id}")
+    public ResponseEntity deleteDiaChi(@PathVariable("id") String id) {
+        try {
+            if(diaChiRepository.findById(id).get().getTrangThai() == 1) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không được xóa địa chỉ mặc định");
+            }
+            diaChiRepository.delete(diaChiRepository.findById(id).get());
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Xóa thất bại");
+        }
+    }
+
     @PostMapping("/khach-hang/add")
     public ResponseEntity add(@RequestBody KhachHangVM khachHang) {
         System.out.println(khachHang);
