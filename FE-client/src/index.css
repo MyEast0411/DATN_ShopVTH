@@ -140,3 +140,7 @@ input[type="number"] {
 .icon-footer-github {
   font-size: 28px;
 }
+
+.text-large {
+  font-size: 16px;
+}

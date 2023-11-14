@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function SaleBar() {
   return (
@@ -74,7 +75,9 @@ export default function SaleBar() {
             </p>
           </div>
           <div className="shop-button flex justify-center mb-10">
-            <button class="btn-shop-button">Shop</button>
+            <Link to="/shop">
+              <button class="btn-shop-button">Shop</button>
+            </Link>
           </div>
         </div>
       </div>

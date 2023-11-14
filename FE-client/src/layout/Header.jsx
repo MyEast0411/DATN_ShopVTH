@@ -2,15 +2,16 @@ import React from "react";
 import Logo from "../assets/logo.png";
 import { AiOutlineHeart } from "react-icons/ai";
 import { BsBagDash } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   return (
     <>
       <div className="flex main-ctn w-full sticky top-0">
-        <div className="flex container-logo">
-          <img className="logo" src={Logo} alt="" />
+        <Link to="/" className="flex container-logo">
+          <img className="logo cursor-pointer" src={Logo} alt="" />
           <div className="flex justify-center">Jordan VTH</div>
-        </div>
+        </Link>
         <div className="menu flex">
           <ul className="flex">
             <li>
@@ -34,7 +35,7 @@ export default function Header() {
           </ul>
         </div>
 
-        <div class="container-input">
+        <div className="container-input">
           <input
             type="text"
             placeholder="Search"
@@ -57,10 +58,10 @@ export default function Header() {
 
         <AiOutlineHeart className="heart" />
         <div className="icon-container">
-          <div className="relative">
+          <Link to="/cart" className="relative">
             <BsBagDash className="bag" />
             <div className="badge">5</div>
-          </div>
+          </Link>
         </div>
       </div>
     </>
