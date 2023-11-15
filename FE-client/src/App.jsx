@@ -5,6 +5,7 @@ import Cart from "./pages/Cart";
 import SignIn from "./components/SignIn";
 import Register from "./components/Register";
 import EnterPassword from "./components/EnterPassword";
+import DetailProduct from "./components/DetailProduct";
 function App() {
   return (
     <>
@@ -15,6 +16,7 @@ function App() {
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
         <Route path="/enter-password" element={<EnterPassword />} />
+        <Route path="/detail-product" element={<DetailProduct />} />
       </Routes>
     </>
   );
