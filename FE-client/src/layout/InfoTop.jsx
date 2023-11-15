@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function InfoTop() {
   return (
@@ -39,7 +40,14 @@ export default function InfoTop() {
             <span>|</span>
           </div>
           <div className="flex">
-            <div className="cursor-pointer">Sign In</div>
+            <Link to="/sign-in" className="cursor-pointer">
+              Sign In
+            </Link>
+            {/* Nếu đăng nhập thì thay chữ Sign In 
+              = Hi, Tên user + icon user
+
+              Làm thêm dropdown của icon user và trang profile
+            */}
           </div>
         </div>
       </div>

@@ -52,25 +52,22 @@ export default function Shop() {
         </Breadcrumbs>
         <div className="sort w-full flex justify-between">
           <h2 className="font-medium mb-8 text-2xl">JORDAN SHOES (29)</h2>
-          <div
-            className="flex justify-center cursor-pointer"
-            style={{
-              fontSize: "18px",
-            }}
-          >
-            <p className="mr-3">Hide Filters</p>
-            <CiSliderHorizontal
-              className="mt-0.5"
-              style={{
-                fontSize: "20px",
-              }}
-            />
-            <div
-              className="cursor-pointer ml-10"
+          <div className="flex justify-center cursor-pointer">
+            <p
+              className="mr-3"
               style={{
                 fontSize: "18px",
               }}
             >
+              Hide Filters
+            </p>
+            <CiSliderHorizontal
+              className="mt-0.5"
+              style={{
+                fontSize: "22px",
+              }}
+            />
+            <div className="cursor-pointer ml-10">
               <Dropdown
                 menu={{
                   items,
@@ -78,7 +75,11 @@ export default function Shop() {
                 trigger={["click"]}
               >
                 <a onClick={(e) => e.preventDefault()}>
-                  <Space>
+                  <Space
+                    style={{
+                      fontSize: "18px",
+                    }}
+                  >
                     Sort by
                     <DownOutlined />
                   </Space>

@@ -1,0 +1,203 @@
+.main-sign-in {
+  width: 30%;
+  margin: 0 auto;
+}
+
+.main-sign-in .container-logo {
+  margin-left: -30px;
+  margin-bottom: 50px;
+  margin-top: 40px;
+}
+
+.sign-in-title {
+  font-size: 26px;
+  margin-top: 30px;
+}
+
+.inputGroupEmail {
+  font-family: "Segoe UI", sans-serif;
+  margin: 1em 0 1em 0;
+  max-width: 100%;
+  position: relative;
+}
+
+.inputGroupEmail input {
+  font-size: 100%;
+  padding: 0.8em;
+  outline: none;
+  border: 2px solid rgb(200, 200, 200);
+  background-color: transparent;
+  border-radius: 20px;
+  width: 100%;
+}
+
+.inputGroupEmail label {
+  font-size: 100%;
+  position: absolute;
+  left: 0;
+  padding: 0.8em;
+  margin-left: 0.5em;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  color: rgb(100, 100, 100);
+}
+
+.inputGroupEmail :is(input:focus, input:valid) ~ label {
+  transform: translateY(-50%) scale(0.9);
+  margin: 0em;
+  margin-left: 1.3em;
+  padding: 0.4em;
+  background-color: #fff;
+}
+
+.inputGroupEmail :is(input:focus, input:valid) {
+  border-color: rgb(144, 144, 144);
+}
+
+.main-sign-in-button {
+  padding: 12px 24px;
+  background-color: black !important;
+  color: #fff;
+  border-radius: 40px;
+}
+
+.main-sign-in-button:hover {
+  background-color: #3f3e3e !important;
+  transition: 0.2s;
+}
+
+.main-sign-in .policy {
+  margin: 30px 0;
+  width: 80%;
+  color: #696363;
+  font-size: 15px;
+}
+
+.sign-up-title {
+  font-size: 24px;
+  margin-top: -30px;
+}
+
+.sign-up-edit {
+  padding: 0;
+}
+
+.send-code {
+  margin-top: -10px;
+  width: 70%;
+}
+
+.email-sended-code {
+  font-weight: 450;
+}
+
+.inputGroupCodeSignUp {
+  font-family: "Segoe UI", sans-serif;
+  margin: 1em 0 1em 0;
+  max-width: 100%;
+  position: relative;
+}
+
+.inputGroupCodeSignUp input {
+  font-size: 100%;
+  padding: 0.8em;
+  outline: none;
+  border: 2px solid rgb(200, 200, 200);
+  background-color: transparent;
+  border-radius: 20px;
+  width: 100%;
+}
+
+.inputGroupCodeSignUp label {
+  font-size: 100%;
+  position: absolute;
+  left: 0;
+  padding: 0.8em;
+  margin-left: 0.5em;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  color: rgb(100, 100, 100);
+}
+
+.inputGroupCodeSignUp :is(input:focus, input:valid) ~ label {
+  transform: translateY(-50%) scale(0.9);
+  margin: 0em;
+  margin-left: 1.3em;
+  padding: 0.4em;
+  background-color: #fff;
+}
+
+.inputGroupCodeSignUp :is(input:focus, input:valid) {
+  border-color: rgb(144, 144, 144);
+}
+
+/*  no move*/
+
+.inputGroupNoMove {
+  font-family: "Segoe UI", sans-serif;
+  margin: 1em 0 1em 0;
+  max-width: 100%;
+  position: relative;
+}
+
+.inputGroupNoMove input {
+  font-size: 100%;
+  padding: 0.8em;
+  outline: none;
+  border: 2px solid rgb(200, 200, 200);
+  background-color: transparent;
+  border-radius: 20px;
+  width: 100%;
+}
+
+.inputGroupNoMove label {
+  font-size: 100%;
+  position: absolute;
+  left: 0;
+  padding: 0.8em;
+  margin-left: 0.5em;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  color: rgb(100, 100, 100);
+
+  transform: translateY(-50%) scale(0.9);
+  margin: 0em;
+  margin-left: 1.3em;
+  padding: 0.4em;
+  background-color: #fff;
+}
+
+.inputGroupNoMove :is(input:focus, input:valid) {
+  border-color: rgb(144, 144, 144);
+}
+
+.agree-sign-up {
+  width: 100%;
+  display: inline-block;
+}
+
+.main-sign-up-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background-color: black !important;
+  color: #fff;
+  border-radius: 40px;
+  margin-bottom: 30px;
+}
+
+.main-sign-up-button:hover {
+  background-color: #3f3e3e !important;
+  transition: 0.2s;
+}
+
+.ctnlogo-signUp {
+  margin-top: -1px !important;
+}
+
+.main-enter-password{
+    width: 60% !important;
+}
+
+.enter-password-signIn-button{
+    margin-top: 30px;
+}

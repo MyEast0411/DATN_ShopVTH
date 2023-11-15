@@ -15,7 +15,7 @@ export default function Popular() {
             />
             <h2>AIR JORDAN 1S</h2>
             <p className="popular-des">MEN'S SHOES</p>
-            <p className="popular-price">$ 180</p>
+            <p className="popular-price">$180</p>
           </Link>
           <Link to="/shop" className="x-scroll-product-card snap-center">
             <img
@@ -25,7 +25,7 @@ export default function Popular() {
             />
             <h2>AIR JORDAN 1 HIGH OG</h2>
             <p className="popular-des">BIG KIDS' SHOES</p>
-            <p className="popular-price">$ 140</p>
+            <p className="popular-price">$140</p>
           </Link>
           <Link to="/shop" className="x-scroll-product-card snap-center">
             <img
@@ -35,7 +35,7 @@ export default function Popular() {
             />
             <h2>JORDAN 1 RETRO HIGH OG</h2>
             <p className="popular-des">LITTLE KIDS' SHOES</p>
-            <p className="popular-price">$ 80</p>
+            <p className="popular-price">$80</p>
           </Link>
           <Link to="/shop" className="x-scroll-product-card snap-center">
             <img
@@ -45,7 +45,7 @@ export default function Popular() {
             />
             <h2>JORDAN 1 RETRO HIGH OG</h2>
             <p className="popular-des">BABY/TODDLER SHOES</p>
-            <p className="popular-price">$ 70</p>
+            <p className="popular-price">$70</p>
           </Link>
           <Link to="/shop" className="x-scroll-product-card snap-center">
             <img
@@ -55,7 +55,7 @@ export default function Popular() {
             />
             <h2>JORDAN 1</h2>
             <p className="popular-des">BABY CRIB BOOTIE</p>
-            <p className="popular-price">$ 60</p>
+            <p className="popular-price">$60</p>
           </Link>
         </div>
       </div>
