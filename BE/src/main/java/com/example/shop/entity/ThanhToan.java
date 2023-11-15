@@ -26,8 +26,8 @@ public class ThanhToan {
     @Column(name = "hinh_thuc")
     private String hinhThuc;
 
-    @Column(name = "mo_ta")
-    private String moTa;
+    @Column(name = "so_tien")
+    private String soTien;
 
     @Column(name = "trang_thai")
     private String trangThai;

@@ -166,7 +166,7 @@ const columns = [
   { key: "id", label: "STT" },
   { key: "ma", label: "Mã" },
   { key: "ten", label: "Tên Khách Hàng" },
-  { key: "nhanVien", label: "Mã Nhân Viên" },
+  { key: "nhanVien", label: "Tên Nhân Viên" },
   { key: "loaiHd", label: "Loại HD" },
   { key: "ngayTao", label: "Ngày Tạo" },
   { key: "tienGiam", label: "Tiền Giảm " },
@@ -224,4 +224,12 @@ const GetTrangThai = ({ tinhTrang }) => {
         <span className=" text-sm ">Hủy</span>
       </Tag>
     );
+  if (tinhTrang == 7)
+    return (
+      <Tag color="#ff0000">
+        {" "}
+        <span className=" text-sm ">Chờ thanh toán</span>
+      </Tag>
+  );
+  
 };

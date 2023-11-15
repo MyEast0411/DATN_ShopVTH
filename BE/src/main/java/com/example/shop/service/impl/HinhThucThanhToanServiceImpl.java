@@ -17,4 +17,9 @@ public class HinhThucThanhToanServiceImpl implements HinhThucThanhToanService {
     public List<HinhThucThanhToan> getHTTT(String idHD) {
         return repository.getHTTH(idHD);
     }
+
+    @Override
+    public List<HinhThucThanhToan> getThanhToan(String maHD) {
+        return repository.getThanhToan(maHD);
+    }
 }

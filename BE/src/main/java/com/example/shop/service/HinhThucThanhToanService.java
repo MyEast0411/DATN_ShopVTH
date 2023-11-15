@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface HinhThucThanhToanService  {
     List<HinhThucThanhToan> getHTTT(String idHD);
+
+    List<HinhThucThanhToan> getThanhToan(String maHD);
 }

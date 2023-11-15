@@ -107,7 +107,7 @@ export function LineChart() {
     ],
   });
   return (
-    <div style={{ width: 660 }}>
+    <div style={{ width: 660, marginLeft: 5 }}>
       {/* <div style={{ width: 600, height: 271, marginLeft: 60 }}> */}
       <Line data={userData} />
     </div>

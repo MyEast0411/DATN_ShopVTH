@@ -3,8 +3,8 @@
 //   MdOutlineArrowCircleDown,
 // } from "react-icons/md";
 import { Button } from "@nextui-org/button";
-import { FaArrowDown, FaArrowUp, FaEye, FaStar } from "react-icons/fa";
-import React from "react";
+import { FaArrowDown, FaArrowUp, FaCrown, FaEye, FaStar } from "react-icons/fa";
+import React, { useState } from "react";
 import {
   Table,
   TableHeader,
@@ -23,70 +23,76 @@ import { Link } from "react-router-dom";
 import { ColumnChart } from "../components/thong_ke/ColumnChart";
 import { PieChart } from "../components/thong_ke/PieChart";
 import { LineChart } from "../components/thong_ke/LineChart";
+import { AiTwotoneCrown } from "react-icons/ai";
 
 const columns = [
-  { name: "NAME", uid: "name" },
-  { name: "ROLE", uid: "role" },
-  { name: "STATUS", uid: "status" },
-  { name: "ACTIONS", uid: "actions" },
+  { uid: "id", name: "Tracking No" },
+  { uid: "name", name: "Product Name" },
+  { uid: "price", name: "Price" },
+  { uid: "totalorder", name: "Total Order" },
+  { uid: "totalamount", name: "Total amount" },
 ];
+
+// const colorRanks = ["#ffd600", "#5D6595", "#AA5619"];
+const colorRanks = ["rgb(253 224 71)", "rgb(125 211 252)", "rgb(234 88 12)"];
 
 const users = [
   {
-    id: 1,
-    name: "Tony Reichert",
-    role: "CEO",
-    team: "Management",
-    status: "active",
-    age: "29",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-    email: "tony.reichert@example.com",
+    id: "#JY7685	",
+    name: "Nike Air max 170",
+    price: 560000,
+    totalorder: 325,
+    totalamount: 8000000,
+    avatar: "https://uko-react.vercel.app/static/products/shoe-1.png",
   },
   {
-    id: 2,
-    name: "Zoey Lang",
-    role: "Technical Lead",
-    team: "Development",
-    status: "paused",
-    age: "25",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-    email: "zoey.lang@example.com",
+    id: "#JY7686	",
+    name: "Nike Air Panda 1",
+    price: 325000,
+    totalorder: 25,
+    totalamount: 56789000,
+    avatar: "https://uko-react.vercel.app/static/products/black-keds.png",
   },
   {
-    id: 3,
-    name: "Jane Fisher",
-    role: "Senior Developer",
-    team: "Development",
-    status: "active",
-    age: "22",
-    avatar: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-    email: "jane.fisher@example.com",
+    id: "#JY7687	",
+    name: "Nike Air Lion ",
+    price: 4530000,
+    totalorder: 325,
+    totalamount: 17904000,
+    avatar: "https://uko-react.vercel.app/static/products/green-keds.png",
   },
   {
-    id: 4,
-    name: "William Howard",
-    role: "Community Manager",
-    team: "Marketing",
-    status: "vacation",
-    age: "28",
-    avatar: "https://i.pravatar.cc/150?u=a048581f4e29026701d",
-    email: "william.howard@example.com",
+    id: "#JY7688	",
+    name: "Nike Air Basic ",
+    price: 399000,
+    totalorder: 325,
+    totalamount: 2689900,
+    avatar: "https://uko-react.vercel.app/static/products/yellow-keds.png",
   },
   {
-    id: 5,
-    name: "Kristen Copper",
-    role: "Sales Manager",
-    team: "Sales",
-    status: "active",
-    age: "24",
-    avatar: "https://i.pravatar.cc/150?u=a092581d4ef9026700d",
-    email: "kristen.cooper@example.com",
+    id: "#JY7689	",
+    name: "Nike Air Basic 1 ",
+    price: 200000,
+    totalorder: 325,
+    totalamount: 6000000,
+    avatar: "https://uko-react.vercel.app/static/products/yellow-keds.png",
   },
 ];
 
 const ThongKe = () => {
+  const [valueColumnChart, setValueColumnChart] = useState("week");
   const handleChange = (value) => {
-    console.log(`selected ${value}`);
+    if (value == "week") {
+      setValueColumnChart(value);
+    }
+
+    if (value == "month") {
+      setValueColumnChart(value);
+    }
+
+    if (value == "year") {
+      setValueColumnChart(value);
+    }
   };
 
   const renderCell = React.useCallback((user, columnKey) => {
@@ -100,49 +106,26 @@ const ThongKe = () => {
             description={user.email}
             name={cellValue}
           >
-            {user.email}
+            {user.name}
           </User>
         );
-      case "role":
+      case "price":
         return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellValue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">
-              {user.team}
-            </p>
-          </div>
+          <span className=" text-sm font-semibold text-red-500">
+            {Intl.NumberFormat().format(cellValue)} ₫{" "}
+          </span>
         );
-      case "status":
+      case "totalorder":
         return (
-          <Chip
-            className="capitalize"
-            // color={statusColorMap[user.status]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
+          <span className=" text-sm font-semibold ">{`${cellValue} sản phẩm`}</span>
         );
-      case "actions":
+      case "totalamount":
         return (
-          <div className="relative flex items-center gap-2">
-            <Tooltip content="Details">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <FaEye />
-              </span>
-            </Tooltip>
-            <Tooltip content="Edit user">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <FaEye />
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="Delete user">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <FaEye />
-              </span>
-            </Tooltip>
-          </div>
+          <span className=" text-sm font-semibold text-red-500">
+            {Intl.NumberFormat().format(cellValue)} ₫{" "}
+          </span>
         );
+
       default:
         return cellValue;
     }
@@ -157,7 +140,7 @@ const ThongKe = () => {
               className="gap-4  flex"
               style={{
                 borderRadius: 5,
-                backgroundColor: "#ECEBEB",
+                backgroundColor: "#F3F4F9",
               }}
             >
               <div className=" p-4 w-2/3">
@@ -208,7 +191,7 @@ const ThongKe = () => {
                 className="total-order "
                 style={{
                   borderRadius: 5,
-                  backgroundColor: "#ECEBEB",
+                  backgroundColor: "#F3F4F9",
                   padding: "1rem 1.5rem",
                 }}
               >
@@ -221,21 +204,28 @@ const ThongKe = () => {
                     marginBottom: 8,
                   }}
                 >
-                  Tổng đơn hàng
+                  Lợi nhuận tuần
                 </p>
                 <div className="content">
                   <p
                     style={{
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: 700,
                       marginBottom: 16,
 
                       color: "rgb(47, 67, 101)",
                     }}
                   >
-                    {Intl.NumberFormat().format(3000000)} ₫{" "}
+                    {Intl.NumberFormat().format(3040000)} ₫{" "}
                   </p>
-                  <span style={{ color: "red" }}>
+                  <span
+                    style={{
+                      color: "red",
+                      backgroundColor: "white",
+                      borderRadius: 10,
+                      padding: 5,
+                    }}
+                  >
                     <FaArrowDown
                       style={{
                         display: "inline",
@@ -243,14 +233,71 @@ const ThongKe = () => {
                         paddingRight: 5,
                       }}
                     />
-                    <span style={{ fontWeight: "bold" }}>-30</span>%
+
+                    <Chip color="danger">
+                      {" "}
+                      <span style={{ fontWeight: "bold" }}>-30</span>%
+                    </Chip>
                   </span>
                 </div>
               </div>
               <div
                 style={{
                   borderRadius: 5,
-                  backgroundColor: "#ECEBEB",
+                  backgroundColor: "#F3F4F9",
+                  padding: "1rem 1.5rem",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 500,
+                    lineHeight: 1.6,
+                    color: "rgb(95, 116, 141)",
+                    marginBottom: 8,
+                  }}
+                >
+                  Khách hàng mới
+                </p>
+                <div className="content">
+                  <p
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 700,
+                      marginBottom: 16,
+                      color: "rgb(47, 67, 101)",
+                    }}
+                  >
+                    {Intl.NumberFormat().format(2000000)} ₫{" "}
+                  </p>
+                  <span
+                    style={{
+                      backgroundColor: "white",
+                      borderRadius: 10,
+                      padding: 5,
+                      color: "#32d08e",
+                    }}
+                  >
+                    <FaArrowUp
+                      style={{
+                        display: "inline",
+
+                        paddingRight: 5,
+                      }}
+                    />
+                    <Chip color="success">
+                      {" "}
+                      <span style={{ fontWeight: "bold", color: "white" }}>
+                        +30%
+                      </span>
+                    </Chip>
+                  </span>
+                </div>
+              </div>
+              <div
+                style={{
+                  borderRadius: 5,
+                  backgroundColor: "#F3F4F9",
                   padding: "1rem 1.5rem",
                 }}
               >
@@ -268,58 +315,23 @@ const ThongKe = () => {
                 <div className="content">
                   <p
                     style={{
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: 700,
                       marginBottom: 16,
 
                       color: "rgb(47, 67, 101)",
                     }}
                   >
-                    {Intl.NumberFormat().format(3000000)} ₫{" "}
+                    {123} đơn hàng
                   </p>
-                  <span style={{ color: "#32d08e" }}>
-                    <FaArrowUp
-                      style={{
-                        display: "inline",
-
-                        paddingRight: 5,
-                      }}
-                    />
-                    <span style={{ fontWeight: "bold" }}>+30</span>%
-                  </span>
-                </div>
-              </div>
-              <div
-                style={{
-                  borderRadius: 5,
-                  backgroundColor: "#ECEBEB",
-                  padding: "1rem 1.5rem",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: 15,
-                    fontWeight: 500,
-                    lineHeight: 1.6,
-                    color: "rgb(95, 116, 141)",
-                    marginBottom: 8,
-                  }}
-                >
-                  Tổng đơn hàng
-                </p>
-                <div className="content">
-                  <p
+                  <span
                     style={{
-                      fontSize: 24,
-                      fontWeight: 700,
-                      marginBottom: 16,
-
-                      color: "rgb(47, 67, 101)",
+                      backgroundColor: "white",
+                      borderRadius: 10,
+                      padding: 5,
+                      color: "#32d08e",
                     }}
                   >
-                    {Intl.NumberFormat().format(3000000)} ₫{" "}
-                  </p>
-                  <span style={{ color: "#32d08e" }}>
                     <FaArrowUp
                       style={{
                         display: "inline",
@@ -327,7 +339,12 @@ const ThongKe = () => {
                         paddingRight: 5,
                       }}
                     />
-                    <span style={{ fontWeight: "bold" }}>+30</span>%
+                    <Chip color="success">
+                      {" "}
+                      <span style={{ fontWeight: "bold", color: "white" }}>
+                        +30%
+                      </span>
+                    </Chip>
                   </span>
                 </div>
               </div>
@@ -336,7 +353,7 @@ const ThongKe = () => {
 
           <div
             className="block-1-2 w-1/2 earning-report"
-            style={{ backgroundColor: "#ECEBEB", borderRadius: 5 }}
+            style={{ backgroundColor: "#F3F4F9", borderRadius: 5 }}
           >
             <div
               className="heaer"
@@ -360,7 +377,7 @@ const ThongKe = () => {
               <div className="fiter  mt-2">
                 <Select
                   defaultValue="week"
-                  style={{ width: 120 }}
+                  style={{ width: 125 }}
                   onChange={handleChange}
                   options={[
                     { value: "week", label: "Theo tuần" },
@@ -371,14 +388,14 @@ const ThongKe = () => {
               </div>
             </div>
             <div className="content">
-              <ColumnChart />
+              <ColumnChart value={valueColumnChart} />
             </div>
           </div>
         </div>
         <div className="block-2 flex space-x-8">
           <div
             className="block-1-2 w-1/2 earning-report"
-            style={{ backgroundColor: "#ECEBEB", borderRadius: 5 }}
+            style={{ backgroundColor: "#F3F4F9", borderRadius: 5 }}
           >
             <div
               className="header"
@@ -405,7 +422,7 @@ const ThongKe = () => {
           </div>
           <div
             className="block-1-2 w-1/2 earning-report"
-            style={{ backgroundColor: "#ECEBEB", borderRadius: 5 }}
+            style={{ backgroundColor: "#F3F4F9", borderRadius: 5 }}
           >
             <div
               className="header"
@@ -434,7 +451,7 @@ const ThongKe = () => {
         <div className="block-3 flex space-x-8">
           <div
             className="block-3-1 w-2/3  p-3 space-4"
-            style={{ backgroundColor: "#ECEBEB", borderRadius: 5 }}
+            style={{ backgroundColor: "#F3F4F9", borderRadius: 5 }}
           >
             <div
               className="header"
@@ -489,7 +506,7 @@ const ThongKe = () => {
           </div>
           <div
             className="block-3-2 w-1/3  p-3 space-4"
-            style={{ backgroundColor: "#ECEBEB", borderRadius: 5 }}
+            style={{ backgroundColor: "#F3F4F9", borderRadius: 5 }}
           >
             <div
               className="header"
@@ -512,107 +529,156 @@ const ThongKe = () => {
             </div>
             <div className="content">
               <div
-                className="recent flex mb-4 p-4"
-                style={{ backgroundColor: "white", borderRadius: 5 }}
+                className="recent flex mb-4 p-4 outline outline-offset-2 bg-gradient-to-r from-yellow-500 
+                hover:from-pink-500 hover:to-yellow-500"
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: 5,
+                  outlineColor: colorRanks[0],
+                }}
               >
-                <div className="w-5/6 ...">
-                  <div class="flex space-x-6">
-                    <div class="w-2/4 ...">
-                      <Image
-                        width={200}
-                        alt="NextUI hero Image"
-                        src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
-                      />
-                    </div>
+                <div className="flex space-x-6">
+                  <div className="w-1/6">
+                    <span className="font-bold" style={{ marginLeft: 10 }}>
+                      NO.1
+                    </span>
+                    <AiTwotoneCrown
+                      color={colorRanks[0]}
+                      style={{ display: "inline", width: 55, height: 70 }}
+                    />
+                  </div>
+                  <div className="w-2/6 ...">
+                    <Avatar
+                      isBordered
+                      radius="sm"
+                      src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
+                      className="w-25 h-25 text-large"
+                    />
+                  </div>
 
-                    <div class="w-2/4 ...">
-                      <p className="text-lg font-semibold mb-2">Nike Air 170</p>
+                  <div className="w-3/6 ...">
+                    <p className="text-base  font-semibold mb-2">
+                      Nike Air 170{" "}
+                    </p>
 
-                      <p
-                        className="text-base  font-medium mb-2"
-                        style={{ color: "rgb(140, 163, 186)" }}
-                      >
-                        {new Array(5).fill(null).map((_, i) => (
-                          <FaStar
-                            color="#ffd600"
-                            style={{ display: "inline", marginRight: 5 }}
-                          />
-                        ))}
-                      </p>
-                      <p className=" text-base font-semibold ">
-                        {Intl.NumberFormat().format(30000)} ₫{" "}
-                      </p>
-                    </div>
+                    <p
+                      className="text-base  font-medium mb-2"
+                      style={{ color: "rgb(140, 163, 186)" }}
+                    >
+                      {new Array(5).fill(null).map((_, i) => (
+                        <FaStar
+                          key={i + 1}
+                          color="#ffd600"
+                          style={{ display: "inline", marginRight: 5 }}
+                        />
+                      ))}
+                    </p>
+                    <p className=" text-base font-semibold ">
+                      {Intl.NumberFormat().format(30000)} ₫{" "}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="recent flex mb-4 p-4 outline outline-offset-2 bg-gradient-to-r from-blue-500 
+                hover:from-pink-500 hover:to-blue-500"
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: 5,
+                  outlineColor: colorRanks[1],
+                }}
+              >
+                <div className="flex space-x-6">
+                  <div className="w-1/6">
+                    <span className="font-bold" style={{ marginLeft: 10 }}>
+                      NO.2
+                    </span>
+                    <AiTwotoneCrown
+                      color={colorRanks[1]}
+                      style={{ display: "inline", width: 55, height: 70 }}
+                    />
+                  </div>
+                  <div className="w-2/6 ...">
+                    <Avatar
+                      isBordered
+                      radius="sm"
+                      src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
+                      className="w-25 h-25 text-large"
+                    />
+                  </div>
+
+                  <div className="w-3/6 ...">
+                    <p className="text-base  font-semibold mb-1">
+                      Nike Air 170{" "}
+                    </p>
+
+                    <p
+                      className="text-base  font-medium mb-1"
+                      style={{ color: "rgb(140, 163, 186)" }}
+                    >
+                      {new Array(5).fill(null).map((_, i) => (
+                        <FaStar
+                          key={i + 1}
+                          color="#ffd600"
+                          style={{ display: "inline", marginRight: 5 }}
+                        />
+                      ))}
+                    </p>
+                    <p className=" text-base font-semibold ">
+                      {Intl.NumberFormat().format(30000)} ₫{" "}
+                    </p>
                   </div>
                 </div>
               </div>
               <div
-                className="recent flex mb-4 p-4"
-                style={{ backgroundColor: "white", borderRadius: 5 }}
+                className="recent flex mb-4 p-4 outline outline-offset-2 bg-gradient-to-r from-amber-700 
+               hover:from-pink-500 hover:to-amber-700"
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: 5,
+                  outlineColor: colorRanks[2],
+                }}
               >
-                <div className="w-5/6 ...">
-                  <div class="flex space-x-6">
-                    <div class="w-2/4 ...">
-                      <Image
-                        width={200}
-                        alt="NextUI hero Image"
-                        src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
-                      />
-                    </div>
-
-                    <div class="w-2/4 ...">
-                      <p className="text-lg font-semibold mb-2">Nike Air 170</p>
-
-                      <p
-                        className="text-base  font-medium mb-2"
-                        style={{ color: "rgb(140, 163, 186)" }}
-                      >
-                        {new Array(5).fill(null).map((_, i) => (
-                          <FaStar
-                            color="#ffd600"
-                            style={{ display: "inline", marginRight: 5 }}
-                          />
-                        ))}
-                      </p>
-                      <p className=" text-base font-semibold ">
-                        {Intl.NumberFormat().format(30000)} ₫{" "}
-                      </p>
-                    </div>
+                <div className="flex space-x-6">
+                  <div className="w-1/6">
+                    <span className="font-bold" style={{ marginLeft: 10 }}>
+                      NO.3
+                    </span>
+                    <AiTwotoneCrown
+                      color={colorRanks[2]}
+                      style={{ display: "inline", width: 55, height: 70 }}
+                    />
                   </div>
-                </div>
-              </div>
-              <div
-                className="recent flex mb-4 p-4"
-                style={{ backgroundColor: "white", borderRadius: 5 }}
-              >
-                <div className="w-5/6 ...">
-                  <div class="flex space-x-6">
-                    <div class="w-2/4 ...">
-                      <Image
-                        width={200}
-                        alt="NextUI hero Image"
-                        src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
-                      />
-                    </div>
+                  <div className="w-2/6 ...">
+                    <Avatar
+                      isBordered
+                      radius="sm"
+                      src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
+                      className="w-25 h-25 text-large"
+                    />
+                  </div>
 
-                    <div class="w-2/4 ...">
-                      <p className="text-lg font-semibold mb-2">Nike Air 170</p>
+                  <div className="w-3/6 ...">
+                    <p className="text-base  font-semibold mb-1">
+                      Nike Air 170{" "}
+                    </p>
 
-                      <p
-                        className="text-base  font-medium mb-2"
-                        style={{ color: "rgb(140, 163, 186)" }}
-                      >
-                        {new Array(5).fill(null).map((_, i) => (
-                          <FaStar
-                            color="#ffd600"
-                            style={{ display: "inline", marginRight: 5 }}
-                          />
-                        ))}
-                      </p>
-                      <p className=" text-base font-semibold ">
-                        {Intl.NumberFormat().format(30000)} ₫{" "}
-                      </p>
-                    </div>
+                    <p
+                      className="text-base  font-medium mb-1"
+                      style={{ color: "rgb(140, 163, 186)" }}
+                    >
+                      {new Array(5).fill(null).map((_, i) => (
+                        <FaStar
+                          key={i + 1}
+                          color="#ffd600"
+                          style={{ display: "inline", marginRight: 5 }}
+                        />
+                      ))}
+                    </p>
+                    <p className=" text-base font-semibold ">
+                      {Intl.NumberFormat().format(30000)} ₫{" "}
+                    </p>
                   </div>
                 </div>
               </div>

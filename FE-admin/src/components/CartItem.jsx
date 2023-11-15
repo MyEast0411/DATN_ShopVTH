@@ -9,10 +9,19 @@ import {
   Tooltip,
   Input,
 } from "@nextui-org/react";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from "@mui/material";
+
 import { MdOutlineDelete } from "react-icons/md";
 import { Button } from "@material-tailwind/react";
-// import { useSearchParams } from "react-router-dom";
-
+import axios from "axios";
+import { TbInfoTriangle } from "react-icons/tb";
+import { toast } from "react-toastify";
 const statusColorMap = {
   active: "success",
   paused: "danger",
@@ -20,7 +29,51 @@ const statusColorMap = {
 };
 
 export default function CartItem({ users, columns, updateSoLuong }) {
-  useEffect(() => {});
+  const [idToDelete, setIdToDelete] = useState({
+    id_hoa_don : "",
+    id_san_pham : ""
+  });
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
+  const [hinhAnh, setHinhAnh] = useState([]);
+  
+
+  const getAllHA = async () => {
+    await axios.get("http://localhost:8080/getAllHinhAnh").then((response) => {
+      setHinhAnh(response.data);
+    });
+  };
+  useEffect(() => {
+    getAllHA();
+  }, []);
+
+  const handleDelete = (idHoaDon,idSanPham) => {
+    setIdToDelete({
+      id_hoa_don : idHoaDon,
+      id_san_pham : idSanPham
+    });
+
+    setDeleteConfirmationOpen(true);
+  };
+
+  const cancelDelete = () => {
+    setIdToDelete({});
+    setDeleteConfirmationOpen(false);
+  };
+
+  const confirmDelete = async () => {
+    console.log(idToDelete);
+    if (idToDelete) {
+      await axios.delete(`http://localhost:8080/hoa_don_chi_tiet/deleteHDCT/${idToDelete.id_hoa_don}/${idToDelete.id_san_pham}`)
+        .then((response) => {
+          toast("🎉 Xóa thành công");
+          cancelDelete();
+        })
+        .catch((error) => {
+          toast("😢 Xóa thất bại");
+        });
+    cancelDelete();
+    }
+  };
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
 
@@ -28,22 +81,22 @@ export default function CartItem({ users, columns, updateSoLuong }) {
       case "thongtinsanpham":
         return (
           <div className="flex col-span-2 gap-4">
-            <div className="col-span-1">
-              {" "}
-              <img src={user.img} alt="No-img" style={{ borderRadius: 10 }} />
+            <div className="w-40">
+              <img src={user.id_chi_tiet_san_pham.defaultImg} 
+              alt="No-img" style={{ borderRadius: 10,width : "100%" }} />
             </div>
-            <div className="col-span-1 text-base justify-center mt-8 ">
+            <div className="col-span-1 text-base mt-2 mb-2">
               <p>
-                <span className="font-bold ">Tên sản phẩm : </span> {user.name}
+                <span className="font-bold ">Tên sản phẩm : </span> {user.id_chi_tiet_san_pham.id_san_pham.ten}
               </p>
               <p>
-                <span className="font-bold ">Size : </span> {user.size}
+                <span className="font-bold ">Size : </span> {user.id_chi_tiet_san_pham.id_kich_co.ten}
               </p>
               <p>
                 <span className="font-bold ">Đơn giá : </span>
                 <span style={{ color: "red" }}>
                   {" "}
-                  {Intl.NumberFormat().format(user.donGia)}&nbsp;₫
+                  {Intl.NumberFormat().format(user.id_chi_tiet_san_pham.giaBan)}&nbsp;₫
                 </span>
               </p>
             </div>
@@ -56,9 +109,9 @@ export default function CartItem({ users, columns, updateSoLuong }) {
           <div className=" flex col-span-3 gap-1">
             <div className="col-span-1">
               <Button
-                onClick={() => {
-                  updateSoLuong(user.key);
-                }}
+                // onClick={() => {
+                //   updateSoLuong(user.key);
+                // }}
               >
                 -
               </Button>
@@ -93,7 +146,7 @@ export default function CartItem({ users, columns, updateSoLuong }) {
       case "tongTien":
         return (
           <span style={{ color: "red", fontSize: 20 }}>
-            {Intl.NumberFormat().format(user.soLuong * user.donGia)}&nbsp;₫
+            {Intl.NumberFormat().format(user.giaTien)}&nbsp;₫
           </span>
         );
       case "actions":
@@ -101,7 +154,7 @@ export default function CartItem({ users, columns, updateSoLuong }) {
           <div className="relative flex items-center gap-2">
             <Tooltip color="danger" content="Xóa sản phẩm">
               <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <MdOutlineDelete style={{ fontSize: 40, color: "red" }} />
+                <MdOutlineDelete style={{ fontSize: 40, color: "red" }} onClick={() => handleDelete(user.id_hoa_don.id,user.id_chi_tiet_san_pham.id)}/>
               </span>
             </Tooltip>
           </div>
@@ -109,9 +162,10 @@ export default function CartItem({ users, columns, updateSoLuong }) {
       default:
         return cellValue;
     }
-  }, []);
+  }, [users]);
 
   return (
+    <>
     <Table aria-label="Example table with custom cells" className="pb-4">
       <TableHeader columns={columns}>
         {(column) => (
@@ -125,9 +179,9 @@ export default function CartItem({ users, columns, updateSoLuong }) {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody items={users} emptyContent={`Không có dữ liệu 🫗🫗🫗🫗`}>
+      <TableBody items={users} emptyContent={`No data`}>
         {(item) => (
-          <TableRow key={item.id} style={{ borderBottom: "1px solid black" }}>
+          <TableRow key={item.id_chi_tiet_san_pham.id} style={{ borderBottom: "1px solid black" }}>
             {(columnKey) => (
               <TableCell>{renderCell(item, columnKey)}</TableCell>
             )}
@@ -135,5 +189,40 @@ export default function CartItem({ users, columns, updateSoLuong }) {
         )}
       </TableBody>
     </Table>
+
+    <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận xóa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn xóa Sản phẩm này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="warning">
+            Hủy
+          </Button>
+          <Button color="primary" onClick={confirmDelete}>
+            Vẫn xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
