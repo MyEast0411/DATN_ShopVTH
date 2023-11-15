@@ -1,0 +1,152 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&family=Play:wght@700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: "Poppins", sans-serif;
+  }
+  body {
+    background: #ffffff;
+  }
+  h1 {
+    @apply text-xl font-medium capitalize;
+  }
+}
+
+.link {
+  @apply p-2.5 flex rounded-md gap-6 items-center md:cursor-pointer cursor-default duration-300 font-medium;
+}
+
+.active {
+  @apply bg-blue-100 text-blue-600;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.poppins-font {
+  font-family: "Poppins", sans-serif;
+}
+a {
+  text-decoration: none;
+  color: black;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  cursor: pointer;
+  /*background-color: rgba(229, 231, 235, var(--bg-opacity));*/
+}
+::-webkit-scrollbar-track {
+  background-color: rgba(229, 231, 235, var(--bg-opacity));
+  cursor: pointer;
+  /*background: red;*/
+}
+::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  background-color: #85888a;
+  /* outline: 1px solid slategrey; */
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.icon-hover:hover {
+  transition: 0.06s;
+  /* scale: 1.1; */
+  color: #1976d2;
+}
+
+.delete-hover:hover {
+  color: rgb(236, 74, 74);
+  transition: 0.06s;
+}
+
+.blue-hover:hover {
+  color: #1976d2;
+  transition: 0.06s;
+}
+
+.yellow-hover:hover {
+  color: #ffcd4b;
+  transition: 0.06s;
+}
+
+.ant-btn.ant-btn-sm {
+  color: black;
+}
+
+/* color ok button ant modal */
+.ant-modal-footer .ant-btn-primary {
+  background-color: #1976d2; /* Replace with your desired background color */
+  border-color: #1976d2; /* Replace with your desired border color */
+  color: #fff; /* Text color for the button */
+}
+
+.ant-modal-footer .ant-btn-primary:hover {
+  background-color: #1976d2; /* Replace with your desired hover background color */
+  border-color: #1976d2; /* Replace with your desired hover border color */
+  color: #fff; /* Text color for the button on hover */
+}
+
+.selectedKichCo {
+  border: 2px solid yellow;
+}
+
+/* ToolTip */
+.discount-tag {
+  position: absolute;
+  display: inline-block;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  background-color: #d80032;
+  color: white;
+  padding: 2px 5px;
+  font-size: 12px;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.text-black {
+  color: black;
+}
+
+.icon-footer-facebook {
+  font-size: 28px;
+}
+.icon-footer-instagram {
+  font-size: 32px;
+}
+.icon-footer-twitter {
+  font-size: 32px;
+}
+.icon-footer-github {
+  font-size: 28px;
+}
+
+.text-large {
+  font-size: 16px;
+}
+
+.link-underline{
+  color: #7a7979;
+}
+
+

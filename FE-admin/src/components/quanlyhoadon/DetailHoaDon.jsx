@@ -250,7 +250,7 @@ export default function DetailHoaDon() {
         <div className="row timeline bg-white">
           <div className="row timeline justify-center" style={{ height: 300 }}>
             {info.loaiHd === 0 ? (
-              <Timeline minEvents={5} placeholder>
+              <Timeline minEvents={6} placeholder>
                 {listTimeLineOnline.map((item) => (
                   <TimelineEvent
                     color="#9c2919"
@@ -273,7 +273,7 @@ export default function DetailHoaDon() {
           </div>
           <div className="row button-contact p-4 grid grid-cols-2">
             <div className="row ">
-              {currentTimeLine < 5 &&
+              {currentTimeLine < 6 &&
               info.loaiHd === 0 &&
               info.trangThai != 6 ? (
                 <Button
@@ -580,25 +580,35 @@ export default function DetailHoaDon() {
   );
 }
 
+// const items = [
+//   `Chờ xác nhận`,
+//   `Xác Nhận`,
+//   `Chờ Thanh Toán`,
+//   `Chờ Vận Chuyển`,
+//   `Giao Hàng`,
+//   `Hoàn Thành`,
+//   `Hủy`,
+// ];
+
 const listTitleTimline = [
+  {
+    title: "Chờ Xác Nhận",
+    icon: { GiConfirmed },
+  },
   {
     title: "Xác Nhận",
     icon: { GiConfirmed },
   },
   {
-    title: "Đóng Hàng",
+    title: "Chờ Thanh Toán",
     icon: { LuPackageCheck },
   },
   {
-    title: "Vận Đơn",
+    title: "Chờ Vận Chuyển",
     icon: { FaFileInvoice },
   },
   {
-    title: "Chuyển Ship",
-    icon: { GiReceiveMoney },
-  },
-  {
-    title: "Giao Hàng",
+    title: "Hoàn Thành",
     icon: { FaShippingFast },
   },
 ];

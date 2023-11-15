@@ -60,9 +60,9 @@ export default function TabTrangThai() {
   const items = [
     `Chờ xác nhận`,
     `Xác Nhận`,
+    `Chờ Thanh Toán`,
     `Chờ Vận Chuyển`,
-    `Vận Chuyển`,
-    `Thanh Toán`,
+    `Giao Hàng`,
     `Hoàn Thành`,
     `Hủy`,
     `Chờ Thanh Toán`,

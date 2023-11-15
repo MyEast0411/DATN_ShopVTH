@@ -21,6 +21,7 @@ import EditVoucher from "./components/voucher/EditVoucher";
 import DetailHoaDon from "./components/quanlyhoadon/DetailHoaDon";
 import DetailVoucher from "./components/voucher/DetailVoucher";
 import AddVoucher from "./components/voucher/AddVoucher";
+import ThongKe from "./pages/ThongKe";
 
 const App = () => {
   return (
@@ -47,6 +48,8 @@ const App = () => {
 
           <Route path="/giam-gia/voucher" element={<Voucher />} />
           <Route path="/detail-hoa-don/:id" element={<DetailHoaDon />} />
+
+          <Route path="/thong-ke" element={<ThongKe />} />
 
           <Route path="/quan-ly-san-pham" element={<Build />}>
             <Route path=":bID">
