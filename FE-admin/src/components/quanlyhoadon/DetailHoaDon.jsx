@@ -142,7 +142,7 @@ export default function DetailHoaDon() {
           soTien: item.id_hoa_don.tongTien,
           trangThai: item.id_thanh_toan.hinhThuc,
           thoiGian: item.ngayTao,
-          loaiGiaoDich: item.id_thanh_toan.trangThai,
+          // loaiGiaoDich: item.id_thanh_toan.trangThai,
           phuongThucThanhToan: item.id_thanh_toan.hinhThuc,
           ghiChu: item.moTa,
           nguoiXacNhan: item.nguoiTao,
@@ -630,19 +630,19 @@ const columnsThanhToan = [
     dataIndex: "thoiGian",
     render: (text) => format(new Date(text), " hh:mm ,   dd-MM-yyyy"),
   },
-  {
-    key: "loaiGiaoDich",
-    title: "Loại Giao Dịch",
-    width: 110,
-    dataIndex: "loaiGiaoDich",
+  // {
+  //   key: "loaiGiaoDich",
+  //   title: "Loại Giao Dịch",
+  //   width: 110,
+  //   dataIndex: "loaiGiaoDich",
 
-    render: (_, record) =>
-      record.loaiGiaoDich == 1 ? (
-        <Tag color="green"> Thanh toán</Tag>
-      ) : (
-        <Tag color="red">Chưa thanh toán</Tag>
-      ),
-  },
+  //   render: (_, record) =>
+  //     record.loaiGiaoDich == 1 ? (
+  //       <Tag color="green"> Thanh toán</Tag>
+  //     ) : (
+  //       <Tag color="red">Chưa thanh toán</Tag>
+  //     ),
+  // },
   {
     key: "phuongThucThanhToan",
     title: "Phương Thức Thanh Toán",

@@ -238,7 +238,7 @@ export default function ThemSanPham() {
           <div className="group relative">
             <MdDeleteOutline
               className="cursor-pointer text-xl delete-hover relative"
-              onClick={() => {}}
+              onClick={() => {console.log(params)}}
             />
             <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">
               Xóa

@@ -14,8 +14,25 @@ const columns = [
   { name: "THAO TÁC", uid: "actions" },
 ];
 const TabBanHang = () => {
-  const [activeKey, setActiveKey] = useState("HD1");
-  const [items, setItems] = useState([]);
+  const [activeKey, setActiveKey] = useState("💖💖");
+  const [selectData, setSelectData] = useState(null);
+  const handleDataSelect = (data) => {
+    setSelectData(data);
+    console.log(data);
+  };
+
+  const [items, setItems] = useState([{
+    label: `💖💖`,
+    children: (
+      <Children
+        columns={columns}
+        users={[]}
+        activeKey={`💖💖`}
+        onDataSelect={handleDataSelect}
+      />
+    ),
+    key: `💖💖`,
+  }]);
   
   const getData = async () => {
       await axios
@@ -32,6 +49,7 @@ const TabBanHang = () => {
                 users={user?.list}
                 activeKey={user?.id}
                 updateSoLuong={updateSoLuong}
+                // onDataSelected={handleDataSelected}
               />
             ),
             key: user?.id,
@@ -44,30 +62,37 @@ const TabBanHang = () => {
   };
 
   useEffect(() => {
-    getData();
+    // getData();
   }, []);
 
   
   const [invoiceCount, setInvoiceCount] = useState(1);
 
-  const addEmptyInvoice = () => {
-    setItems((prevItems) => [
-      ...prevItems,
-      {
-        label: `HD${items.length + 1}`,
-        children: (
-          <Children
-            columns={columns}
-            users={[]}
-            activeKey={items.length + 1}
-            updateSoLuong={updateSoLuong}
-          />
-        ),
-        key: items.length + 1,
-      },
-    ]);
-    setActiveKey(items.length + 1);
-    setInvoiceCount((prevCount) => prevCount + 1);
+  const addEmptyInvoice =async () => {
+    const result = await axios.post('http://localhost:8080/hoa_don/taoHoaDon')
+    .then((res) => {
+      console.log(res.data);
+      setItems((prevItems) => [
+        ...prevItems,
+        {
+          label: res.data.ma,
+          children: (
+            <Children
+              columns={columns}
+              users={[]}
+              activeKey={res.data.ma}
+              updateSoLuong={updateSoLuong}
+              // onDataSelected={handleDataSelected}
+            />
+          ),
+          key: res.data.ma,
+        },
+      ]);
+      setActiveKey(res.data.ma);
+      setInvoiceCount((prevCount) => prevCount + 1);
+      toast("Tạo hóa đơn thành công");
+    })
+    
   };
   const updateSoLuong = (key) => {
     

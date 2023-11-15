@@ -1,7 +1,14 @@
 package com.example.shop.controller;
 
+import com.example.shop.dto.ThanhToanDTO;
+import com.example.shop.entity.HinhThucThanhToan;
+import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.ThanhToan;
 import com.example.shop.entity.Voucher;
+import com.example.shop.repositories.HinhAnhRepository;
+import com.example.shop.repositories.HinhThucThanhToanRepository;
+import com.example.shop.repositories.HoaDonRepository;
+import com.example.shop.service.HinhThucThanhToanService;
 import com.example.shop.service.ThanhToanService;
 import com.example.shop.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +34,11 @@ public class ThanhToanController {
     @Autowired
     private ThanhToanService thanhToanService;
 
+    @Autowired
+    private HinhThucThanhToanRepository hinhThucThanhToanService;
+
+    @Autowired
+    private HoaDonRepository ssHD;
     @GetMapping("getThanhToans")
     public ResponseEntity<List<ThanhToan>> getThanhToans() {
         return ResponseEntity.ok(thanhToanService.getThanhToans());
@@ -45,6 +57,30 @@ public class ThanhToanController {
         thanhToan.setMa_giao_dich(System.currentTimeMillis()+"");
         ThanhToan thanhToanSucess = thanhToanService.addThanhToan(thanhToan);
         return new ResponseEntity<>(thanhToanSucess, HttpStatus.CREATED);
+    }
+
+    @PostMapping("addThanhToan")
+    public ResponseEntity addTT(@RequestBody ThanhToanDTO thanhToan) {
+        try {
+            System.out.println(thanhToan);
+            HoaDon hd = ssHD.getHoaDonByMa(thanhToan.getMaHD());
+            ThanhToan tt = ThanhToan.builder()
+                    .hinhThuc(thanhToan.getPhuongThuc())
+                    .ma_giao_dich(thanhToan.getMaGiaoDich())
+                    .soTien(thanhToan.getSoTien())
+                    .build();
+            ThanhToan newThanhToan = thanhToanService.addThanhToan(tt);
+
+            HinhThucThanhToan hinhThucThanhToan = HinhThucThanhToan.builder()
+                    .id_hoa_don(hd)
+                    .id_thanh_toan(newThanhToan)
+                    .build();
+            hinhThucThanhToanService.save(hinhThucThanhToan);
+            System.out.println(tt);
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
     }
 
     @PutMapping("update/{id}")
