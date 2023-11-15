@@ -166,7 +166,7 @@ export function ColumnChart({ value }) {
     labels: UserDataWeek.map((data) => data.year),
     datasets: [
       {
-        label: ` Đơn vị  tính (1.000₫) : `,
+        label: ` Đơn vị  tính (1.000 ₫) : `,
         data: UserDataWeek.map((data) => data.userGain),
         backgroundColor: colors,
         borderColor: "black",
@@ -198,7 +198,7 @@ export function ColumnChart({ value }) {
         labels: UserDataMonth.map((data) => data.year),
         datasets: [
           {
-            label: ` Đơn vị  tính (1.000₫) : `,
+            label: ` Đơn vị  tính (1.000 ₫) : `,
             data: UserDataMonth.map((data) => data.userGain),
             backgroundColor: colors,
             borderColor: "black",
