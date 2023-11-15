@@ -27,7 +27,7 @@ export default function Delivery() {
 
   return (
     <>
-      <div className="flex justify-center ">
+      <div className="flex justify-center">
         <form className="bg-slate-500 rounded">
           <h2 className="text-center text-2xl font-bold text-gray-800">
             Địa chỉ nhận hàng
@@ -77,7 +77,7 @@ export default function Delivery() {
               type="email"
               id="email"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="nguyenvanhoi2k3@gmail.com"
+              placeholder="donglun@gmail.com"
               // required
             />
           </div>

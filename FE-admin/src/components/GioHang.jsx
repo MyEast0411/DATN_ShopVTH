@@ -31,7 +31,7 @@ import TableHoaDon from "../common/table/sanPham/TableAllHoaDon";
 // icons
 import { BsQrCodeScan } from "react-icons/bs";
 import CartItem from "./CartItem";
-
+import Delivery from "./Delivery";
 import { Link, useNavigate } from "react-router-dom";
 import { MdPayments } from "react-icons/md";
 import { IoAddCircle } from "react-icons/io5";
@@ -251,8 +251,13 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
     setSelectedData(data);
     if(data != null) {
       activeKey = data;
-      getData();
-      getThanhToan();
+      if (typeof onDataSelect === 'function') {
+        onDataSelect(data);
+      }else {
+        toast.error(`404 Bát Rì Quét`)
+      }
+      // getData();
+      // getThanhToan();
       handleCancelHD();
     }
   };
@@ -342,12 +347,15 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
 
 
   const [list, setList] = useState([]);
+  const [isBlur, setIsBlur] = useState(false);
 
+  const handleSwitchChange = () => {
+    setIsBlur(!isBlur);
+  };
   const getData = async () => {
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
       .then((response) => {
-        console.log(response.data);
         setList(response.data);
         setKhachHang({
           tenKhachHang : response.data[0]?.id_hoa_don
@@ -360,7 +368,6 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         const tongTien = tinhTongTien(response.data);
         
         setTongTien(tongTien);
-        console.log(tongTien);
         // setKhachCanTra(tongTien);
       });
   };
@@ -370,7 +377,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
   }, [list]);
   return (
     <>
-      <div className="p-5">
+      <div className="p-5"> 
         <div className="flex items-center gap-4">
           <Modal
             onOk={handleOkThem}
@@ -519,7 +526,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
             onOk={handleOkHD}
             onCancel={handleCancelHD}
             open={isModalOpenHD}
-            width={1000}
+            width={1300}
             footer={[]}
           >
             <div className="mt-5">
@@ -642,13 +649,11 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
             backgroundColor: "#232D3F",
           }}
         />
-        <div className="flex justify-between mt-5 mb-3">
-          <span className="poppins-font h-10 text-lg font-bold uppercase ">
-            Khách Hàng{" "}
-          </span>
-        </div>
 
-        <div class="flex justify-end">
+        <div class="flex justify-between mt-7">
+        <div className={`delivery-content ${!isBlur ? "blur" : ""}`}>
+            <Delivery />
+          </div>
           <div className="w-6/12 space-y-8">
             <p className="font-bold text-lg">
               <span>💝 Thông tin thanh toán</span>{" "}
@@ -759,6 +764,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
                     Giao hàng
                   </span>
                 }
+                checked={isBlur} onChange={handleSwitchChange}
               />
             </div>
             <div class="flex ... gap-20">
