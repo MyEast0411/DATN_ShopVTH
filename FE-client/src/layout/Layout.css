@@ -400,6 +400,10 @@ section {
   border-right: 1px solid #dfdfdf;
 }
 
+.card-product {
+  cursor: pointer;
+}
+
 .card-product .img-product {
   width: 374px;
   height: 376px;
@@ -576,14 +580,14 @@ section {
   transition: 0.2s;
 }
 
-.cart-item-horizontal{
+.cart-item-horizontal {
   height: 0.5px;
   background-color: #ccc;
   margin: 20px 0;
   width: 80%;
 }
 
-.cart-also-like-title{
+.cart-also-like-title {
   font-size: 25px;
   font-weight: 450;
   margin-bottom: 50px;
@@ -591,7 +595,7 @@ section {
   margin: 50px auto;
 }
 
-.popular-price-discount{
+.popular-price-discount {
   text-decoration: line-through;
   color: #a2a2a2;
 }

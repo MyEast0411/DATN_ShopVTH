@@ -552,6 +552,7 @@ import {
   Pagination,
   Spinner,
   user,
+  Slider,
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -570,7 +571,7 @@ import { capitalize } from "../components/voucher/common/utils";
 import { BiFilterAlt } from "react-icons/bi";
 import FilterMa from "../common/filter/sanPham/FilterMa";
 import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
-import Slider from "../common/filter/sanPham/Slider";
+// import Slider from "../common/filter/sanPham/Slider";
 import { Button as ButtonAntd } from "antd";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import { Link } from "react-router-dom";
@@ -1088,7 +1089,16 @@ export default function App() {
                 </div>
               </div>
               <div className="p-5">
-                <Slider style={{ width: "100%" }} />
+                {/* <Slider style={{ width: "100%" }} /> */}
+                <Slider
+                  label="Price Range"
+                  step={50}
+                  minValue={0}
+                  maxValue={1000}
+                  defaultValue={[100, 500]}
+                  formatOptions={{ style: "currency", currency: "USD" }}
+                  className="max-w-md"
+                />
               </div>
               <div className="p-5 text-center mt-4">
                 <ButtonAntd
