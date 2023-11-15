@@ -15,5 +15,6 @@ public interface HinhThucThanhToanRepository extends JpaRepository<HinhThucThanh
     @Query("select u from HinhThucThanhToan u where u.id_hoa_don.id = ?1")
     List<HinhThucThanhToan> getHTTH(String idHD );
 
-
+    @Query("select u from HinhThucThanhToan u where u.id_hoa_don.ma = ?1")
+    List<HinhThucThanhToan> getThanhToan(String maHD);
 }

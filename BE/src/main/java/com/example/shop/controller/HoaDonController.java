@@ -2,6 +2,7 @@ package com.example.shop.controller;
 
 import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.Voucher;
+import com.example.shop.repositories.HoaDonRepository;
 import com.example.shop.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,9 @@ import java.util.List;
 public class HoaDonController {
     @Autowired
     private HoaDonService hoaDonService;
+
+    @Autowired
+    private HoaDonRepository hoaDonRepository;
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
             @RequestParam(name = "page" , defaultValue = "0")Integer numPage
@@ -58,6 +62,11 @@ public class HoaDonController {
         return ResponseEntity.ok(hoaDon);
     }
 
+    @GetMapping("getHoaDonCTT")
+    public ResponseEntity<List<HoaDon>> getHoaDonCTT(){
+        return ResponseEntity.ok(hoaDonRepository.getHDChuaTT());
+    }
+
 
     @PostMapping("add")
     public ResponseEntity<HoaDon> addHoaDon(
@@ -67,9 +76,21 @@ public class HoaDonController {
         return new ResponseEntity<>(hoaDonSave, HttpStatus.CREATED);
     }
 
+    @PostMapping("taoHoaDon")
+    public ResponseEntity<HoaDon> taoHoaDon(){
+        Integer maxMa = Integer.parseInt(hoaDonRepository.getMaxMa());
+        HoaDon hoaDon = HoaDon.builder()
+                .ma("HD"+(maxMa+1))
+                .trangThai(7)
+                .deleted(0)
+                .build();
+        hoaDonRepository.save(hoaDon);
+        return new ResponseEntity<>(hoaDon, HttpStatus.CREATED);
+    }
+
     @PutMapping("update/{id}")
     public ResponseEntity<HoaDon> updateHoaDon(
-            @PathVariable("id")String id  ,
+            @PathVariable("id")String id,
             @RequestBody HoaDon hoaDon
     ){
         try{
@@ -83,6 +104,30 @@ public class HoaDonController {
             }
         }catch (Exception exception){
             return null;
+        }
+    }
+
+    @PutMapping("thanhToanHoaDon/{id}")
+    public ResponseEntity thanhToanHoaDon(
+            @PathVariable("id")String id,
+            @RequestBody HoaDon hoaDon
+    ){
+        try{
+            HoaDon hoaDon1 = hoaDonRepository.getHoaDonByMa(id);
+            System.out.println(hoaDon1.toString());
+            if (hoaDon1 != null){
+                hoaDon1.setTrangThai(5);
+                hoaDon1.setLoaiHd(hoaDon.getLoaiHd());
+                hoaDon1.setTenKhachHang(hoaDon.getTenKhachHang());
+                hoaDon1.setSdt(hoaDon.getSdt());
+                hoaDon1.setTongTien(hoaDon.getTongTien());
+                HoaDon updateHoaDon = hoaDonRepository.save(hoaDon1);
+                return new ResponseEntity<>(updateHoaDon , HttpStatus.CREATED);
+            }else{
+                throw new Exception("khong co id" + id);
+            }
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body("ERROR");
         }
     }
 

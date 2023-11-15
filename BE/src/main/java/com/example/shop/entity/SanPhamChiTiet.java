@@ -28,6 +28,9 @@ public class SanPhamChiTiet implements Serializable {
     @Column(name = "ten")
     private String ten;
 
+    @Column(name = "defaultImg")
+    private String defaultImg;
+
     @Column(name = "so_luong_ton")
     private Integer soLuongTon;
 

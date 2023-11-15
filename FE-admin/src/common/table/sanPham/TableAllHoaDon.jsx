@@ -45,19 +45,16 @@ import { Modal } from 'antd';
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "Ảnh", uid: "hinhAnh", sortable: true },
-  { name: "Kích thước", uid: "kichThuoc", sortable: true },
-  { name: "Màu sắc", uid: "mauSac", sortable: true },
-  { name: "Đế giày", uid: "deGiay", sortable: true },
-  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center"},
-  { name: "Đơn giá", uid: "donGia", sortable: true },
+  { name: "Mã hóa đơn", uid: "maHD", sortable: true },
+  { name: "Tên khách hàng", uid: "tenKhachHang", sortable: true },
+  { name: "Tên nhân viên", uid: "tenNhanVien", sortable: true },
+  { name: "Loại hóa đơn", uid: "loaiHoaDon", sortable: true },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Hành Động", uid: "hanhDong" },
 ];
 
 const statusOptions = [
-  { name: "Đang bán", uid: "Đang bán" },
-  { name: "Ngừng bán", uid: "Ngừng bán" },
+  { name: "Chờ thanh toán", uid: "Chờ thanh toán" }
 ];
 
 const statusColorMap = {
@@ -65,22 +62,20 @@ const statusColorMap = {
   paused: "danger",
   incoming: "warning",
 };
-statusColorMap["Đang bán"] = "success";
+statusColorMap["Chờ thanh toán"] = "success";
 statusColorMap["Ngừng bán"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
-  "hinhAnh",
-  "kichThuoc",
-  "mauSac",
-  "deGiay",
-  "soLuongTon",
-  "donGia",
+  "maHD",
+  "tenKhachHang",
+  "tenNhanVien",
+  "loaiHoaDon",
   "trangThai",
   "hanhDong",
 ];
 
-export default function App({ gioHang }) {
+export default function App({ onDataSelected }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -88,37 +83,15 @@ export default function App({ gioHang }) {
   const [soLuongDat, setSoLuongDat] = useState("");
   const [isModalOpenThemSL, setIsModalOpenThemSL] = useState(false);
 
-  const showModalThemSL = () => {
-    setIsModalOpenThemSL(true);
-  };
   const handleOkThemSL = async () => {
-    // localStorage.setItem("gioHang"+gioHang,soLuongSP.id)
-    // localStorage.setItem("soLuongDat",soLuongDat)
-    console.log(gioHang);
-    console.log(soLuongSP.id);
-    console.log(soLuongDat);
-
-    await axios.post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
-      id_hoa_don : gioHang,
-      id_san_pham : soLuongSP.id,
-      so_luong : soLuongDat
-    })
-      .then((response) => {
-        toast("🎉 Thêm thành công");
-        cancelDelete();
-      })
-      .catch((error) => {
-        toast(error.response.data);
-      });
-    cancelDelete();
-    setIsModalOpenThemSL(false);
+    
   };
   const handleCancelThemSL = () => {
     setIsModalOpenThemSL(false);
   };
 
-  const handleDelete = (idToDelete) => {
-    setIdToDelete(idToDelete);
+  const handleDelete = () => {
+    
     setDeleteConfirmationOpen(true);
   };
 
@@ -128,17 +101,8 @@ export default function App({ gioHang }) {
   };
 
   const confirmDelete = async () => {
-    if (idToDelete) {
-      //   await axios.delete(`http://localhost:8080/delete/${idToDelete}`)
-      //     .then((response) => {
-      //       toast("🎉 Xóa thành công");
-      //       cancelDelete();
-      //     })
-      //     .catch((error) => {
-      //       toast("😢 Xóa thất bại");
-      //     });
-      cancelDelete();
-    }
+    onDataSelected(idToDelete);
+    cancelDelete();
   };
   const [hinhAnh, setHinhAnh] = useState([]);
   const getAllHA = async () => {
@@ -172,28 +136,21 @@ export default function App({ gioHang }) {
   });
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
-  const { ma } = useParams();
 
-  const url = `http://localhost:8080/getAllSPCT`;
+  const url = `http://localhost:8080/hoa_don/getHoaDonCTT`;
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(url);
-        // console.log(response.data);
+        console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
-          hinhAnh:
-            hinhAnh.find((x) => x.id_san_pham_chi_tiet.id == item.id)?.ten ||
-            "",
-          mauSac: item.id_mau_sac.maMau,
-          kichThuoc: item.id_kich_co.ten,
-          soLuongTon: item.soLuongTon,
-          deGiay: item.id_de_giay.ten,
-          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
-          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
-            ?.id_khuyen_mai.giaTriPhanTram,
+          maHD : item.ma,
+          tenKhachHang : item.tenKhachHang,
+          tenNhanVien : item.id_nhan_vien?.ten,
+          loaiHoaDon : item.loaiHd == 0 ? "Online" : "Tại quầy",
+          trangThai : "Chờ thanh toán"
         }));
         // console.log(giaGiam)
         setSanPhams(updatedRows);
@@ -202,7 +159,7 @@ export default function App({ gioHang }) {
       }
     }
     fetchChiTietSanPham();
-  }, [sanPhams]);
+  }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -254,47 +211,11 @@ export default function App({ gioHang }) {
     });
   }, [sortDescriptor, items]);
 
-  const DiscountTag = ({ discount }) => {
-    if (discount === undefined) {
-      return null;
-    }
-
-    return (
-      <div className="discount-tag">
-        {`${discount}% OFF`}
-      </div>
-    );
-  };
-
 
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
-    const giaGiam = sanPham.giaGiam;
     
     switch (columnKey) {
-      case "hinhAnh":
-        
-        const hinhAnhURL = sanPham.hinhAnh;
-        return (
-          <div style={{
-            display: 'inline-block'
-          }}>
-            
-            <Image
-              width={150}
-              height={100}
-              src={hinhAnhURL}
-              alt={sanPham.ten || "Ảnh sản phẩm"}
-              classNames="m-5 relative"
-              style={{
-                border: '1px solid #D8D9DA',
-                padding: '10px'
-              }}
-            />
-            <DiscountTag discount={giaGiam} />
-            
-          </div>
-        );
       case "trangThai":
         return (
           <Chip
@@ -328,8 +249,8 @@ export default function App({ gioHang }) {
       case "hanhDong":
         return (
           <div className="relative flex gap-4">
-            <Tooltip content="Thêm sản phẩm" showArrow={true}>
-                <span className="cursor-pointer active:opacity-50 w-20 text-center">
+            <Tooltip content="Chọn hóa đơn" showArrow={true}>
+                <span className="cursor-pointer active:opacity-50 w-16 text-center">
                   <div
                     className="p-2"
                     style={{
@@ -338,9 +259,26 @@ export default function App({ gioHang }) {
                       color: "white",
                       cursor: "pointer",
                     }}
-                    onClick={() => {showModalThemSL();setSoLuongSP({id : sanPham.id , soLuongTon : sanPham.soLuongTon})}}
+                    onClick={() => {handleDelete();setIdToDelete(sanPham.maHD)}}
                   >
                     Chọn
+                  </div>
+                  
+                </span>
+            </Tooltip>
+            <Tooltip content="Hủy hóa đơn" showArrow={true}>
+                <span className="cursor-pointer active:opacity-50 w-16 text-center">
+                  <div
+                    className="p-2"
+                    style={{
+                      backgroundColor: "red",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {}}
+                  >
+                    Hủy
                   </div>
                   
                 </span>
@@ -387,7 +325,7 @@ export default function App({ gioHang }) {
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <h1>Các sản phẩm đang có</h1>
+        <h1>Các hóa đơn đang chờ</h1>
 
         <div className="flex justify-between gap-3 items-end">
           <Input
@@ -453,7 +391,7 @@ export default function App({ gioHang }) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Tổng {sanPhams.length} sản phẩm
+            Tổng {sanPhams.length} hóa đơn
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
@@ -482,20 +420,20 @@ export default function App({ gioHang }) {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        {/* <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
+        <span className="w-[30%] text-small text-default-400">
+          {/* {selectedKeys === "all"
             ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
-        </span> */}
+            : `${selectedKeys.size} khyến mại đã được chọn`} */}
+        </span>
         <Pagination
           isCompact
           showControls
           showShadow
           color="primary"
           page={page}
-          total={pages}
+          total={totalPages}
           onChange={setPage}
-          style={{ paddingLeft: "730px" }}
+        //   style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -561,21 +499,7 @@ export default function App({ gioHang }) {
           )}
         </TableBody>
       </Table>
-      <Modal
-        onOk={handleOkThemSL}
-        onCancel={handleCancelThemSL}
-        open={isModalOpenThemSL}
-        width={350}
-        okText="Đặt hàng"
-        >
-        <div className="mt-5">
-          <h2>Số lượng tồn sản phẩm : {soLuongSP.soLuongTon}</h2>
-          <br />
-          <p>Nhập số lượng sản phẩm  
-          </p>
-          <InputNumber onChange={(value) => {setSoLuongDat(value)}} max={soLuongSP.soLuongTon}/>
-        </div>
-      </Modal>
+      
       <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
         <DialogTitle>
           <div
@@ -592,12 +516,12 @@ export default function App({ gioHang }) {
                 fontSize: "25px",
               }}
             />
-            <span>Xác nhận xóa</span>
+            <span>Xác nhận chọn</span>
           </div>
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc muốn xóa Sản phẩm này?
+            Bạn có chắc muốn chọn hóa đơn này?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -605,7 +529,7 @@ export default function App({ gioHang }) {
             Hủy
           </Button>
           <Button color="primary" onClick={confirmDelete}>
-            Vẫn xóa
+            Vẫn chọn
           </Button>
         </DialogActions>
       </Dialog>

@@ -3,7 +3,9 @@ import { List, Tabs } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Children from "./Chirldren";
 import axios from "axios";
-import { fakeData } from "../../db/datafake";
+import { toast } from "react-toastify";
+import { data } from "browserslist";
+
 const columns = [
   { name: "STT", uid: "key" },
   { name: "THÔNG TIN SẢN PHẨM", uid: "thongtinsanpham" },
@@ -11,42 +13,43 @@ const columns = [
   { name: "TỔNG TIỀN", uid: "tongTien" },
   { name: "THAO TÁC", uid: "actions" },
 ];
-
-// const defaultPanes = axios
-//   .get("https://65484e06dd8ebcd4ab22b45f.mockapi.io/test/data")
-//   .then((res) => {
-//     return res.data.map((user, index) => {
-//       return {
-//         label: `Hóa Đơn ${user?.id}`,
-//         children: (
-//           <Children
-//             columns={columns}
-//             users={user?.data}
-//             activeKey={user?.id}
-//             updateSoLuong={updateSoLuong}
-//           />
-//         ),
-//         key: user?.id,
-//       };
-//     });
-//   });
-
 const TabBanHang = () => {
-  const [activeKey, setActiveKey] = useState(1);
-  const [items, setItems] = useState([]);
+  const [activeKey, setActiveKey] = useState("💖💖");
+  const [selectData, setSelectData] = useState(null);
+  const handleDataSelect = (data) => {
+    setSelectData(data);
+    console.log(data);
+  };
+
+  const [items, setItems] = useState([{
+    label: `💖💖`,
+    children: (
+      <Children
+        columns={columns}
+        users={[]}
+        activeKey={`💖💖`}
+        onDataSelect={handleDataSelect}
+      />
+    ),
+    key: `💖💖`,
+  }]);
+  
   const getData = async () => {
-    await axios
-      .get("https://65484e06dd8ebcd4ab22b45f.mockapi.io/test/data")
+      await axios
+      .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCT/${activeKey}`)
       .then((res) => {
         const data = res.data.map((user, index) => {
+          console.log(user);
+
           return {
-            label: `Hóa Đơn ${user?.id}`,
+            label: `${user?.id}`,
             children: (
               <Children
                 columns={columns}
-                users={user?.data}
+                users={user?.list}
                 activeKey={user?.id}
                 updateSoLuong={updateSoLuong}
+                // onDataSelected={handleDataSelected}
               />
             ),
             key: user?.id,
@@ -55,59 +58,65 @@ const TabBanHang = () => {
 
         setActiveKey(res.data[0].id);
         setItems(data);
-        // console.log(items);
-
-        localStorage.setItem("data", JSON.stringify(data));
-        console.log(JSON.parse(localStorage.getItem("data")));
       });
   };
 
-  useMemo(() => {
-    getData();
+  useEffect(() => {
+    // getData();
   }, []);
 
-  const onChange = (key) => {
-    setActiveKey(key);
-    localStorage.setItem("keyHD", key);
-  };
-  const add = () => {
-    if (items.length < 5) {
-      const newKey = Date.now();
-      setItems([
-        ...items,
+  
+  const [invoiceCount, setInvoiceCount] = useState(1);
+
+  const addEmptyInvoice =async () => {
+    const result = await axios.post('http://localhost:8080/hoa_don/taoHoaDon')
+    .then((res) => {
+      console.log(res.data);
+      setItems((prevItems) => [
+        ...prevItems,
         {
-          label: `Hóa đơn ${newKey}`,
+          label: res.data.ma,
           children: (
             <Children
               columns={columns}
               users={[]}
-              activeKey={newKey}
+              activeKey={res.data.ma}
               updateSoLuong={updateSoLuong}
+              // onDataSelected={handleDataSelected}
             />
           ),
-          key: newKey,
+          key: res.data.ma,
         },
       ]);
-      setActiveKey(newKey);
-      localStorage.setItem("keyHD", newKey);
-      localStorage.setItem("data", JSON.stringify(items));
+      setActiveKey(res.data.ma);
+      setInvoiceCount((prevCount) => prevCount + 1);
+      toast("Tạo hóa đơn thành công");
+    })
+    
+  };
+  const updateSoLuong = (key) => {
+    
+  };
+  const onChange = (key) => {
+    setActiveKey(key);
+  };
+
+  const add = () => {
+    if (items.length < 5) {
+      addEmptyInvoice();
     } else {
-      alert("Hóa đơn tạo không vượt quá 5 hd");
+      toast.warning(`Không thể tạo nhiều hơn 5 hóa đơn`);
     }
   };
+
   const remove = (targetKey) => {
-    const targetIndex = items.findIndex((pane) => pane.key === targetKey);
     const newPanes = items.filter((pane) => pane.key !== targetKey);
     if (newPanes.length && targetKey === activeKey) {
-      const { key } =
-        newPanes[
-          targetIndex === newPanes.length ? targetIndex - 1 : targetIndex
-        ];
-      setActiveKey(key);
+      setActiveKey(newPanes[newPanes.length - 1].key);
     }
     setItems(newPanes);
-    localStorage.setItem("data", JSON.stringify(newPanes));
   };
+
   const onEdit = (targetKey, action) => {
     if (action === "add") {
       add();
@@ -116,51 +125,10 @@ const TabBanHang = () => {
     }
   };
 
-  const updateSoLuong = (key) => {
-    const dataLocalStorage = JSON.parse(localStorage.getItem("data"));
-    var keyActiveChoose = localStorage.getItem("keyHD");
-    // console.log(keyActiveChoose);
-    // console.log(keyActiveChoose);
-    // console.log(dataLocalStorage);
-
-    // const itemUpdate = dataLocalStorage.filter(
-    //   (item) =>
-    // );
-
-    // console.log(itemUpdate);
-
-    // console.log(itemUpdate);
-    var list = dataLocalStorage.map((item) => {
-      if (item.key === keyActiveChoose) {
-        item.children.props.users,
-          map((el) => {
-            if (data[i].key === key) {
-              data[i].soLuong -= 1;
-            }
-          });
-      }
-    });
-
-    // for (let index = 0; index < list.length; index++) {
-    //   if (list[index].key === keyActiveChoose) {
-    //     var data = list[index].children.props.users;
-    //     for (let i = 0; i < data.length; i++) {
-    //       if (data[i].key === key) {
-    //         data[i].soLuong -= 1;
-    //       }
-    //     }
-    //   }
-    // }
-    // dataLocalStorage[index1].children.props.users[i1] = item;
-    console.log(list);
-    // console.log(dataLocalStorage);
-    localStorage.setItem("data", JSON.stringify(dataLocalStorage));
-  };
-
   const handleOnTabClick = (key, e) => {
     setActiveKey(key);
-    localStorage.setItem("keyHD", key);
   };
+
   return (
     <>
       <div className="overflow-auto w-full bg-white p-3">
@@ -188,33 +156,5 @@ const TabBanHang = () => {
     </>
   );
 };
-// list.then((result) => {
-//   console.log(result);
-//   defaultPanes = result.map((user, index) => {
-//     return {
-//       label: `Hóa Đơn ${user?.id}`,
-//       children: (
-//         <Children
-//           columns={columns}
-//           users={user?.data}
-//           activeKey={user?.id}
-//           // changeData={changeData}
-//           // updateSoLuong={updateSoLuong}
-//         />
-//       ),
-//       key: user?.id,
-//     };
-//   });
-// });
-
-// const result = fakeData();
-// const TabBanHang = () => {
-//   console.log(JSON.parse(result));
-//   return (
-//     <>
-//       <p>Hello</p>
-//     </>
-//   );
-// };
 
 export default TabBanHang;
