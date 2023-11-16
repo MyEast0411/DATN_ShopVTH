@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 @RestController
 @CrossOrigin("*")
@@ -83,6 +84,7 @@ public class HoaDonController {
                 .ma("HD"+(maxMa+1))
                 .trangThai(7)
                 .deleted(0)
+                .ngayTao(new Date())
                 .build();
         hoaDonRepository.save(hoaDon);
         return new ResponseEntity<>(hoaDon, HttpStatus.CREATED);

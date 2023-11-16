@@ -93,7 +93,7 @@ const Sidebar = () => {
       mainTitle: "Giảm giá",
     },
     {
-      name: "thong-ke",
+      name: "settings",
       icon: AiOutlineSetting,
       menus: ["dang-ky", "dang-nhap", "dang-xuat"],
       subTitles: ["Đăng ký", "Đăng nhập", "Đăng xuất"],

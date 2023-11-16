@@ -48,8 +48,9 @@ const columns = [
   { name: "Mã hóa đơn", uid: "maHD", sortable: true },
   { name: "Tên khách hàng", uid: "tenKhachHang", sortable: true },
   { name: "Tên nhân viên", uid: "tenNhanVien", sortable: true },
+  { name: "Số lượng", uid: "soLuong", sortable: true },
   { name: "Loại hóa đơn", uid: "loaiHoaDon", sortable: true },
-  { name: "Trạng thái", uid: "trangThai", sortable: true },
+  { name: "Trạng thái", uid: "trangThai", sortable: true},
   { name: "Hành Động", uid: "hanhDong" },
 ];
 
@@ -70,6 +71,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "maHD",
   "tenKhachHang",
   "tenNhanVien",
+  "soLuong",
   "loaiHoaDon",
   "trangThai",
   "hanhDong",
@@ -104,25 +106,7 @@ export default function App({ onDataSelected }) {
     onDataSelected(idToDelete);
     cancelDelete();
   };
-  const [hinhAnh, setHinhAnh] = useState([]);
-  const getAllHA = async () => {
-    await axios.get("http://localhost:8080/getAllHinhAnh").then((response) => {
-      setHinhAnh(response.data);
-      // console.log(response.data);
-    });
-  };
-  useEffect(() => {
-    getAllHA();
-  }, []);
 
-  const [kmspcts, setKmspcts] = useState([]);
-  const fetchKMSPCT = async () => {
-    const data = await getAllKMSPCT();
-    setKmspcts(data)
-  };
-  useEffect(() => {
-    fetchKMSPCT();
-  }, [kmspcts]);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -142,13 +126,14 @@ export default function App({ onDataSelected }) {
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(url);
-        console.log(response.data);
+        // console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
           maHD : item.ma,
           tenKhachHang : item.tenKhachHang,
           tenNhanVien : item.id_nhan_vien?.ten,
+          soLuong : "2",
           loaiHoaDon : item.loaiHd == 0 ? "Online" : "Tại quầy",
           trangThai : "Chờ thanh toán"
         }));
@@ -159,7 +144,7 @@ export default function App({ onDataSelected }) {
       }
     }
     fetchChiTietSanPham();
-  }, []);
+  }, [sanPhams]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -228,24 +213,7 @@ export default function App({ onDataSelected }) {
           </Chip>
           
         );
-      case "mauSac":
-        return (
-          <Chip
-            color="white"
-            style={{
-              backgroundColor: sanPham.mauSac, // Sử dụng giá trị từ statusColorMap làm màu nền
-              color: "white", // Màu văn bản trắng
-              fontSize: "13px",
-              textAlign: "center",
-              padding: "1px 6px",
-              borderRadius: "5px",
-            }}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
+      
       case "hanhDong":
         return (
           <div className="relative flex gap-4">

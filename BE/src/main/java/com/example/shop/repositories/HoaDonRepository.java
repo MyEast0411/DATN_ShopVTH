@@ -12,13 +12,13 @@ import java.util.List;
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
-    @Query("select u from HoaDon u where u.trangThai = ?1 and u.deleted =0")
+    @Query("select u from HoaDon u where u.trangThai = ?1 and u.deleted =0 order by u.ngayTao desc")
     List<HoaDon> getPage(int trangThai );
 
     @Query("select u from HoaDon u where u.trangThai = 7 and u.deleted = 0")
     List<HoaDon> getHDChuaTT();
 
-    @Query("select u from HoaDon u where u.deleted = 0")
+    @Query("select u from HoaDon u where u.deleted = 0 order by u.ngayTao desc")
     List<HoaDon> getPageDeleted( );
 
     HoaDon getHoaDonByMa(String ma);
