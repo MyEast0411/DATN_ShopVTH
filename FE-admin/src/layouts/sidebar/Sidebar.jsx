@@ -89,7 +89,7 @@ const Sidebar = () => {
       name: "giam-gia",
       icon: HiOutlineDatabase,
       menus: ["khuyen-mai", "voucher"],
-      subTitles: ["Khuyến mại", "Voucher"],
+      subTitles: ["Đợt giảm giá", "Phiếu giảm giá"],
       mainTitle: "Giảm giá",
     },
     {

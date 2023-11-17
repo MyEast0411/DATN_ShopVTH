@@ -3,6 +3,7 @@ package com.example.shop.controller;
 import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.Voucher;
 import com.example.shop.repositories.HoaDonRepository;
+import com.example.shop.repositories.KhachHangRepository;
 import com.example.shop.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,9 @@ public class HoaDonController {
 
     @Autowired
     private HoaDonRepository hoaDonRepository;
+
+    @Autowired
+    private KhachHangRepository ssKH;
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
             @RequestParam(name = "page" , defaultValue = "0")Integer numPage
