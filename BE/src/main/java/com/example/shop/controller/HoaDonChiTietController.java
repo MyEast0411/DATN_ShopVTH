@@ -86,12 +86,6 @@ public class HoaDonChiTietController {
     @PostMapping("/addHDCT")
     public ResponseEntity addHDCT(@RequestBody HoaDonChiTietDTO hoaDonChiTiet) {
         try {
-//            for (HoaDonChiTiet x:
-//                 ssHDCT.getHDCTByMA(hoaDonChiTiet.getId_hoa_don())) {
-//                if(x.getId_chi_tiet_san_pham().getId().equals(hoaDonChiTiet.getId_san_pham())) {
-//                    return;
-//                }
-//            }
             System.out.println(hoaDonChiTiet.toString());
             SanPhamChiTiet sp = ssSP.findById(hoaDonChiTiet.getId_san_pham()).get();
             BigDecimal tongTien = sp.getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSo_luong()));
