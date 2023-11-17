@@ -26,36 +26,33 @@ import {
   DialogTitle,
   TableCell as TableCellMui,
 } from "@mui/material";
+import { format } from "date-fns";
 // import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
-import { AiOutlinePlus } from "react-icons/ai";
-import { SearchIcon } from "../../otherComponents/SearchIcon";
-import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
-import { capitalize } from "../../otherComponents/utils";
-import { TbInfoTriangle } from "react-icons/tb";
+import { SearchIcon } from "../../common/otherComponents/SearchIcon";
+import { ChevronDownIcon } from "../../common/otherComponents/ChevronDownIcon";
+import { capitalize } from "../../common/otherComponents/utils";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { MdDeleteOutline } from "react-icons/md";
-import { LiaEyeSolid } from "react-icons/lia";
-import { getAllKMSPCT } from "../../../api/khuyenMai/KhuyenMaiApi"
-import { DeleteIcon } from "../../otherComponents/DeleteIcon";
-import { EyeIcon } from "../../otherComponents/EyeIcon";
-import numeral from "numeral";
-import { InputNumber } from "antd";
-import { Modal } from 'antd';
+import { DeleteIcon } from "../../common/otherComponents/DeleteIcon";
+import { EyeIcon } from "../../common/otherComponents/EyeIcon";
+// import { MdDeleteOutline } from "react-icons/md";
+import { TbInfoTriangle } from "react-icons/tb";
+// import { LiaEyeSolid } from "react-icons/lia";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "Mã hóa đơn", uid: "maHD", sortable: true },
-  { name: "Tên khách hàng", uid: "tenKhachHang", sortable: true },
-  { name: "Tên nhân viên", uid: "tenNhanVien", sortable: true },
-  { name: "Số lượng", uid: "soLuong", sortable: true },
-  { name: "Loại hóa đơn", uid: "loaiHoaDon", sortable: true },
-  { name: "Trạng thái", uid: "trangThai", sortable: true},
+  { name: "Ảnh", uid: "hinhAnh", sortable: true, align: "center" },
+  { name: "Họ tên", uid: "hoTen", sortable: true },
+  { name: "Email", uid: "email", sortable: true },
+  { name: "Số điện thoại", uid: "sdt", sortable: true },
+  { name: "Ngày sinh", uid: "ngaySinh", sortable: true },
+  { name: "Trạng thái", uid: "trangThai" },
   { name: "Hành Động", uid: "hanhDong" },
 ];
 
 const statusOptions = [
-  { name: "Chờ thanh toán", uid: "Chờ thanh toán" }
+  { name: "Kích hoạt", uid: "Kích hoạt" },
+  { name: "Chưa kích hoạt", uid: "Chưa kích hoạt" },
 ];
 
 const statusColorMap = {
@@ -63,37 +60,28 @@ const statusColorMap = {
   paused: "danger",
   incoming: "warning",
 };
-statusColorMap["Chờ thanh toán"] = "success";
-statusColorMap["Ngừng bán"] = "danger";
+statusColorMap["Kích hoạt"] = "success";
+statusColorMap["Chưa kích hoạt"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
-  "maHD",
-  "tenKhachHang",
-  "tenNhanVien",
-  "soLuong",
-  "loaiHoaDon",
+  "hinhAnh",
+  "hoTen",
+  "email",
+  "sdt",
   "trangThai",
   "hanhDong",
 ];
 
-export default function App({ onDataSelected }) {
+export default function App({ hoaDon, setKhachHang }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [soLuongSP, setSoLuongSP] = useState({});
-  const [soLuongDat, setSoLuongDat] = useState("");
-  const [isModalOpenThemSL, setIsModalOpenThemSL] = useState(false);
+  const [rows, setRows] = React.useState([]);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
 
-  const handleOkThemSL = async () => {
-    
-  };
-  const handleCancelThemSL = () => {
-    setIsModalOpenThemSL(false);
-  };
-
-  const handleDelete = () => {
-    
+  const handleDelete = (idToDelete) => {
+    setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);
   };
 
@@ -103,8 +91,18 @@ export default function App({ onDataSelected }) {
   };
 
   const confirmDelete = async () => {
-    onDataSelected(idToDelete);
-    cancelDelete();
+    if (idToDelete) {
+      await axios
+        .delete(`http://localhost:8080/khach-hang/delete/${idToDelete}`)
+        .then((response) => {
+          toast("🎉 Xóa thành công");
+          cancelDelete();
+        })
+        .catch((error) => {
+          toast("😢 Xóa thất bại");
+        });
+      cancelDelete();
+    }
   };
 
   const [filterValue, setFilterValue] = React.useState("");
@@ -121,20 +119,22 @@ export default function App({ onDataSelected }) {
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
 
-  const url = `http://localhost:8080/hoa_don/getHoaDonCTT`;
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
-        const response = await axios.get(url);
+        const response = await axios.get(
+          "http://localhost:8080/khach-hang/getAll"
+        );
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
-          maHD : item.ma,
-          tenKhachHang : item.id_khach_hang?.ten,
-          tenNhanVien : item.id_nhan_vien?.ten,
-          soLuong : "2",
-          loaiHoaDon : item.loaiHd == 0 ? "Online" : "Tại quầy",
-          trangThai : "Chờ thanh toán"
+          maKH: item.ma,
+          anh: item.anhNguoiDung,
+          hoTen: item.ten,
+          email: item.email,
+          sdt: item.sdt,
+          ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
+          trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
         }));
         setSanPhams(updatedRows);
       } catch (error) {
@@ -194,11 +194,20 @@ export default function App({ onDataSelected }) {
     });
   }, [sortDescriptor, items]);
 
-
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
-    
+    // console.log(sanPham);
     switch (columnKey) {
+      case "hinhAnh":
+        const hinhAnhURL = sanPham.anh;
+        return (
+          <Image
+            style={{ height: "80px", width: "100px" }}
+            src={hinhAnhURL}
+            alt={sanPham.ten || "Ảnh sản phẩm"}
+            classNames="m-5"
+          />
+        );
       case "trangThai":
         return (
           <Chip
@@ -209,15 +218,13 @@ export default function App({ onDataSelected }) {
           >
             {cellValue}
           </Chip>
-          
         );
-      
       case "hanhDong":
         return (
-          <div className="relative flex gap-4">
-            <Tooltip content="Chọn hóa đơn" showArrow={true}>
-                <span className="cursor-pointer active:opacity-50 w-16 text-center">
-                  <div
+          <div className="relative flex items-center gap-4">
+            <Tooltip content="Chọn khách hàng" showArrow={true}>
+              {/*  */}
+              <div
                     className="p-2"
                     style={{
                       backgroundColor: "#00C5CD",
@@ -225,36 +232,26 @@ export default function App({ onDataSelected }) {
                       color: "white",
                       cursor: "pointer",
                     }}
-                    onClick={() => {handleDelete();setIdToDelete(sanPham.maHD)}}
+                    onClick={async() => {
+                        await axios.put("http://localhost:8080/hoa_don_chi_tiet/addKH_HD", {
+                            maHD : hoaDon,
+                            id_khach_hang : sanPham.id
+                        })
+                        .then((response) => {
+                            setKhachHang(sanPham);
+                            toast(`Chọn khách hàng thành công`);
+                        })
+                    }}
                   >
                     Chọn
-                  </div>
-                  
-                </span>
-            </Tooltip>
-            <Tooltip content="Hủy hóa đơn" showArrow={true}>
-                <span className="cursor-pointer active:opacity-50 w-16 text-center">
-                  <div
-                    className="p-2"
-                    style={{
-                      backgroundColor: "red",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {}}
-                  >
-                    Hủy
-                  </div>
-                  
-                </span>
+              </div>
             </Tooltip>
           </div>
         );
       default:
         return cellValue;
     }
-  }, [isModalOpenThemSL]);
+  }, []);
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -291,8 +288,6 @@ export default function App({ onDataSelected }) {
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <h1>Các hóa đơn đang chờ</h1>
-
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -302,7 +297,6 @@ export default function App({ onDataSelected }) {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
-            // style={{margin : "100px 500px"}}
           />
           <div className="flex gap-3 items-end">
             <Dropdown>
@@ -357,7 +351,7 @@ export default function App({ onDataSelected }) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Tổng {sanPhams.length} hóa đơn
+            Tổng {sanPhams.length} khách hàng
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
@@ -428,7 +422,7 @@ export default function App({ onDataSelected }) {
       <Table
         style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
-        // isHeaderSticky
+        isHeaderSticky
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{
@@ -453,7 +447,7 @@ export default function App({ onDataSelected }) {
           )}
         </TableHeader>
         <TableBody
-          emptyContent={"Không tìm thấy sản phẩm nào!"}
+          emptyContent={"Không tìm thấy khách hàng nào!"}
           items={sortedItems}
         >
           {(item) => (
@@ -465,7 +459,6 @@ export default function App({ onDataSelected }) {
           )}
         </TableBody>
       </Table>
-      
       <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
         <DialogTitle>
           <div
@@ -482,12 +475,12 @@ export default function App({ onDataSelected }) {
                 fontSize: "25px",
               }}
             />
-            <span>Xác nhận chọn</span>
+            <span>Xác nhận xóa</span>
           </div>
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc muốn chọn hóa đơn này?
+            Bạn có chắc muốn xóa Sản phẩm này?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -495,7 +488,7 @@ export default function App({ onDataSelected }) {
             Hủy
           </Button>
           <Button color="primary" onClick={confirmDelete}>
-            Vẫn chọn
+            Vẫn xóa
           </Button>
         </DialogActions>
       </Dialog>
