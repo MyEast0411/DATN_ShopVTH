@@ -75,6 +75,23 @@ export default function DetailProduct() {
             <div className="detail-pro-name">Air Jordan 5 "Navy"</div>
             <div className="detail-pro-gender">Men's Shoes</div>
             <div className="detail-pro-price mt-5">$210</div>
+            <div className="choose-color-product flex">
+              <img
+                src="https://static.nike.com/a/images/t_PDP_144_v1/f_auto,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/89b9c5f5-9049-422d-aa76-19ea5323ef58/air-jordan-1-mid-shoes-7wnzmw.png"
+                alt=""
+                className="choose-color-img-pro"
+              />
+              <img
+                src="https://static.nike.com/a/images/t_PDP_144_v1/f_auto,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/b8e08e8d-d273-4500-a0c5-eceba7210943/air-jordan-1-mid-shoes-7wnzmw.png"
+                alt=""
+                className="choose-color-img-pro"
+              />
+              <img
+                src="https://static.nike.com/a/images/t_PDP_144_v1/f_auto,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/46f55604-0c16-43d7-8d74-05b379c140dc/air-jordan-1-mid-shoes-7wnzmw.png"
+                alt=""
+                className="choose-color-img-pro"
+              />
+            </div>
             <div className="detail-pro-select-size-title flex justify-between mt-10">
               <div> Select Size</div>
               <Link to="/size-guide" className="size-guide underline">

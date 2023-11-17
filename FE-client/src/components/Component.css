@@ -242,19 +242,33 @@
   width: 60%;
 }
 
-.size-guide{
+.size-guide {
   color: #7b7474;
   cursor: pointer;
   font-weight: normal;
 }
 
-.size-guide:hover{
+.size-guide:hover {
   color: #605f5f;
 }
 
 .detail-product-left {
   position: relative;
-  min-height: 200vh;
+  /* min-height: 100vh; */
+}
+
+.choose-color-img-pro {
+  width: 70px;
+  border-radius: 6px;
+  height: 70px;
+  margin-right: 10px;
+  margin-top: 10px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.choose-color-img-pro:hover{
+  border: 2px solid #000;
 }
 
 .sticky-grid {
@@ -289,21 +303,39 @@
   color: #cdc9c9;
 }
 
-.interested{
+.interested {
   width: 60%;
 }
 
-.detail-pro-group-btn{
+.detail-pro-group-btn {
   width: 60%;
   margin-top: 20px;
 }
 
-.detail-pro-review{
+.detail-pro-review {
   width: 60%;
 }
 
-.horizontal{
+.horizontal {
   height: 0.5px;
   background-color: #ccc;
   margin: 20px 0;
+}
+
+.main-size-guide-title{
+  width: 80%;
+  margin: 20px auto;
+  font-weight: 450;
+  font-size: 18px;
+}
+
+.main-foot-wear-size-chart{
+  width: 60%;
+  margin: auto;
+}
+
+.main-foot-wear-size-chart-title{
+  font-size: 30px;
+  font-weight: 450;
+  margin-bottom: 20px;
 }

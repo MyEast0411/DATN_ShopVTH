@@ -75,9 +75,9 @@ export default function SaleBar() {
             </p>
           </div>
           <div className="shop-button flex justify-center mb-10">
-            <Link to="/shop">
+            <a href="/shop">
               <button class="btn-shop-button">Shop</button>
-            </Link>
+            </a>
           </div>
         </div>
       </div>
