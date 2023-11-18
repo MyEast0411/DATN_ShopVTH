@@ -16,12 +16,13 @@ import {
   DialogContentText,
   DialogTitle
 } from "@mui/material";
-
+import { DeleteIcon } from "../common/otherComponents/DeleteIcon";
 import { MdOutlineDelete } from "react-icons/md";
 import { Button } from "@material-tailwind/react";
 import axios from "axios";
 import { TbInfoTriangle } from "react-icons/tb";
 import { toast } from "react-toastify";
+import { InputNumber } from "antd";
 const statusColorMap = {
   active: "success",
   paused: "danger",
@@ -35,6 +36,10 @@ export default function CartItem({ users, columns, updateSoLuong }) {
   });
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
   const [hinhAnh, setHinhAnh] = useState([]);
+  const [soLuong, setSoLuong] = useState({
+    id_san_pham : "",
+    so_luong : ""
+  });
   
 
   const getAllHA = async () => {
@@ -54,6 +59,7 @@ export default function CartItem({ users, columns, updateSoLuong }) {
 
     setDeleteConfirmationOpen(true);
   };
+
 
   const cancelDelete = () => {
     setIdToDelete({});
@@ -76,7 +82,6 @@ export default function CartItem({ users, columns, updateSoLuong }) {
   };
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
-
     switch (columnKey) {
       case "thongtinsanpham":
         return (
@@ -106,43 +111,35 @@ export default function CartItem({ users, columns, updateSoLuong }) {
       case "soLuong":
         console;
         return (
-          <div className=" flex col-span-3 gap-1">
-            <div className="col-span-1">
-              <Button
-                // onClick={() => {
-                //   updateSoLuong(user.key);
-                // }}
-              >
-                -
-              </Button>
-            </div>
+          <div className="flex col-span-3 gap-1">
             <div
-              className="col-span-1"
+              className="col-span-1 flex items-center"
               style={{
                 width: 100,
               }}
             >
-              <Input
+              <InputNumber
                 type="text"
                 value={user.soLuong}
                 variant="bordered"
                 className="text-lg"
-                style={{ textAlign: "center", paddingTop: 5 }}
+                style={{ textAlign: "center", paddingTop: 0, height: "40px", flex: 1 }}
+                onChange={async(value) => {
+                  console.log(value);
+                  if(value > 10) {
+                    toast(`Chỉ được thêm tối đa 10 sản phẩm`);
+                    return;
+                  }
+                  await axios.post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
+                    id_hoa_don : user.id_hoa_don.ma,
+                    id_san_pham : user.id_chi_tiet_san_pham.id,
+                    so_luong : value
+                  })
+                }}
               />
             </div>
-
-            <div className="col-span-1">
-              <Button
-                onClick={() => {
-                  user.soLuong + 1;
-                }}
-              >
-                +
-              </Button>
-            </div>
-          </div>
+        </div>
         );
-
       case "tongTien":
         return (
           <span style={{ color: "red", fontSize: 20 }}>
@@ -152,7 +149,7 @@ export default function CartItem({ users, columns, updateSoLuong }) {
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
-            <Tooltip color="danger" content="Xóa sản phẩm">
+            <Tooltip color="danger" content="Xóa sản phẩm" showArrow>
               <span className="text-lg text-danger cursor-pointer active:opacity-50">
                 <MdOutlineDelete style={{ fontSize: 40, color: "red" }} onClick={() => handleDelete(user.id_hoa_don.id,user.id_chi_tiet_san_pham.id)}/>
               </span>

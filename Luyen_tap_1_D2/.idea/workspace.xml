@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f83df207-bf43-405d-ac54-003fa49cf26c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/repository/KhachHangVoucherRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/service/KhachHangVoucherService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/service/impl/KhachHangVoucherServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/viewmodel/DataReq.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/controller/KhachHangController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/controller/KhachHangController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/controller/LichSuHoaDonController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/controller/LichSuHoaDonController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/controller/VoucherController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/controller/VoucherController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/ChatLieu.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/ChatLieu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/ChucVu.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/ChucVu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/DeGiay.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/DeGiay.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/DiaChi.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/DiaChi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/GioHang.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/GioHang.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/GioHangChiTiet.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/GioHangChiTiet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/HinhAnh.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/HinhAnh.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/HinhThucThanhToan.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/HinhThucThanhToan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/HoaDon.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/HoaDon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/HoaDonChiTiet.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/HoaDonChiTiet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KhachHang.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KhachHang.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KhachHangVoucher.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KhachHangVoucher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KhuyenMai.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KhuyenMai.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KhuyenMaiSanPhamChiTiet.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KhuyenMaiSanPhamChiTiet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KichCo.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/KichCo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/LichSuHoaDon.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/LichSuHoaDon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/MauSac.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/MauSac.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/NhanHieu.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/NhanHieu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/NhanVien.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/NhanVien.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/SanPham.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/SanPham.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/SanPhamChiTiet.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/SanPhamChiTiet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/ThanhToan.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/ThanhToan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/TheLoai.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/TheLoai.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/ThuongHieu.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/ThuongHieu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/Voucher.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/entity/Voucher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/repository/KhachHangRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/repository/KhachHangRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/service/KhachHangService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/service/KhachHangService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/service/impl/KhachHangServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/shop/service/impl/KhachHangServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../FE-admin/src/components/voucher/AddVoucher.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../FE-admin/src/components/voucher/AddVoucher.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../FE-admin/src/pages/Voucher.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../FE-admin/src/pages/Voucher.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../FE-admin/src/small-component/common/TableAntd.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../FE-admin/src/small-component/common/TableAntd.jsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2X54dXxb0Ek81rw5eXZ7oDcm6bH" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;716cff44db0fe32ad7a982422475496d&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="LuyenTap1D2Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="Luyen_tap_1_D2" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.luyen_tap_1_d2.LuyenTap1D2Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f83df207-bf43-405d-ac54-003fa49cf26c" name="Changes" comment="" />
+      <created>1697905697734</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1697905697734</updated>
+      <workItem from="1697905700215" duration="72000" />
+      <workItem from="1697905793177" duration="67000" />
+      <workItem from="1698075545229" duration="3000" />
+      <workItem from="1698167060135" duration="4000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

@@ -134,12 +134,13 @@ export default function DetailHoaDon() {
   const getDataLichSuThanhToan = async () => {
     const res = await axios.get(`http://localhost:8080/htth/getHTTT/${id}`);
     const data = await res.data;
+    console.log(data);
     if (data.length != 0) {
       const list = data.map((item, index) => {
         return {
           id: index + 1,
           maGiaoDich: item.id_thanh_toan.ma_giao_dich,
-          soTien: item.id_hoa_don.tongTien,
+          soTien: item.id_thanh_toan.soTien,
           trangThai: item.id_thanh_toan.hinhThuc,
           thoiGian: item.ngayTao,
           // loaiGiaoDich: item.id_thanh_toan.trangThai,
@@ -383,12 +384,12 @@ export default function DetailHoaDon() {
                       <p>
                         <span className="font-bold">Mã Nhân Viên : </span>
                         &nbsp;&nbsp;
-                        {item.id_hoa_don.id_nhan_vien.ma}
+                        {item?.id_hoa_don?.id_nhan_vien?.ma}
                       </p>
                       <p>
                         <span className="font-bold">Tên Nhân Viên : </span>
                         &nbsp;&nbsp;
-                        {item.id_hoa_don.id_nhan_vien.ten}
+                        {item?.id_hoa_don?.id_nhan_vien?.ten}
                       </p>
                       <p>
                         <span className="font-bold">Thoi gian : </span>
@@ -455,7 +456,7 @@ export default function DetailHoaDon() {
                 </div>
                 <div className="grid grid-cols-2 gap-1 ">
                   <p className="font-bold text-lg"> Tên Khách hàng : </p>
-                  <p> {info.hoTen}</p>
+                  <p> {info.tenKhachHang}</p>
                 </div>
               </div>
 
@@ -544,28 +545,28 @@ export default function DetailHoaDon() {
                   <div className="grid grid-cols-1 gap-x-8 gap-y-4 space-y-3">
                     <div className="grid grid-cols-2 gap-1  pt-3">
                       <p className="font-bold text-lg">Tiền Hàng : </p>
-                      <p className="font-bold text-red-500">
+                      <p className="font-bold text-red-500" style={{fontSize : "25px"}}>
                         {Intl.NumberFormat().format(money.tienHang)}&nbsp;₫
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-1  ">
                       <p className="font-bold text-lg"> Phí Vận Chuyển : </p>
-                      <p className="font-bold text-red-500">
+                      <p className="font-bold text-red-500" style={{fontSize : "20px"}}>
                         {Intl.NumberFormat().format(money.tienShip)}&nbsp;₫
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-1  ">
                       <p className="font-bold text-lg"> Tien Giam : </p>
-                      <p className="font-bold text-red-500">
+                      <p className="font-bold text-red-500" style={{fontSize : "20px"}}>
                         {Intl.NumberFormat().format(money.tienGiam)}&nbsp;₫
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-1  pe-3  ">
                       <p className="font-bold text-lg"> Tổng Tiền : </p>
-                      <p className="font-bold text-red-500">
+                      <p className="font-bold text-red-500" style={{fontSize : "25px"}}>
                         {Intl.NumberFormat().format(money.tongTien)}&nbsp;₫
                       </p>
                     </div>
@@ -600,10 +601,6 @@ const listTitleTimline = [
     icon: { GiConfirmed },
   },
   {
-    title: "Chờ Thanh Toán",
-    icon: { LuPackageCheck },
-  },
-  {
     title: "Chờ Vận Chuyển",
     icon: { FaFileInvoice },
   },
@@ -611,6 +608,10 @@ const listTitleTimline = [
     title: "Hoàn Thành",
     icon: { FaShippingFast },
   },
+  {
+    title: "Chờ Thanh Toán",
+    icon: { LuPackageCheck },
+  }
 ];
 
 const columnsThanhToan = [

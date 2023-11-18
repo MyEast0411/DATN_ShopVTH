@@ -79,4 +79,8 @@ public class HoaDon {
     @JoinColumn(name = "id_nhan_vien")
     private NhanVien id_nhan_vien;
 
+    @ManyToOne
+    @JoinColumn(name = "id_khach_hang")
+    private KhachHang id_khach_hang;
+
 }

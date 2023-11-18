@@ -119,3 +119,8 @@ input[type="number"] {
   border-top-right-radius: 10px;
   border-bottom-left-radius: 10px;
 }
+
+
+.thuy-hien {
+  overflow: hidden;
+}

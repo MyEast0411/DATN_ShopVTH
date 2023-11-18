@@ -47,6 +47,11 @@ public class KhachHangController {
         return diaChiRepository.findDiaChiByMa(ma);
     }
 
+    @GetMapping("/dia-chi/findDiaChiMacDinh/{ma}")
+    public DiaChi findDiaChiMacDinh(@PathVariable String ma) {
+        return diaChiRepository.findDiaChiMacDinh(ma);
+    }
+
     @DeleteMapping("/khach-hang/delete/{id}")
     public void delete(@PathVariable("id") String id) {
         khachHangRepository.delete(khachHangRepository.findById(id).get());
