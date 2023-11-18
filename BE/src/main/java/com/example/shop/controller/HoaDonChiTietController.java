@@ -46,7 +46,7 @@ public class HoaDonChiTietController {
         List<HoaDonDTO> result = new ArrayList<>();
         for (Map.Entry<String, List<HoaDonChiTiet>> entry : groupedData.entrySet()) {
             HoaDonDTO groupedDataDTO = new HoaDonDTO();
-            groupedDataDTO.setId(entry.getKey());
+            groupedDataDTO.setId(maHD);
             groupedDataDTO.setList(entry.getValue());
             result.add(groupedDataDTO);
         }

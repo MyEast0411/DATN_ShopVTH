@@ -27,7 +27,6 @@ import {
   TableCell as TableCellMui,
 } from "@mui/material";
 import { format } from "date-fns";
-// import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
 import { SearchIcon } from "../../common/otherComponents/SearchIcon";
 import { ChevronDownIcon } from "../../common/otherComponents/ChevronDownIcon";
 import { capitalize } from "../../common/otherComponents/utils";
@@ -35,14 +34,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { DeleteIcon } from "../../common/otherComponents/DeleteIcon";
 import { EyeIcon } from "../../common/otherComponents/EyeIcon";
-// import { MdDeleteOutline } from "react-icons/md";
-import { TbInfoTriangle } from "react-icons/tb";
-// import { LiaEyeSolid } from "react-icons/lia";
 
+import { TbInfoTriangle } from "react-icons/tb";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
   { name: "Ảnh", uid: "hinhAnh", sortable: true, align: "center" },
-  { name: "Họ tên", uid: "hoTen", sortable: true },
+  { name: "Họ tên", uid: "ten", sortable: true },
   { name: "Email", uid: "email", sortable: true },
   { name: "Số điện thoại", uid: "sdt", sortable: true },
   { name: "Ngày sinh", uid: "ngaySinh", sortable: true },
@@ -66,7 +63,7 @@ statusColorMap["Chưa kích hoạt"] = "danger";
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
   "hinhAnh",
-  "hoTen",
+  "ten",
   "email",
   "sdt",
   "trangThai",
@@ -130,7 +127,7 @@ export default function App({ hoaDon, setKhachHang }) {
           stt: index + 1,
           maKH: item.ma,
           anh: item.anhNguoiDung,
-          hoTen: item.ten,
+          ten: item.ten,
           email: item.email,
           sdt: item.sdt,
           ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),

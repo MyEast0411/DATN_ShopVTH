@@ -119,7 +119,7 @@ export default function TableCommon({ data }) {
       bottomContent={
         <div className="flex w-full justify-center ">
           <Pagination
-            isCompact
+            // isCompact
             showControls
             showShadow
             page={page}

@@ -1,10 +1,13 @@
 package com.example.shop.controller;
 
+import com.example.shop.dto.ThanhToanHoaDonDTO;
 import com.example.shop.entity.HoaDon;
+import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.entity.Voucher;
 import com.example.shop.repositories.HoaDonRepository;
 import com.example.shop.repositories.KhachHangRepository;
 import com.example.shop.service.HoaDonService;
+import com.example.shop.service.LichSuHoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +41,9 @@ public class HoaDonController {
 
     @Autowired
     private KhachHangRepository ssKH;
+
+    @Autowired
+    private LichSuHoaDonService lichSuHoaDonService;
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
             @RequestParam(name = "page" , defaultValue = "0")Integer numPage
@@ -88,6 +95,7 @@ public class HoaDonController {
                 .ma("HD"+(maxMa+1))
                 .trangThai(7)
                 .deleted(0)
+                .loaiHd(1)
                 .ngayTao(new Date())
                 .build();
         hoaDonRepository.save(hoaDon);
@@ -116,17 +124,40 @@ public class HoaDonController {
     @PutMapping("thanhToanHoaDon/{id}")
     public ResponseEntity thanhToanHoaDon(
             @PathVariable("id")String id,
-            @RequestBody HoaDon hoaDon
+            @RequestBody ThanhToanHoaDonDTO hoaDon
     ){
         try{
             HoaDon hoaDon1 = hoaDonRepository.getHoaDonByMa(id);
-            System.out.println(hoaDon1.toString());
+            System.out.println(hoaDon.toString());
+            if(hoaDon.getTrangThai().equals("1") && hoaDon.getLoaiHd().equals("0")) {
+                LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                        .id_hoa_don(hoaDon1)
+                        .moTaHoaDon("Chờ xác nhận")
+                        .deleted(0)
+                        .nguoiTao("Đông")
+                        .ngayTao(new Date(System.currentTimeMillis()))
+                        .build();
+                LichSuHoaDon lichSuHoaDon2 = LichSuHoaDon.builder()
+                        .id_hoa_don(hoaDon1)
+                        .moTaHoaDon("Xác nhận")
+                        .deleted(0)
+                        .nguoiTao("Đông")
+                        .ngayTao(new Date(System.currentTimeMillis()))
+                        .build();
+                lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
+                lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon2);
+                System.out.println("true");
+            }
+
             if (hoaDon1 != null){
                 hoaDon1.setTrangThai(5);
-                hoaDon1.setLoaiHd(hoaDon.getLoaiHd());
+                hoaDon1.setLoaiHd(Integer.parseInt(hoaDon.getLoaiHd()));
+                hoaDon1.setTrangThai(Integer.parseInt(hoaDon.getTrangThai()));
+                hoaDon1.setDiaChi(hoaDon.getDiaChi());
                 hoaDon1.setTenKhachHang(hoaDon.getTenKhachHang());
                 hoaDon1.setSdt(hoaDon.getSdt());
-                hoaDon1.setTongTien(hoaDon.getTongTien());
+                hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
+                hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
                 HoaDon updateHoaDon = hoaDonRepository.save(hoaDon1);
                 return new ResponseEntity<>(updateHoaDon , HttpStatus.CREATED);
             }else{
