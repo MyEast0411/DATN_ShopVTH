@@ -89,11 +89,11 @@ const Sidebar = () => {
       name: "giam-gia",
       icon: HiOutlineDatabase,
       menus: ["khuyen-mai", "voucher"],
-      subTitles: ["Khuyến mại", "Voucher"],
+      subTitles: ["Đợt giảm giá", "Phiếu giảm giá"],
       mainTitle: "Giảm giá",
     },
     {
-      name: "thong-ke",
+      name: "settings",
       icon: AiOutlineSetting,
       menus: ["dang-ky", "dang-nhap", "dang-xuat"],
       subTitles: ["Đăng ký", "Đăng nhập", "Đăng xuất"],

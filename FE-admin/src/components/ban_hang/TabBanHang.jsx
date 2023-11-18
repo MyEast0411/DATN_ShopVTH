@@ -16,9 +16,33 @@ const columns = [
 const TabBanHang = () => {
   const [activeKey, setActiveKey] = useState("💖💖");
   const [selectData, setSelectData] = useState(null);
-  const handleDataSelect = (data) => {
+
+  const handleDataSelect =async (data) => {
     setSelectData(data);
-    console.log(data);
+    await axios
+      .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCT/${data}`)
+      .then((res) => {
+        console.log(res.data)
+        const data = res.data.map((user, index) => {
+          return {
+            label: `${user?.id}`,
+            children: (
+              <Children
+                columns={columns}
+                users={user?.list}
+                activeKey={user?.id}
+                updateSoLuong={updateSoLuong}
+                onDataSelected={handleDataSelect}
+              />
+            ),
+            key: user?.id,
+          };
+        });
+
+        setActiveKey(res.data[0].id);
+        setItems((prevItems) => [...prevItems, ...data]);
+        toast(`Chọn hóa đơn thành công`)
+      });
   };
 
   const [items, setItems] = useState([{
@@ -38,23 +62,23 @@ const TabBanHang = () => {
       await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCT/${activeKey}`)
       .then((res) => {
-        const data = res.data.map((user, index) => {
-          console.log(user);
-
-          return {
-            label: `${user?.id}`,
+        console.log(res.data)
+        setItems((prevItems) => [
+          ...prevItems,
+          {
+            label: res.data[0].id,
             children: (
               <Children
                 columns={columns}
-                users={user?.list}
-                activeKey={user?.id}
+                users={res.data[0]?.list}
+                activeKey={res.data[0].id}
                 updateSoLuong={updateSoLuong}
                 // onDataSelected={handleDataSelected}
               />
             ),
-            key: user?.id,
-          };
-        });
+            key: res.data[0].id,
+          },
+        ]);
 
         setActiveKey(res.data[0].id);
         setItems(data);

@@ -3,17 +3,21 @@ package com.example.shop.controller;
 
 import com.example.shop.dto.HoaDonChiTietDTO;
 import com.example.shop.dto.HoaDonDTO;
+import com.example.shop.dto.HoaDonKhDTO;
+import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.HoaDonChiTiet;
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.ChiTietSanPhamRepository;
 import com.example.shop.repositories.HoaDonChiTietRepository;
 import com.example.shop.repositories.HoaDonRepository;
+import com.example.shop.repositories.KhachHangRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,6 +35,9 @@ public class HoaDonChiTietController {
     @Autowired
     ChiTietSanPhamRepository ssSP;
 
+    @Autowired
+    KhachHangRepository ssKH;
+
     @GetMapping("/getHDCT/{maHD}")
     public ResponseEntity getHDCT(@PathVariable String maHD) {
         List<HoaDonChiTiet> list = ssHDCT.getHDCTByMA(maHD);
@@ -39,7 +46,7 @@ public class HoaDonChiTietController {
         List<HoaDonDTO> result = new ArrayList<>();
         for (Map.Entry<String, List<HoaDonChiTiet>> entry : groupedData.entrySet()) {
             HoaDonDTO groupedDataDTO = new HoaDonDTO();
-            groupedDataDTO.setId(entry.getKey());
+            groupedDataDTO.setId(maHD);
             groupedDataDTO.setList(entry.getValue());
             result.add(groupedDataDTO);
         }
@@ -68,7 +75,6 @@ public class HoaDonChiTietController {
                     .id_hoa_don(ssHD.findById(id_hoa_don).get())
                     .id_chi_tiet_san_pham(ssSP.findById(id_san_pham).get())
                     .build();
-            System.out.println(hdct.toString());
             ssHDCT.delete(hdct);
             return ResponseEntity.ok("OK");
         } catch (Exception e) {
@@ -80,6 +86,7 @@ public class HoaDonChiTietController {
     @PostMapping("/addHDCT")
     public ResponseEntity addHDCT(@RequestBody HoaDonChiTietDTO hoaDonChiTiet) {
         try {
+            System.out.println(hoaDonChiTiet.toString());
             SanPhamChiTiet sp = ssSP.findById(hoaDonChiTiet.getId_san_pham()).get();
             BigDecimal tongTien = sp.getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSo_luong()));
             HoaDonChiTiet hdct = HoaDonChiTiet.
@@ -89,6 +96,7 @@ public class HoaDonChiTietController {
                     .soLuong(hoaDonChiTiet.getSo_luong())
                     .giaTien(tongTien)
                     .build();
+            System.out.println(hdct);
             ssHDCT.save(hdct);
             return ResponseEntity.ok("Thành công");
         } catch (Exception e) {
@@ -96,4 +104,19 @@ public class HoaDonChiTietController {
         }
     }
 
+    @PutMapping("/addKH_HD")
+    public ResponseEntity addKH_HD(@RequestBody HoaDonKhDTO x) {
+        try {
+            HoaDon hd = ssHD.getHoaDonByMa(x.getMaHD());
+            if(x.getId_khach_hang().equals("")) {
+                hd.setId_khach_hang(null);
+            }else {
+                hd.setId_khach_hang(ssKH.findById(x.getId_khach_hang()).get());
+            }
+            ssHD.save(hd);
+            return ResponseEntity.ok("Thành công");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
 }

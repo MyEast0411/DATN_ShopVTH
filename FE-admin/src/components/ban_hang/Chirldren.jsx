@@ -6,6 +6,7 @@ export default function Children({
   activeKey,
   changeData,
   updateSoLuong,
+  onDataSelect
 }) {
   return (
     <div className="p-5">
@@ -16,6 +17,7 @@ export default function Children({
         activeKey={activeKey}
         changeData={changeData}
         updateSoLuong={updateSoLuong}
+        onDataSelect={onDataSelect}
       />
     </div>
   );
