@@ -4,10 +4,12 @@ package com.example.shop.service.impl;
 import com.example.shop.entity.HoaDon;
 import com.example.shop.repositories.HoaDonRepository;
 import com.example.shop.service.HoaDonService;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -53,4 +55,22 @@ public class HoaDonServiceImpl implements HoaDonService {
     public List<HoaDon> getHDs(int page) {
         return hoaDonRepository.getPage(page);
     }
+
+    public List<Double> getTotalByThang() {
+
+        List<Double> totalMonth = new ArrayList<>();
+        double a = 0;
+
+            for (int i = 0; i < 12; i++) {
+
+                if (hoaDonRepository.getTotalByThang(i+1) == null){
+                    a = 0;
+                }else{
+                    a = hoaDonRepository.getTotalByThang(i+1);
+                }
+                totalMonth.add(a);
+        }
+        return totalMonth;
+    }
+
 }
