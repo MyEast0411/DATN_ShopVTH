@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { format } from "date-fns";
+import moment from "moment";
 
 import {
   Table,
@@ -75,7 +76,12 @@ export default function TableCommon({ data }) {
           <Tag color="green">Online</Tag>
         );
       case "ngayTao":
-        return <p> {format(new Date(cellValue), " hh:mm ,   dd-MM-yyyy")}</p>;
+        return (
+          <p>
+            {moment(new Date(cellValue)).format("  HH:mm:ss   , DD-MM-YYYY")}
+          </p>
+        );
+
       case "trangThai":
         return <GetTrangThai tinhTrang={cellValue} />;
 
@@ -230,6 +236,5 @@ const GetTrangThai = ({ tinhTrang }) => {
         {" "}
         <span className=" text-sm ">Chờ thanh toán</span>
       </Tag>
-  );
-  
+    );
 };
