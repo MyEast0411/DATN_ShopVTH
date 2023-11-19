@@ -209,6 +209,7 @@
 
 .detail-product-right {
   /* background-color: #ccc; */
+
 }
 
 .main-detail-product-img {
@@ -291,6 +292,10 @@
 }
 
 .detail-pro-select-size-button:hover {
+  border: 2px solid black;
+}
+
+.selected-border {
   border: 2px solid black;
 }
 

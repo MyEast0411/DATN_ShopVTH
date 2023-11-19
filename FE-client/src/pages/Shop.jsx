@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import InfoTop from "../layout/InfoTop";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
@@ -10,10 +10,21 @@ import ProductList from "../components/ProductList";
 import { CiSliderHorizontal } from "react-icons/ci";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
+import {countAllSanPham} from "../api/SanPham"
 
 export default function Shop() {
-  window.scrollTo(0, 0);
-
+  const [countSanPham, setCountSanPham] = useState(0)
+  const fetchCountSanPham= async () => {
+    try {
+      const data = await countAllSanPham();
+      setCountSanPham(data);
+    } catch (error) {
+      console.error("Error fetchSanPham():", error);
+    }
+  };
+  useEffect(() => {
+    fetchCountSanPham();
+  }, [countSanPham]);
   const items = [
     {
       label: <a href="http://localhost:5173/shop">Featured</a>,
@@ -49,11 +60,11 @@ export default function Shop() {
           </BreadcrumbItem>
 
           <BreadcrumbItem>
-            <Link to="/shop">Shop</Link>
+            <Link className="text-[#B4B4B3] cursor-default">Shop</Link>
           </BreadcrumbItem>
         </Breadcrumbs>
         <div className="sort w-full flex justify-between">
-          <h2 className="font-medium mb-8 text-2xl">JORDAN SHOES (29)</h2>
+          <h2 className="font-medium mb-8 text-2xl">JORDAN SHOES ({countSanPham})</h2>
           <div className="flex justify-center cursor-pointer">
             <p
               className="mr-3"
@@ -90,8 +101,11 @@ export default function Shop() {
             </div>
           </div>
         </div>
-        <div class="grid grid-cols-6 gap-4" style={{ position: "relative" }}>
-          <div class="filter-side">
+        <div
+          className="grid grid-cols-6 gap-4"
+          style={{ position: "relative" }}
+        >
+          <div className="filter-side">
             <div
               className="filter-accordion pr-5"
               style={{

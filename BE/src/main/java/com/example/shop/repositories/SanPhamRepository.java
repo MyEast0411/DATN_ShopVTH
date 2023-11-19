@@ -13,5 +13,8 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     @Query(value = "select MAX(ma) from san_pham",nativeQuery = true)
     String findMaxMa();
 
+    @Query(value = "select count(*) from san_pham", nativeQuery = true)
+    int countAllSanPham();
+
 
 }

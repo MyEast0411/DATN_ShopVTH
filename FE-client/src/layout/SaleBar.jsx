@@ -20,7 +20,7 @@ export default function SaleBar() {
         <div className="flex justify-center p-5">
           <svg
             aria-hidden="false"
-            class="_2eprOjqm"
+            className="_2eprOjqm"
             focusable="false"
             viewBox="4 2.5 16 17"
             role="img"
@@ -78,7 +78,7 @@ export default function SaleBar() {
           </div>
           <div className="shop-button flex justify-center mb-10">
             <Link to="/shop">
-              <button class="btn-shop-button">Shop</button>
+              <button className="btn-shop-button">Shop</button>
             </Link>
           </div>
         </div>
