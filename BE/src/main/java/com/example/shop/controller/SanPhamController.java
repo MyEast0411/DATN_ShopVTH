@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 @Controller
 @RestController
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin("*")
 public class SanPhamController {
     @Autowired
     ChiTietSanPhamRepository repo;
@@ -344,5 +344,6 @@ public class SanPhamController {
         List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaList(maList);
         return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
     }
+
     //-------------Hội-----------------
 }

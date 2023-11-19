@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import InfoTop from "../layout/InfoTop";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
@@ -12,6 +12,8 @@ import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 
 export default function Shop() {
+  window.scrollTo(0, 0);
+
   const items = [
     {
       label: <a href="http://localhost:5173/shop">Featured</a>,

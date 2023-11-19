@@ -1100,7 +1100,7 @@ export default function App() {
                   className="max-w-md"
                 />
               </div>
-              <div className="p-5 text-center mt-4">
+              {/* <div className="p-5 text-center mt-4">
                 <ButtonAntd
                   type="primary"
                   style={{
@@ -1111,14 +1111,14 @@ export default function App() {
                 >
                   Làm mới
                 </ButtonAntd>
-              </div>
+              </div> */}
             </div>
           </div>
 
           <div className="mb-2 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
             <div className="flex items-center">
               <HiOutlineClipboardList />
-              <p className="ml-2 mt-1"> Danh sách sản phẩm</p>
+              <p className="ml-2 mt-1"> Danh sách phiếu giảm giá</p>
             </div>
 
             <ButtonAntd
@@ -1128,7 +1128,7 @@ export default function App() {
                 marginBottom: "2px",
               }}
             >
-              <Link to={"/add-voucher"}>+ Tạo voucher</Link>
+              <Link to={"/add-voucher"}>+ Tạo phiếu giảm giá</Link>
             </ButtonAntd>
           </div>
           <div

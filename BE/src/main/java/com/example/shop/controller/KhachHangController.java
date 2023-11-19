@@ -18,7 +18,7 @@ import java.util.Random;
 
 @Controller
 @RestController
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin("*")
 public class KhachHangController {
 
     @Autowired
