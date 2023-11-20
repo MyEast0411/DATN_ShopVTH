@@ -397,7 +397,7 @@ public class SanPhamController {
 
     @GetMapping("/getHinhAnhByIdSPCT/{id}")
     public List<HinhAnh> getHinhAnhByIdSPCT(@PathVariable String id){
-        return hinhAnhRepository.getHinhAnhByIdSPCT(id);
+        return hinhAnhRepository.getHinhAnhBySanPhamChiTiet(id);
     }
 
     //-------------Hội-----------------
