@@ -465,7 +465,7 @@ export default function SanPham() {
             <div className="p-5">
               <Slider style={{ width: "100%" }} searchValue={0} maxValue={Math.max(...sanPhams.map(sanPham => sanPham.soLuongTon))}/>
             </div>
-            <div className="p-5 text-center mt-4">
+            {/* <div className="p-5 text-center mt-4">
               <ButtonAntd
                 type="primary"
                 style={{
@@ -476,7 +476,7 @@ export default function SanPham() {
               >
                 Làm mới
               </ButtonAntd>
-            </div>
+            </div> */}
           </div>
         </div>
 

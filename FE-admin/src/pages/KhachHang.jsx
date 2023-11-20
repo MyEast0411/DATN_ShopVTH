@@ -52,7 +52,7 @@ export default function KhachHang() {
             <div className="p-5">
               <Slider style={{ width: "100%" }} />
             </div>
-            <div className="p-5 text-center mt-4">
+            {/* <div className="p-5 text-center mt-4">
               <Button
                 type="primary"
                 style={{
@@ -63,7 +63,7 @@ export default function KhachHang() {
               >
                 Làm mới
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
 

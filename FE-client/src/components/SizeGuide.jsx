@@ -11,6 +11,18 @@ import {
 } from "@nextui-org/react";
 
 export default function SizeGuide() {
+  const [isLoading, setIsLoading] = React.useState(true);
+  const generateNumbers = (start, end, step) => {
+    const result = [];
+    for (let i = start; i <= end; i += step) {
+      result.push(i);
+    }
+    return result;
+  };
+
+  const mensSizes = generateNumbers(1, 40.5, 0.5);
+  const womensSizes = generateNumbers(2.5, 40.5, 0.5);
+
   return (
     <>
       <InfoTop />
@@ -23,33 +35,25 @@ export default function SizeGuide() {
           </h2>
 
           <div className="size-chart">
-            <Table isStriped aria-label="Example static collection table">
+            <Table
+              isStriped
+              aria-label="Example static collection table"
+              classNames={{
+                base: "max-h-[450px] overflow-scroll",
+                table: "min-h-[420px]",
+              }}
+            >
               <TableHeader>
-                <TableColumn>NAME</TableColumn>
-                <TableColumn>ROLE</TableColumn>
-                <TableColumn>STATUS</TableColumn>
+                <TableColumn>Men's</TableColumn>
+                <TableColumn>Women's</TableColumn>
               </TableHeader>
-              <TableBody>
-                <TableRow key="1">
-                  <TableCell>Tony Reichert</TableCell>
-                  <TableCell>CEO</TableCell>
-                  <TableCell>Active</TableCell>
-                </TableRow>
-                <TableRow key="2">
-                  <TableCell>Zoey Lang</TableCell>
-                  <TableCell>Technical Lead</TableCell>
-                  <TableCell>Paused</TableCell>
-                </TableRow>
-                <TableRow key="3">
-                  <TableCell>Jane Fisher</TableCell>
-                  <TableCell>Senior Developer</TableCell>
-                  <TableCell>Active</TableCell>
-                </TableRow>
-                <TableRow key="4">
-                  <TableCell>William Howard</TableCell>
-                  <TableCell>Community Manager</TableCell>
-                  <TableCell>Vacation</TableCell>
-                </TableRow>
+              <TableBody isLoading={isLoading}>
+                {mensSizes.map((size, index) => (
+                  <TableRow key={index + 1}>
+                    <TableCell>{size}</TableCell>
+                    <TableCell>{womensSizes[index]}</TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>

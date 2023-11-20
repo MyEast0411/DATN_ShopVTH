@@ -17,6 +17,7 @@ import { AiOutlineHeart } from "react-icons/ai"; //heart icon
 import { CgTrashEmpty } from "react-icons/cg"; //trash icon
 
 export default function Cart() {
+  // window.scrollTo(0, 0);
   const [selectedKeysSize, setSelectedKeysSize] = React.useState(
     new Set(["M 8.5 / W 10"])
   );

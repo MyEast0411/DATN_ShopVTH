@@ -124,7 +124,7 @@ const KhuyenMai = () => {
       <div>
         <div className="mb-2  border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
           <HiOutlineClipboardList />
-          <p className="ml-2 mt-1"> Danh sách khuyến mại</p>
+          <p className="ml-2 mt-1"> Danh sách đợt giảm giá</p>
           <Link to={"/them-khuyen-mai"} className="absolute right-0 mb-1">
             <Button
               type="primary"
@@ -133,7 +133,7 @@ const KhuyenMai = () => {
                 marginBottom: "2px",
               }}
             >
-              + Tạo khuyến mại
+              + Tạo đợt giảm giá
             </Button>
           </Link>
         </div>

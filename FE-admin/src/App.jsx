@@ -29,27 +29,30 @@ const App = () => {
       <RootLayout>
         <Routes>
           <Route path="/" element={<BanHangTaiQuay />} />
-          <Route path="/quan-ly-hoa-don" element={<QuanLyHoaDon />} />
-          <Route path="/khuyen-mai" element={<KhuyenMai />} />
+
           <Route path="/profile" element={<Profile />} />
 
+          <Route path="/thong-ke" element={<ThongKe />} />
+          
+          <Route path="/quan-ly-hoa-don" element={<QuanLyHoaDon />} />
+          <Route path="/detail-hoa-don/:id" element={<DetailHoaDon />} />
+
+          <Route path="/khuyen-mai" element={<KhuyenMai />} />
           <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
           <Route path="/them-khuyen-mai/:idKM" element={<ThemKhuyenMai />} />
-          <Route path="/them-khach-hang" element={<ThemKhachHang />} />
-          <Route path="/them-san-pham" element={<ThemSanPham />} />
 
+          <Route path="/them-khach-hang" element={<ThemKhachHang />} />
+          <Route path="/edit-khach-hang/:maKH" element={<DetailKhachHang />} />
+
+          <Route path="/them-san-pham" element={<ThemSanPham />} />
           <Route path="/edit-san-pham/:ma" element={<ChiTietSanPham />} />
           <Route path="/update-san-pham/:maSP" element={<DetailSanPham />} />
-          <Route path="/edit-khach-hang/:maKH" element={<DetailKhachHang />} />
 
           <Route path="/add-voucher" element={<AddVoucher />} />
           <Route path="/eidt-voucher/:id" element={<EditVoucher />} />
           <Route path="/detail-voucher/:id" element={<DetailVoucher />} />
-
           <Route path="/giam-gia/voucher" element={<Voucher />} />
-          <Route path="/detail-hoa-don/:id" element={<DetailHoaDon />} />
 
-          <Route path="/thong-ke" element={<ThongKe />} />
 
           <Route path="/quan-ly-san-pham" element={<Build />}>
             <Route path=":bID">

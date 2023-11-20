@@ -28,7 +28,7 @@ export default function ThemKhuyenMai() {
   const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
 
   const chuyenTrang = useNavigate();
-  const percentValues = Array.from({ length: 90 }, (_, index) => index + 1);
+  const percentValues = Array.from({ length: 60 }, (_, index) => index + 1);
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, "0");

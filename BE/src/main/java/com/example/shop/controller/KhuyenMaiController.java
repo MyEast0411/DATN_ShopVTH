@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 @RequestMapping("/khuyen-mai")
 public class KhuyenMaiController {
 

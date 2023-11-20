@@ -17,5 +17,6 @@ public interface HoaDonService  {
     Boolean deleteHoaDon(HoaDon hoaDon);
 
     List<HoaDon> getHDs(int page );
+    List<Double>  getTotalByThang();
 
 }

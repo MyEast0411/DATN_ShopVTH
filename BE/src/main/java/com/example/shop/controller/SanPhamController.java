@@ -20,10 +20,11 @@ import java.util.*;
 import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Controller
 @RestController
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin("*")
 public class SanPhamController {
     @Autowired
     ChiTietSanPhamRepository repo;
@@ -49,21 +50,21 @@ public class SanPhamController {
 
     @GetMapping("/getAllSanPham")
     List<SanPhamChiTiet> getAll() {
-        System.out.println("Mau sac");
+//        System.out.println("Mau sac");
         mauSacRepository.findAll().forEach(x -> System.out.println(x.getId()));
 //        System.out.println("san pham");
 //        sanPhamRepository.findAll().forEach(x-> System.out.println(x.getId()));
-        System.out.println("kich co");
+//        System.out.println("kich co");
         kichCoRepository.findAll().forEach(x -> System.out.println(x.getId()));
-        System.out.println("chat lieu");
+//        System.out.println("chat lieu");
         chatLieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
 //        System.out.println("the loai");
 //        theLoaiRepository.findAll().forEach(x-> System.out.println(x.getId()));
-        System.out.println("de giay");
+//        System.out.println("de giay");
         deGiayRepository.findAll().forEach(x -> System.out.println(x.getId()));
-        System.out.println("thuong hieu");
+//        System.out.println("thuong hieu");
         thuongHieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
-        System.out.println("nhan hieu");
+//        System.out.println("nhan hieu");
         nhanHieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
         return repo.findAll();
     }
@@ -344,5 +345,60 @@ public class SanPhamController {
         List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaList(maList);
         return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
     }
+
+    @GetMapping("/get-all-san-pham")
+    public List<SanPham> getAllSanPham() {
+        return sanPhamRepository.findAll();
+    }
+
+    @GetMapping("/getAllSanPhamChiTietByIdSanPham/{idSP}")
+    public List<SanPhamChiTiet> getAllSanPhamChiTietByIdSanPham(@PathVariable String idSP) {
+//        System.out.println("id san pham: " + idSP);
+        return repo.getAllSanPhamChiTietByIdSanPham(idSP);
+    }
+
+    @GetMapping("/get-all-san-pham-enhanced")
+    public List<Map<String, Object>> getAllSanPhamEnhanced() {
+        List<SanPham> sanPhams = sanPhamRepository.findAll();
+
+        return sanPhams.stream().map(sanPham -> {
+            Map<String, Object> sanPhamInfo = new HashMap<>();
+            sanPhamInfo.put("id", sanPham.getId());
+            sanPhamInfo.put("ma", sanPham.getMa());
+            sanPhamInfo.put("ten", sanPham.getTen());
+
+            // Lấy giá cao nhất
+            List<SanPhamChiTiet> sanPhamChiTiets = repo.getAllSanPhamChiTietByIdSanPham(sanPham.getId());
+            Optional<SanPhamChiTiet> maxPriceSPCT = sanPhamChiTiets.stream()
+                    .max(Comparator.comparing(SanPhamChiTiet::getGiaBan));
+
+            maxPriceSPCT.ifPresent(spct -> {
+                sanPhamInfo.put("defaultImg", spct.getDefaultImg());
+                sanPhamInfo.put("maxPrice", spct.getGiaBan());
+                sanPhamInfo.put("theLoai", spct.getId_the_loai().getTen());
+            });
+
+            // Đếm tổng màu
+            long colorCount = sanPhamChiTiets.stream()
+                    .map(spct -> spct.getId_mau_sac().getId())
+                    .distinct()
+                    .count();
+
+            sanPhamInfo.put("colorCount", colorCount);
+
+            return sanPhamInfo;
+        }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/countAllSanPham")
+    public int countAllSanPham(){
+        return sanPhamRepository.countAllSanPham();
+    }
+
+    @GetMapping("/getHinhAnhByIdSPCT/{id}")
+    public List<HinhAnh> getHinhAnhByIdSPCT(@PathVariable String id){
+        return hinhAnhRepository.getHinhAnhBySanPhamChiTiet(id);
+    }
+
     //-------------Hội-----------------
 }

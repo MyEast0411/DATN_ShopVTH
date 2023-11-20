@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export default function SaleBar() {
+
+
   return (
     <>
       <div className="info-top w-full flex justify-center">
@@ -18,7 +20,7 @@ export default function SaleBar() {
         <div className="flex justify-center p-5">
           <svg
             aria-hidden="false"
-            class="_2eprOjqm"
+            className="_2eprOjqm"
             focusable="false"
             viewBox="4 2.5 16 17"
             role="img"
@@ -75,9 +77,9 @@ export default function SaleBar() {
             </p>
           </div>
           <div className="shop-button flex justify-center mb-10">
-            <a href="/shop">
-              <button class="btn-shop-button">Shop</button>
-            </a>
+            <Link to="/shop">
+              <button className="btn-shop-button">Shop</button>
+            </Link>
           </div>
         </div>
       </div>

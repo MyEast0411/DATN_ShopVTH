@@ -5,6 +5,9 @@ import { BsBagDash } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
 export default function Header() {
+  const handleLinkClick = () => {
+    window.scrollTo(0, 0);
+  };
   return (
     <>
       <div className="flex justify-between main-ctn w-full sticky top-0">
