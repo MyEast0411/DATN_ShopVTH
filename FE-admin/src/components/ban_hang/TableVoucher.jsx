@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip, Tag, Modal } from "antd";
+import { Tag, Modal } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -17,7 +17,7 @@ import {
   DropdownItem,
   Pagination,
   Spinner,
-  user,
+  Tooltip,
   Slider,
 } from "@nextui-org/react";
 import {
@@ -28,16 +28,12 @@ import {
   DialogTitle,
   TableCell as TableCellMui,
 } from "@mui/material";
-import { PlusIcon } from "../components/voucher/common/PlusIcon";
-import { VerticalDotsIcon } from "../components/voucher/common/VerticalDotsIcon";
-import { SearchIcon } from "../components/voucher/common/SearchIcon";
-import { ChevronDownIcon } from "../components/voucher/common/ChevronDownIcon";
-import { statusOptions } from "../components/voucher/common/data";
-import { capitalize } from "../components/voucher/common/utils";
+import { SearchIcon } from "../../common/otherComponents/SearchIcon";
+import { ChevronDownIcon } from "../../common/otherComponents/ChevronDownIcon";
+import { statusOptions } from "../../components/voucher/common/data";
+import { capitalize } from "../../components/voucher/common/utils";
 import { BiFilterAlt } from "react-icons/bi";
-import FilterMa from "../common/filter/sanPham/FilterMa";
-import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
-// import Slider from "../common/filter/sanPham/Slider";
+import FilterTrangThai from "../../common/filter/sanPham/FilterTrangThai";
 import { Button as ButtonAntd } from "antd";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import { Link } from "react-router-dom";
@@ -52,20 +48,6 @@ const statusColorMap = {
   paused: "danger",
   vacation: "warning",
 };
-// const columns = [
-//   { uid: "id", name: "Stt" },
-//   { uid: "ma", name: "Mã" },
-//   { uid: "ten", name: "Tên" },
-//   { uid: "code", name: "Code" },
-//   { uid: "ngayBatDau", name: "Ngày Bắt Đầu" },
-//   { uid: "ngayKetThuc", name: "Ngày Kết Thúc" },
-//   { uid: "soLuong", name: "Số Lượng" },
-//   { uid: "ngayTao", name: "Ngày Tạo" },
-//   { uid: "giaTriMax", name: "Giá trị tối đa" },
-//   { uid: "trangThai", name: "Trạng Thái" },
-//   { uid: "actions", name: "Thao Tác" },
-//   { uid: "changeHD", name: "Hoạt Động" },
-// ];
 
 const INITIAL_VISIBLE_COLUMNS = [
   "id",
@@ -75,11 +57,10 @@ const INITIAL_VISIBLE_COLUMNS = [
   "ngayBatDau",
   "ngayKetThuc",
   "ngayTao",
-  "actions",
-  "changeHD",
+  "actions"
 ];
 
-export default function App() {
+export default function App({ activeKey, setVoucher, tongTien, setTongTien }) {
   const url = "http://localhost:8080/voucher/";
   const [loading, setLoading] = React.useState(true);
   const [action, setAction] = React.useState(true);
@@ -119,12 +100,12 @@ export default function App() {
             ngayBatDau: item.ngayBatDau,
             ngayKetThuc: item.ngayKetThuc,
             soLuong: item.soLuong,
-            ngayTao: item.ngayTao,
+            ngayTao: item.giaTriMax,
             giaTriMax: item.giaTriMax,
             trangThai: item.trangThai,
           };
         });
-      console.log(rows);
+    //   console.log(rows);
 
       setList(rows);
       // console.log(rows);
@@ -171,7 +152,7 @@ export default function App() {
         id: i + 1,
       };
     });
-    console.log(data);
+    // console.log(data);
 
     return data;
   }, [list, filterValue, statusFilter]);
@@ -207,15 +188,15 @@ export default function App() {
 
       case "ngayKetThuc":
         return <p>{format(new Date(cellValue), " hh:mm ,   dd-MM-yyyy")}</p>;
-      case "giaTriMax":
+      case "ngayTao":
         return (
           <p style={{ color: "red" }}>
             {" "}
             {Intl.NumberFormat().format(cellValue)} ₫
           </p>
         );
-      case "ngayTao":
-        return <p>{format(new Date(cellValue), " hh:mm ,   dd-MM-yyyy")}</p>;
+    //   case "ngayTao":
+    //     return <p>{format(new Date(cellValue), " hh:mm ,   dd-MM-yyyy")}</p>;
       case "trangThai":
         return cellValue === 1 ? (
           <Tag color="red">Kích Hoạt</Tag>
@@ -224,104 +205,35 @@ export default function App() {
         );
       case "actions":
         return (
-          <div className="container">
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <Tooltip title="Xem chi tiết" color="green">
-                  <Link
-                    to={`/detail-voucher/${user.ids}`}
-                    className="button-link group relative"
-                  >
-                    <BsEye
-                      description="Chi tiết"
-                      className="cursor-pointer text-xl blue-hover mr-4"
-                      style={{ color: "green" }}
-                    />
-                  </Link>
-                </Tooltip>
-              </div>
-              <div>
-                <Tooltip title="Xóa voucher" color="red">
-                  <Link
-                    onClick={() => {
-                      Modal.confirm({
-                        title: `bạn có muốn xóa  voucher không ?`,
-                        okText: "Yes",
-                        okType: "danger",
-                        onOk: async () => {
-                          axios
-                            .delete(url + `delete/${user.ids}`)
-                            .then((response) => {
-                              toast.success(`Xóa thành công`, {
-                                position: "top-right",
-                                autoClose: 2000,
-                              });
-                            })
-                            .catch((e) =>
-                              toast.error(`Xóa  thất bại`, {
-                                position: "top-right",
-                                autoClose: 2000,
-                              })
-                            );
-                        },
-                      });
+            <div className="relative flex items-center gap-4">
+            <Tooltip content="Chọn voucher" showArrow={true}>
+              {/*  */}
+              <div
+                    className="p-2"
+                    style={{
+                      backgroundColor: "#00C5CD",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}
+                    onClick={async() => {
+                        await axios.put("http://localhost:8080/hoa_don_chi_tiet/addVC_HD", {
+                            maHD : activeKey,
+                            id_khach_hang : user.ids
+                        })
+                        .then((response) => {
+                            setVoucher(user.giaTriMax);
+                            setTongTien(tongTien - user.giaTriMax);
+                            toast(`Chọn voucher thành công`);
+                        })
                     }}
                   >
-                    <BsTrash
-                      description="Chi tiết"
-                      className="cursor-pointer text-xl blue-hover mr-4"
-                      style={{ color: "red" }}
-                    />
-                  </Link>
-                </Tooltip>
+                    Chọn
               </div>
-            </div>
-          </div>
-        );
-      case "changeHD":
-        return (
-          <div className="pt-3">
-            <Tooltip title="cập nhật trạng thái" color="blue">
-              <Switch
-                disabled={
-                  new Date().getTime() > new Date(user.ngayKetThuc).getTime()
-                    ? true
-                    : false
-                }
-                checked={user.trangThai === 1 ? true : false}
-                onChange={() => {
-                  Modal.confirm({
-                    title: `bạn có muốn ${
-                      user.trangThai == 1 ? "hủy" : " "
-                    } kích hoạt voucher không ?`,
-                    okText: "Yes",
-                    okType: "danger",
-                    onOk: async () => {
-                      axios
-                        .put(url + `update-trang-thai/${user.ids}`)
-                        .then((response) => {
-                          setAction(() => !action);
-                          toast.success(`Update thành công`, {
-                            position: "top-right",
-                            autoClose: 2000,
-                          });
-                        })
-                        .catch((e) =>
-                          toast.error(`Update  thất bại`, {
-                            position: "top-right",
-                            autoClose: 2000,
-                          })
-                        );
-                    },
-                    okCancel: () => {
-                      alert("cancelText");
-                    },
-                  });
-                }}
-              />
             </Tooltip>
           </div>
         );
+      
       default:
         return cellValue;
     }
@@ -584,7 +496,7 @@ export default function App() {
           <div className="mb-2 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
             <div className="flex items-center">
               <HiOutlineClipboardList />
-              <p className="ml-2 mt-1"> Danh sách sản phẩm</p>
+              <p className="ml-2 mt-1"> Danh sách phiếu giảm giá</p>
             </div>
 
             <ButtonAntd
@@ -702,9 +614,8 @@ const columns = [
   { uid: "ngayBatDau", name: "Ngày Bắt Đầu", sortable: true },
   { uid: "ngayKetThuc", name: "Ngày Kết Thúc", sortable: true },
   { uid: "soLuong", name: "Số Lượng", sortable: true },
-  { uid: "ngayTao", name: "Ngày Tạo", sortable: true },
+  { uid: "ngayTao", name: "Giá trị giảm", sortable: true },
   { uid: "giaTriMax", name: "Giá trị tối đa", sortable: true },
   { uid: "trangThai", name: "Trạng Thái" },
-  { uid: "actions", name: "Thao Tác" },
-  { uid: "changeHD", name: "Hoạt Động" },
+  { uid: "actions", name: "Thao Tác" }
 ];

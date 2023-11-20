@@ -493,7 +493,7 @@ export default function App({ gioHang }) {
           showShadow
           color="primary"
           page={page}
-          total={pages}
+          total={totalPages}
           onChange={setPage}
           style={{ paddingLeft: "730px" }}
         />
