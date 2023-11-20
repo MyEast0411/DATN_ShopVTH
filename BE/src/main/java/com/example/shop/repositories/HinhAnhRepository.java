@@ -18,4 +18,10 @@ public interface HinhAnhRepository extends JpaRepository<HinhAnh,String> {
 
     @Query(value = "SELECT MAX(substr(ma,3)) FROM shopvth.hinh_anh",nativeQuery = true)
     String getMaxMa();
+
+    @Query(value = "SELECT hinh_anh.*\n" +
+            "FROM san_pham_chi_tiet\n" +
+            "JOIN hinh_anh ON san_pham_chi_tiet.id = hinh_anh.id_san_pham_chi_tiet\n" +
+            "WHERE san_pham_chi_tiet.id = :id", nativeQuery = true)
+    List<HinhAnh> getHinhAnhByIdSPCT(@Param("id") String id);
 }

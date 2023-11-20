@@ -1,7 +1,7 @@
 .main-ctn {
   padding: 10px;
   align-items: center;
-  z-index: 10;
+  z-index: 100;
   box-shadow: 0px 4px 7px rgba(97, 97, 97, 0.1);
   background-color: #fff;
 }
@@ -405,7 +405,7 @@ section {
 
 .card-product .img-product {
   width: 374px;
-  height: 376px;
+  height: auto;
   object-fit: contain;
 }
 

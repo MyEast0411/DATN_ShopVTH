@@ -64,7 +64,7 @@ export default function ShopRecommend() {
             <h2>JORDAN MEN</h2>
             <div className="shop-button mb-10">
               <Link to="/shop">
-                <button class="btn-shop-button">Shop</button>
+                <button className="btn-shop-button">Shop</button>
               </Link>
             </div>
           </div>
@@ -79,7 +79,7 @@ export default function ShopRecommend() {
             <h2>JORDAN WOMEN</h2>
             <div className="shop-button mb-10">
               <Link to="/shop">
-                <button class="btn-shop-button">Shop</button>
+                <button className="btn-shop-button">Shop</button>
               </Link>
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function ShopRecommend() {
             <h2>JORDAN KIDS</h2>
             <div className="shop-button mb-10">
               <Link to="/shop">
-                <button class="btn-shop-button">Shop</button>
+                <button className="btn-shop-button">Shop</button>
               </Link>
             </div>
           </div>
