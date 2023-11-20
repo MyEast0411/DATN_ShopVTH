@@ -24,10 +24,14 @@ export default function DetailProduct() {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedIdSPCT, setSelectedIdSPCT] = useState("");
   const [runFirstTime, setRunFirstTime] = useState(false);
+  const [selectedGiaBan, setSelectedGiaBan] = useState(0);
+  const [selectedTheLoai, setSelectedTheLoai] = useState("");
 
   const handleImageClick = (spct) => {
     setSelectedImage(spct.defaultImg);
     setSelectedImageDisplay(spct.defaultImg);
+    setSelectedGiaBan(spct.giaBan);
+    setSelectedTheLoai(spct.id_the_loai.ten);
     // setSelectedSize(spct.id_kich_co.ten);
     console.log(spct.id);
     setSelectedIdSPCT(spct.id);
@@ -46,6 +50,8 @@ export default function DetailProduct() {
       if (!runFirstTime) {
         setSelectedImage(data.length > 0 ? data[0].defaultImg : "");
         setSelectedImageDisplay(data.length > 0 ? data[0].defaultImg : "");
+        setSelectedGiaBan(data.length > 0 ? data[0].giaBan : "");
+        setSelectedTheLoai(data.length > 0 ? data[0].id_the_loai.ten : "");
         setRunFirstTime(true);
       }
     } catch (error) {
@@ -137,12 +143,10 @@ export default function DetailProduct() {
             <div className="detail-pro-name">{sanPhamChiTiets[0].ten}</div>
             {sanPhamChiTiets[0].id_the_loai && (
               <div className="detail-pro-gender">
-                {sanPhamChiTiets[0].id_the_loai.ten}
+                {selectedTheLoai}
               </div>
             )}
-            <div className="detail-pro-price mt-5">
-              ${sanPhamChiTiets[0].giaBan}
-            </div>
+            <div className="detail-pro-price mt-5">${selectedGiaBan}</div>
             <div className="choose-color-product flex">
               {/* Tổng Sản phẩm chi tiết phải tương ứng với tổng số màu sắc*/}
               {sanPhamChiTiets.map((spct) => (

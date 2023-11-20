@@ -59,7 +59,7 @@ export default function ProductList() {
             onMouseLeave={handleMouseLeave}
           >
             <img
-              src={selectedImage}
+              src={selectedImage==="" ? sanPham.defaultImg : selectedImage}
               alt="Ảnh sản phẩm"
               className="img-product"
             />
