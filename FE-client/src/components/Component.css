@@ -209,7 +209,6 @@
 
 .detail-product-right {
   /* background-color: #ccc; */
-
 }
 
 .main-detail-product-img {
@@ -268,7 +267,7 @@
   cursor: pointer;
 }
 
-.choose-color-img-pro:hover{
+.choose-color-img-pro:hover {
   border: 2px solid #000;
 }
 
@@ -327,20 +326,45 @@
   margin: 20px 0;
 }
 
-.main-size-guide-title{
+.main-size-guide-title {
   width: 80%;
   margin: 20px auto;
   font-weight: 450;
   font-size: 18px;
 }
 
-.main-foot-wear-size-chart{
+.main-foot-wear-size-chart {
   width: 60%;
   margin: auto;
 }
 
-.main-foot-wear-size-chart-title{
+.main-foot-wear-size-chart-title {
   font-size: 30px;
   font-weight: 450;
   margin-bottom: 20px;
+}
+
+.list-chiTietSanPham {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.img-list-chiTietSanPham {
+  margin-top: 5px;
+  margin-right: 6px;
+  width: 13%;
+  object-fit: contain;
+}
+
+.card-product {
+  min-height: 570px;
+}
+
+.moreThan {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 25%;
+  color: #928b8b;
 }

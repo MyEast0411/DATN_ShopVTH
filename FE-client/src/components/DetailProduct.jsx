@@ -19,7 +19,19 @@ export default function DetailProduct() {
   const [sanPhamChiTiets, setSanPhamChiTiets] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
   const [selectedImage, setSelectedImage] = useState("");
+  const [selectedImageGocChup, setSelectedImageGocChup] = useState("");
+  const [selectedImageDisplay, setSelectedImageDisplay] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedIdSPCT, setSelectedIdSPCT] = useState("");
+  const [runFirstTime, setRunFirstTime] = useState(false);
+
+  const handleImageClick = (spct) => {
+    setSelectedImage(spct.defaultImg);
+    setSelectedImageDisplay(spct.defaultImg);
+    // setSelectedSize(spct.id_kich_co.ten);
+    console.log(spct.id);
+    setSelectedIdSPCT(spct.id);
+  };
 
   const handleSizeClick = (size) => {
     setSelectedSize(size);
@@ -29,26 +41,46 @@ export default function DetailProduct() {
   const fetchSanPhamById = async () => {
     try {
       const data = await getAllSanPhamChiTietByIdSanPham(idSP);
-      console.log("fetchSanPhamById:", data);
+      // console.log("fetchSanPhamById:", data);
       setSanPhamChiTiets(data);
-      setSelectedImage(data.length > 0 ? data[0].defaultImg : "");
+      if (!runFirstTime) {
+        setSelectedImage(data.length > 0 ? data[0].defaultImg : "");
+        setSelectedImageDisplay(data.length > 0 ? data[0].defaultImg : "");
+        setRunFirstTime(true);
+      }
     } catch (error) {
       console.error("Error fetchSanPham():", error);
     }
   };
-  // const fetchHinhAnhByIdSPCT = async () => {
-  //   try {
-  //     const data = await getHinhAnhByIdSPCT();
-  //     console.log("ha: ", data);
-  //     setHinhAnhs(data);
-  //   } catch (error) {
-  //     console.error("Error fetchSanPham():", error);
-  //   }
-  // };
+
+  const fetchHinhAnhByIdSPCT = async () => {
+    try {
+      const data = await getHinhAnhByIdSPCT(selectedIdSPCT);
+      // console.log("ha: ", data);
+      setHinhAnhs(data);
+    } catch (error) {
+      console.error("Error fetchHinhAnhByIdSPCT():", error);
+    }
+  };
   useEffect(() => {
     fetchSanPhamById();
-    // fetchHinhAnhByIdSPCT();
-  }, [idSP]);
+    fetchHinhAnhByIdSPCT();
+  }, [idSP, selectedIdSPCT]);
+
+  useEffect(() => {
+    if (runFirstTime && selectedImage) {
+      const selectedId = sanPhamChiTiets.find(
+        (spct) => spct.defaultImg === selectedImage
+      )?.id;
+      setSelectedIdSPCT(selectedId);
+      fetchHinhAnhByIdSPCT();
+    }
+  }, [selectedImage]);
+
+  const handleImageHover = (image) => {
+    setSelectedImageGocChup(image);
+    setSelectedImageDisplay(image);
+  };
 
   if (sanPhamChiTiets.length === 0) {
     return null;
@@ -80,20 +112,20 @@ export default function DetailProduct() {
             <div className="grid grid-cols-6 gap-4 sticky-grid">
               <div className="col-start-1 col-end-2">
                 <div className="flex flex-col container-main-detail-img-pro">
-                  {sanPhamChiTiets.map((spct) => (
+                  {hinhAnhs.map((item) => (
                     <img
-                      key={spct.id}
-                      src={spct.defaultImg}
+                      key={item.id}
+                      src={item.ten}
                       alt=""
                       className="main-detail-product-img"
-                      onMouseOver={() => setSelectedImage(spct.defaultImg)}
+                      onMouseOver={() => handleImageHover(item.ten)}
                     />
                   ))}
                 </div>
               </div>
               <div className="col-start-2 col-end-6">
                 <img
-                  src={selectedImage}
+                  src={selectedImageDisplay}
                   alt=""
                   className="main-img-detail-pro"
                 />
@@ -112,15 +144,18 @@ export default function DetailProduct() {
               ${sanPhamChiTiets[0].giaBan}
             </div>
             <div className="choose-color-product flex">
-              {/* Lấy hình ảnh theo màu sắc */}
-              {/* {sanPhamChiTiets.map((spct) => (
+              {/* Tổng Sản phẩm chi tiết phải tương ứng với tổng số màu sắc*/}
+              {sanPhamChiTiets.map((spct) => (
                 <img
                   key={spct.id}
-                  src={hinhAnhs.ten}
+                  src={spct.defaultImg}
                   alt=""
-                  className="choose-color-img-pro"
+                  className={`choose-color-img-pro ${
+                    selectedImage === spct.defaultImg ? "selected-border" : ""
+                  }`}
+                  onClick={() => handleImageClick(spct)}
                 />
-              ))} */}
+              ))}
             </div>
             <div className="detail-pro-select-size-title flex justify-between mt-10">
               <div> Select Size</div>

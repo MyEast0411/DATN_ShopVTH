@@ -24,4 +24,13 @@ public interface HinhAnhRepository extends JpaRepository<HinhAnh,String> {
             "JOIN hinh_anh ON san_pham_chi_tiet.id = hinh_anh.id_san_pham_chi_tiet\n" +
             "WHERE san_pham_chi_tiet.id = :id", nativeQuery = true)
     List<HinhAnh> getHinhAnhByIdSPCT(@Param("id") String id);
+
+    //-------Hội------------//
+    @Query(value = "SELECT hinh_anh.*\n" +
+            "FROM san_pham_chi_tiet\n" +
+            "JOIN hinh_anh ON san_pham_chi_tiet.id = hinh_anh.id_san_pham_chi_tiet\n" +
+            "WHERE san_pham_chi_tiet.id =  :idSanPhamChiTiet", nativeQuery = true)
+    List<HinhAnh> getHinhAnhBySanPhamChiTiet(@Param("idSanPhamChiTiet") String idSanPhamChiTiet);
+
+    //-------Hội------------//
 }
