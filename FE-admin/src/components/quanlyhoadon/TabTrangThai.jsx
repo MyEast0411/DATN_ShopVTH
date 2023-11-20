@@ -21,7 +21,6 @@ export default function TabTrangThai() {
   }, []);
 
   const getData = async () => {
-    
     const res = await axios.get(url + "getHoaDons");
     const data = await res.data;
     console.log(res.data);
@@ -30,13 +29,11 @@ export default function TabTrangThai() {
         return {
           ...item,
           id: index + 1,
-          ids : item.id,
-          nhanVien: item?.id_nhan_vien
-          ?.ten,
+          ids: item.id,
+          nhanVien: item?.id_nhan_vien?.ten,
         };
       })
     );
-
   };
 
   const onChange = async (key) => {
@@ -49,9 +46,8 @@ export default function TabTrangThai() {
         return {
           ...item,
           id: index,
-          ids : item.id,
-          nhanVien: item?.id_nhan_vien
-          ?.ten,
+          ids: item.id,
+          nhanVien: item?.id_nhan_vien?.ten,
         };
       })
     );
@@ -65,7 +61,6 @@ export default function TabTrangThai() {
     `Giao Hàng`,
     `Hoàn Thành`,
     `Hủy`,
-    `Chờ Thanh Toán`,
   ];
   var data = [];
   for (let index = 0; index < items.length; index++) {

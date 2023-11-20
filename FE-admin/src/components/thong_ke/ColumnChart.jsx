@@ -176,6 +176,8 @@ export function ColumnChart({ value }) {
     ],
   });
 
+  const [data, setData] = useState({});
+
   useEffect(() => {
     if (value == "week") {
       setUserData({
