@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -31,6 +32,27 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
     @Query(value = "select sum(hd.tong_tien) from hoa_don hd where month(hd.ngay_nhan) = ?1  and hd.deleted = 0",nativeQuery = true)
     Double  getTotalByThang(int thang);
+    @Query(value = "select sum(hd.tong_tien) from hoa_don hd ",nativeQuery = true)
+    Double  getTotalAll();
+
+    @Query(value = "SELECT*FROM hoa_don\n" +
+            "order by ngay_tao desc\n" +
+            "LIMIT 5; ",nativeQuery = true)
+    List<HoaDon>  top5HDMoi();
+
+    @Query(value = "SELECT SUM(tong_tien) FROM hoa_don\n" +
+            "WHERE ngay_tao >= ?1 AND ngay_tao <= ?2;",nativeQuery = true)
+    Double  getTotalTuanTheoThang(Date ngayBD , Date ngayKT);
+
+
+
+
+
+
+
+
+
+
 
 
 }
