@@ -23,6 +23,9 @@ public class LichSuHoaDon {
     @Column(name = "mo_ta_hoa_don")
     private String moTaHoaDon;
 
+    @Column(name = "ghi_chu")
+    private String ghiChu;
+
     @Column(name = "ngay_tao")
     private Date ngayTao = new Date();
 
