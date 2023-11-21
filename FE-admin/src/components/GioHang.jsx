@@ -28,7 +28,8 @@ import { QrReader } from "react-qr-reader";
 import { Modal, Tag } from "antd";
 import TableSanPhamChiTiet from "../common/table/sanPham/TableSanPhamChiTiet";
 import TableHoaDon from "../common/table/sanPham/TableAllHoaDon";
-import TableKhachHang from "./ban_hang/TableKhachHang"
+import TableKhachHang from "./ban_hang/TableKhachHang";
+import TableVoucher from "./ban_hang/TableVoucher";
 // icons
 import { BsQrCodeScan } from "react-icons/bs";
 import CartItem from "./CartItem";
@@ -52,9 +53,12 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
   const [khachHang, setKhachHang] = useState({});
   const [tienKhachDua, setTienKhachDua] = useState("");
   const [tongTien, setTongTien] = useState("");
+  const [tienHang, setTienHang] = useState("");
   const [tienThua, setTienThua] = useState("");
   const [khachCanTra, setKhachCanTra] = useState("");
   const [maGiaoDich, setMaGiaoDich] = useState("");
+  const [voucher, setVoucher] = useState(0);
+  const [codeVC, setCodeVC] = useState("");
   const [tienMatConfirmationOpen, setTienMatConfirmationOpen] = React.useState(false);
   const textRef = useRef('');
   const navigate = useNavigate();
@@ -168,6 +172,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         console.log(totalSoTien);
         setKhachCanTra(totalSoTien);
         setTienKhachDua(totalSoTien);
+        
         setTienThua("");
         if(totalSoTien > tongTien) {
           setTienThua(totalSoTien - tongTien);
@@ -451,12 +456,17 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
       .then((response) => {
+        // console.log(response.data);
         setList(response.data);
           
         // Gọi hàm tính tổng tiền với mảng data
         const tongTien = tinhTongTien(response.data);
-        // console.log(tongTien);
-        setTongTien(tongTien);
+        const vc = response.data[0]?.id_hoa_don.id_voucher?.giaTriMax || 0;
+        const codeVoucher = response.data[0]?.id_hoa_don.id_voucher?.code;
+        setCodeVC(codeVoucher);
+        setVoucher(vc);
+        setTienHang(tongTien);
+        setTongTien(tongTien - voucher);
         // setKhachCanTra(tongTien);
       });
   };
@@ -750,71 +760,53 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
             </div>
 
             <div class="flex gap-6">
-              <div class="w-4/6 font-">
-                <Input label="Mời nhập mã" />
+              <div class="w-4/6 ">
+                <Input label="Mời nhập mã" value={codeVC}/>
               </div>
               <Modal
                 onOk={handleOkVoucher}
                 onCancel={handleCancelVoucher}
                 open={isModalOpenVoucher}
+                width={1300}
+                height={100}
+                footer={[]}
               >
-                <Table
-                  removeWrapper
-                  aria-label="Example static collection table"
-                >
-                  <TableHeader>
-                    <TableColumn>NAME</TableColumn>
-                    <TableColumn>ROLE</TableColumn>
-                    <TableColumn>STATUS</TableColumn>
-                    <TableColumn>THAO TÁC</TableColumn>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow key="1">
-                      <TableCell>Tony Reichert</TableCell>
-                      <TableCell>CEO</TableCell>
-                      <TableCell>Active</TableCell>
-                      <TableCell>
-                        <Button>
-                          <IoAddCircle />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow key="2">
-                      <TableCell>Zoey Lang</TableCell>
-                      <TableCell>Technical Lead</TableCell>
-                      <TableCell>Paused</TableCell>
-                      <TableCell>
-                        <Button>
-                          <IoAddCircle />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow key="3">
-                      <TableCell>Jane Fisher</TableCell>
-                      <TableCell>Senior Developer</TableCell>
-                      <TableCell>Active</TableCell>
-                      <TableCell>
-                        <Button>
-                          <IoAddCircle />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow key="4">
-                      <TableCell>William Howard</TableCell>
-                      <TableCell>Community Manager</TableCell>
-                      <TableCell>Vacation</TableCell>
-                      <TableCell>
-                        <Button>
-                          <IoAddCircle />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
+                <TableVoucher activeKey={activeKey} setVoucher={setVoucher} tongTien={tongTien} setTongTien={setTongTien}/>
               </Modal>
 
-              <div class="w-2/6 ...">
+              <div class="w-2/6 flex">
                 <Button onClick={showModalVoucher}>Chọn mã</Button>
+
+                <Button
+                  type="text"
+                  // onClick={async() => {
+                  //   setKhachHang("");
+                  //   await axios.put("http://localhost:8080/hoa_don_chi_tiet/addKH_HD", {
+                  //     maHD : activeKey,
+                  //     id_khach_hang : ""
+                  //   })
+                  // }}
+                  style={{ marginLeft: '10px'}}
+                  onClick={async() => {
+                    console.log(codeVC);
+                    if(codeVC == undefined) {
+                      toast.warning(`Chưa có phiếu giảm giá`);
+                      return;
+                    }
+                    await axios.put("http://localhost:8080/hoa_don_chi_tiet/removeVC_HD", {
+                        maHD : activeKey,
+                        id_khach_hang : ""
+                    })
+                    .then((response) => {
+                        setVoucher(0);
+                        setCodeVC("");
+                        setTongTien(tongTien);
+                        toast(`Xóa voucher thành công`);
+                    })
+                }}
+                >
+                  <CloseOutlined />
+                </Button>
               </div>
             </div>
             <div class="flex ...">
@@ -844,7 +836,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
               <div class="w-2/6 ...">
                 <span style={{ color: "red", fontWeight: "bold", fontSize : "20px"  }}>
                   {" "}
-                  {Intl.NumberFormat().format(tongTien)}&nbsp;₫
+                  {Intl.NumberFormat().format(tienHang)}&nbsp;₫
                 </span>
               </div>
             </div>
@@ -853,7 +845,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
               <div class="w-2/6 ...">
                 <span style={{ color: "red", fontWeight: "bold", fontSize : "15px"  }}>
                   {" "}
-                  {Intl.NumberFormat().format(-0)}&nbsp;₫
+                  {Intl.NumberFormat().format("-"+voucher)}&nbsp;₫
                 </span>
               </div>
             </div>

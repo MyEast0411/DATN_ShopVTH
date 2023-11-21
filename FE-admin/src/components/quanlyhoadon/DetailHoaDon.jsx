@@ -210,7 +210,7 @@ export default function DetailHoaDon() {
               ...item,
               subtitle: format(
                 new Date(item.ngayTao),
-                " hh:mm:ss ,   dd-MM-yyyy"
+                " hh:mm:ss ,dd-MM-yyyy"
               ),
               description: listTitleTimline[index].title,
               icon: listTitleTimline[index].icon,

@@ -152,6 +152,7 @@ public class HoaDonController {
                 hoaDon1.setDiaChi(hoaDon.getDiaChi());
                 hoaDon1.setTenKhachHang(hoaDon.getTenKhachHang());
                 hoaDon1.setSdt(hoaDon.getSdt());
+                hoaDon1.setNgayTao(new Date());
                 hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
                 HoaDon updateHoaDon = hoaDonRepository.save(hoaDon1);
