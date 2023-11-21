@@ -98,7 +98,7 @@ export default function DetailHoaDon() {
   };
 
   const onHandleTimeLineChange = () => {
-    if (currentTimeLine < 6) {
+    if (currentTimeLine <= 6) {
       Modal.confirm({
         title: `Bạn có muốn ${listTitleTimline[currentTimeLine].title} không ?`,
         okText: "Yes",
@@ -154,16 +154,16 @@ export default function DetailHoaDon() {
   };
 
   const getDataChiTietSanPham = async () => {
-    const res = await axios.get(`http://localhost:8080/hdct/getHDCT/${id}`);
+    const res = await axios.get(
+      "http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id
+    );
     const data = await res.data;
-    console.log(res.data);
-    var tong = 0;
+    console.log("spct", res.data);
     setRowsSPCT(
       data.map((item, index) => {
         return {
           id: item.id_chi_tiet_san_pham.ids,
-          imageUrl:
-            "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+          imageUrl: item.id_chi_tiet_san_pham.defaultImg,
           name: item.id_chi_tiet_san_pham.id_san_pham.ten,
           size: "6",
           quantity: item.soLuong,
@@ -180,7 +180,9 @@ export default function DetailHoaDon() {
       okType: "danger",
       onOk: async () => {
         const res = await axios
-          .delete(`http://localhost:8080/hdct/deleteHDCT/${id}/${idSPCT}`)
+          .delete(
+            `http://localhost:8080/hoa_don_chi_tiet/deleteHDCT/${id}/${idSPCT}`
+          )
           .then((response) => {
             response.data == true ? success("Xóa thành công") : error();
           })
@@ -208,10 +210,7 @@ export default function DetailHoaDon() {
           data.map((item, index) => {
             return {
               ...item,
-              subtitle: format(
-                new Date(item.ngayTao),
-                " hh:mm:ss ,dd-MM-yyyy"
-              ),
+              subtitle: format(new Date(item.ngayTao), " hh:mm:ss ,dd-MM-yyyy"),
               description: listTitleTimline[index].title,
               icon: listTitleTimline[index].icon,
             };
@@ -230,9 +229,10 @@ export default function DetailHoaDon() {
 
   const getInfoHD = async () => {
     const res = await axios.get(
-      `http://localhost:8080/hoa_don/getHoaDon/${id}`
+      "http://localhost:8080/hoa_don/getHoaDon/" + id
     );
     const data = await res.data;
+    console.log(data);
     setMoney({
       tienGiam: data.tienGiam,
       tienHang: data.tongTien + data.tienGiam,
@@ -603,25 +603,38 @@ export default function DetailHoaDon() {
 //   `Hủy`,
 // ];
 
+// const items = [
+//   `Chờ xác nhận`,
+//   `Xác Nhận`,
+//   `Chờ Thanh Toán`,
+//   `Chờ Vận Chuyển`,
+//   `Giao Hàng`,
+//   `Hoàn Thành`,
+//   `Hủy`,
+// ];
 const listTitleTimline = [
   {
-    title: "Chờ Xác Nhận",
+    title: `Chờ xác nhận`,
     icon: { GiConfirmed },
   },
   {
-    title: "Xác Nhận",
+    title: `Xác Nhận`,
     icon: { GiConfirmed },
   },
   {
-    title: "Chờ Vận Chuyển",
+    title: `Chờ Thanh Toán`,
     icon: { FaFileInvoice },
   },
   {
-    title: "Hoàn Thành",
+    title: `Chờ Vận Chuyển`,
     icon: { FaShippingFast },
   },
   {
-    title: "Chờ Thanh Toán",
+    title: `Giao Hàng`,
+    icon: { LuPackageCheck },
+  },
+  {
+    title: `Hoàn Thành`,
     icon: { LuPackageCheck },
   },
 ];

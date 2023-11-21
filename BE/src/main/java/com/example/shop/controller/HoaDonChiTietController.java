@@ -148,4 +148,14 @@ public class HoaDonChiTietController {
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
+
+    @GetMapping("getHDCTByID/{idHD}")
+    public ResponseEntity<List<HoaDonChiTiet>> getHDCTByIDHD(@PathVariable("idHD") String idHD) {
+        return ResponseEntity.ok(ssHDCT.getHDCT(idHD));
+    }
+
+
+
+
+
 }

@@ -46,7 +46,7 @@ public class HoaDonController {
     private LichSuHoaDonService lichSuHoaDonService;
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
-            @RequestParam(name = "page" , defaultValue = "0")Integer numPage
+//            @RequestParam(name = "page" , defaultValue = "0")Integer numPage
     ){
         List<HoaDon> page = hoaDonService.getHoaDons();
         return ResponseEntity.ok(page);

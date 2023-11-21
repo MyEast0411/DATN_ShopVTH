@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 @Repository
 public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , String> {
-    @Query("select u from HoaDonChiTiet u where u.id_hoa_don.id = ?1")
+    @Query(value = "select * from hoa_don_chi_tiet u where u.id_hoa_don = ?1" , nativeQuery = true)
     List<HoaDonChiTiet> getHDCT(String idHD);
     @Modifying
     @Transactional
