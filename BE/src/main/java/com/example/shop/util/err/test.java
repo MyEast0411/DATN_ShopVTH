@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Calendar;
 
 
@@ -23,6 +24,11 @@ public class test {
         DayOfWeek ngayDauThangThu = ngayDauThang.getDayOfWeek();
 
         System.out.println("Các ngày trong tuần của tháng " + thang + " năm " + nam + ":");
+
+        YearMonth yearMonth = YearMonth.of(nam, thang);
+        LocalDate lastDayOfSpecificMonth = yearMonth.atEndOfMonth();
+
+        System.out.println("Ngày cuối cùng của tháng " + thang + "/" + nam + ": " + lastDayOfSpecificMonth);
 
 //        // In ra ngày đầu tiên của tháng
 //        System.out.println("Ngày 1: " + ngayDauThang);

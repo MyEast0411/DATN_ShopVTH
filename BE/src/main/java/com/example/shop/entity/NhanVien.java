@@ -53,6 +53,12 @@ public class NhanVien {
     @Column(name = "deleted")
     private Integer deleted;
 
+    @Column(name = "anh")
+    private String anh;
+
+    @Column(name = "sdt")
+    private String sdt;
+
     @ManyToOne
     @JoinColumn(name = "id_chuc_vu")
     private ChucVu id_chuc_vu;

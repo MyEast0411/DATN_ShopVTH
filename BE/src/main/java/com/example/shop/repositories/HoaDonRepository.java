@@ -15,13 +15,13 @@ import java.util.List;
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
-    @Query("select u from HoaDon u where u.trangThai = ?1 and u.deleted =0 order by u.ngayTao desc")
+    @Query(value = "select * from hoa_don u where u.trang_thai = ?1 and u.deleted =1 order by u.ngay_tao desc" , nativeQuery = true)
     List<HoaDon> getPage(int trangThai );
 
     @Query("select u from HoaDon u where u.trangThai = 7 and u.deleted = 0")
     List<HoaDon> getHDChuaTT();
 
-    @Query("select u from HoaDon u where u.deleted = 0 order by u.ngayTao desc")
+    @Query(value = "select * from hoa_don u where u.deleted = 1 order by u.ngay_tao desc", nativeQuery = true)
     List<HoaDon> getPageDeleted( );
 
     HoaDon getHoaDonByMa(String ma);
@@ -44,15 +44,8 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             "WHERE ngay_tao >= ?1 AND ngay_tao <= ?2;",nativeQuery = true)
     Double  getTotalTuanTheoThang(Date ngayBD , Date ngayKT);
 
-
-
-
-
-
-
-
-
-
+    @Query(value = "select count(*)  from hoa_don  where trang_thai != 6;",nativeQuery = true)
+    Integer  countHD();
 
 
 }
