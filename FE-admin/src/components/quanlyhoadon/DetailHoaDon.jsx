@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 export default function DetailHoaDon() {
   const { id } = useParams();
   const [info, setInfo] = useState({});
+  const [note, setNote] = useState("");
   const [rowsLichSuThanhToan, setRowsLichSuThanhToan] = useState([]);
   const [quantityEdit, setQuantityEdit] = useState(0);
   const [money, setMoney] = useState({
@@ -87,6 +88,7 @@ export default function DetailHoaDon() {
         moTaHoaDon: listTitleTimline[currentTimeLine].title,
         deleted: 0,
         nguoiTao: "Cam",
+        ghiChu: note,
       })
       .then((response) => {
         setCurrentTimeLine(currentTimeLine + 1);
@@ -165,7 +167,8 @@ export default function DetailHoaDon() {
           id: item.id_chi_tiet_san_pham.ids,
           imageUrl: item.id_chi_tiet_san_pham.defaultImg,
           name: item.id_chi_tiet_san_pham.id_san_pham.ten,
-          size: "6",
+          kichco: item.id_chi_tiet_san_pham.id_kich_co.ten,
+          mausac: item.id_chi_tiet_san_pham.id_mau_sac.ten,
           quantity: item.soLuong,
           price: item.giaTien,
         };
@@ -314,6 +317,10 @@ export default function DetailHoaDon() {
                 <Input.TextArea
                   rows={4}
                   placeholder="Ghi chu ...."
+                  value={note}
+                  onChange={(e) => {
+                    setNote(e.target.value);
+                  }}
                   // maxLength={}
                 />
               </Modal>
@@ -381,6 +388,14 @@ export default function DetailHoaDon() {
                         &nbsp;&nbsp;
                         {item.description}
                       </p>
+                      {item.ghiChu && (
+                        <p>
+                          <span className="font-bold">Ghi Chú : </span>
+                          &nbsp;&nbsp;
+                          {item.ghiChu}
+                        </p>
+                      )}
+
                       <p>
                         <span className="font-bold">Mã Nhân Viên : </span>
                         &nbsp;&nbsp;
@@ -504,34 +519,52 @@ export default function DetailHoaDon() {
                       className="w-full rounded-lg sm:w-40 me-10"
                     />
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className=" sm:mt-0" style={{ marginRight: 400 }}>
-                        <h2 className="text-lg font-bold text-gray-900">
+                    <div
+                      className="flex cols-3 gap-4"
+                      style={{ marginRight: 200 }}
+                    >
+                      <div className=" sm:mt-0" style={{ marginRight: 300 }}>
+                        <h2 className="text-lg font-bold text-gray-900 mb-3">
                           {item.name}
+                          {item.mausac.substring(3)}
                         </h2>
-                        <p className="mt-1 text-xs text-gray-700">
-                          Size: {item.size}
+                        <p className="mb-3  font-bold text-gray-900">
+                          Size: {item.kichco}
                         </p>
-                        <p className="font-bold text-gray-700">
-                          x{item.quantity}
+                        <p className="font-bold text-gray-900 mb-3">
+                          Số lượng :{" "}
+                          <span className="font-bold text-red-500 mb-3">
+                            {item.quantity}
+                          </span>{" "}
+                          sản phẩm
+                        </p>
+                        <p className="font-bold text-gray-900 mb-3">
+                          Đơn giá :{" "}
+                          <span className="font-bold text-red-500 mb-3">
+                            {Intl.NumberFormat().format(item.price)} &nbsp;₫
+                          </span>
                         </p>
                       </div>
 
                       <div className=" space-x-4 mt-4">
                         <p className="font-bold text-red-500">
-                          {Intl.NumberFormat().format(item.price)}&nbsp;₫
+                          {Intl.NumberFormat().format(
+                            item.price * item.quantity
+                          )}
+                          &nbsp;₫
                         </p>
                       </div>
 
+                      <div className="row">
+                        <Button
+                          color="red"
+                          onClick={() => onHandleDelete(item.id)}
+                        >
+                          Xóa
+                        </Button>
+                      </div>
+
                       {/* <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6"></div> */}
-                    </div>
-                    <div className="row">
-                      <Button
-                        color="red"
-                        onClick={() => onHandleDelete(item.id)}
-                      >
-                        Xóa
-                      </Button>
                     </div>
                   </div>
                 ))}
