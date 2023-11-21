@@ -12,37 +12,6 @@ import { SearchIcon } from "../components/voucher/common/SearchIcon";
 import TabTrangThai from "../components/quanlyhoadon/TabTrangThai";
 
 export default function QuanLyHoaDon() {
-  const [filterValue, setFilterValue] = React.useState("");
-  const hasSearchFilter = Boolean(filterValue);
-  const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...list];
-
-    if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter(
-        (user) =>
-          user.code.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.ten.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.ma.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
-    if (
-      statusFilter !== "all" &&
-      Array.from(statusFilter).length !== statusOptions.length
-    ) {
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status)
-      );
-    }
-    const data = filteredUsers.map((el, i) => {
-      return {
-        ...el,
-        id: i + 1,
-      };
-    });
-    console.log(data);
-
-    return data;
-  }, [list, filterValue, statusFilter]);
   return (
     <>
       <div>
