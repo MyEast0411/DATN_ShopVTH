@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Logo from "../assets/logo.png";
 import { AiOutlineHeart } from "react-icons/ai";
 import { BsBagDash } from "react-icons/bs";
@@ -8,6 +8,25 @@ export default function Header() {
   const handleLinkClick = () => {
     window.scrollTo(0, 0);
   };
+  const [badge, setBadge] = useState(0);
+  useEffect(() => {
+    const updateCartBadge = () => {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      setBadge(cart.length);
+    };
+  
+    // Gọi hàm để cập nhật badge khi component được render
+    updateCartBadge();
+  
+    // Thêm callback để cập nhật badge khi giỏ hàng được cập nhật
+    window.cartUpdatedCallback = updateCartBadge;
+  
+    return () => {
+      delete window.cartUpdatedCallback;
+    };
+  }, []);
+  
+
   return (
     <>
       <div className="flex justify-between main-ctn w-full sticky top-0">
@@ -64,7 +83,7 @@ export default function Header() {
           <div className="icon-container">
             <Link to="/cart" className="relative">
               <BsBagDash className="bag" />
-              <div className="badge">5</div>
+              <div className="badge">{badge}</div>
             </Link>
           </div>
         </div>

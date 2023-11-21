@@ -10,10 +10,27 @@ export const getAllSanPham = async () => {
         throw error;
     }
 }
+export const getSPCTByIdSP = async (id) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/getSanPhamIdSPCT/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
 
 export const getHinhAnhByIdSPCT = async (id) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/getHinhAnhByIdSPCT/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getSPCTbyId = async (id) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/getSPCTbyId/${id}`);
         return response.data;
     } catch (error) {
         throw error;

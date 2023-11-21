@@ -10,9 +10,13 @@ import { FaStarHalfAlt } from "react-icons/fa";
 import {
   getAllSanPhamChiTietByIdSanPham,
   getHinhAnhByIdSPCT,
+  getSPCTbyId,
+  getSPCTByIdSP,
 } from "../api/SanPham";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import AlsoLike from "./AlsoLike";
+import { notification } from "antd";
+import successIcon from "../assets/successIcon.png";
 
 export default function DetailProduct() {
   const { idSP } = useParams();
@@ -26,6 +30,76 @@ export default function DetailProduct() {
   const [runFirstTime, setRunFirstTime] = useState(false);
   const [selectedGiaBan, setSelectedGiaBan] = useState(0);
   const [selectedTheLoai, setSelectedTheLoai] = useState("");
+  const [cartItem, setCartItem] = useState({});
+
+  const [api, contextHolder] = notification.useNotification();
+  // const { idSanPham } = useParams();
+  useEffect(() => {
+    const fetchSPCTByIdSP = async () => {
+      try {
+        const data = await getSPCTByIdSP(idSP);
+        setSelectedIdSPCT(data[0].id);
+        setCartItem(data[0]);
+      } catch (error) {
+        console.error("Error fetchSPCTbyId():", error);
+      }
+    };
+    fetchSPCTByIdSP();
+  }, []);
+  const openNotificationWithIcon = (type) => {
+    api[type]({
+      message: "Add success!",
+      duration: 1.3,
+      icon: (
+        <img
+          src={successIcon}
+          alt=""
+          style={{
+            width: "7%",
+          }}
+        />
+      ),
+    });
+  };
+
+  const fetchSPCTbyId = async (id) => {
+    try {
+      const data = await getSPCTbyId(id);
+      setCartItem(data);
+    } catch (error) {
+      console.error("Error fetchSPCTbyId():", error);
+    }
+  };
+
+  const addToCart = () => {
+    // console.log(selectedIdSPCT);
+    console.log(cartItem.id);
+    // Tạo giỏ hàng mới nếu chưa tồn tại trong localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+    const existingItemIndex = cart.findIndex(
+      (item) => item.idSPCT === cartItem.id && item.size === selectedSize
+    );
+    if (existingItemIndex !== -1) {
+      // Nếu sản phẩm đã tồn tại, tăng số lượng
+      cart[existingItemIndex].quantity += 1;
+    } else {
+      // Nếu sản phẩm chưa tồn tại, thêm vào giỏ hàng
+      cart.push({
+        idSPCT: cartItem.id,
+        size: selectedSize,
+        quantity: 1,
+      });
+    }
+    // Lưu giỏ hàng vào localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Thông báo rằng giỏ hàng đã được cập nhật
+    if (typeof window.cartUpdatedCallback === "function") {
+      window.cartUpdatedCallback();
+    }
+    openNotificationWithIcon("success");
+  };
 
   const handleImageClick = (spct) => {
     setSelectedImage(spct.defaultImg);
@@ -33,13 +107,13 @@ export default function DetailProduct() {
     setSelectedGiaBan(spct.giaBan);
     setSelectedTheLoai(spct.id_the_loai.ten);
     // setSelectedSize(spct.id_kich_co.ten);
-    console.log(spct.id);
+    // console.log(spct.id);
     setSelectedIdSPCT(spct.id);
+    fetchSPCTbyId(spct.id);
   };
 
   const handleSizeClick = (size) => {
     setSelectedSize(size);
-    console.log("Size: " + size);
   };
 
   const fetchSanPhamById = async () => {
@@ -47,6 +121,7 @@ export default function DetailProduct() {
       const data = await getAllSanPhamChiTietByIdSanPham(idSP);
       // console.log("fetchSanPhamById:", data);
       setSanPhamChiTiets(data);
+      setSelectedIdSPCT(data[0].id);
       if (!runFirstTime) {
         setSelectedImage(data.length > 0 ? data[0].defaultImg : "");
         setSelectedImageDisplay(data.length > 0 ? data[0].defaultImg : "");
@@ -81,7 +156,7 @@ export default function DetailProduct() {
       setSelectedIdSPCT(selectedId);
       fetchHinhAnhByIdSPCT();
     }
-  }, [selectedImage]);
+  }, [selectedImage, runFirstTime]);
 
   const handleImageHover = (image) => {
     setSelectedImageGocChup(image);
@@ -94,6 +169,7 @@ export default function DetailProduct() {
 
   return (
     <>
+      {contextHolder}
       <InfoTop />
       <Header />
 
@@ -142,9 +218,7 @@ export default function DetailProduct() {
           <div className="col-span-1 detail-product-right">
             <div className="detail-pro-name">{sanPhamChiTiets[0].ten}</div>
             {sanPhamChiTiets[0].id_the_loai && (
-              <div className="detail-pro-gender">
-                {selectedTheLoai}
-              </div>
+              <div className="detail-pro-gender">{selectedTheLoai}</div>
             )}
             <div className="detail-pro-price mt-5">${selectedGiaBan}</div>
             <div className="choose-color-product flex">
@@ -172,12 +246,11 @@ export default function DetailProduct() {
               {sanPhamChiTiets.map((spct) => (
                 <div
                   key={spct.id}
+                  id={spct.id}
                   className={`detail-pro-select-size-button text-center ${
-                    selectedSize === spct.id_kich_co.ten
-                      ? "selected-border"
-                      : ""
+                    selectedSize === spct.id_kich_co.id ? "selected-border" : ""
                   }`}
-                  onClick={() => handleSizeClick(spct.id_kich_co.ten)}
+                  onClick={() => handleSizeClick(spct.id_kich_co.id)}
                 >
                   {spct.id_kich_co.ten}
                 </div>
@@ -193,7 +266,10 @@ export default function DetailProduct() {
                 </a>
               </div>
             </div>
-            <div className="flex flex-col detail-pro-group-btn">
+            <div
+              className="flex flex-col detail-pro-group-btn"
+              onClick={addToCart}
+            >
               <div className="checkout-button mb-5 flex justify-center">
                 <button>Add to bag</button>
               </div>

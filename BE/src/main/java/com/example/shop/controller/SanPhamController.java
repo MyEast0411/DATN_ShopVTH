@@ -391,14 +391,29 @@ public class SanPhamController {
     }
 
     @GetMapping("/countAllSanPham")
-    public int countAllSanPham(){
+    public int countAllSanPham() {
         return sanPhamRepository.countAllSanPham();
     }
 
     @GetMapping("/getHinhAnhByIdSPCT/{id}")
-    public List<HinhAnh> getHinhAnhByIdSPCT(@PathVariable String id){
+    public List<HinhAnh> getHinhAnhByIdSPCT(@PathVariable String id) {
         return hinhAnhRepository.getHinhAnhBySanPhamChiTiet(id);
     }
 
+    @GetMapping("/getSanPhamIdSPCT/{id}")
+    public List<SanPhamChiTiet> getSPCTByIdSP(@PathVariable String id) {
+        return repo.getAllSanPhamChiTietByIdSanPham(id);
+    }
+
+    @GetMapping("/getSPCTbyId/{id}")
+    public ResponseEntity getSPCTbyId(@PathVariable String id) {
+        try {
+            SanPhamChiTiet spct = repo.findById(id).get();
+            return ResponseEntity.ok(spct);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại kích cỡ này!");
+        }
+    }
     //-------------Hội-----------------
 }

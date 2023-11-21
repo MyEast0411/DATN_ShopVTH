@@ -1,7 +1,7 @@
-   drop database shopVTH;
-    create database shopVTH;
+--    drop database shopVTH;
+--     create database shopVTH;
+--     -- run intelliJ IDEA
     use shopVTH;
-    -- run intelliJ IDEA
     select * from chat_lieu;
     ------------------------------
     INSERT INTO chat_lieu (id, deleted, ma, ngay_sua, ngay_tao,nguoi_sua,nguoi_tao, ten)

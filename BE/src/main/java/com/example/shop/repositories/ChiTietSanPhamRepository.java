@@ -42,6 +42,9 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query(value = "select * from san_pham_chi_tiet where san_pham_chi_tiet.id_san_pham = :idSP", nativeQuery = true)
     List<SanPhamChiTiet> getAllSanPhamChiTietByIdSanPham(@Param("idSP") String idSP);
+
+    @Query(value = "SELECT x FROM SanPhamChiTiet x where x.id_san_pham.id = :id")
+    List<SanPhamChiTiet> getSanPhamChiTietByIdSanPham(@Param("id") String id);
     //---------------Hội----------------//
 
 }

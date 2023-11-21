@@ -71,10 +71,6 @@
   position: relative;
 }
 
-/* .search {
-    position: relative;
-  } */
-
 .input {
   width: 100%;
   padding-top: 5px;
@@ -597,4 +593,14 @@ section {
 .popular-price-discount {
   text-decoration: line-through;
   color: #a2a2a2;
+}
+
+.breadcrumbs-cart {
+  background-color: #fff;
+  padding: 5px 0;
+}
+
+.design-w {
+  width: 90%;
+  margin: auto;
 }
