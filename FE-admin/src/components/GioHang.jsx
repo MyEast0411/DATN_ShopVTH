@@ -779,13 +779,6 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
 
                 <Button
                   type="text"
-                  // onClick={async() => {
-                  //   setKhachHang("");
-                  //   await axios.put("http://localhost:8080/hoa_don_chi_tiet/addKH_HD", {
-                  //     maHD : activeKey,
-                  //     id_khach_hang : ""
-                  //   })
-                  // }}
                   style={{ marginLeft: '10px'}}
                   onClick={async() => {
                     console.log(codeVC);
@@ -794,6 +787,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
                       return;
                     }
                     await axios.put("http://localhost:8080/hoa_don_chi_tiet/removeVC_HD", {
+                      
                         maHD : activeKey,
                         id_khach_hang : ""
                     })

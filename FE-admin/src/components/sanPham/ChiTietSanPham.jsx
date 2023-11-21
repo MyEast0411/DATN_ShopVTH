@@ -54,10 +54,11 @@ import numeral from "numeral";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
   { name: "Ảnh", uid: "hinhAnh", sortable: true },
+  { name: "Tên sản phẩm", uid: "tenSanPham", sortable: true },
   { name: "Kích thước", uid: "kichThuoc", sortable: true },
   { name: "Màu sắc", uid: "mauSac", sortable: true },
   { name: "Đế giày", uid: "deGiay", sortable: true },
-  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center"},
+  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center" },
   { name: "Đơn giá", uid: "donGia", sortable: true },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Hành Động", uid: "hanhDong" },
@@ -79,6 +80,7 @@ statusColorMap["Ngừng bán"] = "danger";
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
   "hinhAnh",
+  "tenSanPham",
   "kichThuoc",
   "mauSac",
   "deGiay",
@@ -92,6 +94,55 @@ export default function ChiTietSanPham() {
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
   const [selectedCTSP, setSelectedCTSP] = useState([]);
+  const [mauSac, setMauSac] = useState([]);
+  const [thuongHieu, setThuongHieu] = useState([]);
+  const [chatLieu, setChatLieu] = useState([]);
+  const [deGiay, setDeGiay] = useState([]);
+  const [kichCo, setKichCo] = useState([]);
+  const [nhanHieu, setNhanHieu] = useState([]);
+
+  useEffect(() => {
+    getAllNH();
+    getAllMS();
+    getAllCL();
+    getAllTH();
+    getAllKC();
+    getAllDG();
+  }, []);
+  const getAllNH = async () => {
+    await axios.get("http://localhost:8080/getAllNH").then((response) => {
+      setNhanHieu(response.data);
+    });
+  };
+  const getAllMS = async () => {
+    await axios.get("http://localhost:8080/getAllMS").then((response) => {
+      setMauSac(response.data);
+    });
+  };
+
+  const getAllTH = async () => {
+    await axios.get("http://localhost:8080/getAllTH").then((response) => {
+      setThuongHieu(response.data);
+    });
+  };
+
+  const getAllCL = async () => {
+    await axios.get("http://localhost:8080/getAllCL").then((response) => {
+      setChatLieu(response.data);
+    });
+  };
+
+  const getAllDG = async () => {
+    await axios.get("http://localhost:8080/getAllDG").then((response) => {
+      setDeGiay(response.data);
+    });
+  };
+
+  const getAllKC = async () => {
+    await axios.get("http://localhost:8080/getAllKC").then((response) => {
+      setKichCo(response.data);
+    });
+  };
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);
@@ -164,6 +215,7 @@ export default function ChiTietSanPham() {
           mauSac: item.id_mau_sac.maMau,
           kichThuoc: item.id_kich_co.ten,
           soLuongTon: item.soLuongTon,
+          tenSanPham: item.ten,
           deGiay: item.id_de_giay.ten,
           donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
           trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
@@ -246,20 +298,20 @@ export default function ChiTietSanPham() {
         return isSanPhamSelected ? (
           <InputNumber
             value={sanPham.soLuongTon}
-            // onChange={handleInputChange}
+          // onChange={handleInputChange}
           />
         ) : (
           sanPham.soLuongTon
         );
       case "donGia":
-      return isSanPhamSelected ? (
-        <InputNumber
-          value={sanPham.donGia}
+        return isSanPhamSelected ? (
+          <InputNumber
+            value={sanPham.donGia}
           // onChange={handleInputChange}
-        />
-      ) : (
-        sanPham.donGia
-      );
+          />
+        ) : (
+          sanPham.donGia
+        );
       case "hinhAnh":
         const hinhAnhURL = sanPham.hinhAnh;
         return (
@@ -444,14 +496,14 @@ export default function ChiTietSanPham() {
             </select>
           </label> */}
           <ButtonAntd
-              type="primary"
-              style={{
-                backgroundColor: "#1976d2",
-                marginBottom: "2px",
-              }}
-            >
-              📝 Cập nhật sản phẩm
-            </ButtonAntd>
+            type="primary"
+            style={{
+              backgroundColor: "#1976d2",
+              marginBottom: "2px",
+            }}
+          >
+            📝 Cập nhật sản phẩm
+          </ButtonAntd>
         </div>
       </div>
     );
@@ -481,7 +533,7 @@ export default function ChiTietSanPham() {
           page={page}
           total={totalPages}
           onChange={setPage}
-          // style={{ paddingLeft: "730px" }}
+        // style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -512,60 +564,272 @@ export default function ChiTietSanPham() {
           fontSizfe: "8px",
         }}
       >
+        <div className="mb-2 font-normal border-gray-500 text-lg	flex items-center">
+          <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>⚙ Chi tiết sản phẩm</p>
+        </div>
         <div className="mb-2 border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
           <BiFilterAlt />
           <p className="ml-2 mt-1"> Bộ lọc</p>
         </div>
 
-        <div
-          className="grid drop-shadow-lg grid-cols-1 md:grid-cols-3 gap-4"
-          style={{
-            fontSizfe: "8px",
-            backgroundColor: "white",
-            padding: "20px 10px",
-            borderRadius: "8px",
-          }}
-        >
-          <div className="p-5 ml-32">
-            <Input
-              isClearable
-              className="w-full "
-              placeholder="Tìm kiếm bất kỳ..."
-              startContent={<SearchIcon />}
-              value={filterValue}
-              onClear={() => onClear()}
-              onValueChange={onSearchChange}
-            />
-          </div>
-          <div className="p-5">
+        <div className="" style={{ fontSize: "8px", backgroundColor: "white", padding: "20px 10px", borderRadius: "8px" }}>
+          <div className="">
             <div className="flex items-center">
-              <span className="pr-2">Trạng thái:</span>
-              <FilterTrangThai style={{ width: "100%" }} />
+              {/* <div className="container-input"> */}
+                {/* <input
+                  type="text"
+                  placeholder="Search"
+                  name="text"
+                  className="input search"
+                />
+                <svg
+                  fill="#000000"
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 1920 1920"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M790.588 1468.235c-373.722 0-677.647-303.924-677.647-677.647 0-373.722 303.925-677.647 677.647-677.647 373.723 0 677.647 303.925 677.647 677.647 0 373.723-303.924 677.647-677.647 677.647Zm596.781-160.715c120.396-138.692 193.807-319.285 193.807-516.932C1581.176 354.748 1226.428 0 790.588 0S0 354.748 0 790.588s354.748 790.588 790.588 790.588c197.647 0 378.24-73.411 516.932-193.807l516.028 516.142 79.963-79.963-516.142-516.028Z"
+                    fill-rule="evenodd"
+                  ></path>
+                </svg> */}
+              {/* </div> */}
+              <Input
+                isClearable
+                className="w-72 sm:max-w-[30%]"
+                placeholder="Tìm kiếm bất kỳ..."
+                startContent={<SearchIcon />}
+                value={filterValue}
+                onClear={() => onClear()}
+                onValueChange={onSearchChange}
+              />
+
+              {/* <Button
+                type="primary"
+                style={{
+                  backgroundColor: "#1976d2",
+                  marginLeft: "8px",
+                  color: "#fff",
+                  height: "35px",
+                  borderRadius : "20px"
+                }}
+              >
+                Làm mới
+              </Button> */}
+            </div>
+            <div className="flex justify-center">
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Chất liệu :
+                </label>
+                <div className="flex">
+                  <select
+                    id="thuongHieu"
+                    name="id_thuong_hieu"
+                    autoComplete="country-name"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {chatLieu.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Thương hiệu :
+                </label>
+                <div className="flex">
+                  <select
+                    id="thuongHieu"
+                    name="id_thuong_hieu"
+                    autoComplete="country-name"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {thuongHieu.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Đế giày :
+                </label>
+                <div className="flex">
+                  <select
+                    id="thuongHieu"
+                    name="id_thuong_hieu"
+                    autoComplete="country-name"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {deGiay.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Kích cỡ :
+                </label>
+                <div className="flex">
+                  <select
+                    id="thuongHieu"
+                    name="id_thuong_hieu"
+                    autoComplete="country-name"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {kichCo.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Màu sắc :
+                </label>
+                <div className="flex">
+                  <select
+                    id="thuongHieu"
+                    name="id_thuong_hieu"
+                    autoComplete="country-name"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {mauSac.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Thể loại :
+                </label>
+                <div className="flex">
+                  <select
+                    id="thuongHieu"
+                    name="id_thuong_hieu"
+                    autoComplete="country-name"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {chatLieu.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Trạng thái :
+                </label>
+                <div className="flex">
+                  <select
+                    id="thuongHieu"
+                    name="id_thuong_hieu"
+                    autoComplete="country-name"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    <option >Đang bán</option>
+                    <option >Ngừng bán</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="p-5">
-            <Slider style={{ width: "100%" }} />
+        </div>
+        <div className="mb-2 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg flex items-center">
+          <div className="flex items-center">
+            <HiOutlineClipboardList />
+            <p className="ml-2 mt-1">Danh sách chi tiết sản phẩm</p>
           </div>
-          <div className="p-5 text-center mt-4">
-            <Button
+          <div className="flex items-center">
+            <ButtonAntd
               type="primary"
               style={{
                 backgroundColor: "#1976d2",
                 marginBottom: "2px",
-                marginLeft: "150%",
                 color: "#fff",
+                marginRight: "8px", // Adjust the margin as needed
               }}
-            >
+            >  
               Làm mới
-            </Button>
-          </div>
-        </div>
-
-        <div className="mb-2 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
-          <div className="flex items-center">
-            <HiOutlineClipboardList />
-            <p className="ml-2 mt-1"> Danh sách chi tiết sản phẩm</p>
-          </div>
+            </ButtonAntd>
             <ButtonAntd
               type="primary"
               style={{
@@ -574,11 +838,13 @@ export default function ChiTietSanPham() {
                 color: "#fff",
               }}
             >
-            <Link to={"/quan-ly-san-pham/san-pham"}>
-              Quay lại
-            </Link>
+              <Link to={"/quan-ly-san-pham/san-pham"}>
+                Quay lại
+              </Link>
             </ButtonAntd>
+          </div>
         </div>
+
         <Table
           style={{ height: "382px" }}
           aria-label="Example table with custom cells, pagination and sorting"
@@ -605,9 +871,10 @@ export default function ChiTietSanPham() {
             if (selectedKeys === "all") {
               selectedCTSP = sanPhams;
             } else {
-            selectedCTSP = Array.from(selectedKeys).map(
-              (id) => sanPhams[id-1]
-            );}
+              selectedCTSP = Array.from(selectedKeys).map(
+                (id) => sanPhams[id - 1]
+              );
+            }
             setSelectedCTSP(selectedCTSP);
           }}
         >
@@ -635,7 +902,7 @@ export default function ChiTietSanPham() {
             )}
           </TableBody>
         </Table>
-        
+
         <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
           <DialogTitle>
             <div

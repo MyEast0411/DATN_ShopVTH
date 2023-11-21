@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { QrReader } from "react-qr-reader";
 import { Modal, Select, Switch } from "antd";
 const { Option } = Select;
 import {
