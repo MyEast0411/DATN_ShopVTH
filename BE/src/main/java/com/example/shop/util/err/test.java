@@ -6,20 +6,29 @@ import java.text.SimpleDateFormat;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.Month;
+import java.time.YearMonth;
+import java.util.Calendar;
+
 
 public class test {
     public static void main(String[] args) {
-        int nam = 2023; // Năm muốn kiểm tra
-        int thang = 11; // Tháng muốn kiểm tra
+        int nam = Calendar.getInstance().get(Calendar.YEAR); // Năm muốn kiểm tra
+        int thang = Calendar.getInstance().get(Calendar.MONTH)+1; // Tháng muốn kiểm tra
+
+
 
         // Tạo một LocalDate đại diện cho ngày đầu tiên của tháng
-        LocalDate ngayDauThang = LocalDate.of(nam, Month.of(thang), 1);
+        LocalDate ngayDauThang = LocalDate.of(nam, thang, 1);
 
         // Xác định ngày trong tuần của ngày đầu tiên của tháng
         DayOfWeek ngayDauThangThu = ngayDauThang.getDayOfWeek();
 
         System.out.println("Các ngày trong tuần của tháng " + thang + " năm " + nam + ":");
+
+        YearMonth yearMonth = YearMonth.of(nam, thang);
+        LocalDate lastDayOfSpecificMonth = yearMonth.atEndOfMonth();
+
+        System.out.println("Ngày cuối cùng của tháng " + thang + "/" + nam + ": " + lastDayOfSpecificMonth);
 
 //        // In ra ngày đầu tiên của tháng
 //        System.out.println("Ngày 1: " + ngayDauThang);
@@ -34,6 +43,9 @@ public class test {
             System.out.println("Ngày " + ngayDauThang.getDayOfMonth() + ": " + ngayDauThang);
             ngayDauThang = ngayDauThang.plusDays(6);
         }
+
+
+
     }
 }
 

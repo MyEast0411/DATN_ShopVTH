@@ -48,8 +48,6 @@ public class HoaDonController {
     public ResponseEntity<List<HoaDon>> getHoaDons(
             @RequestParam(name = "page" , defaultValue = "0")Integer numPage
     ){
-//        Pageable pageable = PageRequest.of(numPage , 3);
-//        Page<HoaDon> page = hoaDonService.getHoaDons(pageable);
         List<HoaDon> page = hoaDonService.getHoaDons();
         return ResponseEntity.ok(page);
     }
@@ -59,8 +57,6 @@ public class HoaDonController {
             @RequestParam(name = "page" , defaultValue = "0")Integer numPage,
             @PathVariable Integer trangThai
     ){
-//        Pageable pageable = PageRequest.of(numPage , 3);
-//        Page<HoaDon> page = hoaDonService.getHDs(trangThai , pageable);
         List<HoaDon> page = hoaDonService.getHoaDons();
         if(trangThai !=-1){
             page   = hoaDonService.getHDs(trangThai);
@@ -156,6 +152,7 @@ public class HoaDonController {
                 hoaDon1.setDiaChi(hoaDon.getDiaChi());
                 hoaDon1.setTenKhachHang(hoaDon.getTenKhachHang());
                 hoaDon1.setSdt(hoaDon.getSdt());
+                hoaDon1.setNgayTao(new Date());
                 hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
                 HoaDon updateHoaDon = hoaDonRepository.save(hoaDon1);
@@ -182,4 +179,8 @@ public class HoaDonController {
 //        System.out.println(mess);
         return new ResponseEntity(mess , HttpStatus.OK);
     }
+
+
+
+
 }

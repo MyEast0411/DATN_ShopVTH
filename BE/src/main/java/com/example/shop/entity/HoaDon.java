@@ -83,4 +83,8 @@ public class HoaDon {
     @JoinColumn(name = "id_khach_hang")
     private KhachHang id_khach_hang;
 
+    @ManyToOne
+    @JoinColumn(name = "id_voucher")
+    private Voucher id_voucher;
+
 }

@@ -7,10 +7,7 @@ import com.example.shop.dto.HoaDonKhDTO;
 import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.HoaDonChiTiet;
 import com.example.shop.entity.SanPhamChiTiet;
-import com.example.shop.repositories.ChiTietSanPhamRepository;
-import com.example.shop.repositories.HoaDonChiTietRepository;
-import com.example.shop.repositories.HoaDonRepository;
-import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +34,9 @@ public class HoaDonChiTietController {
 
     @Autowired
     KhachHangRepository ssKH;
+
+    @Autowired
+    VoucherRepository ssVC;
 
     @GetMapping("/getHDCT/{maHD}")
     public ResponseEntity getHDCT(@PathVariable String maHD) {
@@ -113,6 +113,35 @@ public class HoaDonChiTietController {
             }else {
                 hd.setId_khach_hang(ssKH.findById(x.getId_khach_hang()).get());
             }
+            ssHD.save(hd);
+            return ResponseEntity.ok("Thành công");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
+
+    @PutMapping("/addVC_HD")
+    public ResponseEntity addVC_HD(@RequestBody HoaDonKhDTO x) {
+        System.out.println(x);
+        try {
+            HoaDon hd = ssHD.getHoaDonByMa(x.getMaHD());
+            if(x.getId_khach_hang().equals("")) {
+                hd.setId_voucher(null);
+            }else {
+                hd.setId_voucher(ssVC.findById(x.getId_khach_hang()).get());
+            }
+            ssHD.save(hd);
+            return ResponseEntity.ok("Thành công");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
+
+    @PutMapping("/removeVC_HD")
+    public ResponseEntity removeVC_HD(@RequestBody HoaDonKhDTO x) {
+        try {
+            HoaDon hd = ssHD.getHoaDonByMa(x.getMaHD());
+            hd.setId_voucher(null);
             ssHD.save(hd);
             return ResponseEntity.ok("Thành công");
         } catch (Exception e) {

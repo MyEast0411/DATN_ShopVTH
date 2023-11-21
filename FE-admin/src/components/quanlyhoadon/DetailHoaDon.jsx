@@ -98,7 +98,7 @@ export default function DetailHoaDon() {
   };
 
   const onHandleTimeLineChange = () => {
-    if (currentTimeLine < 5) {
+    if (currentTimeLine < 6) {
       Modal.confirm({
         title: `Bạn có muốn ${listTitleTimline[currentTimeLine].title} không ?`,
         okText: "Yes",
@@ -210,7 +210,7 @@ export default function DetailHoaDon() {
               ...item,
               subtitle: format(
                 new Date(item.ngayTao),
-                " hh:mm:ss ,   dd-MM-yyyy"
+                " hh:mm:ss ,dd-MM-yyyy"
               ),
               description: listTitleTimline[index].title,
               icon: listTitleTimline[index].icon,
@@ -545,28 +545,40 @@ export default function DetailHoaDon() {
                   <div className="grid grid-cols-1 gap-x-8 gap-y-4 space-y-3">
                     <div className="grid grid-cols-2 gap-1  pt-3">
                       <p className="font-bold text-lg">Tiền Hàng : </p>
-                      <p className="font-bold text-red-500" style={{fontSize : "25px"}}>
+                      <p
+                        className="font-bold text-red-500"
+                        style={{ fontSize: "25px" }}
+                      >
                         {Intl.NumberFormat().format(money.tienHang)}&nbsp;₫
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-1  ">
                       <p className="font-bold text-lg"> Phí Vận Chuyển : </p>
-                      <p className="font-bold text-red-500" style={{fontSize : "20px"}}>
+                      <p
+                        className="font-bold text-red-500"
+                        style={{ fontSize: "20px" }}
+                      >
                         {Intl.NumberFormat().format(money.tienShip)}&nbsp;₫
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-1  ">
                       <p className="font-bold text-lg"> Tien Giam : </p>
-                      <p className="font-bold text-red-500" style={{fontSize : "20px"}}>
+                      <p
+                        className="font-bold text-red-500"
+                        style={{ fontSize: "20px" }}
+                      >
                         {Intl.NumberFormat().format(money.tienGiam)}&nbsp;₫
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-1  pe-3  ">
                       <p className="font-bold text-lg"> Tổng Tiền : </p>
-                      <p className="font-bold text-red-500" style={{fontSize : "25px"}}>
+                      <p
+                        className="font-bold text-red-500"
+                        style={{ fontSize: "25px" }}
+                      >
                         {Intl.NumberFormat().format(money.tongTien)}&nbsp;₫
                       </p>
                     </div>
@@ -611,7 +623,7 @@ const listTitleTimline = [
   {
     title: "Chờ Thanh Toán",
     icon: { LuPackageCheck },
-  }
+  },
 ];
 
 const columnsThanhToan = [

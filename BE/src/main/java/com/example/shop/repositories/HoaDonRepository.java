@@ -9,18 +9,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
-    @Query("select u from HoaDon u where u.trangThai = ?1 and u.deleted =0 order by u.ngayTao desc")
+    @Query(value = "select * from hoa_don u where u.trang_thai = ?1 and u.deleted =1 order by u.ngay_tao desc" , nativeQuery = true)
     List<HoaDon> getPage(int trangThai );
 
     @Query("select u from HoaDon u where u.trangThai = 7 and u.deleted = 0")
     List<HoaDon> getHDChuaTT();
 
-    @Query("select u from HoaDon u where u.deleted = 0 order by u.ngayTao desc")
+    @Query(value = "select * from hoa_don u where u.deleted = 1 order by u.ngay_tao desc", nativeQuery = true)
     List<HoaDon> getPageDeleted( );
 
     HoaDon getHoaDonByMa(String ma);
@@ -31,6 +32,20 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
     @Query(value = "select sum(hd.tong_tien) from hoa_don hd where month(hd.ngay_nhan) = ?1  and hd.deleted = 0",nativeQuery = true)
     Double  getTotalByThang(int thang);
+    @Query(value = "select sum(hd.tong_tien) from hoa_don hd ",nativeQuery = true)
+    Double  getTotalAll();
+
+    @Query(value = "SELECT*FROM hoa_don\n" +
+            "order by ngay_tao desc\n" +
+            "LIMIT 5; ",nativeQuery = true)
+    List<HoaDon>  top5HDMoi();
+
+    @Query(value = "SELECT SUM(tong_tien) FROM hoa_don\n" +
+            "WHERE ngay_tao >= ?1 AND ngay_tao <= ?2;",nativeQuery = true)
+    Double  getTotalTuanTheoThang(Date ngayBD , Date ngayKT);
+
+    @Query(value = "select count(*)  from hoa_don  where trang_thai != 6;",nativeQuery = true)
+    Integer  countHD();
 
 
 }

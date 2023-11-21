@@ -7,7 +7,6 @@ import Register from "./components/Register";
 import EnterPassword from "./components/EnterPassword";
 import DetailProduct from "./components/DetailProduct";
 import SizeGuide from "./components/SizeGuide";
-import 'react-notifications-component/dist/theme.css'
 
 
 function App() {
