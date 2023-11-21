@@ -4,7 +4,7 @@
 // } from "react-icons/md";
 import { Button } from "@nextui-org/button";
 import { FaArrowDown, FaArrowUp, FaCrown, FaEye, FaStar } from "react-icons/fa";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -24,63 +24,72 @@ import { ColumnChart } from "../components/thong_ke/ColumnChart";
 import { PieChart } from "../components/thong_ke/PieChart";
 import { LineChart } from "../components/thong_ke/LineChart";
 import { AiTwotoneCrown } from "react-icons/ai";
+import axios from "axios";
 
 const columns = [
-  { uid: "id", name: "Tracking No" },
+  { uid: "ma", name: "Mã Hóa Đơn" },
   { uid: "name", name: "Product Name" },
-  { uid: "price", name: "Price" },
+  { uid: "status", name: "Thời gian" },
   { uid: "totalorder", name: "Total Order" },
-  { uid: "totalamount", name: "Total amount" },
+  { uid: "tongTien", name: "Tổng Tiền" },
 ];
 
 // const colorRanks = ["#ffd600", "#5D6595", "#AA5619"];
 const colorRanks = ["rgb(253 224 71)", "rgb(125 211 252)", "rgb(234 88 12)"];
 
-const users = [
-  {
-    id: "#JY7685	",
-    name: "Nike Air max 170",
-    price: 560000,
-    totalorder: 325,
-    totalamount: 8000000,
-    avatar: "https://uko-react.vercel.app/static/products/shoe-1.png",
-  },
-  {
-    id: "#JY7686	",
-    name: "Nike Air Panda 1",
-    price: 325000,
-    totalorder: 25,
-    totalamount: 56789000,
-    avatar: "https://uko-react.vercel.app/static/products/black-keds.png",
-  },
-  {
-    id: "#JY7687	",
-    name: "Nike Air Lion ",
-    price: 4530000,
-    totalorder: 325,
-    totalamount: 17904000,
-    avatar: "https://uko-react.vercel.app/static/products/green-keds.png",
-  },
-  {
-    id: "#JY7688	",
-    name: "Nike Air Basic ",
-    price: 399000,
-    totalorder: 325,
-    totalamount: 2689900,
-    avatar: "https://uko-react.vercel.app/static/products/yellow-keds.png",
-  },
-  {
-    id: "#JY7689	",
-    name: "Nike Air Basic 1 ",
-    price: 200000,
-    totalorder: 325,
-    totalamount: 6000000,
-    avatar: "https://uko-react.vercel.app/static/products/yellow-keds.png",
-  },
-];
+// const users = [
+//   {
+//     id: "#JY7685	",
+//     name: "Nike Air max 170",
+//     price: 560000,
+//     totalorder: 325,
+//     totalamount: 8000000,
+//     avatar: "https://uko-react.vercel.app/static/products/shoe-1.png",
+//   },
+//   {
+//     id: "#JY7686	",
+//     name: "Nike Air Panda 1",
+//     price: 325000,
+//     totalorder: 25,
+//     totalamount: 56789000,
+//     avatar: "https://uko-react.vercel.app/static/products/black-keds.png",
+//   },
+//   {
+//     id: "#JY7687	",
+//     name: "Nike Air Lion ",
+//     price: 4530000,
+//     totalorder: 325,
+//     totalamount: 17904000,
+//     avatar: "https://uko-react.vercel.app/static/products/green-keds.png",
+//   },
+//   {
+//     id: "#JY7688	",
+//     name: "Nike Air Basic ",
+//     price: 399000,
+//     totalorder: 325,
+//     totalamount: 2689900,
+//     avatar: "https://uko-react.vercel.app/static/products/yellow-keds.png",
+//   },
+//   {
+//     id: "#JY7689	",
+//     name: "Nike Air Basic 1 ",
+//     price: 200000,
+//     totalorder: 325,
+//     totalamount: 6000000,
+//     avatar: "https://uko-react.vercel.app/static/products/yellow-keds.png",
+//   },
+// ];
 
 const ThongKe = () => {
+  const url = "http://localhost:8080/thong-ke/";
   const [valueColumnChart, setValueColumnChart] = useState("week");
+  const [countHD, setCountHD] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [totalSP, setTotalSP] = useState(0);
+  const [top5HD, setTop5HD] = useState([]);
+  const [top3SP, setTop3SP] = useState([]);
+
+  // change select columnchart
   const handleChange = (value) => {
     if (value == "week") {
       setValueColumnChart(value);
@@ -95,31 +104,111 @@ const ThongKe = () => {
     }
   };
 
+  const changeDateToStatus = (ngayTao) => {
+    var startDate = new Date(ngayTao);
+    var endDate = new Date();
+
+    // Tính khoảng thời gian giữa hai ngày (tính bằng mili giây)
+    var timeDifference = endDate - startDate;
+
+    // Chuyển đổi khoảng thời gian từ mili giây sang giây, phút, giờ
+    var seconds = Math.floor(timeDifference / 1000);
+
+    var minutes = Math.floor(seconds / 60);
+    var hours = Math.floor(minutes / 60);
+    var days = Math.floor(hours / 24);
+    if (days > 0) {
+      return `${days} days ago`;
+    } else if (hours > 0) {
+      return `${hours} hours ago`;
+    } else if (minutes > 0) {
+      return `${minutes} minutes ago`;
+    } else {
+      return `Just seconds ago`;
+    }
+  };
+
+  //  call data
+  const getTotal = async () => {
+    await axios.get(url + "getTotal").then((res) => {
+      setTotal(res.data);
+    });
+  };
+  const getTotalSP = async () => {
+    await axios.get(url + "totalSPSaled").then((res) => {
+      setTotalSP(res.data);
+    });
+  };
+
+  const getCountHD = async () => {
+    await axios.get(url + "countHD").then((res) => {
+      setCountHD(res.data);
+    });
+  };
+
+  const getTop3SP = async () => {
+    await axios.get(url + "top3SP").then((res) => {
+      console.log(res.data);
+      setTop3SP(res.data);
+    });
+  };
+
+  const getTop5HD = async () => {
+    await axios.get(url + "top5HDNew").then((res) => {
+      setTop5HD(
+        res.data.map((hd) => {
+          var st = changeDateToStatus(hd.ngayTao);
+          return {
+            ...hd,
+            status: st,
+          };
+        })
+      );
+    });
+  };
+
+  useEffect(() => {
+    getTotal();
+    getCountHD();
+    getTop5HD();
+    getTotalSP();
+    getTop3SP();
+  }, [total, countHD, top5HD, totalSP]);
+
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
+      case "ma":
+        return <span className="text-sm font-semibold">{cellValue}</span>;
       case "name":
         return (
-          <User
-            avatarProps={{ radius: "lg", src: user.avatar }}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.name}
-          </User>
+          <>
+            {user.listHDCT.map((spct) => (
+              <div className="mb-1 text-black-400 ">
+                <User
+                  avatarProps={{
+                    radius: "lg",
+                    src: spct.id_chi_tiet_san_pham.defaultImg,
+                  }}
+                  description={`${Intl.NumberFormat().format(spct.giaTien)} ₫`}
+                  name={`${spct.id_chi_tiet_san_pham.ten} x ${spct.soLuong}`}
+                >
+                  {spct.id_chi_tiet_san_pham.ten}
+                </User>
+              </div>
+            ))}
+          </>
         );
-      case "price":
-        return (
-          <span className=" text-sm font-semibold text-red-500">
-            {Intl.NumberFormat().format(cellValue)} ₫{" "}
-          </span>
-        );
+      case "status":
+        return <span>{cellValue}</span>;
       case "totalorder":
         return (
-          <span className=" text-sm font-semibold ">{`${cellValue} sản phẩm`}</span>
+          <span className=" text-sm font-semibold">
+            {user.listHDCT.length} sản phẩm
+          </span>
         );
-      case "totalamount":
+      case "tongTien":
         return (
           <span className=" text-sm font-semibold text-red-500">
             {Intl.NumberFormat().format(cellValue)} ₫{" "}
@@ -165,7 +254,7 @@ const ThongKe = () => {
                       color: "rgb(47, 67, 101)",
                     }}
                   >
-                    {Intl.NumberFormat().format(3000000)} ₫{" "}
+                    {Intl.NumberFormat().format(total)} ₫{" "}
                   </p>
                   <Button style={{ backgroundColor: "#2499ef" }}>
                     <span className="text-white font-semibold">Tải về</span>
@@ -245,7 +334,7 @@ const ThongKe = () => {
                 style={{
                   borderRadius: 5,
                   backgroundColor: "#F3F4F9",
-                  padding: "1rem 1.5rem",
+                  padding: "1rem 1rem",
                 }}
               >
                 <p
@@ -257,7 +346,7 @@ const ThongKe = () => {
                     marginBottom: 8,
                   }}
                 >
-                  Khách hàng mới
+                  Tổng sản phẩm đã bán
                 </p>
                 <div className="content">
                   <p
@@ -268,7 +357,7 @@ const ThongKe = () => {
                       color: "rgb(47, 67, 101)",
                     }}
                   >
-                    {Intl.NumberFormat().format(2000000)} ₫{" "}
+                    {totalSP} sản phẩm
                   </p>
                   <span
                     style={{
@@ -322,7 +411,7 @@ const ThongKe = () => {
                       color: "rgb(47, 67, 101)",
                     }}
                   >
-                    {123} đơn hàng
+                    {countHD} đơn hàng
                   </p>
                   <span
                     style={{
@@ -372,7 +461,7 @@ const ThongKe = () => {
                   fontWeight: 600,
                 }}
               >
-                Earning report
+                Báo cáo thu nhập
               </h5>
               <div className="fiter  mt-2">
                 <Select
@@ -492,9 +581,9 @@ const ThongKe = () => {
                     </TableColumn>
                   )}
                 </TableHeader>
-                <TableBody items={users}>
+                <TableBody items={top5HD}>
                   {(item) => (
-                    <TableRow key={item.id}>
+                    <TableRow key={item.ma}>
                       {(columnKey) => (
                         <TableCell>{renderCell(item, columnKey)}</TableCell>
                       )}
@@ -528,59 +617,64 @@ const ThongKe = () => {
               </h5>
             </div>
             <div className="content">
-              <div
-                className="recent flex mb-4 p-4 outline outline-offset-2 bg-gradient-to-r from-yellow-500 
+              {top3SP.map((sp, i) => (
+                <div
+                  className="recent flex mb-4 p-4 outline outline-offset-2 bg-gradient-to-r from-yellow-500 
                 hover:from-pink-500 hover:to-yellow-500"
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: 5,
-                  outlineColor: colorRanks[0],
-                }}
-              >
-                <div className="flex space-x-6">
-                  <div className="w-1/6">
-                    <span className="font-bold" style={{ marginLeft: 10 }}>
-                      NO.1
-                    </span>
-                    <AiTwotoneCrown
-                      color={colorRanks[0]}
-                      style={{ display: "inline", width: 55, height: 70 }}
-                    />
-                  </div>
-                  <div className="w-2/6 ...">
-                    <Avatar
-                      isBordered
-                      radius="sm"
-                      src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
-                      className="w-25 h-25 text-large"
-                    />
-                  </div>
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: 5,
+                    outlineColor: colorRanks[i],
+                  }}
+                >
+                  <div className="flex space-x-6">
+                    <div className="w-1/6">
+                      <span className="font-bold" style={{ marginLeft: 10 }}>
+                        NO.{i + 1}
+                      </span>
+                      <AiTwotoneCrown
+                        color={colorRanks[i]}
+                        style={{ display: "inline", width: 55, height: 70 }}
+                      />
+                    </div>
+                    <div className="w-2/6 ...">
+                      <Avatar
+                        isBordered
+                        radius="sm"
+                        src={sp.sanPhamChiTiet.defaultImg}
+                        className="w-25 h-25 text-large"
+                      />
+                    </div>
 
-                  <div className="w-3/6 ...">
-                    <p className="text-base  font-semibold mb-2">
-                      Nike Air 170{" "}
-                    </p>
+                    <div className="w-3/6 ...">
+                      <p className="text-base  font-semibold mb-2">
+                        {sp.sanPhamChiTiet.ten}
+                      </p>
 
-                    <p
-                      className="text-base  font-medium mb-2"
-                      style={{ color: "rgb(140, 163, 186)" }}
-                    >
-                      {new Array(5).fill(null).map((_, i) => (
-                        <FaStar
-                          key={i + 1}
-                          color="#ffd600"
-                          style={{ display: "inline", marginRight: 5 }}
-                        />
-                      ))}
-                    </p>
-                    <p className=" text-base font-semibold ">
-                      {Intl.NumberFormat().format(30000)} ₫{" "}
-                    </p>
+                      <p
+                        className="text-base  font-medium mb-2"
+                        style={{ color: "rgb(140, 163, 186)" }}
+                      >
+                        {new Array(5).fill(null).map((_, i) => (
+                          <FaStar
+                            key={i + 1}
+                            color="#ffd600"
+                            style={{ display: "inline", marginRight: 5 }}
+                          />
+                        ))}
+                      </p>
+                      <p className=" text-base font-semibold mb-2">
+                        {Intl.NumberFormat().format(sp.sanPhamChiTiet.giaBan)} ₫{" "}
+                      </p>
+                      <p className=" text-base font-semibold ">
+                        {sp.soLuong} sản phẩm
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
 
-              <div
+              {/* <div
                 className="recent flex mb-4 p-4 outline outline-offset-2 bg-gradient-to-r from-blue-500 
                 hover:from-pink-500 hover:to-blue-500"
                 style={{
@@ -681,7 +775,7 @@ const ThongKe = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

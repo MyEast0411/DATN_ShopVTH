@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 @Repository
 public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , String> {
-    @Query("select u from HoaDonChiTiet u where u.id_hoa_don.id = ?1")
+    @Query(value = "select * from hoa_don_chi_tiet u where u.id_hoa_don = ?1" , nativeQuery = true)
     List<HoaDonChiTiet> getHDCT(String idHD);
     @Modifying
     @Transactional
@@ -21,4 +21,20 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , S
 
     @Query("select u,anh.ten from HoaDonChiTiet u join HinhAnh anh on u.id_chi_tiet_san_pham = anh.id_san_pham_chi_tiet where u.id_hoa_don.ma = ?1")
     List<HoaDonChiTiet> getHDCTByMA(String maHD);
+
+    @Query(value = "SELECT id_chi_tiet_san_pham, SUM(so_luong) AS total_quantity\n" +
+            "FROM hoa_don_chi_tiet\n" +
+            "GROUP BY id_chi_tiet_san_pham\n" +
+            "order by total_quantity desc \n" +
+            " limit 3 " , nativeQuery = true)
+    List<Object[]> top3SP();
+
+    @Query(value ="SELECT  count(id_chi_tiet_san_pham) FROM hoa_don_chi_tiet" , nativeQuery = true)
+    Integer totalSPSaled();
+
+
+
+
+
+
 }
