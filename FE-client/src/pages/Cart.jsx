@@ -17,48 +17,57 @@ import { MdHorizontalRule } from "react-icons/md";
 import { AiOutlineHeart } from "react-icons/ai"; //heart icon
 import { CgTrashEmpty } from "react-icons/cg"; //trash icon
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { getSPCTbyId } from "../api/SanPham";
+import { getAllSanPhamChiTietByIdList, getAllHA } from "../api/SanPham";
 
 export default function Cart() {
+  const [idList, setIdList] = useState([]);
   const [cartItems, setCartItems] = useState([]);
+  const [hinhAnhs, setHinhAnhs] = useState([]);
+  const [kichCo, setKichCo] = useState(25);
+  const [isCartEmpty, setIsCartEmpty] = useState(false);
+
+  const fetchAllHinhAnh = async () => {
+    try {
+      const data = await getAllHA();
+      setHinhAnhs(data);
+    } catch (error) {
+    }
+  };
 
   const getCartItems = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    console.log("cart: ", cart);
     setCartItems(cart);
+    console.log("cart", cart);
+    setIsCartEmpty(cart.length === 0);
   };
+
   useEffect(() => {
+    fetchAllHinhAnh();
     getCartItems();
-  }, []);
-   //--->>get allSPCT by array isSPCT 
-  // const fetchSPCTByIdSP = async () => {
-  //   try {
-  //     const data = await getSPCTbyId(cartItems.id);
-  //   } catch (error) {
-  //     console.error("Error fetchSPCTbyId():", error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchSPCTByIdSP();
-  // }, []);
+  }, [idList]);
 
-  const [selectedKeysSize, setSelectedKeysSize] = React.useState(
-    new Set(["M 8.5 / W 10"])
-  );
-
-  const selectedValueSize = React.useMemo(
-    () => Array.from(selectedKeysSize).join(", ").replaceAll("_", " "),
-    [selectedKeysSize]
-  );
+  const handleDelete = (product) => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const updatedCart = cart.filter((item) => item.product.ids !== product.ids);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    getCartItems();
+    if (window.cartUpdatedCallback) {
+      window.cartUpdatedCallback();
+    }
+  };
 
   const [selectedKeysQuantity, setSelectedKeysQuantity] = React.useState(
-    new Set(["1"])
+    new Set([""])
   );
 
   const selectedValueQuantity = React.useMemo(
     () => Array.from(selectedKeysQuantity).join(", ").replaceAll("_", " "),
     [selectedKeysQuantity]
   );
+
+  const handleQuantityChange = (selected) => {
+    setSelectedKeysQuantity(new Set([selected]));
+  };
 
   return (
     <>
@@ -80,118 +89,113 @@ export default function Cart() {
       <div className="grid grid-cols-3 gap-4 main-cart">
         <div className="col-span-2 main-cart-item">
           <h2 className="main-cart-item-title-bag mb-2">BAG</h2>
-          <div className="cart-item-card">
-            <div className="flex justify-flex-start gap-4">
-              <img
-                src="https://secure-images.nike.com/is/image/DotCom/FD1437_031?align=0,1&cropN=0,0,0,0&resMode=sharp&bgc=f5f5f5&wid=150&fmt=jpg"
-                alt=""
-                className="cart-item-card-img-product"
-              />
-              <div className="cart-item-card-info">
-                <h2 className="cart-item-card-name-product">
-                  Air Jordan 1 High OG
-                </h2>
-                <div className="cart-item-card-gender">Men's Shoes</div>
-                <div className="cart-item-card-color">Black / White / Blue</div>
-                <div className="cart-item-card-size flex align-center">
-                  <h2 className="cart-item-card-size-title mr-2">Size</h2>
-                  <div className="cart-item-card-size-dropdown">
-                    <Dropdown>
-                      <DropdownTrigger>
-                        <Button
-                          variant="bordered"
-                          className="capitalize"
-                          style={{ fontSize: "13px", padding: "0 12px" }}
-                        >
-                          {selectedValueSize}
-                        </Button>
-                      </DropdownTrigger>
-                      <DropdownMenu
-                        aria-label="Single selection example"
-                        variant="flat"
-                        disallowEmptySelection
-                        selectionMode="single"
-                        selectedKeys={selectedKeysSize}
-                        onSelectionChange={setSelectedKeysSize}
-                      >
-                        <DropdownItem key="M 8.5 / W 10">
-                          M 8.5 / W 10
-                        </DropdownItem>
-                        <DropdownItem key="M 8 / W 10.5">
-                          M 8 / W 10.5
-                        </DropdownItem>
-                        <DropdownItem key="M 9.5 / W 11">
-                          M 9.5 / W 11
-                        </DropdownItem>
-                        <DropdownItem key="M 10.5 / W 12">
-                          M 10.5 / W 12
-                        </DropdownItem>
-                        <DropdownItem key="M 11 / W 12.5">
-                          M 11 / W 12.5
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
-                  <div className="cart-item-card-quantity flex align-center">
-                    <h2 className="cart-item-card-size-title mr-2 ml-5">
-                      Quantity
+          {isCartEmpty ? (
+            <span>Không có sản phẩm nào trong giỏ hàng!</span>
+          ) : (
+            cartItems.map((cart) => (
+              <div className="cart-item-card" key={cart.id}>
+                <div className="flex justify-flex-start gap-4">
+                  <img
+                    src={cart.product.defaultImg}
+                    alt=""
+                    className="cart-item-card-img-product"
+                  />
+                  <div className="cart-item-card-info">
+                    <h2 className="cart-item-card-name-product">
+                      {cart.product.ten}
                     </h2>
-                    <div className="cart-item-card-quantity">
+                    <div className="cart-item-card-gender">
+                      {cart.product.theLoai}
+                    </div>
+                    <div className="cart-item-card-color mb-2">
+                      {hinhAnhs.find(
+                        (ha) => ha.id_san_pham_chi_tiet.id === cart.product.id
+                      )?.mauSac || ""}
+                    </div>
+                    <div className="gia-ban-cartItem">
+                      ${cart.product.giaBan}
+                    </div>
+                    <div className="cart-item-card-size flex align-center">
+                      <h2 className="cart-item-card-size-title mr-2">Size</h2>
                       <div className="cart-item-card-size-dropdown">
                         <Dropdown>
                           <DropdownTrigger>
                             <Button
                               variant="bordered"
                               className="capitalize"
-                              style={{ fontSize: "13px", padding: "0" }}
+                              style={{ fontSize: "13px", padding: "0 12px" }}
                             >
-                              {selectedValueQuantity}
+                              {cart.product.kichCo}
                             </Button>
                           </DropdownTrigger>
-                          <DropdownMenu
-                            aria-label="Single selection example"
-                            variant="flat"
-                            disallowEmptySelection
-                            selectionMode="single"
-                            selectedKeys={selectedKeysQuantity}
-                            onSelectionChange={setSelectedKeysQuantity}
-                          >
-                            <DropdownItem key="1">1</DropdownItem>
-                            <DropdownItem key="2">2</DropdownItem>
-                            <DropdownItem key="3">3</DropdownItem>
-                            <DropdownItem key="4">4</DropdownItem>
-                            <DropdownItem key="5">5</DropdownItem>
-                            <DropdownItem key="6">6</DropdownItem>
-                            <DropdownItem key="7">7</DropdownItem>
-                            <DropdownItem key="8">8</DropdownItem>
-                            <DropdownItem key="9">9</DropdownItem>
-                            <DropdownItem key="10">10</DropdownItem>
-                          </DropdownMenu>
                         </Dropdown>
                       </div>
+                      <div className="cart-item-card-quantity flex align-center">
+                        <h2 className="cart-item-card-size-title mr-2 ml-5">
+                          Quantity
+                        </h2>
+                        <div className="cart-item-card-quantity">
+                          <div className="cart-item-card-size-dropdown">
+                            <Dropdown>
+                              <DropdownTrigger>
+                                <Button
+                                  variant="bordered"
+                                  className="capitalize"
+                                  style={{ fontSize: "13px", padding: "0" }}
+                                >
+                                  {selectedValueQuantity ||
+                                    cart.product.soLuong}
+                                </Button>
+                              </DropdownTrigger>
+                              <DropdownMenu
+                                aria-label="Single selection example"
+                                variant="flat"
+                                disallowEmptySelection
+                                selectionMode="single"
+                                selectedKeys={selectedKeysQuantity}
+                                onSelectionChange={setSelectedKeysQuantity}
+                              >
+                                <DropdownItem key="1">1</DropdownItem>
+                                <DropdownItem key="2">2</DropdownItem>
+                                <DropdownItem key="3">3</DropdownItem>
+                                <DropdownItem key="4">4</DropdownItem>
+                                <DropdownItem key="5">5</DropdownItem>
+                                <DropdownItem key="6">6</DropdownItem>
+                                <DropdownItem key="7">7</DropdownItem>
+                                <DropdownItem key="8">8</DropdownItem>
+                                <DropdownItem key="9">9</DropdownItem>
+                                <DropdownItem key="10">10</DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="cart-item-card-icon flex align-center">
+                      <AiOutlineHeart className="cart-item-card-icon-heart" />
+                      <CgTrashEmpty
+                        className="cart-item-card-icon-trash"
+                        onClick={() => handleDelete(cart.product)}
+                      />
                     </div>
                   </div>
                 </div>
-                <div className="cart-item-card-icon flex align-center">
-                  <AiOutlineHeart className="cart-item-card-icon-heart" />
-                  <CgTrashEmpty className="cart-item-card-icon-trash" />
+                <div className="cart-item-shipping">
+                  <h2 className="font-medium">Shipping</h2>
+                  <div className="cart-item-arrives">
+                    <span>Arrives by Tue, Nov 21</span>
+                    <Link
+                      to="/cart"
+                      className="underline ml-3 cart-item-arrives-edit-location"
+                    >
+                      Edit Location
+                    </Link>
+                  </div>
                 </div>
+                <div className="cart-item-horizontal"></div>
               </div>
-            </div>
-            <div className="cart-item-shipping">
-              <h2 className="font-medium">Shipping</h2>
-              <div className="cart-item-arrives">
-                <span>Arrives by Tue, Nov 21</span>
-                <Link
-                  to="/cart"
-                  className="underline ml-3 cart-item-arrives-edit-location"
-                >
-                  Edit Location
-                </Link>
-              </div>
-            </div>
-            <div className="cart-item-horizontal"></div>
-          </div>
+            ))
+          )}
         </div>
         <div className="main-checkout col-span-1">
           <h2 className="summary-title">Summary</h2>

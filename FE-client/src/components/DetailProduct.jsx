@@ -17,6 +17,7 @@ import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import AlsoLike from "./AlsoLike";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
+import { v4 as uuidv4 } from "uuid";
 
 export default function DetailProduct() {
   const { idSP } = useParams();
@@ -46,9 +47,9 @@ export default function DetailProduct() {
     };
     fetchSPCTByIdSP();
   }, []);
-  const openNotificationWithIcon = (type) => {
+  const openNotificationWithIcon = (type, message) => {
     api[type]({
-      message: "Add success!",
+      message,
       duration: 1.3,
       icon: (
         <img
@@ -71,34 +72,49 @@ export default function DetailProduct() {
     }
   };
 
+  const renderID = () => {
+    const uniqueID = uuidv4();
+    console.log("renderID", uniqueID);
+    return uniqueID;
+  };
+
   const addToCart = () => {
-    // console.log(selectedIdSPCT);
     console.log(cartItem.id);
-    // Tạo giỏ hàng mới nếu chưa tồn tại trong localStorage
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+    if (!selectedSize) {
+      openNotificationWithIcon("error", "Vui lòng chọn kích cỡ!");
+      return;
+    }
+
     const existingItemIndex = cart.findIndex(
-      (item) => item.idSPCT === cartItem.id && item.size === selectedSize
+      (item) =>
+        item.product.id === cartItem.id && item.product.kichCo === selectedSize
     );
+
     if (existingItemIndex !== -1) {
-      // Nếu sản phẩm đã tồn tại, tăng số lượng
-      cart[existingItemIndex].quantity += 1;
+      cart[existingItemIndex].product.soLuong += 1;
     } else {
-      // Nếu sản phẩm chưa tồn tại, thêm vào giỏ hàng
       cart.push({
-        idSPCT: cartItem.id,
-        size: selectedSize,
-        quantity: 1,
+        product: {
+          ids: renderID(),
+          id: cartItem.id,
+          defaultImg: selectedImageDisplay,
+          ten: sanPhamChiTiets[0].ten,
+          kichCo: selectedSize,
+          soLuong: 1,
+          theLoai: selectedTheLoai,
+          giaBan: selectedGiaBan,
+        },
       });
     }
-    // Lưu giỏ hàng vào localStorage
+
+    console.log("cart: ", cart);
     localStorage.setItem("cart", JSON.stringify(cart));
 
-    // Thông báo rằng giỏ hàng đã được cập nhật
     if (typeof window.cartUpdatedCallback === "function") {
       window.cartUpdatedCallback();
     }
-    openNotificationWithIcon("success");
+    openNotificationWithIcon("success", "Đã thêm vào giỏ hàng!");
   };
 
   const handleImageClick = (spct) => {
@@ -106,8 +122,6 @@ export default function DetailProduct() {
     setSelectedImageDisplay(spct.defaultImg);
     setSelectedGiaBan(spct.giaBan);
     setSelectedTheLoai(spct.id_the_loai.ten);
-    // setSelectedSize(spct.id_kich_co.ten);
-    // console.log(spct.id);
     setSelectedIdSPCT(spct.id);
     fetchSPCTbyId(spct.id);
   };
@@ -146,7 +160,7 @@ export default function DetailProduct() {
   useEffect(() => {
     fetchSanPhamById();
     fetchHinhAnhByIdSPCT();
-  }, [idSP, selectedIdSPCT]);
+  }, [idSP]);
 
   useEffect(() => {
     if (runFirstTime && selectedImage) {
@@ -248,9 +262,11 @@ export default function DetailProduct() {
                   key={spct.id}
                   id={spct.id}
                   className={`detail-pro-select-size-button text-center ${
-                    selectedSize === spct.id_kich_co.id ? "selected-border" : ""
+                    selectedSize === spct.id_kich_co.ten
+                      ? "selected-border"
+                      : ""
                   }`}
-                  onClick={() => handleSizeClick(spct.id_kich_co.id)}
+                  onClick={() => handleSizeClick(spct.id_kich_co.ten)}
                 >
                   {spct.id_kich_co.ten}
                 </div>

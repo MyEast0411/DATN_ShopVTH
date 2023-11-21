@@ -538,7 +538,6 @@ section {
 
 .cart-item-card .cart-item-card-img-product {
   width: 150px;
-  height: 150px;
   object-fit: contain;
 }
 
@@ -603,4 +602,9 @@ section {
 .design-w {
   width: 90%;
   margin: auto;
+}
+
+.gia-ban-cartItem{
+  margin: 5px 0;
+  font-weight: 550;
 }

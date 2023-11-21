@@ -415,5 +415,11 @@ public class SanPhamController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại kích cỡ này!");
         }
     }
+
+    @GetMapping("/getAllSanPhamChiTietByIdList")
+    public List<SanPhamChiTiet> getAllSanPhamChiTietByIdList(@RequestParam List<String> idList) {
+        return repo.getAllSanPhamChiTietByIdList(idList);
+    }
+
     //-------------Hội-----------------
 }

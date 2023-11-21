@@ -10,6 +10,28 @@ export const getAllSanPham = async () => {
         throw error;
     }
 }
+
+export const getAllHA = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/getAllHA`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+export const getAllSanPhamChiTietByIdList = async (idList) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/getAllSanPhamChiTietByIdList`, {
+            params: { idList: idList.join(',') },
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getSPCTByIdSP = async (id) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/getSanPhamIdSPCT/${id}`);
