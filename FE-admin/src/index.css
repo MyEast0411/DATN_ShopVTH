@@ -124,3 +124,34 @@ input[type="number"] {
 .thuy-hien {
   overflow: hidden;
 }
+
+.container-input {
+  position: relative;
+}
+
+.input {
+  width: 200px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 30px;
+  border-radius: 9999px;
+  border: solid 1px #a5a5a5;
+  outline: none;
+  font-size: 14px;
+}
+
+.container-input svg {
+  position: absolute;
+  width: 15px;
+  top: 50%;
+  left: 10px;
+  transform: translate(0, -50%);
+}
+
+.input:hover {
+  background: #e4e6e7;
+}
+
+.input:focus {
+  background: #e4e6e7;
+}
