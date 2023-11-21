@@ -148,6 +148,7 @@ const ThongKe = () => {
 
   const getTop3SP = async () => {
     await axios.get(url + "top3SP").then((res) => {
+      console.log(res.data);
       setTop3SP(res.data);
     });
   };
@@ -629,7 +630,7 @@ const ThongKe = () => {
                   <div className="flex space-x-6">
                     <div className="w-1/6">
                       <span className="font-bold" style={{ marginLeft: 10 }}>
-                        NO.{i}
+                        NO.{i + 1}
                       </span>
                       <AiTwotoneCrown
                         color={colorRanks[i]}
@@ -640,7 +641,7 @@ const ThongKe = () => {
                       <Avatar
                         isBordered
                         radius="sm"
-                        src={sp.sanPhamChiTiet.default_img}
+                        src={sp.sanPhamChiTiet.defaultImg}
                         className="w-25 h-25 text-large"
                       />
                     </div>
@@ -662,8 +663,11 @@ const ThongKe = () => {
                           />
                         ))}
                       </p>
+                      <p className=" text-base font-semibold mb-2">
+                        {Intl.NumberFormat().format(sp.sanPhamChiTiet.giaBan)} ₫{" "}
+                      </p>
                       <p className=" text-base font-semibold ">
-                        {Intl.NumberFormat().format(30000)} ₫{" "}
+                        {sp.soLuong} sản phẩm
                       </p>
                     </div>
                   </div>
