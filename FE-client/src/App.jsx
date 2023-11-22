@@ -7,6 +7,11 @@ import Register from "./components/Register";
 import EnterPassword from "./components/EnterPassword";
 import DetailProduct from "./components/DetailProduct";
 import SizeGuide from "./components/SizeGuide";
+import "primeicons/primeicons.css";
+import "primereact/resources/primereact.css";
+import "primereact/resources/themes/saga-blue/theme.css";
+import Checkout from "./components/Checkout";
+
 function App() {
   return (
     <>
@@ -19,6 +24,7 @@ function App() {
         <Route path="/enter-password" element={<EnterPassword />} />
         <Route path="/detail-product/:idSP" element={<DetailProduct />} />
         <Route path="/size-guide" element={<SizeGuide />} />
+        <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </>
   );

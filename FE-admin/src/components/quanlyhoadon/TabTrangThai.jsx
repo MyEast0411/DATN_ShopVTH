@@ -34,17 +34,7 @@ export default function TabTrangThai({
         if (hd.loaiHd === dataSelect) return hd;
       })
       .filter((hd) => {
-        // var nbd = moment(ngayBatDau, "  HH:mm:ss   , DD-MM-YYYY");
-        // var nkt = moment(ngayKetThuc, "  HH:mm:ss   , DD-MM-YYYY");
-        // var ndata = moment(new Date(hd.ngayTao), "  HH:mm:ss   , DD-MM-YYYY");
         var ndata = Date.parse(new Date(hd.ngayTao));
-        console.log("ndata", ndata);
-        console.log("ndata", ngayBatDau);
-        console.log("ndata", ngayKetThuc);
-
-        // console.log(nbd);
-        // console.log(nkt);
-        // console.log(ndata);
         if (ngayBatDau === "" || ngayKetThuc === "") return hd;
         if (ngayBatDau <= ndata && ngayKetThuc >= ndata) return hd;
       });

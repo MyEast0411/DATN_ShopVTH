@@ -17,10 +17,13 @@
     "antd": "^5.11.1",
     "axios": "^1.6.2",
     "framer-motion": "^10.16.4",
+    "primeicons": "^6.0.1",
+    "primereact": "^10.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
-    "react-router-dom": "^6.18.0"
+    "react-router-dom": "^6.18.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

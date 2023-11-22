@@ -368,3 +368,75 @@
   padding-top: 25%;
   color: #928b8b;
 }
+
+.checkout-left {
+  border-right: 1px solid #bcbcbc;
+  padding-right: 15px;
+  height: 116vh;
+}
+
+.main-choose-payment-method .rdo {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.sub-rdo {
+  border-radius: 4px;
+  background-color: #f5f7f8;
+  padding: 5px;
+}
+
+.rdo {
+  width: 400px;
+}
+
+.rdo img {
+  width: 30px;
+}
+
+.checkout-right {
+  padding: 10px;
+}
+
+.cart-checkout-img {
+  width: 80px;
+  object-fit: contain;
+  border-radius: 5px;
+}
+
+.badge-cart-checkout {
+  right: -10px;
+}
+
+.input-maGiamGia {
+  width: 100%;
+  max-width: 220px;
+  height: 45px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid lightgrey;
+  outline: none;
+  box-shadow: 0px 0px 20px -18px;
+}
+
+.input-maGiamGia:hover {
+  box-shadow: 0px 0px 20px -17px;
+}
+
+.input-maGiamGia:focus {
+  border: 2px solid grey;
+}
+
+.btn-apply-giamGia {
+  background-color: black;
+  color: #fff;
+  border-radius: 10px;
+  padding: 9px 20px;
+  margin-left: 10px;
+}
+
+.btn-apply-giamGia:hover {
+  background-color: #3f3e3e !important;
+  transition: 0.2s;
+}

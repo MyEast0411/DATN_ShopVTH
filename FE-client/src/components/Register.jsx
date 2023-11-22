@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
-import JordanLogo from "../assets/JordanLogo";
 import { Checkbox } from "@nextui-org/react";
 
 export default function Register() {
