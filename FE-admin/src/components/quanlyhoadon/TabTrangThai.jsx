@@ -1,31 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { Tabs } from "antd";
 import axios from "axios";
-import { format } from "date-fns";
-
-import { Tooltip } from "antd";
-import { BsEye } from "react-icons/bs";
-import { Tag } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
-import { TableCell } from "@mui/material";
+import moment from "moment";
 import TableCommon from "../../small-component/common/TableCommon";
 
-export default function TabTrangThai() {
+export default function TabTrangThai({
+  dataInput,
+  dataSelect,
+  ngayBatDau,
+  ngayKetThuc,
+}) {
   const url = "http://localhost:8080/hoa_don/";
 
   const [list, setList] = useState([]);
   const [size, setSize] = useState("large");
   useEffect(() => {
     getData();
-  }, []);
+  }, [dataInput, dataSelect, ngayBatDau, ngayKetThuc]);
+
+  const filterOptions = (data) => {
+    return data
+      .filter((hd) => {
+        if (dataInput === "") return hd;
+        if (
+          hd.ma.toLowerCase().includes(dataInput.toLowerCase()) ||
+          hd.tenKhachHang.toLowerCase().includes(dataInput.toLowerCase()) ||
+          hd.id_nhan_vien.ten.toLowerCase().includes(dataInput.toLowerCase())
+        )
+          return hd;
+      })
+      .filter((hd) => {
+        if (dataSelect === -1) return hd;
+        if (hd.loaiHd === dataSelect) return hd;
+      })
+      .filter((hd) => {
+        // var nbd = moment(ngayBatDau, "  HH:mm:ss   , DD-MM-YYYY");
+        // var nkt = moment(ngayKetThuc, "  HH:mm:ss   , DD-MM-YYYY");
+        // var ndata = moment(new Date(hd.ngayTao), "  HH:mm:ss   , DD-MM-YYYY");
+        var ndata = Date.parse(new Date(hd.ngayTao));
+        console.log("ndata", ndata);
+        console.log("ndata", ngayBatDau);
+        console.log("ndata", ngayKetThuc);
+
+        // console.log(nbd);
+        // console.log(nkt);
+        // console.log(ndata);
+        if (ngayBatDau === "" || ngayKetThuc === "") return hd;
+        if (ngayBatDau <= ndata && ngayKetThuc >= ndata) return hd;
+      });
+  };
 
   const getData = async () => {
     const res = await axios.get(url + "getHoaDons");
     const data = await res.data;
     console.log(res.data);
     setList(
-      data.map((item, index) => {
+      filterOptions(data).map((item, index) => {
         return {
           ...item,
           id: index + 1,
@@ -42,12 +72,13 @@ export default function TabTrangThai() {
     const data = res.data;
 
     setList(
-      data.map((item, index) => {
+      filterOptions(data).map((item, index) => {
         return {
           ...item,
           id: index,
           ids: item.id,
           nhanVien: item?.id_nhan_vien?.ten,
+          tenKhachHang: item?.id_khach_hang?.ten,
         };
       })
     );
