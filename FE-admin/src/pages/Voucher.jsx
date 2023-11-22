@@ -518,6 +518,7 @@ export default function App() {
         </div>
       ) : (
         <div>
+          <h2 className="mb-5 font-bold text-2xl">Quản Lý Phiếu Giảm Giá</h2>
           <div>
             <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex items-center">
               <BiFilterAlt />

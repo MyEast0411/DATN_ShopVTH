@@ -50,6 +50,7 @@ export default function QuanLyHoaDon() {
     <>
       <div>
         <div className="bg-white rounded-lg">
+          <h2 className="mb-5 font-bold text-2xl">Quản Lý Thu Chi</h2>
           <div className="mb-2 border-b-[1px] font-normal relative border-gray-500 text-lg flex items-center">
             <AiOutlineFilter />
             <p className="ml-2 mt-1"> Bộ lọc</p>

@@ -36,12 +36,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { MdDeleteOutline } from "react-icons/md";
 import { LiaEyeSolid } from "react-icons/lia";
-import { getAllKMSPCT } from "../../../api/khuyenMai/KhuyenMaiApi"
+import { getAllKMSPCT } from "../../../api/khuyenMai/KhuyenMaiApi";
 import { DeleteIcon } from "../../otherComponents/DeleteIcon";
 import { EyeIcon } from "../../otherComponents/EyeIcon";
 import numeral from "numeral";
 import { InputNumber } from "antd";
-import { Modal } from 'antd';
+import { Modal } from "antd";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -49,7 +49,7 @@ const columns = [
   { name: "Kích thước", uid: "kichThuoc", sortable: true },
   { name: "Màu sắc", uid: "mauSac", sortable: true },
   { name: "Đế giày", uid: "deGiay", sortable: true },
-  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center"},
+  { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center" },
   { name: "Đơn giá", uid: "donGia", sortable: true },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Hành Động", uid: "hanhDong" },
@@ -98,11 +98,12 @@ export default function App({ gioHang }) {
     console.log(soLuongSP.id);
     console.log(soLuongDat);
 
-    await axios.post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
-      id_hoa_don : gioHang,
-      id_san_pham : soLuongSP.id,
-      so_luong : soLuongDat
-    })
+    await axios
+      .post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
+        id_hoa_don: gioHang,
+        id_san_pham: soLuongSP.id,
+        so_luong: soLuongDat,
+      })
       .then((response) => {
         toast("🎉 Thêm thành công");
         cancelDelete();
@@ -154,7 +155,7 @@ export default function App({ gioHang }) {
   const [kmspcts, setKmspcts] = useState([]);
   const fetchKMSPCT = async () => {
     const data = await getAllKMSPCT();
-    setKmspcts(data)
+    setKmspcts(data);
   };
   useEffect(() => {
     fetchKMSPCT();
@@ -259,76 +260,70 @@ export default function App({ gioHang }) {
       return null;
     }
 
-    return (
-      <div className="discount-tag">
-        {`${discount}% OFF`}
-      </div>
-    );
+    return <div className="discount-tag">{`${discount}% OFF`}</div>;
   };
 
+  const renderCell = React.useCallback(
+    (sanPham, columnKey) => {
+      const cellValue = sanPham[columnKey];
+      const giaGiam = sanPham.giaGiam;
 
-  const renderCell = React.useCallback((sanPham, columnKey) => {
-    const cellValue = sanPham[columnKey];
-    const giaGiam = sanPham.giaGiam;
-    
-    switch (columnKey) {
-      case "hinhAnh":
-        
-        const hinhAnhURL = sanPham.hinhAnh;
-        return (
-          <div style={{
-            display: 'inline-block'
-          }}>
-            
-            <Image
-              width={150}
-              height={100}
-              src={hinhAnhURL}
-              alt={sanPham.ten || "Ảnh sản phẩm"}
-              classNames="m-5 relative"
+      switch (columnKey) {
+        case "hinhAnh":
+          const hinhAnhURL = sanPham.hinhAnh;
+          return (
+            <div
               style={{
-                border: '1px solid #D8D9DA',
-                padding: '10px'
+                display: "inline-block",
               }}
-            />
-            <DiscountTag discount={giaGiam} />
-            
-          </div>
-        );
-      case "trangThai":
-        return (
-          <Chip
-            // className="capitalize"
-            color={statusColorMap[sanPham.trangThai]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-          
-        );
-      case "mauSac":
-        return (
-          <Chip
-            color="white"
-            style={{
-              backgroundColor: sanPham.mauSac, // Sử dụng giá trị từ statusColorMap làm màu nền
-              color: "white", // Màu văn bản trắng
-              fontSize: "13px",
-              textAlign: "center",
-              padding: "1px 6px",
-              borderRadius: "5px",
-            }}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "hanhDong":
-        return (
-          <div className="relative flex gap-4">
-            <Tooltip content="Thêm sản phẩm" showArrow={true}>
+            >
+              <Image
+                width={150}
+                height={100}
+                src={hinhAnhURL}
+                alt={sanPham.ten || "Ảnh sản phẩm"}
+                classNames="m-5 relative"
+                style={{
+                  border: "1px solid #D8D9DA",
+                  padding: "10px",
+                }}
+              />
+              <DiscountTag discount={giaGiam} />
+            </div>
+          );
+        case "trangThai":
+          return (
+            <Chip
+              // className="capitalize"
+              color={statusColorMap[sanPham.trangThai]}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue}
+            </Chip>
+          );
+        case "mauSac":
+          return (
+            <Chip
+              color="white"
+              style={{
+                backgroundColor: sanPham.mauSac, // Sử dụng giá trị từ statusColorMap làm màu nền
+                color: "white", // Màu văn bản trắng
+                fontSize: "13px",
+                textAlign: "center",
+                padding: "1px 6px",
+                borderRadius: "5px",
+              }}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue}
+            </Chip>
+          );
+        case "hanhDong":
+          return (
+            <div className="relative flex gap-4">
+              <Tooltip content="Thêm sản phẩm" showArrow={true}>
                 <span className="cursor-pointer active:opacity-50 w-20 text-center">
                   <div
                     className="p-2"
@@ -338,19 +333,26 @@ export default function App({ gioHang }) {
                       color: "white",
                       cursor: "pointer",
                     }}
-                    onClick={() => {showModalThemSL();setSoLuongSP({id : sanPham.id , soLuongTon : sanPham.soLuongTon})}}
+                    onClick={() => {
+                      showModalThemSL();
+                      setSoLuongSP({
+                        id: sanPham.id,
+                        soLuongTon: sanPham.soLuongTon,
+                      });
+                    }}
                   >
                     Chọn
                   </div>
-                  
                 </span>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, [isModalOpenThemSL]);
+              </Tooltip>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    [isModalOpenThemSL]
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -387,7 +389,7 @@ export default function App({ gioHang }) {
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <h1>Các sản phẩm đang có</h1>
+        <h2 className="mb-5 font-bold text-2xl">Quản Lý Nhân Viên</h2>
 
         <div className="flex justify-between gap-3 items-end">
           <Input
@@ -567,13 +569,17 @@ export default function App({ gioHang }) {
         open={isModalOpenThemSL}
         width={350}
         okText="Đặt hàng"
-        >
+      >
         <div className="mt-5">
           <h2>Số lượng tồn sản phẩm : {soLuongSP.soLuongTon}</h2>
           <br />
-          <p>Nhập số lượng sản phẩm  
-          </p>
-          <InputNumber onChange={(value) => {setSoLuongDat(value)}} max={soLuongSP.soLuongTon}/>
+          <p>Nhập số lượng sản phẩm</p>
+          <InputNumber
+            onChange={(value) => {
+              setSoLuongDat(value);
+            }}
+            max={soLuongSP.soLuongTon}
+          />
         </div>
       </Modal>
       <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>

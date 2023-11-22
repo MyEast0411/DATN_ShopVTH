@@ -1,18 +1,18 @@
-import React from 'react'
+import React from "react";
 
 //filter
 import FilterPhanTram from "../common/filter/khuyenMai/FilterPhanTram";
 import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
 import FilterDate from "../small-component/FilterKhuyenMai/FilterDate";
 import FilterMa from "../common/filter/sanPham/FilterMa";
-import Slider from '../common/filter/khachHang/SliderTuoi';
+import Slider from "../common/filter/khachHang/SliderTuoi";
 
 import { Button } from "antd";
 import { Link } from "react-router-dom";
 
 //table
 import DataTableMa from "../small-component/Table/DataTableKhachHang";
-import TableAllKhachHang from "../common/tableNextUi/khachHang/TableAllKhachHang"
+import TableAllKhachHang from "../common/tableNextUi/khachHang/TableAllKhachHang";
 
 //icon
 import { BiFilterAlt } from "react-icons/bi";
@@ -22,8 +22,9 @@ import { HiOutlineClipboardList } from "react-icons/hi";
 export default function KhachHang() {
   return (
     <>
-    <div>
+      <div>
         <div>
+          <h2 className="mb-5 font-bold text-2xl">Quản Lý Khách Hàng</h2>
           <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex items-center">
             <BiFilterAlt />
             <p className="ml-2 mt-1"> Bộ lọc</p>
@@ -44,10 +45,8 @@ export default function KhachHang() {
             <div className="p-5">
               <div className="flex items-center">
                 <span className="pr-2">Trạng thái:</span>
-                <FilterTrangThai
-                  style={{ width: "100%" }}
-                />
-                </div>
+                <FilterTrangThai style={{ width: "100%" }} />
+              </div>
             </div>
             <div className="p-5">
               <Slider style={{ width: "100%" }} />
@@ -92,15 +91,14 @@ export default function KhachHang() {
             padding: "10px",
             paddingLeft: "10px",
             borderRadius: "8px",
-            width: "100%"
+            width: "100%",
           }}
         >
           <div>
-          <TableAllKhachHang />
+            <TableAllKhachHang />
           </div>
         </div>
       </div>
     </>
-  )
+  );
 }
-

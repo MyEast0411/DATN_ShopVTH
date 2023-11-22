@@ -220,9 +220,9 @@ export default function SanPham() {
                 style={{ display: "block" }}
                 className="button-link group relative"
               >
-                  <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                    <EyeIcon />
-                  </span>
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
               </Link>
             </Tooltip>
 
@@ -426,6 +426,7 @@ export default function SanPham() {
   return (
     <>
       <div>
+        <h2 className="mb-5 font-bold text-2xl">Quản Lý Sản Phẩm</h2>
         <div>
           <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex items-center">
             <BiFilterAlt />
@@ -464,7 +465,13 @@ export default function SanPham() {
               </div>
             </div>
             <div className="p-5">
-              <Slider style={{ width: "100%" }} searchValue={0} maxValue={Math.max(...sanPhams.map(sanPham => sanPham.soLuongTon))}/>
+              <Slider
+                style={{ width: "100%" }}
+                searchValue={0}
+                maxValue={Math.max(
+                  ...sanPhams.map((sanPham) => sanPham.soLuongTon)
+                )}
+              />
             </div>
             {/* <div className="p-5 text-center mt-4">
               <ButtonAntd

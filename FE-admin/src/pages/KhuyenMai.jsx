@@ -53,6 +53,7 @@ const KhuyenMai = () => {
   }, []);
   return (
     <>
+      <h2 className="mb-5 font-bold text-2xl">Quản Lý Khuyến Mại</h2>
       <div className="mb-2  border-b-[1px] font-normal relative border-gray-500 text-lg flex  items-center">
         <AiOutlineFilter />
         <p className="ml-2 mt-1"> Bộ lọc</p>
