@@ -52,6 +52,7 @@ statusColorMap["Đã dừng"] = "danger";
 
 export default function TableCommon({ data }) {
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
   const rowsPerPage = 6;
 
   const pages = Math.ceil(data.length / rowsPerPage);
@@ -125,7 +126,7 @@ export default function TableCommon({ data }) {
       bottomContent={
         <div className="flex w-full justify-center ">
           <Pagination
-            // isCompact
+            isCompact
             showControls
             showShadow
             page={page}

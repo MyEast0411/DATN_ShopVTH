@@ -18,11 +18,11 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
     @Query(value = "select * from hoa_don u where u.trang_thai = ?1 and u.deleted =1 order by u.ngay_tao desc" , nativeQuery = true)
     List<HoaDon> getPage(int trangThai );
 
-    @Query("select u from HoaDon u where u.trangThai = 7 and u.deleted = 0")
+    @Query("select u from HoaDon u where u.trangThai = 7 and u.deleted = 1")
     List<HoaDon> getHDChuaTT();
 
     @Query(value = "select * from hoa_don u where u.deleted = 1 order by u.ngay_tao desc", nativeQuery = true)
-    List<HoaDon> getPageDeleted( );
+    List<HoaDon> getPageDeleted();
 
     HoaDon getHoaDonByMa(String ma);
 
@@ -30,7 +30,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             "FROM shopvth.hoa_don",nativeQuery = true)
     String getMaxMa();
 
-    @Query(value = "select sum(hd.tong_tien) from hoa_don hd where month(hd.ngay_nhan) = ?1  and hd.deleted = 0",nativeQuery = true)
+    @Query(value = "select sum(hd.tong_tien) from hoa_don hd where month(hd.ngay_nhan) = ?1  and hd.deleted = 1",nativeQuery = true)
     Double  getTotalByThang(int thang);
     @Query(value = "select sum(hd.tong_tien) from hoa_don hd ",nativeQuery = true)
     Double  getTotalAll();

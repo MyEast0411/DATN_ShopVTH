@@ -44,9 +44,9 @@ const TabBanHang = () => {
         toast(`Chọn hóa đơn thành công`)
       });
   };
-
+  
   const [items, setItems] = useState([{
-    label: `💖💖`,
+    label: `Hóa đơn 1`,
     children: (
       <Children
         columns={columns}
