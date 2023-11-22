@@ -11,9 +11,48 @@ export const getAllSanPham = async () => {
     }
 }
 
+export const getAllHA = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/getAllHA`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+export const getAllSanPhamChiTietByIdList = async (idList) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/getAllSanPhamChiTietByIdList`, {
+            params: { idList: idList.join(',') },
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getSPCTByIdSP = async (id) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/getSanPhamIdSPCT/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const getHinhAnhByIdSPCT = async (id) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/getHinhAnhByIdSPCT/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getSPCTbyId = async (id) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/getSPCTbyId/${id}`);
         return response.data;
     } catch (error) {
         throw error;

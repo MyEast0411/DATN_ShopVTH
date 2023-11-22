@@ -34,6 +34,7 @@ const KhuyenMai = () => {
       return "";
     }
   };
+
   const onChangeDatePicker = (value, dateString) => {
     const nbd = formatToYYYYMMDDHHMM(dateString[0]);
     const nkt = formatToYYYYMMDDHHMM(dateString[1]);

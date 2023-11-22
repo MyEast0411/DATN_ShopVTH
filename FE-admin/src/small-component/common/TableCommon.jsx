@@ -68,8 +68,8 @@ export default function TableCommon({ data }) {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "ten":
-        return <p>Lee Lan</p>;
+      case "tenKhachHang":
+        return <p>{cellValue}</p>;
       case "loaiHd":
         return cellValue == 1 ? (
           <Tag color="red">Tại quầy</Tag>
@@ -172,7 +172,7 @@ export default function TableCommon({ data }) {
 const columns = [
   { key: "id", label: "STT" },
   { key: "ma", label: "Mã" },
-  { key: "ten", label: "Tên Khách Hàng" },
+  { key: "tenKhachHang", label: "Tên Khách Hàng" },
   { key: "nhanVien", label: "Tên Nhân Viên" },
   { key: "loaiHd", label: "Loại HD" },
   { key: "ngayTao", label: "Ngày Tạo" },
