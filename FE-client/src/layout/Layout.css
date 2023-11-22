@@ -604,7 +604,45 @@ section {
   margin: auto;
 }
 
-.gia-ban-cartItem{
+.gia-ban-cartItem {
   margin: 5px 0;
   font-weight: 550;
 }
+
+
+/* confirm */
+.p-dialog-title{
+ padding-top: 30px;
+ padding-bottom: 30px;
+}
+
+.p-confirm-dialog {
+  width: 600px;
+}
+
+.p-confirm-dialog-accept{
+  margin-left: 30px;
+}
+
+.p-button-label{
+  padding: 5px;
+}
+
+.p-dialog-title{
+  padding-left: 20px;
+}
+
+.p-dialog-content{
+  padding-bottom: 50px;
+  padding-left: 20px;
+}
+
+.p-confirm-dialog-icon{
+  padding-right: 20px;
+}
+
+.p-dialog-footer{
+  padding-bottom: 10px;
+  padding-right: 20px;
+}
+/* confirm */

@@ -1,6 +1,7 @@
 
 package com.example.shop.controller;
 
+import com.example.shop.dto.GioHangDTO;
 import com.example.shop.dto.HoaDonChiTietDTO;
 import com.example.shop.dto.HoaDonDTO;
 import com.example.shop.dto.HoaDonKhDTO;
@@ -148,4 +149,54 @@ public class HoaDonChiTietController {
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
+
+    //----------------------Hội--------------------------//
+    @PostMapping("/addHoaDonChiTietToHoaDon")
+    public ResponseEntity addHoaDonChiTietToHoaDon(@RequestBody GioHangDTO giohang){
+        try {
+            Integer maxMa = Integer.parseInt(ssHD.getMaxMa());
+            HoaDon hoaDon = HoaDon.builder()
+                    .ma("HD"+(maxMa+1))
+                    .trangThai(0)
+                    .deleted(1)
+                    .loaiHd(0)
+                    .ngayTao(new Date())
+                    .diaChi(giohang.getDiaChi() + "," + giohang.getThanhPho() + "," + giohang.getHuyen() + "," + giohang.getXa())
+                    .tongTien(BigDecimal.valueOf(Double.parseDouble(giohang.getTongTien())))
+                    .build();
+            ssHD.save(hoaDon);
+            System.out.println(giohang);
+        for (Object gioHangItem : giohang.getGioHang()) {
+            if (gioHangItem instanceof Map) {
+                Map<?, ?> gioHangMap = (Map<?, ?>) gioHangItem;
+
+                Object productObject = gioHangMap.get("product");
+                if (productObject instanceof Map) {
+                    Map<?, ?> productMap = (Map<?, ?>) productObject;
+
+                    String id = (String) productMap.get("id");
+                    Integer kichCo = Integer.parseInt(productMap.get("kichCo").toString());
+                    Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
+                    Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
+
+                    System.out.println("kichCo: " + kichCo);
+                    System.out.println("id: " + id);
+                    System.out.println("giaBan: " + giaBan);
+                    System.out.println("soLuong: " + soLuong);
+
+                    HoaDonChiTiet hdct = new HoaDonChiTiet();
+                    hdct.setId_hoa_don(hoaDon);
+                    hdct.setId_chi_tiet_san_pham(ssSP.findById(id).get());
+                    hdct.setSoLuong(soLuong);
+                    hdct.setGiaTien(BigDecimal.valueOf(giaBan));
+                    ssHDCT.save(hdct);
+                }
+            }
+        }
+            return ResponseEntity.ok("Thành công");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
+    //----------------------Hội--------------------------//
 }

@@ -17,7 +17,7 @@ import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import AlsoLike from "./AlsoLike";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";; 
 
 export default function DetailProduct() {
   const { idSP } = useParams();
@@ -34,7 +34,8 @@ export default function DetailProduct() {
   const [cartItem, setCartItem] = useState({});
 
   const [api, contextHolder] = notification.useNotification();
-  // const { idSanPham } = useParams();
+
+
   useEffect(() => {
     const fetchSPCTByIdSP = async () => {
       try {
@@ -184,6 +185,7 @@ export default function DetailProduct() {
   return (
     <>
       {contextHolder}
+    
       <InfoTop />
       <Header />
 

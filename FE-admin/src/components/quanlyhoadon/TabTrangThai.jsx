@@ -18,7 +18,7 @@ export default function TabTrangThai() {
   const [size, setSize] = useState("large");
   useEffect(() => {
     getData();
-  }, []);
+  }, [list]);
 
   const getData = async () => {
     const res = await axios.get(url + "getHoaDons");

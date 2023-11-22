@@ -4,6 +4,9 @@ import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import { Link } from "react-router-dom";
 import AlsoLike from "../components/AlsoLike";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { notification } from "antd";
+import successIcon from "../assets/successIcon.png";
 import {
   Accordion,
   AccordionItem,
@@ -17,21 +20,36 @@ import { MdHorizontalRule } from "react-icons/md";
 import { AiOutlineHeart } from "react-icons/ai"; //heart icon
 import { CgTrashEmpty } from "react-icons/cg"; //trash icon
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { getAllSanPhamChiTietByIdList, getAllHA } from "../api/SanPham";
+import { getAllHA } from "../api/SanPham";
 
 export default function Cart() {
-  const [idList, setIdList] = useState([]);
+  const [api, contextHolder] = notification.useNotification();
   const [cartItems, setCartItems] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
   const [kichCo, setKichCo] = useState(25);
   const [isCartEmpty, setIsCartEmpty] = useState(false);
 
+  const openNotificationWithIcon = (type, message) => {
+    api[type]({
+      message,
+      duration: 1,
+      icon: (
+        <img
+          src={successIcon}
+          alt=""
+          style={{
+            width: "7%",
+          }}
+        />
+      ),
+    });
+  };
+
   const fetchAllHinhAnh = async () => {
     try {
       const data = await getAllHA();
       setHinhAnhs(data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const getCartItems = () => {
@@ -44,16 +62,27 @@ export default function Cart() {
   useEffect(() => {
     fetchAllHinhAnh();
     getCartItems();
-  }, [idList]);
+  }, []);
 
   const handleDelete = (product) => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const updatedCart = cart.filter((item) => item.product.ids !== product.ids);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    getCartItems();
-    if (window.cartUpdatedCallback) {
-      window.cartUpdatedCallback();
-    }
+    confirmDialog({
+      message: "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
+      header: "Xác nhận xóa",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const updatedCart = cart.filter(
+          (item) => item.product.ids !== product.ids
+        );
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+        getCartItems();
+        if (window.cartUpdatedCallback) {
+          window.cartUpdatedCallback();
+        }
+        openNotificationWithIcon("success", "Xóa thành công!");
+      },
+    });
   };
 
   const [selectedKeysQuantity, setSelectedKeysQuantity] = React.useState(
@@ -69,8 +98,52 @@ export default function Cart() {
     setSelectedKeysQuantity(new Set([selected]));
   };
 
+  const updateCartItemQuantity = (productId, newQuantity) => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const updatedCart = cart.map((item) => {
+      if (item.product.ids === productId) {
+        return {
+          ...item,
+          product: {
+            ...item.product,
+            soLuong: newQuantity,
+          },
+        };
+      }
+      return item;
+    });
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    getCartItems();
+    if (window.cartUpdatedCallback) {
+      window.cartUpdatedCallback();
+    }
+    openNotificationWithIcon("success", "Cập nhật số lượng thành công!");
+  };
+
+  const calculateSubtotal = () => {
+    let subtotal = 0;
+
+    cartItems.forEach((cart) => {
+      const quantity =
+        parseInt(selectedValueQuantity) || parseInt(cart.product.soLuong);
+      subtotal += quantity * cart.product.giaBan;
+    });
+
+    return subtotal.toFixed(0);
+  };
+
+  const calculateTotal = () => {
+    const subtotal = parseFloat(calculateSubtotal());
+    const shippingAndHandling = 7.0;
+    const total = subtotal + shippingAndHandling;
+
+    return total.toFixed(0);
+  };
+
   return (
     <>
+      {contextHolder}
+      <ConfirmDialog />
       <InfoTop />
       <Header />
       <div className="breadcrumbs-cart w-full sticky top-20">
@@ -90,7 +163,16 @@ export default function Cart() {
         <div className="col-span-2 main-cart-item">
           <h2 className="main-cart-item-title-bag mb-2">BAG</h2>
           {isCartEmpty ? (
-            <span>Không có sản phẩm nào trong giỏ hàng!</span>
+            <>
+              <span className="link-underline font-medium">
+                Không có sản phẩm nào trong giỏ hàng!
+              </span>
+              <img
+                className="mt-10"
+                src="https://rackstore.be/assets/images/empty-cart.png"
+                alt=""
+              />
+            </>
           ) : (
             cartItems.map((cart) => (
               <div className="cart-item-card" key={cart.id}>
@@ -152,8 +234,25 @@ export default function Cart() {
                                 variant="flat"
                                 disallowEmptySelection
                                 selectionMode="single"
-                                selectedKeys={selectedKeysQuantity}
-                                onSelectionChange={setSelectedKeysQuantity}
+                                selectedKeys={
+                                  selectedKeysQuantity[cart.product.ids] ||
+                                  new Set([""])
+                                }
+                                onSelectionChange={(selected) => {
+                                  handleQuantityChange(selected);
+                                  const productId = cart.product.ids;
+                                  const newQuantity = selected.currentKey;
+                                  setSelectedKeysQuantity((prev) => ({
+                                    ...prev,
+                                    [productId]: new Set([
+                                      newQuantity.toString(),
+                                    ]),
+                                  }));
+                                  updateCartItemQuantity(
+                                    productId,
+                                    newQuantity
+                                  );
+                                }}
                               >
                                 <DropdownItem key="1">1</DropdownItem>
                                 <DropdownItem key="2">2</DropdownItem>
@@ -197,7 +296,7 @@ export default function Cart() {
             ))
           )}
         </div>
-        <div className="main-checkout col-span-1">
+        <div className="main-checkout col-span-1 sticky-grid">
           <h2 className="summary-title">Summary</h2>
           <div className="accordion">
             <Accordion
@@ -223,11 +322,11 @@ export default function Cart() {
           <div className="main-subtotal">
             <div className="flex justify-between">
               <h2 className="subtotal-title">Subtotal</h2>
-              <div className="price-subtotal">$140.00</div>
+              <div className="price-subtotal">${calculateSubtotal()}</div>
             </div>
             <div className="flex justify-between">
               <h2 className="subtotal-title">Estimated Shipping & Handling</h2>
-              <div className="price-subtotal">$7.00</div>
+              <div className="price-subtotal">$7</div>
             </div>
             <div className="flex justify-between">
               <h2 className="subtotal-title">Estimated Tax</h2>
@@ -238,12 +337,15 @@ export default function Cart() {
             <div className="horizontal"></div>
             <div className="flex justify-between">
               <h2 className="subtotal-title">Total</h2>
-              <div className="price-subtotal">$147.00</div>
+              <div className="price-subtotal">${calculateTotal()}</div>
             </div>
             <div className="horizontal"></div>
-            <div className="checkout-button mb-5 flex justify-center">
+            <Link
+              to={"/checkout"}
+              className="checkout-button mb-5 flex justify-center"
+            >
               <button>Checkout</button>
-            </div>
+            </Link>
             <div className="paypal-button flex justify-center">
               <img
                 src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR.png"
