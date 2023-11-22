@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
 import Logo from "../assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../api/Location";
 import { Radio, Space, Input } from "antd";
 import { IoIosArrowBack } from "react-icons/io";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { notification } from "antd";
+import successIcon from "../assets/successIcon.png";
+
 import { getAllHA } from "../api/SanPham";
 import { taoHoaDon } from "../api/HoaDon";
 import axios from "axios";
 
 export default function Checkout() {
+  const navigate = useNavigate();
+  const [api, contextHolder] = notification.useNotification();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -17,6 +23,23 @@ export default function Checkout() {
   const [hinhAnhs, setHinhAnhs] = useState([]);
   const [shippingCost, setShippingCost] = useState("");
   const [hoaDon, setHoaDon] = useState({});
+  const [tongTien, setTongTien] = useState(0);
+
+  const openNotificationWithIcon = (type, message) => {
+    api[type]({
+      message,
+      duration: 1,
+      icon: (
+        <img
+          src={successIcon}
+          alt=""
+          style={{
+            width: "7%",
+          }}
+        />
+      ),
+    });
+  };
 
   const fetchAllHinhAnh = async () => {
     try {
@@ -27,7 +50,7 @@ export default function Checkout() {
 
   const getCartItems = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    console.log(cart)
+    console.log(cart);
     setCartItems(cart);
   };
 
@@ -77,12 +100,13 @@ export default function Checkout() {
     } else {
       updatedShippingCost = localShippingCost.toString();
     }
+    const total = parseFloat(subtotal) + localShippingCost;
 
     useEffect(() => {
       setShippingCost(updatedShippingCost);
-    }, [updatedShippingCost]);
+      setTongTien(total.toFixed(0));
+    }, [updatedShippingCost, total]);
 
-    const total = parseFloat(subtotal) + localShippingCost;
     return total.toFixed(0);
   };
 
@@ -105,28 +129,36 @@ export default function Checkout() {
       shippingCost === "Miễn phí"
         ? "Chuyển khoản qua ngân hàng"
         : "Thanh toán khi nhận hàng";
-    console.log("ho ten: ", hoTen);
-    console.log("sdt: ", soDienThoai);
-    console.log("dia chi: ", diaChi);
-    console.log("thanh pho: ", thanhPho);
-    console.log("quan huyen: ", quanHuyen);
-    console.log("xa phuong: ", xaPhuong);
-    console.log("phuong thuc thanh toan: ", phuongThucThanhToan);
-    console.log(cartItems);
+    // console.log("ho ten: ", hoTen);
+    // console.log("sdt: ", soDienThoai);
+    // console.log("dia chi: ", diaChi);
+    // console.log("thanh pho: ", thanhPho);
+    // console.log("quan huyen: ", quanHuyen);
+    // console.log("xa phuong: ", xaPhuong);
+    // console.log("phuong thuc thanh toan: ", phuongThucThanhToan);
+    // console.log(cartItems);
+    // console.log(tongTien);
     try {
-      const response = await axios.post("http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon", {
-        hoTen : hoTen,
-        sdt : soDienThoai,
-        diaChi : diaChi,
-        thanhPho : thanhPho,
-        huyen : quanHuyen,
-        xa : xaPhuong,
-        hinhThucThanhToan : phuongThucThanhToan,
-        gioHang : cartItems,
-        tongTien : shippingCost
-      })
-    //   setHoaDon(response);
-    console.log(response.data);
+      const response = await axios.post(
+        "http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon",
+        {
+          hoTen: hoTen,
+          sdt: soDienThoai,
+          diaChi: diaChi,
+          thanhPho: thanhPho,
+          huyen: quanHuyen,
+          xa: xaPhuong,
+          hinhThucThanhToan: phuongThucThanhToan,
+          gioHang: cartItems,
+          tongTien: tongTien,
+        }
+      );
+      console.log(response.data);
+      localStorage.clear();
+      openNotificationWithIcon("success", "Cảm ơn bạn đã mua hàng!");
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } catch (error) {
       console.error(error);
     }
@@ -138,6 +170,7 @@ export default function Checkout() {
 
   return (
     <>
+      {contextHolder}
       <div className="main-checkout w-[80%] mx-auto">
         <div className="grid grid-cols-2 gap-4">
           <div className="checkout-left sticky-grid">
