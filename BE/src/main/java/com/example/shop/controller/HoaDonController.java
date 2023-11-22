@@ -90,8 +90,9 @@ public class HoaDonController {
         HoaDon hoaDon = HoaDon.builder()
                 .ma("HD"+(maxMa+1))
                 .trangThai(7)
-                .deleted(0)
+                .deleted(1)
                 .loaiHd(1)
+                .nguoiTao("Đông")
                 .ngayTao(new Date())
                 .build();
         hoaDonRepository.save(hoaDon);
@@ -129,14 +130,14 @@ public class HoaDonController {
                 LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
                         .id_hoa_don(hoaDon1)
                         .moTaHoaDon("Chờ xác nhận")
-                        .deleted(0)
+                        .deleted(1)
                         .nguoiTao("Đông")
                         .ngayTao(new Date(System.currentTimeMillis()))
                         .build();
                 LichSuHoaDon lichSuHoaDon2 = LichSuHoaDon.builder()
                         .id_hoa_don(hoaDon1)
                         .moTaHoaDon("Xác nhận")
-                        .deleted(0)
+                        .deleted(1)
                         .nguoiTao("Đông")
                         .ngayTao(new Date(System.currentTimeMillis()))
                         .build();

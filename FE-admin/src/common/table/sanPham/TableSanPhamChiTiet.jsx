@@ -17,6 +17,7 @@ import {
   Pagination,
   Image,
   Tooltip,
+  Slider,
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -88,6 +89,54 @@ export default function App({ gioHang }) {
   const [soLuongDat, setSoLuongDat] = useState("");
   const [isModalOpenThemSL, setIsModalOpenThemSL] = useState(false);
 
+  const [mauSac, setMauSac] = useState([]);
+  const [thuongHieu, setThuongHieu] = useState([]);
+  const [chatLieu, setChatLieu] = useState([]);
+  const [deGiay, setDeGiay] = useState([]);
+  const [kichCo, setKichCo] = useState([]);
+  const [nhanHieu, setNhanHieu] = useState([]);
+  useEffect(() => {
+    getAllNH();
+    getAllMS();
+    getAllCL();
+    getAllTH();
+    getAllKC();
+    getAllDG();
+  }, []);
+  const getAllNH = async () => {
+    await axios.get("http://localhost:8080/getAllNH").then((response) => {
+      setNhanHieu(response.data);
+    });
+  };
+  const getAllMS = async () => {
+    await axios.get("http://localhost:8080/getAllMS").then((response) => {
+      setMauSac(response.data);
+    });
+  };
+
+  const getAllTH = async () => {
+    await axios.get("http://localhost:8080/getAllTH").then((response) => {
+      setThuongHieu(response.data);
+    });
+  };
+
+  const getAllCL = async () => {
+    await axios.get("http://localhost:8080/getAllCL").then((response) => {
+      setChatLieu(response.data);
+    });
+  };
+
+  const getAllDG = async () => {
+    await axios.get("http://localhost:8080/getAllDG").then((response) => {
+      setDeGiay(response.data);
+    });
+  };
+
+  const getAllKC = async () => {
+    await axios.get("http://localhost:8080/getAllKC").then((response) => {
+      setKichCo(response.data);
+    });
+  };
   const showModalThemSL = () => {
     setIsModalOpenThemSL(true);
   };
@@ -180,7 +229,7 @@ export default function App({ gioHang }) {
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(url);
-        // console.log(response.data);
+
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
@@ -196,14 +245,14 @@ export default function App({ gioHang }) {
           giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
             ?.id_khuyen_mai.giaTriPhanTram,
         }));
-        // console.log(giaGiam)
+
         setSanPhams(updatedRows);
       } catch (error) {
         console.error("Lỗi khi gọi API: ", error);
       }
     }
     fetchChiTietSanPham();
-  }, [sanPhams]);
+  }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -385,23 +434,311 @@ export default function App({ gioHang }) {
     setFilterValue("");
     setPage(1);
   }, []);
+  const [sanPham, setSanPham] = useState({
+    id_mau_sac: "",
+    id_kich_co: "",
+    id_chat_lieu: "",
+    id_de_giay: "",
+    id_thuong_hieu: "",
+    id_nhan_hieu: "",
+    trangThai : ""
+  });
+  const onChange = (e) => {
+    const { name, value } = e.target;
+  
+    setSanPham((prevSanPham) => ({
+      ...prevSanPham,
+      [name]: value,
+    }));
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post("http://localhost:8080/filterSPCT",sanPham);
+        console.log(response.data);
+        const updatedRows = response.data.map((item, index) => ({
+          id: item.id,
+          stt: index + 1,
+          hinhAnh:
+            hinhAnh.find((x) => x.id_san_pham_chi_tiet.id == item.id)?.ten ||
+            "",
+          mauSac: item.id_mau_sac.maMau,
+          kichThuoc: item.id_kich_co.ten,
+          soLuongTon: item.soLuongTon,
+          deGiay: item.id_de_giay.ten,
+          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
+          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+            ?.id_khuyen_mai.giaTriPhanTram,
+        }));
 
+        setSanPhams(updatedRows);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    fetchData();
+  }, [sanPham]);
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
         <h2 className="mb-5 font-bold text-2xl">Quản Lý Nhân Viên</h2>
 
-        <div className="flex justify-between gap-3 items-end">
+        <div className="justify-between gap-3 items-end">
           <Input
             isClearable
-            className="w-full sm:max-w-[30%]"
+            className="w-72 sm:max-w-[30%]"
             placeholder="Tìm kiếm bất kỳ..."
             startContent={<SearchIcon />}
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
-            // style={{margin : "100px 500px"}}
           />
+          <div className="flex justify-center">
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Chất liệu :
+                </label>
+                <div className="flex">
+                  <select
+                    id="chatLieu"
+                    name="id_chat_lieu"
+                    autoComplete="country-name"
+
+                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {chatLieu.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Thương hiệu :
+                </label>
+                <div className="flex">
+                  <select
+                    id="thuongHieu"
+                    name="id_thuong_hieu"
+                    autoComplete="country-name"
+                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {thuongHieu.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Đế giày :
+                </label>
+                <div className="flex">
+                  <select
+                    id="deGiay"
+                    name="id_de_giay"
+                    autoComplete="country-name"
+                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {deGiay.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Kích cỡ :
+                </label>
+                <div className="flex">
+                  <select
+                    id="kichCo"
+                    name="id_kich_co"
+                    autoComplete="country-name"
+                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {kichCo.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Màu sắc :
+                </label>
+                <div className="flex">
+                  <select
+                    id="mauSac"
+                    name="id_mau_sac"
+                    autoComplete="country-name"
+                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {mauSac.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                        className="py-2 px-4 flex items-center justify-between"
+                      >
+                        <span
+                          className="inline-block w-3 h-3 rounded-full"
+                          style={{ backgroundColor: "red" }}
+                        />
+                        <span className="ml-3">{x.ten}</span>
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Nhãn hiệu :
+                </label>
+                <div className="flex">
+                  <select
+                    id="nhanHieu"
+                    name="id_nhan_hieu"
+                    autoComplete="country-name"
+                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {nhanHieu.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Thể loại :
+                </label>
+                <div className="flex">
+                  <select
+                    id="theLoai"
+                    name="id_the_loai"
+                    autoComplete="country-name"
+                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option selected>Tất cả</option>
+                    {chatLieu.map((x) => (
+                      <option
+                        key={x.id}
+                        value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                      >
+                        {x.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Trạng thái :
+                </label>
+                <div className="flex">
+                  <select
+                    id="trangThai"
+                    name="trangThai"
+                    autoComplete="country-name"
+                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    onChange={(e) => onChange(e)}
+                  >
+                    <option >Đang bán</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex items-center mt-10 mr-10">
+                <label
+                  htmlFor="country"
+                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Khoảng giá :
+                </label>
+                <div className="flex p-5 w-[200px]" >
+                <Slider 
+                  label="Khoảng giá"
+                  size="sm"
+                  step={50} 
+                  minValue={0} 
+                  maxValue={2000} 
+                  defaultValue={[100, 500]} 
+                  className="max-w-md"
+                />
+                </div>
+              </div>
+            </div>
           <div className="flex gap-3 items-end">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">

@@ -148,7 +148,7 @@ export default function DetailHoaDon() {
           // loaiGiaoDich: item.id_thanh_toan.trangThai,
           phuongThucThanhToan: item.id_thanh_toan.hinhThuc,
           ghiChu: item.moTa,
-          nguoiXacNhan: item.nguoiTao,
+          nguoiXacNhan: "Đông",
         };
       });
       setRowsLichSuThanhToan(list);
@@ -653,10 +653,6 @@ const listTitleTimline = [
   {
     title: `Xác Nhận`,
     icon: { GiConfirmed },
-  },
-  {
-    title: `Chờ Thanh Toán`,
-    icon: { FaFileInvoice },
   },
   {
     title: `Chờ Vận Chuyển`,

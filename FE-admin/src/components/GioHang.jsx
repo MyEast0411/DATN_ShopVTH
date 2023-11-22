@@ -839,7 +839,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
               <div class="w-2/6 ...">
                 <span style={{ color: "red", fontWeight: "bold", fontSize : "15px"  }}>
                   {" "}
-                  {Intl.NumberFormat().format("-"+voucher)}&nbsp;₫
+                  {Intl.NumberFormat().format(voucher)}&nbsp;₫
                 </span>
               </div>
             </div>

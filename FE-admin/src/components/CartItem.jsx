@@ -126,6 +126,10 @@ export default function CartItem({ users, columns, updateSoLuong }) {
                 style={{ textAlign: "center", paddingTop: 0, height: "40px", flex: 1 }}
                 onChange={async(value) => {
                   console.log(value);
+                  if(value < 1) {
+                    toast(`Số lượng tối thiểu là 1`);
+                    return;
+                  }
                   if(value > 10) {
                     toast(`Chỉ được thêm tối đa 10 sản phẩm`);
                     return;
