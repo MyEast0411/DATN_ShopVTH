@@ -39,7 +39,7 @@ public class LichSuHoaDonController {
         return ResponseEntity.ok(new LichSuHoaDon());
     }
 
-
+//    http://localhost:8080/lich_su_hoa_don/add/
     @PostMapping("add/{idHD}")
     public ResponseEntity<LichSuHoaDon> addLichSuHoaDon(
             @PathVariable("idHD")HoaDon  hoaDon,
@@ -51,6 +51,7 @@ public class LichSuHoaDonController {
                         .id_hoa_don(hoaDon)
                         .moTaHoaDon(lshd.getMoTaHoaDon())
                         .deleted(lshd.getDeleted())
+                        .ghiChu(lshd.getGhiChu())
                         .nguoiTao(lshd.getNguoiTao())
                         .ngayTao(new Date(System.currentTimeMillis()))
                         .build();

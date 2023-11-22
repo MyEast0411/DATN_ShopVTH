@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 export default function DetailHoaDon() {
   const { id } = useParams();
   const [info, setInfo] = useState({});
+  const [note, setNote] = useState("");
   const [rowsLichSuThanhToan, setRowsLichSuThanhToan] = useState([]);
   const [quantityEdit, setQuantityEdit] = useState(0);
   const [money, setMoney] = useState({
@@ -87,6 +88,7 @@ export default function DetailHoaDon() {
         moTaHoaDon: listTitleTimline[currentTimeLine].title,
         deleted: 0,
         nguoiTao: "Cam",
+        ghiChu: note,
       })
       .then((response) => {
         setCurrentTimeLine(currentTimeLine + 1);
@@ -98,7 +100,7 @@ export default function DetailHoaDon() {
   };
 
   const onHandleTimeLineChange = () => {
-    if (currentTimeLine < 6) {
+    if (currentTimeLine <= 6) {
       Modal.confirm({
         title: `Bạn có muốn ${listTitleTimline[currentTimeLine].title} không ?`,
         okText: "Yes",
@@ -154,18 +156,19 @@ export default function DetailHoaDon() {
   };
 
   const getDataChiTietSanPham = async () => {
-    const res = await axios.get(`http://localhost:8080/hdct/getHDCT/${id}`);
+    const res = await axios.get(
+      "http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id
+    );
     const data = await res.data;
-    console.log(res.data);
-    var tong = 0;
+    console.log("spct", res.data);
     setRowsSPCT(
       data.map((item, index) => {
         return {
           id: item.id_chi_tiet_san_pham.ids,
-          imageUrl:
-            "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+          imageUrl: item.id_chi_tiet_san_pham.defaultImg,
           name: item.id_chi_tiet_san_pham.id_san_pham.ten,
-          size: "6",
+          kichco: item.id_chi_tiet_san_pham.id_kich_co.ten,
+          mausac: item.id_chi_tiet_san_pham.id_mau_sac.ten,
           quantity: item.soLuong,
           price: item.giaTien,
         };
@@ -180,7 +183,9 @@ export default function DetailHoaDon() {
       okType: "danger",
       onOk: async () => {
         const res = await axios
-          .delete(`http://localhost:8080/hdct/deleteHDCT/${id}/${idSPCT}`)
+          .delete(
+            `http://localhost:8080/hoa_don_chi_tiet/deleteHDCT/${id}/${idSPCT}`
+          )
           .then((response) => {
             response.data == true ? success("Xóa thành công") : error();
           })
@@ -208,10 +213,7 @@ export default function DetailHoaDon() {
           data.map((item, index) => {
             return {
               ...item,
-              subtitle: format(
-                new Date(item.ngayTao),
-                " hh:mm:ss ,dd-MM-yyyy"
-              ),
+              subtitle: format(new Date(item.ngayTao), " hh:mm:ss ,dd-MM-yyyy"),
               description: listTitleTimline[index].title,
               icon: listTitleTimline[index].icon,
             };
@@ -230,9 +232,10 @@ export default function DetailHoaDon() {
 
   const getInfoHD = async () => {
     const res = await axios.get(
-      `http://localhost:8080/hoa_don/getHoaDon/${id}`
+      "http://localhost:8080/hoa_don/getHoaDon/" + id
     );
     const data = await res.data;
+    console.log(data);
     setMoney({
       tienGiam: data.tienGiam,
       tienHang: data.tongTien + data.tienGiam,
@@ -314,6 +317,10 @@ export default function DetailHoaDon() {
                 <Input.TextArea
                   rows={4}
                   placeholder="Ghi chu ...."
+                  value={note}
+                  onChange={(e) => {
+                    setNote(e.target.value);
+                  }}
                   // maxLength={}
                 />
               </Modal>
@@ -381,6 +388,14 @@ export default function DetailHoaDon() {
                         &nbsp;&nbsp;
                         {item.description}
                       </p>
+                      {item.ghiChu && (
+                        <p>
+                          <span className="font-bold">Ghi Chú : </span>
+                          &nbsp;&nbsp;
+                          {item.ghiChu}
+                        </p>
+                      )}
+
                       <p>
                         <span className="font-bold">Mã Nhân Viên : </span>
                         &nbsp;&nbsp;
@@ -504,34 +519,52 @@ export default function DetailHoaDon() {
                       className="w-full rounded-lg sm:w-40 me-10"
                     />
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className=" sm:mt-0" style={{ marginRight: 400 }}>
-                        <h2 className="text-lg font-bold text-gray-900">
+                    <div
+                      className="flex cols-3 gap-4"
+                      style={{ marginRight: 200 }}
+                    >
+                      <div className=" sm:mt-0" style={{ marginRight: 300 }}>
+                        <h2 className="text-lg font-bold text-gray-900 mb-3">
                           {item.name}
+                          {item.mausac.substring(3)}
                         </h2>
-                        <p className="mt-1 text-xs text-gray-700">
-                          Size: {item.size}
+                        <p className="mb-3  font-bold text-gray-900">
+                          Size: {item.kichco}
                         </p>
-                        <p className="font-bold text-gray-700">
-                          x{item.quantity}
+                        <p className="font-bold text-gray-900 mb-3">
+                          Số lượng :{" "}
+                          <span className="font-bold text-red-500 mb-3">
+                            {item.quantity}
+                          </span>{" "}
+                          sản phẩm
+                        </p>
+                        <p className="font-bold text-gray-900 mb-3">
+                          Đơn giá :{" "}
+                          <span className="font-bold text-red-500 mb-3">
+                            {Intl.NumberFormat().format(item.price)} &nbsp;₫
+                          </span>
                         </p>
                       </div>
 
                       <div className=" space-x-4 mt-4">
                         <p className="font-bold text-red-500">
-                          {Intl.NumberFormat().format(item.price)}&nbsp;₫
+                          {Intl.NumberFormat().format(
+                            item.price * item.quantity
+                          )}
+                          &nbsp;₫
                         </p>
                       </div>
 
+                      <div className="row">
+                        <Button
+                          color="red"
+                          onClick={() => onHandleDelete(item.id)}
+                        >
+                          Xóa
+                        </Button>
+                      </div>
+
                       {/* <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6"></div> */}
-                    </div>
-                    <div className="row">
-                      <Button
-                        color="red"
-                        onClick={() => onHandleDelete(item.id)}
-                      >
-                        Xóa
-                      </Button>
                     </div>
                   </div>
                 ))}
@@ -603,25 +636,38 @@ export default function DetailHoaDon() {
 //   `Hủy`,
 // ];
 
+// const items = [
+//   `Chờ xác nhận`,
+//   `Xác Nhận`,
+//   `Chờ Thanh Toán`,
+//   `Chờ Vận Chuyển`,
+//   `Giao Hàng`,
+//   `Hoàn Thành`,
+//   `Hủy`,
+// ];
 const listTitleTimline = [
   {
-    title: "Chờ Xác Nhận",
+    title: `Chờ xác nhận`,
     icon: { GiConfirmed },
   },
   {
-    title: "Xác Nhận",
+    title: `Xác Nhận`,
     icon: { GiConfirmed },
   },
   {
-    title: "Chờ Vận Chuyển",
+    title: `Chờ Thanh Toán`,
     icon: { FaFileInvoice },
   },
   {
-    title: "Hoàn Thành",
+    title: `Chờ Vận Chuyển`,
     icon: { FaShippingFast },
   },
   {
-    title: "Chờ Thanh Toán",
+    title: `Giao Hàng`,
+    icon: { LuPackageCheck },
+  },
+  {
+    title: `Hoàn Thành`,
     icon: { LuPackageCheck },
   },
 ];

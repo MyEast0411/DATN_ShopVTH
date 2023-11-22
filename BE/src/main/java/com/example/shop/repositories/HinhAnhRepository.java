@@ -32,6 +32,5 @@ public interface HinhAnhRepository extends JpaRepository<HinhAnh,String> {
             "WHERE san_pham_chi_tiet.id =  :idSanPhamChiTiet", nativeQuery = true)
     List<HinhAnh> getHinhAnhBySanPhamChiTiet(@Param("idSanPhamChiTiet") String idSanPhamChiTiet);
 
-    
     //-------Hội------------//
 }

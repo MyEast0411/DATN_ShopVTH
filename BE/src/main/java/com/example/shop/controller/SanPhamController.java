@@ -391,12 +391,12 @@ public class SanPhamController {
     }
 
     @GetMapping("/countAllSanPham")
-    public int countAllSanPham() {
+    public int countAllSanPham(){
         return sanPhamRepository.countAllSanPham();
     }
 
     @GetMapping("/getHinhAnhByIdSPCT/{id}")
-    public List<HinhAnh> getHinhAnhByIdSPCT(@PathVariable String id) {
+    public List<HinhAnh> getHinhAnhByIdSPCT(@PathVariable String id){
         return hinhAnhRepository.getHinhAnhBySanPhamChiTiet(id);
     }
 

@@ -34,7 +34,7 @@ public class HoaDon {
     private String tenKhachHang;
 
     @Column(name = "tien_giam")
-    private String tienGiam;
+    private BigDecimal tienGiam;
 
     @Column(name = "tong_tien")
     private BigDecimal tongTien;

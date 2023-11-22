@@ -199,4 +199,14 @@ public class HoaDonChiTietController {
         }
     }
     //----------------------Hội--------------------------//
+
+    @GetMapping("getHDCTByID/{idHD}")
+    public ResponseEntity<List<HoaDonChiTiet>> getHDCTByIDHD(@PathVariable("idHD") String idHD) {
+        return ResponseEntity.ok(ssHDCT.getHDCT(idHD));
+    }
+
+
+
+
+
 }
