@@ -1,6 +1,6 @@
-   drop database shopVTH;
-    create database shopVTH;
-    -- run intelliJ IDEA
+--    drop database shopVTH;
+--     create database shopVTH;
+--     -- run intelliJ IDEA
     use shopVTH;
     select * from chat_lieu;
     ------------------------------
@@ -68,8 +68,7 @@
 
     -- ('0d6c88b1-8574-11ee-9f61-f889d261a6fa',1,'SP1','2023-10-03','2023-01-01','Hiền','Hiền','Jordan Retro 6 GNRG'),
     -- ('0d6c88b1-8574-11ee-9f61-f889d261a6f1',1,'SP2','2023-10-04','2023-01-02','Hội','Hội','Jordan Stay Loyal 3'),
-    -- ('0d6c88b1-8574-11ee-9f61-f889d261a6f2',1,'SP3','2023-10-05','2023-01-03','Hiền','Hiền','Air Jordan 1
-    ElevateHigh'),
+    -- ('0d6c88b1-8574-11ee-9f61-f889d261a6f2',1,'SP3','2023-10-05','2023-01-03','Hiền','Hiền','Air Jordan 1ElevateHigh'),
     -- ('0d6c88b1-8574-11ee-9f61-f889d261a6f3',1,'SP4','2023-10-06','2023-01-04','Hiền','Hiền','Jordan Fadeaway'),
 
     -- ----
@@ -96,7 +95,9 @@
     --
 
     INSERT INTO mau_sac (id, deleted, ma, ngay_sua, ngay_tao,nguoi_sua,nguoi_tao, ten)
-    VALUES ('9d348eab-8576-11ee-9f61-f889d261a6fa', 1, '#000000', '2023-10-01', '2023-01-01', 'Hiền','Hiền','Màu
+    VALUES
+      ('9d348eab-8576-11ee-9f61-f829d266a6fa', 1, '#006272', '2023-10-01', '2023-01-01', 'Hiền','Hiền','Màu xanh ngọc'),
+    ('9d348eab-8576-11ee-9f61-f889d261a6fa', 1, '#000000', '2023-10-01', '2023-01-01', 'Hiền','Hiền','Màu
     đen'),
     ('9d348eab-8576-11ee-9f61-f889d261a6f1', 1, '#00A9FF', '2023-10-02', '2023-01-02', 'Cam','Cam','Màu xanh
     dương'),
@@ -131,23 +132,27 @@
     ('9c3026d9-87bf-11ee-9e05-25821f161216',1,'TL9', '2023-10-01', '2023-01-01', 'Hiền','Hiền','Vận động viên'),
     ('9c3026db-87bf-11ee-9e05-25821f161216',1,'TL10', '2023-10-01', '2023-01-01', 'Hiền','Hiền','Bóng đá');
 
-
+	select * from san_pham
     ---------------- -- sản phẩm
     INSERT INTO san_pham (id, deleted, ma, ngay_sua, ngay_tao, nguoi_sua, nguoi_tao, ten) values
     ('0d6c88b1-8574-11ee-9f61-f889d261a6f4',1,'SP5','2023-10-07','2023-01-05','Hiền','Hiền','Air Jordan 1 Mid');
 
     select * from thuong_hieu;
-    select * from the_loai;
+    select * from mau_sac;
     ------------ -- sản phẩm chi tiết
     INSERT INTO san_pham_chi_tiet(id, deleted, gia_ban, gia_nhap, khoi_luong, ma, mo_ta, ngay_sua, ngay_tao, nguoi_sua, nguoi_tao, so_luong_ton, ten, trang_thai, id_chat_lieu,
  id_de_giay, id_kich_co, id_mau_sac, id_nhan_hieu, id_san_pham, id_the_loai, id_thuong_hieu, default_img)
  values
  
-('f7b71662-8641-11ee-9533-f889d261a6fa', '1', '200.00', '180.00', '0.5', 'SPCT41', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f1', (SELECT id FROM kich_co WHERE ma = 'KC1'), '9d348eab-8576-11ee-9f61-f889d261a6f4', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL1'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/0d265602-b5fa-46c1-8eb6-b3e56c7f52b9/air-jordan-1-mid-shoes-SQf7DM.png'),
-('f0d0f191-8641-11ee-9533-f889d261a6fa', '1', '150.00', '100.00', '0.8', 'SPCT42', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f1', (SELECT id FROM kich_co WHERE ma = 'KC2'), '9d348eab-8576-11ee-9f61-f889d261a6f1', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL2'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/514cb17e-dd49-4785-bd59-4e9e7bb6a957/air-jordan-1-mid-shoes-SQf7DM.png'),
-('eb67530e-8641-11ee-9533-f889d261a6fa', '1', '400.00', '350.00', '0.8', 'SPCT44', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f1', (SELECT id FROM kich_co WHERE ma = 'KC3'), '9d348eab-8576-11ee-9f61-f889d261a6f6', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL3'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/ea3a034a-351d-4d5e-9e39-6ebe24eebd23/air-jordan-1-mid-shoes-SQf7DM.png'),
-('e3884cbd-8641-11ee-9533-f889d261a6fa', '1', '300.00', '250.00', '0.5', 'SPCT43', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f4', (SELECT id FROM kich_co WHERE ma = 'KC4'), '9d348eab-8576-11ee-9f61-f889d261a6f1', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL4'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/31ff59e2-89d0-4a83-839a-656618674782/air-jordan-1-mid-shoes-SQf7DM.png'),
-('dd5b194d-8641-11ee-9533-f889d261a6fa', '1', '600.00', '500.00', '0.8', 'SPCT45', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f4', (SELECT id FROM kich_co WHERE ma = 'KC5'), '9d348eab-8576-11ee-9f61-f889d261a6f7', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL5'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/79ecdc1b-bca8-4a57-912c-2a128ef2277a/air-jordan-1-mid-shoes-SQf7DM.png');
+('f7b71662-8641-11ee-9533-f889d261a6fa', '1', '200.00', '180.00', '0.5', 'SPCT41', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f1', (SELECT id FROM kich_co WHERE ma = 'KC1'), '9d348eab-8576-11ee-9f61-f889d261a6f1', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL1'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/0d265602-b5fa-46c1-8eb6-b3e56c7f52b9/air-jordan-1-mid-shoes-SQf7DM.png'),
+
+('f0d0f191-8641-11ee-9533-f889d261a6fa', '1', '150.00', '100.00', '0.8', 'SPCT42', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f1', (SELECT id FROM kich_co WHERE ma = 'KC2'), '9d348eab-8576-11ee-9f61-f889d261a6f6', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL2'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/514cb17e-dd49-4785-bd59-4e9e7bb6a957/air-jordan-1-mid-shoes-SQf7DM.png'),
+
+('eb67530e-8641-11ee-9533-f889d261a6fa', '1', '400.00', '350.00', '0.8', 'SPCT44', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f1', (SELECT id FROM kich_co WHERE ma = 'KC3'), '9d348eab-8576-11ee-9f61-f889d261a6f3', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL3'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/ea3a034a-351d-4d5e-9e39-6ebe24eebd23/air-jordan-1-mid-shoes-SQf7DM.png'),
+
+('e3884cbd-8641-11ee-9533-f889d261a6fa', '1', '300.00', '250.00', '0.5', 'SPCT43', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f4', (SELECT id FROM kich_co WHERE ma = 'KC4'), '9d348eab-8576-11ee-9f61-f889d261a6f9', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL4'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/31ff59e2-89d0-4a83-839a-656618674782/air-jordan-1-mid-shoes-SQf7DM.png'),
+
+('dd5b194d-8641-11ee-9533-f889d261a6fa', '1', '600.00', '500.00', '0.8', 'SPCT45', ' Khi bạn cần một đôi giày luôn sẵn sàng 24/7, đó phải là Max Aura 5. Lấy cảm hứng từ AJ3, đôi giày này tạo nên nét hiện đại trên nền cổ điển. ', '2023-10-01 00:00:00.000000', '2023-01-01 00:00:00.000000', 'Hiền', 'Hiền', '12', 'Jordan Max Aura 5', '1', '5C28B9B8-281F-4838-B6A9-AE3606A15CCF', '2acd739b-856a-11ee-9f61-f889d261a6f4', (SELECT id FROM kich_co WHERE ma = 'KC5'), '9d348eab-8576-11ee-9f61-f829d266a6fa', (select id from nhan_hieu where nhan_hieu.ma = 'NH1'), '0d6c88b1-8574-11ee-9f61-f889d261a6f4', (select id from the_loai where the_loai.ma = 'TL5'), (select id from thuong_hieu where thuong_hieu.ma = 'TH1'), 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/79ecdc1b-bca8-4a57-912c-2a128ef2277a/air-jordan-1-mid-shoes-SQf7DM.png');
 
     ----------------------
     INSERT INTO hinh_anh (id, ma, ten, mau_sac, ngay_tao, nguoi_tao, id_san_pham_chi_tiet)
