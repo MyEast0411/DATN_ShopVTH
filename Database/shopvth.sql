@@ -1,9 +1,23 @@
---    drop database shopVTH;
---     create database shopVTH;
+    drop database shopVTH;
+    create database shopVTH;
+	use shopVTH;
 --     -- run intelliJ IDEA
-    use shopVTH;
-    select * from chat_lieu;
+
+    
     ------------------------------
+    
+	INSERT INTO khuyen_mai (id, ma, ten, ngay_bat_dau, ngay_ket_thuc,
+    gia_tri_phan_tram, ngay_tao, ngay_sua, nguoi_tao, nguoi_sua, trang_thai,  deleted, switchKM)
+    VALUES
+    ('4aefa60e-89f2-11ee-af38-17da04848a28','KM001','Khuyến mại tháng 1/2023','2023-01-01 00:00:00.000000',
+    '2023-01-30 00:00:00.000000',10,'2023-01-01 00:00:00.000000','2023-01-01 00:00:00.000000','Hội','Hội','Đã kết thúc',
+    0,'Đã kết thúc'),
+     ('4aefa669-89f2-11ee-af38-17da04848a28','KM002','Khuyến mại tháng 1/2025','2025-01-01 00:00:00.000000',
+    '2025-01-30 00:00:00.000000',10,'2023-01-01 00:00:00.000000','2023-01-01 00:00:00.000000','Hội','Hội','Chưa diễn ra',
+    0,'Chưa diễn ra');
+    
+    ------------------------------
+
     INSERT INTO chat_lieu (id, deleted, ma, ngay_sua, ngay_tao,nguoi_sua,nguoi_tao, ten)
     VALUES
     ('5C28B9B8-281F-4838-B6A9-AE3606A15CCF', 1, 'CL1', '2023-10-01', '2023-11-01','Hiền','Hiền', 'Da'),
@@ -132,7 +146,7 @@
     ('9c3026d9-87bf-11ee-9e05-25821f161216',1,'TL9', '2023-10-01', '2023-01-01', 'Hiền','Hiền','Vận động viên'),
     ('9c3026db-87bf-11ee-9e05-25821f161216',1,'TL10', '2023-10-01', '2023-01-01', 'Hiền','Hiền','Bóng đá');
 
-	select * from san_pham
+	select * from san_pham;
     ---------------- -- sản phẩm
     INSERT INTO san_pham (id, deleted, ma, ngay_sua, ngay_tao, nguoi_sua, nguoi_tao, ten) values
     ('0d6c88b1-8574-11ee-9f61-f889d261a6f4',1,'SP5','2023-10-07','2023-01-05','Hiền','Hiền','Air Jordan 1 Mid');
