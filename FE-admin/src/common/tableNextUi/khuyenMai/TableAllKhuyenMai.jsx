@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Table,
@@ -7,7 +7,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Input,
   Button,
   DropdownTrigger,
   Dropdown,
@@ -15,7 +14,6 @@ import {
   DropdownItem,
   Chip,
   Tooltip,
-  getKeyValue,
   Pagination,
   Switch,
   Modal,
@@ -33,7 +31,6 @@ import {
   DialogTitle,
 } from "@mui/material";
 
-import { SearchIcon } from "../../otherComponents/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
 import { EditIcon } from "../../otherComponents/EditIcon";
@@ -45,7 +42,6 @@ import {
   searchByDate,
   findKmspctByKhuyenMaiId,
 } from "../../../api/khuyenMai/KhuyenMaiApi";
-import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
@@ -251,7 +247,12 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     });
   }, [sortDescriptor, items]);
 
-  const [isSelected, setIsSelected] = React.useState(true);
+  const [switchStates, setSwitchStates] = useState(
+    JSON.parse(localStorage.getItem("switchStates")) || true
+  );
+  useEffect(() => {
+    localStorage.setItem("switchStates", JSON.stringify(switchStates));
+  }, [switchStates]);
 
   const renderCell = React.useCallback(
     (khuyenMai, columnKey) => {
@@ -297,7 +298,11 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
                 khuyenMai.switchKM === "Đã dừng") && (
                 <Tooltip
                   showArrow={true}
-                  content={isSelected ? "Tắt khuyến mại" : "Bật khuyến mại"}
+                  content={
+                    switchStates[khuyenMai.id]
+                      ? "Tắt khuyến mại"
+                      : "Bật khuyến mại"
+                  }
                 >
                   <span className="text-lg inline-block  text-danger cursor-pointer active:opacity-50">
                     <Switch
@@ -307,12 +312,21 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
                       size="sm"
                       color="success"
                       className="inline-block"
-                      checked={isSelected}
+                      checked={switchStates[khuyenMai.id] || true}
                       onChange={async () => {
-                        setIsSelected(!isSelected);
+                        setSwitchStates((prevSwitchStates) => {
+                          const updatedStates = {
+                            ...prevSwitchStates,
+                            [khuyenMai.id]: !prevSwitchStates[khuyenMai.id],
+                          };
+                          return updatedStates;
+                        });
+
                         await axios
                           .put(
-                            `http://localhost:8080/khuyen-mai/batTatKhuyenMai/${khuyenMai.id}/${isSelected}`,
+                            `http://localhost:8080/khuyen-mai/batTatKhuyenMai/${
+                              khuyenMai.id
+                            }/${!switchStates[khuyenMai.id]}`,
                             khuyenMai
                           )
                           .then((response) => {
@@ -330,7 +344,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
           return cellValue;
       }
     },
-    [isSelected]
+    [switchStates]
   );
 
   const onNextPage = React.useCallback(() => {
@@ -503,15 +517,13 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
       <Table
         style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
-        // isHeaderSticky
         bottomContent={bottomContent}
-        selectionMode="single" 
+        // selectionMode="single"
         bottomContentPlacement="outside"
         classNames={{
           wrapper: "max-h-[382px]",
         }}
         selectedKeys={selectedKeys}
-        // selectionMode="multiple"
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
@@ -575,7 +587,12 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
           </Button>
         </DialogActions>
       </Dialog>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false}   size={"5xl"} >
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        isDismissable={false}
+        size={"5xl"}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -585,9 +602,24 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
               <ModalBody>
                 {khuyenMaiSPCT.map((item, index) => (
                   <div key={index} className="mx-auto">
-                    <p>Mã sản phẩm: <span className="font-medium">{item.id_chi_tiet_san_pham.ma}</span></p>
-                    <p>Tên sản phẩm: <span className="font-medium">{item.id_chi_tiet_san_pham.ten}</span></p>
-                    <p>Giá sản phẩm: <span className="font-medium">{item.id_chi_tiet_san_pham.giaBan}</span></p>
+                    <p>
+                      Mã sản phẩm:{" "}
+                      <span className="font-medium">
+                        {item.id_chi_tiet_san_pham.ma}
+                      </span>
+                    </p>
+                    <p>
+                      Tên sản phẩm:{" "}
+                      <span className="font-medium">
+                        {item.id_chi_tiet_san_pham.ten}
+                      </span>
+                    </p>
+                    <p>
+                      Giá sản phẩm:{" "}
+                      <span className="font-medium">
+                        {item.id_chi_tiet_san_pham.giaBan}
+                      </span>
+                    </p>
                   </div>
                 ))}
               </ModalBody>

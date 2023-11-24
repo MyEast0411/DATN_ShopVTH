@@ -75,12 +75,10 @@ export default function DetailProduct() {
 
   const renderID = () => {
     const uniqueID = uuidv4();
-    console.log("renderID", uniqueID);
     return uniqueID;
   };
 
   const addToCart = () => {
-    console.log(cartItem.id);
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     if (!selectedSize) {
       openNotificationWithIcon("error", "Vui lòng chọn kích cỡ!");

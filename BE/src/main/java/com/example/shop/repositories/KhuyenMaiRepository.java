@@ -15,8 +15,9 @@ public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, String> {
 
     KhuyenMai findByMa(String ma);
 
-    @Query(value = "SELECT * FROM khuyen_mai k WHERE k.deleted = 0 ORDER BY k.trang_thai = 'Đang diễn ra' DESC, k.ngay_sua DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM khuyen_mai k WHERE k.deleted = 0 ORDER BY k.trang_thai = 'Đang diễn ra' DESC, k.ngay_sua DESC, CASE WHEN k.trang_thai = 'Đang diễn ra' THEN 0 ELSE 1 END", nativeQuery = true)
     List<KhuyenMai> findAllByDeleted();
+
 
     @Query(value = "SELECT * FROM khuyen_mai k " +
             "WHERE (:ngayBatDau BETWEEN k.ngay_bat_dau AND k.ngay_ket_thuc " +
@@ -29,4 +30,5 @@ public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, String> {
             "WHERE k.ngay_bat_dau >= :ngayBatDau AND k.ngay_ket_thuc <= :ngayKetThuc\n" +
             "  AND k.deleted = 0", nativeQuery = true)
     List<KhuyenMai> searchByDate(@Param("ngayBatDau") String ngayBatDau, @Param("ngayKetThuc") String ngayKetThuc);
+
 }

@@ -79,8 +79,8 @@ input[type="number"] {
   transition: 0.06s;
 }
 
-.yellow-hover:hover{
-  color: #FFCD4B;
+.yellow-hover:hover {
+  color: #ffcd4b;
   transition: 0.06s;
 }
 
@@ -112,14 +112,13 @@ input[type="number"] {
   top: 0;
   right: 0;
   z-index: 10;
-  background-color: #D80032;
+  background-color: #d80032;
   color: white;
   padding: 2px 5px;
   font-size: 12px;
   border-top-right-radius: 10px;
   border-bottom-left-radius: 10px;
 }
-
 
 .thuy-hien {
   overflow: hidden;

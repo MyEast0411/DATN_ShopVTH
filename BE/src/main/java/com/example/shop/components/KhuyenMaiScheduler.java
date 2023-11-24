@@ -67,8 +67,7 @@ public class KhuyenMaiScheduler {
             List<KhuyenMai> khuyenMaiList = khuyenMaiService.findAllByDeleted();
 
             for (KhuyenMai khuyenMai : khuyenMaiList) {
-                if (khuyenMai.getNgayBatDau().before(currentDate) &&
-                        khuyenMai.getNgayKetThuc().after(currentDate)) {
+                if (khuyenMai.getNgayBatDau().before(currentDate) && khuyenMai.getNgayKetThuc().after(currentDate)) {
                     applyDiscounts();
                 }
             }
@@ -103,8 +102,9 @@ public class KhuyenMaiScheduler {
                 KhuyenMai khuyenMai = sanPhamVM.getId_khuyen_mai();
                 Date currentDate = new Date();
                 Date endDate = khuyenMai.getNgayKetThuc();
-                if (endDate != null && currentDate.after(endDate) || khuyenMai.getDeleted()==1) {
-                    // Khuyến mãi đã hết hạn hoặc bị xóa, trả lại giá ban đầu
+                if (endDate != null && currentDate.after(endDate) || khuyenMai.getDeleted() == 1 ||
+                        khuyenMai.getSwitchKM().equals("Đã dừng") || khuyenMai.getSwitchKM().equals("Đã kết thúc")) {
+                    // Khuyến mãi đã hết hạn hoặc bị xóa, hoặc tắt khuyến mại thủ công, trả lại giá ban đầu
                     if (sanPhamVM.getGiaCu() != null) {
                         spct.setGiaBan(sanPhamVM.getGiaCu());
                         spct.setNgaySua(currentDate);
@@ -126,7 +126,6 @@ public class KhuyenMaiScheduler {
                     // Áp dụng giảm giá
                     BigDecimal originalPrice = spct.getGiaBan();
                     BigDecimal discountedPrice = originalPrice.multiply(BigDecimal.valueOf(1 - (discountPercentage / 100)));
-
                     spct.setGiaBan(discountedPrice);
                     spct.setNgaySua(currentDate);
                     sanPhamChiTietService.save(spct);

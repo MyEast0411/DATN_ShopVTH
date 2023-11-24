@@ -5,13 +5,11 @@ import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../api/Location";
 import { Radio, Space, Input } from "antd";
 import { IoIosArrowBack } from "react-icons/io";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
-
 import { getAllHA } from "../api/SanPham";
-import { taoHoaDon } from "../api/HoaDon";
 import axios from "axios";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -22,8 +20,8 @@ export default function Checkout() {
   const [cartItems, setCartItems] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
   const [shippingCost, setShippingCost] = useState("");
-  const [hoaDon, setHoaDon] = useState({});
   const [tongTien, setTongTien] = useState(0);
+  const [value, setValue] = useState(1);
 
   const openNotificationWithIcon = (type, message) => {
     api[type]({
@@ -54,7 +52,6 @@ export default function Checkout() {
     setCartItems(cart);
   };
 
-  const [value, setValue] = useState(1);
   const onChange = (e) => {
     setValue(e.target.value);
   };
@@ -112,6 +109,9 @@ export default function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    // ...
+  
     const hoTen = e.target.elements.hoTen.value;
     const soDienThoai = e.target.elements.soDienThoai.value;
     const diaChi = e.target.elements.diaChi.value;
@@ -122,26 +122,16 @@ export default function Checkout() {
         e.target.elements.District.selectedIndex
       ].text;
     const xaPhuong =
-      e.target.elements.wards.options[e.target.elements.wards.selectedIndex]
-        .text;
-
+      e.target.elements.wards.options[e.target.elements.wards.selectedIndex].text;
+  
     const phuongThucThanhToan =
       shippingCost === "Miễn phí"
         ? "Chuyển khoản qua ngân hàng"
         : "Thanh toán khi nhận hàng";
-    // console.log("ho ten: ", hoTen);
-    // console.log("sdt: ", soDienThoai);
-    // console.log("dia chi: ", diaChi);
-    // console.log("thanh pho: ", thanhPho);
-    // console.log("quan huyen: ", quanHuyen);
-    // console.log("xa phuong: ", xaPhuong);
-    // console.log("phuong thuc thanh toan: ", phuongThucThanhToan);
-    // console.log(cartItems);
-    // console.log(tongTien);
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon",
-        {
+  
+    const confirmSubmission = () => {
+      axios
+        .post("http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon", {
           hoTen: hoTen,
           sdt: soDienThoai,
           diaChi: diaChi,
@@ -151,26 +141,34 @@ export default function Checkout() {
           hinhThucThanhToan: phuongThucThanhToan,
           gioHang: cartItems,
           tongTien: tongTien,
-        }
-      );
-      console.log(response.data);
-      localStorage.clear();
-      openNotificationWithIcon("success", "Cảm ơn bạn đã mua hàng!");
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
-    } catch (error) {
-      console.error(error);
-    }
+        })
+        .then((response) => {
+          console.log(response.data);
+          localStorage.clear();
+          openNotificationWithIcon("success", "Cảm ơn bạn đã mua hàng!");
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+  
+    confirmDialog({
+      message: "Bạn có chắc muốn hoàn tất đơn hàng?",
+      header: "Xác nhận đơn hàng",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-success",
+      accept: confirmSubmission,
+    });
   };
-
-  useEffect(() => {
-    console.log("hoaDon vua tao: ", hoaDon);
-  }, [hoaDon]);
+  
 
   return (
     <>
       {contextHolder}
+      <ConfirmDialog />
       <div className="main-checkout w-[80%] mx-auto">
         <div className="grid grid-cols-2 gap-4">
           <div className="checkout-left sticky-grid">
