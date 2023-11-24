@@ -17,10 +17,16 @@ import {
   Avatar,
   Chip,
   Tooltip,
+  Pagination,
+  getKeyValue,
 } from "@nextui-org/react";
+
 import { Select } from "antd";
 import { Link } from "react-router-dom";
-import { ColumnChart } from "../components/thong_ke/ColumnChart";
+import {
+  ColumnChart,
+  TableTheoOption,
+} from "../components/thong_ke/ColumnChart";
 import { PieChart } from "../components/thong_ke/PieChart";
 import { LineChart } from "../components/thong_ke/LineChart";
 import { AiTwotoneCrown } from "react-icons/ai";
@@ -89,6 +95,18 @@ const ThongKe = () => {
   const [top5HD, setTop5HD] = useState([]);
   const [top3SP, setTop3SP] = useState([]);
 
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 4;
+
+  const pages = Math.ceil(usersWeek.length / rowsPerPage);
+
+  const items = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return usersWeek.slice(start, end);
+  }, [page, usersWeek]);
+
   // change select columnchart
   const handleChange = (value) => {
     if (value == "week") {
@@ -127,6 +145,31 @@ const ThongKe = () => {
       return `Just seconds ago`;
     }
   };
+
+  const renderCell1 = React.useCallback((user, columnKey) => {
+    const cellValue = user[columnKey];
+
+    switch (columnKey) {
+      case "name":
+        return <span className="text-black-700 font-bold">{cellValue}</span>;
+      case "price":
+        return (
+          <p className="text-red-700 font-bold">
+            {" "}
+            {Intl.NumberFormat().format(cellValue)} ₫{" "}
+          </p>
+        );
+      case "avatar":
+        return <Image width={50} alt="NextUI hero Image" src={cellValue} />;
+      case "quantitySaled":
+        return (
+          <span className="text-black-700 font-bold">{cellValue} sản phẩm</span>
+        );
+
+      default:
+        return cellValue;
+    }
+  }, []);
 
   //  call data
   const getTotal = async () => {
@@ -222,11 +265,8 @@ const ThongKe = () => {
 
   return (
     <>
-    
       <div className="overflow-auto w-full bg-white p-3 space-y-8" style={{}}>
-        <div className="mb-2 font-normal border-gray-500 text-lg	flex items-center">
-          <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>📊 Thống kê</p>
-        </div>
+        <h2 className="mb-5 font-bold text-2xl">Quản Lý Thống Kê</h2>
         <div className="block-1 flex space-x-8">
           <div className="block-1-1 w-1/2 space-y-4">
             <div
@@ -506,11 +546,75 @@ const ThongKe = () => {
                   fontWeight: 600,
                 }}
               >
-                Tổng Giá Và Lợi Nhuận
+                Tình trạng dự án
               </h5>
             </div>
-            <div className="content justify-center">
-              <LineChart />
+            <div className="content justify-center mb-5">
+              <PieChart />
+            </div>
+            <div
+              className="header"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                margin: 24,
+              }}
+            >
+              <h5
+                style={{
+                  fontSize: 17,
+                  lineHeight: 1,
+                  fontWeight: 600,
+                }}
+              >
+                Sản Phẩm Sắp Hết Hàng
+              </h5>
+            </div>
+            <div
+              className="content "
+              style={{
+                marginTop: 18,
+                marginLeft: 18,
+                marginRight: 18,
+                marginBottom: 5,
+              }}
+            >
+              <Table
+                aria-label="Example table with client side pagination"
+                style={{ height: "382px" }}
+                bottomContent={
+                  <div className="flex w-full justify-center">
+                    <Pagination
+                      isCompact
+                      showControls
+                      showShadow
+                      color="secondary"
+                      page={page}
+                      total={pages}
+                      onChange={(page) => setPage(page)}
+                    />
+                  </div>
+                }
+                classNames={{
+                  wrapper: "min-h-[385px] p-0",
+                }}
+              >
+                <TableHeader columns={columns1}>
+                  {(column) => (
+                    <TableColumn key={column.uid}>{column.name}</TableColumn>
+                  )}
+                </TableHeader>
+                <TableBody items={items}>
+                  {(item) => (
+                    <TableRow key={item.name}>
+                      {(columnKey) => (
+                        <TableCell>{renderCell1(item, columnKey)}</TableCell>
+                      )}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </div>
           </div>
           <div
@@ -533,11 +637,22 @@ const ThongKe = () => {
                   fontWeight: 600,
                 }}
               >
-                Tình trạng dự án
+                Tóp 5 Sản Phẩm Bán Chạy Theo {valueColumnChart}
               </h5>
             </div>
-            <div className="content justify-center">
-              <PieChart />
+            {/* <div className="content justify-center">
+              <LineChart />
+            </div> */}
+            <div
+              className="content "
+              style={{
+                marginTop: 18,
+                marginLeft: 18,
+                marginRight: 18,
+                marginBottom: 5,
+              }}
+            >
+              <TableTheoOption value={valueColumnChart} />
             </div>
           </div>
         </div>
@@ -789,3 +904,78 @@ const ThongKe = () => {
 };
 
 export default ThongKe;
+
+const usersWeek = [
+  {
+    id: 1,
+    name: "Zion 3 PF",
+    price: 4109000,
+    avatar:
+      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/84c6e45a-77d0-450e-87a2-e3b4c4fbaa83/air-jordan-1-zoom-cmft-2-shoes-nX8Qqx.png",
+    quantitySaled: 2,
+  },
+  {
+    id: 2,
+    name: "Air Jordan 1 Low",
+    price: 3239000,
+    avatar:
+      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/eed06a38-dc83-4bd6-a4f3-209d70980736/air-jordan-1-zoom-cmft-2-shoes-nX8Qqx.png",
+    quantitySaled: 1,
+  },
+  {
+    id: 3,
+    name: "Air Jordan 1 Elevate Low",
+    price: 3829000,
+    avatar:
+      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/964cfa9e-5ce9-4c66-b11c-e70b7fbb8890/air-jordan-1-elevate-low-shoes-XlkVrM.png",
+    quantitySaled: 4,
+  },
+  {
+    id: 4,
+    name: "Jordan One Take 4 PF",
+    price: 2929000,
+    avatar:
+      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/54ff2b77-3635-4c89-99f5-963722644364/jordan-one-take-4-pf-shoes-v5trdl.png",
+    quantitySaled: 6,
+  },
+  {
+    id: 5,
+    name: "Jordan Max Aura 5",
+    price: 3829000,
+    avatar:
+      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/bd294664-d21a-4b39-86a9-0ee269e51513/jordan-max-aura-5-shoes-ZBZ4Pz.png",
+    quantitySaled: 8,
+  },
+  {
+    id: 6,
+    name: "Air Jordan 1 Elevate Low",
+    price: 3829000,
+    avatar:
+      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/964cfa9e-5ce9-4c66-b11c-e70b7fbb8890/air-jordan-1-elevate-low-shoes-XlkVrM.png",
+    quantitySaled: 4,
+  },
+  {
+    id: 7,
+    name: "Jordan One Take 4 PF",
+    price: 2929000,
+    avatar:
+      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/54ff2b77-3635-4c89-99f5-963722644364/jordan-one-take-4-pf-shoes-v5trdl.png",
+    quantitySaled: 6,
+  },
+  {
+    id: 8,
+    name: "Jordan Max Aura 11",
+    price: 3829000,
+    avatar:
+      "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/bd294664-d21a-4b39-86a9-0ee269e51513/jordan-max-aura-5-shoes-ZBZ4Pz.png",
+    quantitySaled: 8,
+  },
+];
+
+const columns1 = [
+  { uid: "id", name: "STT" },
+  { uid: "avatar", name: "Hình Ảnh" },
+  { uid: "name", name: "Tên Sản Phẩm" },
+  { uid: "price", name: "Giá" },
+  { uid: "quantitySaled", name: "Số Lượng" },
+];
