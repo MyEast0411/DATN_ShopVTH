@@ -1,6 +1,7 @@
 import { Button } from "@material-tailwind/react";
-import { List, Tabs } from "antd";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Tabs } from "antd";
+import Badge from "@mui/material/Badge";
+import { useEffect, useState } from "react";
 import Children from "./Chirldren";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -17,12 +18,12 @@ const TabBanHang = () => {
   const [activeKey, setActiveKey] = useState("💖💖");
   const [selectData, setSelectData] = useState(null);
 
-  const handleDataSelect =async (data) => {
+  const handleDataSelect = async (data) => {
     setSelectData(data);
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCT/${data}`)
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
         const data = res.data.map((user, index) => {
           return {
             label: `${user?.id}`,
@@ -41,28 +42,30 @@ const TabBanHang = () => {
 
         setActiveKey(res.data[0].id);
         setItems((prevItems) => [...prevItems, ...data]);
-        toast(`Chọn hóa đơn thành công`)
+        toast(`Chọn hóa đơn thành công`);
       });
   };
-  
-  const [items, setItems] = useState([{
-    label: `Hóa đơn 1`,
-    children: (
-      <Children
-        columns={columns}
-        users={[]}
-        activeKey={`💖💖`}
-        onDataSelect={handleDataSelect}
-      />
-    ),
-    key: `💖💖`,
-  }]);
-  
+
+  const [items, setItems] = useState([
+    {
+      label: `Hóa đơn 1`,
+      children: (
+        <Children
+          columns={columns}
+          users={[]}
+          activeKey={`💖💖`}
+          onDataSelect={handleDataSelect}
+        />
+      ),
+      key: `💖💖`,
+    },
+  ]);
+
   const getData = async () => {
-      await axios
+    await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCT/${activeKey}`)
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
         setItems((prevItems) => [
           ...prevItems,
           {
@@ -89,38 +92,35 @@ const TabBanHang = () => {
     // getData();
   }, []);
 
-  
   const [invoiceCount, setInvoiceCount] = useState(1);
 
-  const addEmptyInvoice =async () => {
-    const result = await axios.post('http://localhost:8080/hoa_don/taoHoaDon')
-    .then((res) => {
-      console.log(res.data);
-      setItems((prevItems) => [
-        ...prevItems,
-        {
-          label: res.data.ma,
-          children: (
-            <Children
-              columns={columns}
-              users={[]}
-              activeKey={res.data.ma}
-              updateSoLuong={updateSoLuong}
-              // onDataSelected={handleDataSelected}
-            />
-          ),
-          key: res.data.ma,
-        },
-      ]);
-      setActiveKey(res.data.ma);
-      setInvoiceCount((prevCount) => prevCount + 1);
-      toast("Tạo hóa đơn thành công");
-    })
-    
+  const addEmptyInvoice = async () => {
+    const result = await axios
+      .post("http://localhost:8080/hoa_don/taoHoaDon")
+      .then((res) => {
+        console.log(res.data);
+        setItems((prevItems) => [
+          ...prevItems,
+          {
+            label: res.data.ma,
+            children: (
+              <Children
+                columns={columns}
+                users={[]}
+                activeKey={res.data.ma}
+                updateSoLuong={updateSoLuong}
+                // onDataSelected={handleDataSelected}
+              />
+            ),
+            key: res.data.ma,
+          },
+        ]);
+        setActiveKey(res.data.ma);
+        setInvoiceCount((prevCount) => prevCount + 1);
+        toast("Tạo hóa đơn thành công");
+      });
   };
-  const updateSoLuong = (key) => {
-    
-  };
+  const updateSoLuong = (key) => {};
   const onChange = (key) => {
     setActiveKey(key);
   };
@@ -156,13 +156,11 @@ const TabBanHang = () => {
   return (
     <>
       <div className="overflow-auto w-full bg-white p-3">
-        <div className="mb-2 font-normal border-gray-500 text-lg	flex items-center">
-          <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>📋 Bán hàng tại quầy</p>
-        </div>
         <div
           className="flex justify-end ..."
           style={{
             marginBottom: 16,
+            zIndex: 1,
           }}
         >
           <Button color="blue" style={{ width: 300 }} onClick={add}>
@@ -175,10 +173,33 @@ const TabBanHang = () => {
           activeKey={activeKey}
           type="editable-card"
           onEdit={onEdit}
-          items={items}
           size="large"
           onTabClick={handleOnTabClick}
-        />
+        >
+          {items.map((pane) => (
+            <Tabs.TabPane
+              key={pane.key}
+              tab={
+                <div style={{ position: "relative" }}>
+                  <span>{pane.label}</span>
+                  <Badge
+                    badgeContent={6}
+                    color="primary"
+                    max={5}
+                    style={{
+                      position: "absolute",
+                      top: "2px",
+                      right: "-30px",
+                      marginLeft: "100px",
+                    }}
+                  />
+                </div>
+              }
+            >
+              {pane.children}
+            </Tabs.TabPane>
+          ))}
+        </Tabs>
       </div>
     </>
   );
