@@ -10,6 +10,7 @@ import successIcon from "../assets/successIcon.png";
 import { getAllHA } from "../api/SanPham";
 import axios from "axios";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import IconGiaoHangNhanh from "../assets/iconGiaoHangNhanh.webp";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ export default function Checkout() {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const localShippingCost = value === 2 ? 0 : 10;
+    const localShippingCost = value === 2 ? 0 : 50000;
     let updatedShippingCost;
 
     if (value === 2) {
@@ -109,9 +110,9 @@ export default function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // ...
-  
+
     const hoTen = e.target.elements.hoTen.value;
     const soDienThoai = e.target.elements.soDienThoai.value;
     const diaChi = e.target.elements.diaChi.value;
@@ -122,26 +123,30 @@ export default function Checkout() {
         e.target.elements.District.selectedIndex
       ].text;
     const xaPhuong =
-      e.target.elements.wards.options[e.target.elements.wards.selectedIndex].text;
-  
+      e.target.elements.wards.options[e.target.elements.wards.selectedIndex]
+        .text;
+
     const phuongThucThanhToan =
       shippingCost === "Miễn phí"
         ? "Chuyển khoản qua ngân hàng"
         : "Thanh toán khi nhận hàng";
-  
+
     const confirmSubmission = () => {
       axios
-        .post("http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon", {
-          hoTen: hoTen,
-          sdt: soDienThoai,
-          diaChi: diaChi,
-          thanhPho: thanhPho,
-          huyen: quanHuyen,
-          xa: xaPhuong,
-          hinhThucThanhToan: phuongThucThanhToan,
-          gioHang: cartItems,
-          tongTien: tongTien,
-        })
+        .post(
+          "http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon",
+          {
+            hoTen: hoTen,
+            sdt: soDienThoai,
+            diaChi: diaChi,
+            thanhPho: thanhPho,
+            huyen: quanHuyen,
+            xa: xaPhuong,
+            hinhThucThanhToan: phuongThucThanhToan,
+            gioHang: cartItems,
+            tongTien: tongTien,
+          }
+        )
         .then((response) => {
           console.log(response.data);
           localStorage.clear();
@@ -154,7 +159,7 @@ export default function Checkout() {
           console.error(error);
         });
     };
-  
+
     confirmDialog({
       message: "Bạn có chắc muốn hoàn tất đơn hàng?",
       header: "Xác nhận đơn hàng",
@@ -163,7 +168,6 @@ export default function Checkout() {
       accept: confirmSubmission,
     });
   };
-  
 
   return (
     <>
@@ -205,6 +209,10 @@ export default function Checkout() {
               </Link>
             </div>
             <form onSubmit={handleSubmit}>
+              <div className="inputGroupCodeSignUp">
+                <input name="diaChi" type="email" required autocomplete="off" />
+                <label for="Password">Email</label>
+              </div>
               <div className="inputGroupCodeSignUp">
                 <input name="hoTen" type="text" required autocomplete="off" />
                 <label for="Code">Họ và tên</label>
@@ -315,6 +323,11 @@ export default function Checkout() {
                   </Space>
                 </Radio.Group>
               </div>
+              <div className="giao-hang-nhanh flex items-center">
+                <img width={140} src={IconGiaoHangNhanh} alt="" />
+                <span>Thời gian dự kiến: &nbsp;</span>
+                <span className="font-medium">27/11/2023</span>
+              </div>
               <div className="flex justify-between items-center">
                 <Link
                   to={"/cart"}
@@ -357,7 +370,7 @@ export default function Checkout() {
                     {cart.product.kichCo}
                   </p>
                   <p className="cart-checkout-gia-ban font-medium">
-                    VNĐ {cart.product.giaBan}
+                    VNĐ {Intl.NumberFormat().format(cart.product.giaBan)}
                   </p>
                 </div>
               </div>
@@ -378,16 +391,18 @@ export default function Checkout() {
               <div className="checkout-tinhTien">
                 <div className="flex justify-between">
                   <h3>Tạm tính</h3>
-                  <p>${calculateSubtotal()}</p>
+                  <p>VNĐ {Intl.NumberFormat().format(calculateSubtotal())}</p>
                 </div>
                 <div className="flex justify-between">
                   <h3>Phí vận chuyển</h3>
-                  <p>{shippingCost}</p>
+                  <p>VNĐ {Intl.NumberFormat().format(shippingCost)}</p>
                 </div>
                 <div className="horizontal"></div>
                 <div className="flex justify-between">
                   <h3 className="font-medium text-[20px]">Tổng cộng</h3>
-                  <p className="text-[20px] font-medium">${calculateTotal()}</p>
+                  <p className="text-[20px] font-medium">
+                    VNĐ {Intl.NumberFormat().format(calculateTotal())}
+                  </p>
                 </div>
               </div>
             </div>

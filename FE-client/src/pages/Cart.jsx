@@ -119,7 +119,6 @@ export default function Cart() {
     }
     openNotificationWithIcon("success", "Cập nhật số lượng thành công!");
   };
-
   const calculateSubtotal = () => {
     let subtotal = 0;
 
@@ -129,15 +128,13 @@ export default function Cart() {
       subtotal += quantity * cart.product.giaBan;
     });
 
-    return subtotal.toFixed(0);
+    return subtotal;
   };
 
   const calculateTotal = () => {
     const subtotal = parseFloat(calculateSubtotal());
-    const shippingAndHandling = 7.0;
-    const total = subtotal + shippingAndHandling;
-
-    return total.toFixed(0);
+    const total = subtotal;
+    return Intl.NumberFormat().format(total);
   };
 
   return (
@@ -195,10 +192,12 @@ export default function Cart() {
                       )?.mauSac || ""}
                     </div>
                     <div className="gia-ban-cartItem">
-                      ${cart.product.giaBan}
+                      VNĐ {Intl.NumberFormat().format(cart.product.giaBan)}
                     </div>
                     <div className="cart-item-card-size flex align-center">
-                      <h2 className="cart-item-card-size-title mr-2">Kích cỡ</h2>
+                      <h2 className="cart-item-card-size-title mr-2">
+                        Kích cỡ
+                      </h2>
                       <div className="cart-item-card-size-dropdown">
                         <Dropdown>
                           <DropdownTrigger>
@@ -279,7 +278,7 @@ export default function Cart() {
                     </div>
                   </div>
                 </div>
-                <div className="cart-item-shipping">
+                {/* <div className="cart-item-shipping">
                   <h2 className="font-medium">Giao hàng dự kiến</h2>
                   <div className="cart-item-arrives">
                     <span>25/11/2023</span>
@@ -290,7 +289,7 @@ export default function Cart() {
                       Cập nhật địa chỉ  
                     </Link>
                   </div>
-                </div>
+                </div> */}
                 <div className="cart-item-horizontal"></div>
               </div>
             ))
@@ -322,12 +321,11 @@ export default function Cart() {
           <div className="main-subtotal">
             <div className="flex justify-between">
               <h2 className="subtotal-title">Tổng phụ</h2>
-              <div className="price-subtotal">${calculateSubtotal()}</div>
+              <div className="price-subtotal">
+                VNĐ {Intl.NumberFormat().format(calculateSubtotal())}
+              </div>
             </div>
-            <div className="flex justify-between">
-              <h2 className="subtotal-title">Phí vận chuyển ước tính</h2>
-              <div className="price-subtotal">$7</div>
-            </div>
+
             <div className="flex justify-between">
               <h2 className="subtotal-title">Thuế ước tính</h2>
               <div className="price-subtotal">
@@ -337,7 +335,7 @@ export default function Cart() {
             <div className="horizontal"></div>
             <div className="flex justify-between">
               <h2 className="subtotal-title">Tổng</h2>
-              <div className="price-subtotal">${calculateTotal()}</div>
+              <div className="price-subtotal">VNĐ {calculateTotal()}</div>
             </div>
             <div className="horizontal"></div>
             <Link

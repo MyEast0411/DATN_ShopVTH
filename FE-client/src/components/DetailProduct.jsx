@@ -92,6 +92,8 @@ export default function DetailProduct() {
     if (existingItemIndex !== -1) {
       cart[existingItemIndex].product.soLuong += 1;
     } else {
+      console.log("selectedGiaBan:", selectedGiaBan);
+
       cart.push({
         product: {
           ids: renderID(),
@@ -233,7 +235,9 @@ export default function DetailProduct() {
             {sanPhamChiTiets[0].id_the_loai && (
               <div className="detail-pro-gender">{selectedTheLoai}</div>
             )}
-            <div className="detail-pro-price mt-5">${selectedGiaBan}</div>
+            <div className="detail-pro-price mt-5">
+              VNĐ {Intl.NumberFormat().format(selectedGiaBan)}
+            </div>
             <div className="choose-color-product flex">
               {/* Tổng Sản phẩm chi tiết phải tương ứng với tổng số màu sắc*/}
               {sanPhamChiTiets.map((spct) => (
