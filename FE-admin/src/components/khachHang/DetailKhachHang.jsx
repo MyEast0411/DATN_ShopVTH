@@ -230,7 +230,7 @@ export default function ThemKhachHang() {
   useEffect(() => {
     getKhachHang();
     getDiaChi();
-  }, []);
+  }, [diaChi]);
 
   const onChange = (e) => {
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });

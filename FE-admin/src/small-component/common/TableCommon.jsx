@@ -134,13 +134,6 @@ export default function TableCommon({ data }) {
             total={pages}
             onChange={(page) => setPage(page)}
           />
-          {/* <Pagination
-            showControls
-            color="success"
-            total={pages}
-            initialPage={page}
-            onChange={(page) => setPage(page)}
-          /> */}
         </div>
       }
       classNames={{

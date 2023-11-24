@@ -666,7 +666,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
 
         <div className="flex justify-between mt-5 mb-3">
           <span className="poppins-font h-10 text-lg font-bold uppercase">
-            Tài khoản{" "}
+            Khách hàng{" "}
           </span>
           <Modal
             onOk={handleOkTK}

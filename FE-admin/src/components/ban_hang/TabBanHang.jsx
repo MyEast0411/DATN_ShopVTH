@@ -156,6 +156,9 @@ const TabBanHang = () => {
   return (
     <>
       <div className="overflow-auto w-full bg-white p-3">
+        <div className="mb-2 font-normal border-gray-500 text-lg	flex items-center">
+          <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>📋 Bán hàng tại quầy</p>
+        </div>
         <div
           className="flex justify-end ..."
           style={{
