@@ -149,19 +149,19 @@ export default function Cart() {
       <div className="breadcrumbs-cart w-full sticky top-20">
         <Breadcrumbs size="lg" className="my-3 design-w">
           <BreadcrumbItem>
-            <Link to="/">Home</Link>
+            <Link to="/">Trang chủ</Link>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <Link to="/shop">Shop</Link>
+            <Link to="/shop">Sản phẩm</Link>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <Link className="text-[#B4B4B3] cursor-default">Cart</Link>
+            <Link className="text-[#B4B4B3] cursor-default">Giỏ hàng</Link>
           </BreadcrumbItem>
         </Breadcrumbs>
       </div>
       <div className="grid grid-cols-3 gap-4 main-cart">
         <div className="col-span-2 main-cart-item">
-          <h2 className="main-cart-item-title-bag mb-2">BAG</h2>
+          <h2 className="main-cart-item-title-bag mb-2">Túi</h2>
           {isCartEmpty ? (
             <>
               <span className="link-underline font-medium">
@@ -198,7 +198,7 @@ export default function Cart() {
                       ${cart.product.giaBan}
                     </div>
                     <div className="cart-item-card-size flex align-center">
-                      <h2 className="cart-item-card-size-title mr-2">Size</h2>
+                      <h2 className="cart-item-card-size-title mr-2">Kích cỡ</h2>
                       <div className="cart-item-card-size-dropdown">
                         <Dropdown>
                           <DropdownTrigger>
@@ -214,7 +214,7 @@ export default function Cart() {
                       </div>
                       <div className="cart-item-card-quantity flex align-center">
                         <h2 className="cart-item-card-size-title mr-2 ml-5">
-                          Quantity
+                          Số lượng
                         </h2>
                         <div className="cart-item-card-quantity">
                           <div className="cart-item-card-size-dropdown">
@@ -280,14 +280,14 @@ export default function Cart() {
                   </div>
                 </div>
                 <div className="cart-item-shipping">
-                  <h2 className="font-medium">Shipping</h2>
+                  <h2 className="font-medium">Giao hàng dự kiến</h2>
                   <div className="cart-item-arrives">
-                    <span>Arrives by Tue, Nov 21</span>
+                    <span>25/11/2023</span>
                     <Link
                       to="/cart"
                       className="underline ml-3 cart-item-arrives-edit-location"
                     >
-                      Edit Location
+                      Cập nhật địa chỉ  
                     </Link>
                   </div>
                 </div>
@@ -297,7 +297,7 @@ export default function Cart() {
           )}
         </div>
         <div className="main-checkout col-span-1 sticky-grid">
-          <h2 className="summary-title">Summary</h2>
+          <h2 className="summary-title">Tạm tính</h2>
           <div className="accordion">
             <Accordion
               style={{
@@ -308,35 +308,35 @@ export default function Cart() {
             >
               <AccordionItem
                 key="1"
-                aria-label="Do you have a Promo Code?"
-                title="Do you have a Promo Code?"
+                aria-label="Bạn có mã giảm giá?"
+                title="Bạn có mã giảm giá?"
                 className="font-medium"
               >
                 <div className="main-input-promo-code">
                   <input type="text" name="text" className="input-promo-code" />
-                  <button className="apply-promo-code-btn">Apply</button>
+                  <button className="apply-promo-code-btn">Áp dụng</button>
                 </div>
               </AccordionItem>
             </Accordion>
           </div>
           <div className="main-subtotal">
             <div className="flex justify-between">
-              <h2 className="subtotal-title">Subtotal</h2>
+              <h2 className="subtotal-title">Tổng phụ</h2>
               <div className="price-subtotal">${calculateSubtotal()}</div>
             </div>
             <div className="flex justify-between">
-              <h2 className="subtotal-title">Estimated Shipping & Handling</h2>
+              <h2 className="subtotal-title">Phí vận chuyển ước tính</h2>
               <div className="price-subtotal">$7</div>
             </div>
             <div className="flex justify-between">
-              <h2 className="subtotal-title">Estimated Tax</h2>
+              <h2 className="subtotal-title">Thuế ước tính</h2>
               <div className="price-subtotal">
                 <MdHorizontalRule />
               </div>
             </div>
             <div className="horizontal"></div>
             <div className="flex justify-between">
-              <h2 className="subtotal-title">Total</h2>
+              <h2 className="subtotal-title">Tổng</h2>
               <div className="price-subtotal">${calculateTotal()}</div>
             </div>
             <div className="horizontal"></div>
@@ -344,7 +344,7 @@ export default function Cart() {
               to={"/checkout"}
               className="checkout-button mb-5 flex justify-center"
             >
-              <button>Checkout</button>
+              <button>Thanh toán</button>
             </Link>
             <div className="paypal-button flex justify-center">
               <img

@@ -15,11 +15,11 @@ export default function Footer() {
             <span>JORDAN VTH</span>
           </div>
 
-          <p className="mx-auto mt-6 max-w-md text-center leading-relaxed text-gray-500">
-          Copyright © 2023 All Rights Reserved by Jordan VTH.
+          <p className="mx-auto mt-6 text-center leading-relaxed text-gray-500">
+            Bản quyền © 2023 Mọi quyền được bảo lưu bởi Jordan VTH.
           </p>
 
-          <ul className="mt-12 flex flex-wrap justify-center gap-6 md:gap-8 lg:gap-12">
+          {/* <ul className="mt-12 flex flex-wrap justify-center gap-6 md:gap-8 lg:gap-12">
             <li>
               <a
                 className="text-gray-700 transition hover:text-gray-700/75"
@@ -73,7 +73,7 @@ export default function Footer() {
                 Blog
               </a>
             </li>
-          </ul>
+          </ul> */}
 
           <ul className="mt-12 flex align-center justify-center gap-6 md:gap-8">
             <li>

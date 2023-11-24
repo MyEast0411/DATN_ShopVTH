@@ -179,17 +179,17 @@ export default function Checkout() {
             <div className="breadcrumbs-cart text-[15px]">
               <Breadcrumbs className="my-3">
                 <BreadcrumbItem>
-                  <Link to="/">Home</Link>
+                  <Link to="/">Trang chủ</Link>
                 </BreadcrumbItem>
                 <BreadcrumbItem>
-                  <Link to="/shop">Shop</Link>
+                  <Link to="/shop">Sản phẩm</Link>
                 </BreadcrumbItem>
                 <BreadcrumbItem>
-                  <Link to="/cart">Cart</Link>
+                  <Link to="/cart">Giỏ hàng</Link>
                 </BreadcrumbItem>
                 <BreadcrumbItem>
                   <Link className="text-[#B4B4B3] cursor-default">
-                    Checkout
+                    Thủ tục thanh toán
                   </Link>
                 </BreadcrumbItem>
               </Breadcrumbs>
@@ -357,7 +357,7 @@ export default function Checkout() {
                     {cart.product.kichCo}
                   </p>
                   <p className="cart-checkout-gia-ban font-medium">
-                    ${cart.product.giaBan}
+                    VNĐ {cart.product.giaBan}
                   </p>
                 </div>
               </div>

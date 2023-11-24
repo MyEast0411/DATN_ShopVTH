@@ -17,7 +17,7 @@ import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import AlsoLike from "./AlsoLike";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
-import { v4 as uuidv4 } from "uuid";; 
+import { v4 as uuidv4 } from "uuid";
 
 export default function DetailProduct() {
   const { idSP } = useParams();
@@ -34,7 +34,6 @@ export default function DetailProduct() {
   const [cartItem, setCartItem] = useState({});
 
   const [api, contextHolder] = notification.useNotification();
-
 
   useEffect(() => {
     const fetchSPCTByIdSP = async () => {
@@ -183,23 +182,23 @@ export default function DetailProduct() {
   return (
     <>
       {contextHolder}
-    
+
       <InfoTop />
       <Header />
 
       <div className="main-detail-product">
         <Breadcrumbs size="lg" className="my-3">
           <BreadcrumbItem>
-            <Link to="/">Home</Link>
+            <Link to="/">Trang chủ</Link>
           </BreadcrumbItem>
 
           <BreadcrumbItem>
-            <Link to="/shop">Shop</Link>
+            <Link to="/shop">Sản phẩm</Link>
           </BreadcrumbItem>
 
           <BreadcrumbItem>
             <Link className="text-[#B4B4B3] cursor-default">
-              Detail product
+              Chi tiết sản phẩm
             </Link>
           </BreadcrumbItem>
         </Breadcrumbs>
@@ -250,10 +249,10 @@ export default function DetailProduct() {
               ))}
             </div>
             <div className="detail-pro-select-size-title flex justify-between mt-10">
-              <div> Select Size</div>
+              <div> Chọn kích cỡ</div>
               <Link to="/size-guide" className="size-guide underline">
                 {" "}
-                Size Guide
+                Bảng kích cỡ
               </Link>
             </div>
             <div className="detail-pro-select-size-button-choose grid grid-cols-2 gap-4">
@@ -275,10 +274,9 @@ export default function DetailProduct() {
             </div>
             <div className="interested flex justify-center text-center mt-10">
               <div>
-                4 interest-free payments of $52.50 with{" "}
-                <span className="font-medium"> Klarna</span>.{" "}
-                <a href="#" className="underline link-underline">
-                  Learn More
+                Đăng nhập để nhận nhiều ưu đãi {""}
+                <a href="/sign-in" className="underline link-underline">
+                  Đăng nhập
                 </a>
               </div>
             </div>
@@ -287,10 +285,10 @@ export default function DetailProduct() {
               onClick={addToCart}
             >
               <div className="checkout-button mb-5 flex justify-center">
-                <button>Add to bag</button>
+                <button>Thêm vào giỏ hàng</button>
               </div>
               <div className="paypal-button flex justify-center align-center">
-                <button>Favorite</button>
+                <button>Yêu thích</button>
                 <AiOutlineHeart className="ml-2" />
               </div>
             </div>
@@ -298,8 +296,8 @@ export default function DetailProduct() {
               <Accordion className="px-0" selectionMode="multiple">
                 <AccordionItem
                   key="1"
-                  aria-label="Review"
-                  title="Review (8)"
+                  aria-label="Đánh giá"
+                  title="Đánh giá"
                   className="font-medium"
                 >
                   <div className="review-card">
@@ -309,20 +307,13 @@ export default function DetailProduct() {
                       <FaStar />
                       <FaStar />
                       <FaStarHalfAlt />
-                      <p className="ml-5">4.9 Stars</p>
+                      <p className="ml-5">4.9 Sao</p>
                     </div>
                   </div>
                 </AccordionItem>
-                <AccordionItem
-                  key="2"
-                  aria-label="Sale & Offers"
-                  title="Sale & Offers"
-                  className="font-medium"
-                >
-                  Shop All - Up to 60% OFF
-                </AccordionItem>
               </Accordion>
             </div>
+            <div className="cart-item-horizontal max-w-[60%]"></div>
           </div>
         </div>
       </div>

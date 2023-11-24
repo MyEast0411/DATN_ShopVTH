@@ -30,7 +30,7 @@ export default function SignIn() {
 
           <form onSubmit={handleFormSubmit}>
             <div className="sign-in-title mb-10">
-              Enter your email to join us or sign in.
+            Nhập email của bạn để đăng nhập.
             </div>
             <div className="inputGroupEmail">
               <input
@@ -43,22 +43,23 @@ export default function SignIn() {
               <label for="email">Email</label>
             </div>
             <p className="policy">
-              By continuing, I agree to Jordan VTH's{" "}
+            Bằng cách tiếp tục, tôi đồng ý với{" "}
               <a href="#" className="underline cursor-pointer">
-                Privacy Policy
+              Chính sách bảo mật
               </a>{" "}
-              and
+              và
               <a href="#" className="underline cursor-pointer">
                 {" "}
-                Terms of Use.
+                Điều khoản sử dụng{" "}
               </a>
+              của Jordan VTH.
             </p>
             <div className="flex justify-end">
               <button
                 type="submit"
                 className="inline-block main-sign-in-button"
               >
-                Continue
+                Tiếp tục
               </button>
             </div>
           </form>

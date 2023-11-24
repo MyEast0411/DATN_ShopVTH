@@ -24,24 +24,20 @@ export default function InfoTop() {
 
         <div className="user-menu flex">
           <div className="flex">
-            <div className="cursor-pointer">Nike Refurbished</div>
+            <div className="cursor-pointer">Tìm cửa hàng</div>
             <span>|</span>
           </div>
           <div className="flex">
-            <div className="cursor-pointer">Find a Store</div>
+            <div className="cursor-pointer">Giúp đỡ</div>
             <span>|</span>
           </div>
           <div className="flex">
-            <div className="cursor-pointer">Help</div>
-            <span>|</span>
-          </div>
-          <div className="flex">
-            <div className="cursor-pointer">Join us</div>
+            <div className="cursor-pointer">Cộng tác</div>
             <span>|</span>
           </div>
           <div className="flex">
             <Link to="/sign-in" className="cursor-pointer">
-              Sign In
+              Đăng nhập
             </Link>
             {/* Nếu đăng nhập thì thay chữ Sign In 
               = Hi, Tên user + icon user
