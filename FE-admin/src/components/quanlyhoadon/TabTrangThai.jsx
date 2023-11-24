@@ -74,10 +74,32 @@ export default function TabTrangThai({
     );
     // console.log(res.data.content);
   };
+
+  // const listTitleTimline = [
+  //   {
+  //     title: `Chờ xác nhận`,
+  //     icon: { GiConfirmed },
+  //   },
+  //   {
+  //     title: `Xác Nhận`,
+  //     icon: { GiConfirmed },
+  //   },
+  //   {
+  //     title: `Chờ Vận Chuyển`,
+  //     icon: { FaShippingFast },
+  //   },
+  //   {
+  //     title: `Giao Hàng`,
+  //     icon: { LuPackageCheck },
+  //   },
+  //   {
+  //     title: `Hoàn Thành`,
+  //     icon: { LuPackageCheck },
+  //   },
+  // ];
   const items = [
     `Chờ xác nhận`,
     `Xác Nhận`,
-    `Chờ Thanh Toán`,
     `Chờ Vận Chuyển`,
     `Giao Hàng`,
     `Hoàn Thành`,
