@@ -222,7 +222,11 @@ const ThongKe = () => {
 
   return (
     <>
+    
       <div className="overflow-auto w-full bg-white p-3 space-y-8" style={{}}>
+        <div className="mb-2 font-normal border-gray-500 text-lg	flex items-center">
+          <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>📊 Thống kê</p>
+        </div>
         <div className="block-1 flex space-x-8">
           <div className="block-1-1 w-1/2 space-y-4">
             <div

@@ -50,6 +50,9 @@ export default function QuanLyHoaDon() {
     <>
       <div>
         <div className="bg-white rounded-lg">
+          <div className="mb-2 font-normal border-gray-500 text-lg	flex items-center">
+            <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>📋 Quản lý hóa đơn</p>
+          </div>
           <div className="mb-2 border-b-[1px] font-normal relative border-gray-500 text-lg flex items-center">
             <AiOutlineFilter />
             <p className="ml-2 mt-1"> Bộ lọc</p>
