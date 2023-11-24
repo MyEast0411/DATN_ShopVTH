@@ -426,7 +426,6 @@ export default function SanPham() {
   return (
     <>
       <div>
-        <h2 className="mb-5 font-bold text-2xl">Quản Lý Sản Phẩm</h2>
         <div>
         <div className="mb-2 font-normal border-gray-500 text-lg	flex items-center">
           <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>⚙ Quản lý sản phẩm</p>

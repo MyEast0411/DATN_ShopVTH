@@ -1,13 +1,17 @@
 package com.example.shop.controller;
 
+import com.example.shop.dto.HoaDonCTTDTO;
+import com.example.shop.dto.HoaDonDTO;
 import com.example.shop.dto.ThanhToanHoaDonDTO;
 import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.entity.Voucher;
 import com.example.shop.repositories.HoaDonRepository;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.repositories.NhanVienRepository;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
+import com.example.shop.viewmodel.SanPhamVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +48,9 @@ public class HoaDonController {
 
     @Autowired
     private LichSuHoaDonService lichSuHoaDonService;
+
+    @Autowired
+    private NhanVienRepository ssNV;
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
 //            @RequestParam(name = "page" , defaultValue = "0")Integer numPage
@@ -69,10 +76,34 @@ public class HoaDonController {
     public ResponseEntity<HoaDon> getHoaDon(@PathVariable("id")HoaDon hoaDon){
         return ResponseEntity.ok(hoaDon);
     }
+    public HoaDonCTTDTO convertHoaDonChuaTTDTO(Object[] row) {
+        HoaDonCTTDTO hd = new HoaDonCTTDTO();
+        hd.setMa((String) row[0]);
 
+        return hd;
+    }
     @GetMapping("getHoaDonCTT")
-    public ResponseEntity<List<HoaDon>> getHoaDonCTT(){
-        return ResponseEntity.ok(hoaDonRepository.getHDChuaTT());
+    public ResponseEntity getHoaDonCTT(){
+        List<Object[]> resultList = hoaDonRepository.getSLSPByHDChuaTT();
+        List<HoaDonCTTDTO> list = new ArrayList<>();
+        for (Object[] row : resultList) {
+            String ma = (String) row[0];
+            String idKhachHang = (String) row[1];
+            String idNhanVien = (String) row[2];
+            BigDecimal soLuong = (BigDecimal) row[3];
+            Integer loaiHD = (Integer) row[4];
+            Integer trangThai = (Integer) row[5];
+            HoaDonCTTDTO hoaDonCTTDTO = HoaDonCTTDTO.builder()
+                    .ma(ma)
+                    .idKhachHang(idKhachHang == null ? null : ssKH.findById(idKhachHang).get())
+                    .idNhanVien(idNhanVien == null ? null : ssNV.findById(idNhanVien).get())
+                    .soLuong(soLuong.intValue())
+                    .loaiHd(loaiHD)
+                    .trangThai(trangThai)
+                    .build();
+            list.add(hoaDonCTTDTO);
+        }
+        return ResponseEntity.ok(list);
     }
 
 
