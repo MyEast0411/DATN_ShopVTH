@@ -181,6 +181,17 @@ public class HoaDonController {
         return new ResponseEntity(mess , HttpStatus.OK);
     }
 
+    @PostMapping("cancelHD/{id}")
+    public ResponseEntity cancelHD(@PathVariable("id")String id){
+
+        HoaDon hoaDon = hoaDonService.getHoaDon(id);
+        hoaDon.setTrangThai(5);
+        hoaDonService.updateHoaDon(hoaDon);
+
+//        System.out.println(mess);
+        return new ResponseEntity("Hủy Thành công" , HttpStatus.OK);
+    }
+
 
 
 
