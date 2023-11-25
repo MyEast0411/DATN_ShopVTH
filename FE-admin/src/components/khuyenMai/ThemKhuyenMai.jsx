@@ -154,7 +154,7 @@ export default function ThemKhuyenMai() {
         >
           <form className="bg-slate-500 rounded">
             <h2 className="text-xl mb-10 font-bold text-gray-800">
-              Thêm khuyến mại
+              Thêm đợt giảm giá
             </h2>
             <div className="grid gap-6 mb-6 md:grid-cols-1">
               <div className="mb-5">

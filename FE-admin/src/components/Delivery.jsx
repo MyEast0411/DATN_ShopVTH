@@ -276,12 +276,6 @@ export default function Delivery({ activeKey, khachHang,setKhachHang }) {
                 placeholder="Ten"
                 value={khachHang?.ten || ""}
                 required
-                onChange={(e) => {
-                  setKhachHang(prevState => ({
-                    ...prevState,
-                    ten: e.target.value
-                  }));
-                }}
               />
             </div>
 

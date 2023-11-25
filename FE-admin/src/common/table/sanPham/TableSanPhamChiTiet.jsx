@@ -225,14 +225,15 @@ export default function App({ gioHang }) {
   const { ma } = useParams();
 
   const url = `http://localhost:8080/getAllSPCT`;
-  
+  React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(url);
+
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
-          hinhAnh: 
+          hinhAnh:
             hinhAnh.find((x) => x.id_san_pham_chi_tiet.id == item.id)?.ten ||
             "",
           mauSac: item.id_mau_sac.maMau,
@@ -250,10 +251,9 @@ export default function App({ gioHang }) {
         console.error("Lỗi khi gọi API: ", error);
       }
     }
+    fetchChiTietSanPham();
+  }, []);
 
-  useEffect(() => {
-    fetchChiTietSanPham(); 
-  },[])
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -479,7 +479,7 @@ export default function App({ gioHang }) {
     };
   
     fetchData();
-  }, [sanPhams]);
+  }, [sanPham]);
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">

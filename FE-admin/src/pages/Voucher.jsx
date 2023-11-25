@@ -620,7 +620,7 @@ export default function Voucher() {
                     label="Giá trị(VND)"
                     step={1000}
                     minValue={0}
-                    maxValue={priceOptions[1] / 10}
+                    maxValue={20000}
                     defaultValue={priceOptions}
                     formatOptions={{ style: "currency", currency: "VND" }}
                     className="max-w-md"

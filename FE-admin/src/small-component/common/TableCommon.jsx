@@ -52,13 +52,12 @@ statusColorMap["Đã dừng"] = "danger";
 
 export default function TableCommon({ data }) {
   const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(0);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const rowsPerPage = 6;
+
+  const pages = Math.ceil(data.length / rowsPerPage);
 
   const items = useMemo(() => {
-    const rowsPerPage = 6;
-
-    // const pages = ;
-    setPages(Math.ceil(data.length / rowsPerPage));
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
@@ -134,6 +133,13 @@ export default function TableCommon({ data }) {
             total={pages}
             onChange={(page) => setPage(page)}
           />
+          {/* <Pagination
+            showControls
+            color="success"
+            total={pages}
+            initialPage={page}
+            onChange={(page) => setPage(page)}
+          /> */}
         </div>
       }
       classNames={{

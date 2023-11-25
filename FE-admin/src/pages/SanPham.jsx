@@ -428,9 +428,6 @@ export default function SanPham() {
       <div>
         <h2 className="mb-5 font-bold text-2xl">Quản Lý Sản Phẩm</h2>
         <div>
-        <div className="mb-2 font-normal border-gray-500 text-lg	flex items-center">
-          <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>⚙ Quản lý sản phẩm</p>
-        </div>
           <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex items-center">
             <BiFilterAlt />
             <p className="ml-2 mt-1"> Bộ lọc</p>
@@ -443,7 +440,7 @@ export default function SanPham() {
               padding: "10px",
               borderRadius: "8px",
               width: "100%",
-              height: "230px",
+              height: "190px",
               boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
               transition: "transform 0.2s",
               justifyContent: "space-between",

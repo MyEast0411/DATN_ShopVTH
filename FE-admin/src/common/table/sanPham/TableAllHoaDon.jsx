@@ -81,7 +81,7 @@ export default function App({ onDataSelected }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [soLuongSP, setSoLuongSP] = useState({});
+  const [soLuong, setSoLuong] = useState("");
   const [soLuongDat, setSoLuongDat] = useState("");
   const [isModalOpenThemSL, setIsModalOpenThemSL] = useState(false);
 
@@ -225,7 +225,7 @@ export default function App({ onDataSelected }) {
                       color: "white",
                       cursor: "pointer",
                     }}
-                    onClick={() => {handleDelete();setIdToDelete(sanPham.maHD)}}
+                    onClick={() => {handleDelete(sanPham.soLuong);setIdToDelete(sanPham.maHD)}}
                   >
                     Chọn
                   </div>

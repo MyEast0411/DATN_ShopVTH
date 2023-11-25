@@ -2,17 +2,16 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export default function SaleBar() {
-
-
   return (
     <>
       <div className="info-top w-full flex justify-center">
         <div>
           <div className="font-medium text-base">
-            🎊 Early Access to Black Friday: Up to 60% Off Sign in and use code
+            🎊 Truy cập sớm vào Black Friday: Giảm tới 60% đăng nhập và sử dụng
+            mã
           </div>
           <div className="flex justify-center">
-            ACCESS for an extra 25% off select styles.
+            TRUY CẬP để được giảm thêm 25% cho các kiểu đã chọn.
           </div>
         </div>
       </div>
@@ -40,22 +39,22 @@ export default function SaleBar() {
         <div className="menu-under flex justify-center">
           <ul className="flex">
             <li>
-              <a href="#">New Releases</a>
+              <a href="#">Bản mới phát hành</a>
             </li>
             <li>
-              <a href="#">Jordan Basketball</a>
+              <a href="#">Jordan bóng rổ</a>
             </li>
             <li>
-              <a href="#">Purpose & Community</a>
+              <a href="#">Mục đích & Cộng đồng</a>
             </li>
             <li>
-              <a href="#">Men</a>
+              <a href="#">Đàn ông</a>
             </li>
             <li>
-              <a href="#">Women</a>
+              <a href="#">Phụ nữ</a>
             </li>
             <li>
-              <a href="#">Kids</a>
+              <a href="#">Trẻ em</a>
             </li>
           </ul>
         </div>
@@ -72,13 +71,13 @@ export default function SaleBar() {
           </div>
           <div className="des-banner m-5 flex justify-center">
             <p className="text-center">
-              The signature star-studded outsole gets the Royal Blue treatment,
-              letting you walk the dynasty with each step.
+              Đế ngoài có hình ngôi sao đặc trưng được xử lý bằng màu xanh Royal
+              Blue, cho phép bạn bước đi theo từng bước đi của triều đại.
             </p>
           </div>
           <div className="shop-button flex justify-center mb-10">
             <Link to="/shop">
-              <button className="btn-shop-button">Shop</button>
+              <button className="btn-shop-button">Mua ngay</button>
             </Link>
           </div>
         </div>

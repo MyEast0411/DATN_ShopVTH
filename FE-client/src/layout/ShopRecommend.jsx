@@ -5,7 +5,7 @@ export default function ShopRecommend() {
   return (
     <>
       <div className="main-shop-recommend">
-        <h1>SHOP JORDAN ESSENTIALS</h1>
+        <h1 className="leading-loose">JORDAN ĐẶC SẮC</h1>
         <div className="x-scroll-product flex snap-x overflow-x-auto w-full">
           <Link to="/shop" className="x-scroll-product-card snap-center">
             <img
@@ -51,7 +51,7 @@ export default function ShopRecommend() {
       </div>
 
       <div className="main-shop-recommend main-shop-recommend-2">
-        <h1>JORDAN GEAR FOR THE ENTIRE FAM</h1>
+        <h1 className="leading-loose">JORDAN GEAR CHO TOÀN BỘ GIA ĐÌNH</h1>
         <div className="x-scroll-product flex justify-between w-full">
           <div className="x-scroll-product-card snap-center">
             <Link to="/shop">
@@ -61,10 +61,10 @@ export default function ShopRecommend() {
                 alt=""
               />
             </Link>
-            <h2>JORDAN MEN</h2>
+            <h2>JORDAN NAM</h2>
             <div className="shop-button mb-10">
               <Link to="/shop">
-                <button className="btn-shop-button">Shop</button>
+                <button className="btn-shop-button">Mua</button>
               </Link>
             </div>
           </div>
@@ -76,10 +76,10 @@ export default function ShopRecommend() {
                 alt=""
               />
             </Link>
-            <h2>JORDAN WOMEN</h2>
+            <h2>JORDAN NỮ</h2>
             <div className="shop-button mb-10">
               <Link to="/shop">
-                <button className="btn-shop-button">Shop</button>
+                <button className="btn-shop-button">Mua</button>
               </Link>
             </div>
           </div>
@@ -91,10 +91,10 @@ export default function ShopRecommend() {
                 alt=""
               />
             </Link>
-            <h2>JORDAN KIDS</h2>
+            <h2>JORDAN TRẺ EM</h2>
             <div className="shop-button mb-10">
               <Link to="/shop">
-                <button className="btn-shop-button">Shop</button>
+                <button className="btn-shop-button">Mua</button>
               </Link>
             </div>
           </div>

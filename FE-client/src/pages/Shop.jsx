@@ -10,11 +10,11 @@ import ProductList from "../components/ProductList";
 import { CiSliderHorizontal } from "react-icons/ci";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
-import {countAllSanPham} from "../api/SanPham"
+import { countAllSanPham } from "../api/SanPham";
 
 export default function Shop() {
-  const [countSanPham, setCountSanPham] = useState(0)
-  const fetchCountSanPham= async () => {
+  const [countSanPham, setCountSanPham] = useState(0);
+  const fetchCountSanPham = async () => {
     try {
       const data = await countAllSanPham();
       setCountSanPham(data);
@@ -27,19 +27,19 @@ export default function Shop() {
   }, [countSanPham]);
   const items = [
     {
-      label: <a href="http://localhost:5173/shop">Featured</a>,
+      label: <a href="http://localhost:5173/shop">Nổi bật</a>,
       key: "0",
     },
     {
-      label: <a href="http://localhost:5173/shop">Newest</a>,
+      label: <a href="http://localhost:5173/shop">Mới nhất</a>,
       key: "1",
     },
     {
-      label: <a href="http://localhost:5173/shop">Price: High-Low</a>,
+      label: <a href="http://localhost:5173/shop">Giá: Cao-Thấp</a>,
       key: "3",
     },
     {
-      label: <a href="http://localhost:5173/shop">Price: Low-High</a>,
+      label: <a href="http://localhost:5173/shop">Giá: Thấp-Cao</a>,
       key: "4",
     },
   ];
@@ -56,15 +56,17 @@ export default function Shop() {
       >
         <Breadcrumbs size="lg" className="my-3">
           <BreadcrumbItem>
-            <Link to="/">Home</Link>
+            <Link to="/">Trang chủ</Link>
           </BreadcrumbItem>
 
           <BreadcrumbItem>
-            <Link className="text-[#B4B4B3] cursor-default">Shop</Link>
+            <Link className="text-[#B4B4B3] cursor-default">Sản phẩm</Link>
           </BreadcrumbItem>
         </Breadcrumbs>
         <div className="sort w-full flex justify-between">
-          <h2 className="font-medium mb-8 text-2xl">JORDAN SHOES ({countSanPham})</h2>
+          <h2 className="font-medium mb-8 text-2xl">
+            GIÀY JORDAN({countSanPham})
+          </h2>
           <div className="flex justify-center cursor-pointer">
             <p
               className="mr-3"
@@ -72,7 +74,7 @@ export default function Shop() {
                 fontSize: "18px",
               }}
             >
-              Hide Filters
+              Ẩn bộ lọc
             </p>
             <CiSliderHorizontal
               className="mt-0.5"
@@ -93,7 +95,7 @@ export default function Shop() {
                       fontSize: "18px",
                     }}
                   >
-                    Sort by
+                    Lọc theo
                     <DownOutlined />
                   </Space>
                 </a>
@@ -118,8 +120,8 @@ export default function Shop() {
               <Accordion className="px-0" selectionMode="multiple">
                 <AccordionItem
                   key="1"
-                  aria-label="Sale & Offers"
-                  title="Sale & Offers"
+                  aria-label="Giảm giá & Ưu đãi"
+                  title="Giảm giá & Ưu đãi"
                   className="font-medium"
                 >
                   <Checkbox
@@ -128,13 +130,13 @@ export default function Shop() {
                     className="font-normal"
                     color="default"
                   >
-                    Shop All - Up to 60% OFF
+                    Ưu đãi nổi bật - Giảm tối đa tới 60%
                   </Checkbox>
                 </AccordionItem>
                 <AccordionItem
                   key="2"
-                  aria-label="Gender"
-                  title="Gender"
+                  aria-label="Giới tính"
+                  title="Giới tính"
                   className="font-medium"
                 >
                   <div className="flex flex-col">
@@ -144,7 +146,7 @@ export default function Shop() {
                       className="font-normal"
                       color="default"
                     >
-                      Men
+                      Nam
                     </Checkbox>
                     <Checkbox
                       defaultSelected={false}
@@ -152,7 +154,7 @@ export default function Shop() {
                       className="font-normal"
                       color="default"
                     >
-                      Women
+                      Nữ
                     </Checkbox>
                     <Checkbox
                       defaultSelected={false}
@@ -166,8 +168,8 @@ export default function Shop() {
                 </AccordionItem>
                 <AccordionItem
                   key="3"
-                  aria-label="Kids"
-                  title="Kids"
+                  aria-label="Trẻ em"
+                  title="Trẻ em"
                   className="font-medium"
                 >
                   <div className="flex flex-col">
@@ -177,7 +179,7 @@ export default function Shop() {
                       className="font-normal"
                       color="default"
                     >
-                      Boys
+                      Trai
                     </Checkbox>
                     <Checkbox
                       defaultSelected={false}
@@ -185,14 +187,14 @@ export default function Shop() {
                       className="font-normal"
                       color="default"
                     >
-                      Girls
+                      Gái
                     </Checkbox>
                   </div>
                 </AccordionItem>
                 <AccordionItem
                   key="4"
-                  aria-label="Shop by price"
-                  title="Shop by price"
+                  aria-label="Mua sắm theo giá  "
+                  title="Mua sắm theo giá "
                   className="font-medium"
                 >
                   <div className="flex flex-col">
@@ -202,7 +204,7 @@ export default function Shop() {
                       className="font-normal"
                       color="default"
                     >
-                      $25-$50
+                      200.000-500.000
                     </Checkbox>
                     <Checkbox
                       defaultSelected={false}
@@ -210,7 +212,7 @@ export default function Shop() {
                       className="font-normal"
                       color="default"
                     >
-                      $50-$100
+                      500.000-1Tr
                     </Checkbox>
                     <Checkbox
                       defaultSelected={false}
@@ -218,7 +220,7 @@ export default function Shop() {
                       className="font-normal"
                       color="default"
                     >
-                      $100-$150
+                      1Tr-1.5Tr
                     </Checkbox>
                     <Checkbox
                       defaultSelected={false}
@@ -226,59 +228,59 @@ export default function Shop() {
                       className="font-normal"
                       color="default"
                     >
-                      Over $150
+                      Trên 1.5Tr
                     </Checkbox>
                   </div>
                 </AccordionItem>
                 <AccordionItem
                   key="5"
-                  aria-label="Color"
-                  title="Color"
+                  aria-label="Màu sắc"
+                  title="Màu sắc"
                   className="font-medium"
                 >
                   <div className="grid grid-cols-3 gap-4 pb-5">
                     <div className="main-color black flex flex-col justify-center">
                       <div className="black-circle"></div>
-                      <p className="color-text">Black</p>
+                      <p className="color-text">Đen</p>
                     </div>
                     <div className="main-color black flex flex-col justify-center">
                       <div className="blue-circle"></div>
-                      <p className="color-text">Blue</p>
+                      <p className="color-text">Lam</p>
                     </div>
                     <div className="main-color black flex flex-col justify-center">
                       <div className="brown-circle"></div>
-                      <p className="color-text">Brown</p>
+                      <p className="color-text">Nâu</p>
                     </div>
                     <div className="main-color black flex flex-col justify-center">
                       <div className="green-circle"></div>
-                      <p className="color-text">Green</p>
+                      <p className="color-text">Lục</p>
                     </div>
                     <div className="main-color black flex flex-col justify-center">
                       <div className="grey-circle"></div>
-                      <p className="color-text">Grey</p>
+                      <p className="color-text">Xám</p>
                     </div>
                     <div className="main-color black flex flex-col justify-center">
                       <div className="orange-circle"></div>
-                      <p className="color-text">Orange</p>
+                      <p className="color-text">Cam</p>
                     </div>
                     <div className="main-color black flex flex-col justify-center">
                       <div className="red-circle"></div>
-                      <p className="color-text">Red</p>
+                      <p className="color-text">Đỏ</p>
                     </div>
                     <div className="main-color black flex flex-col justify-center">
                       <div className="purple-circle"></div>
-                      <p className="color-text">Purple</p>
+                      <p className="color-text">Tím</p>
                     </div>
                     <div className="main-color black flex justify-center flex-col">
                       <div className="white-circle"></div>
-                      <p className="color-text">White</p>
+                      <p className="color-text">Trắng</p>
                     </div>
                   </div>
                 </AccordionItem>
                 <AccordionItem
                   key="6"
-                  aria-label="Brand"
-                  title="Brand"
+                  aria-label="Dòng giày"
+                  title="Dòng giày"
                   className="font-medium"
                 >
                   <div className="flex flex-col">
@@ -337,31 +339,6 @@ export default function Shop() {
                       color="default"
                     >
                       Jordan 13
-                    </Checkbox>
-                  </div>
-                </AccordionItem>
-                <AccordionItem
-                  key="7"
-                  aria-label="Shoe hieght"
-                  title="Shoe hieght"
-                  className="font-medium"
-                >
-                  <div className="flex flex-col font-normal">
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal mb-0.5"
-                      color="default"
-                    >
-                      Low Top
-                    </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal mb-0.5"
-                      color="default"
-                    >
-                      Mid Top
                     </Checkbox>
                   </div>
                 </AccordionItem>

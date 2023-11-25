@@ -315,7 +315,7 @@ export default function DetailHoaDon() {
           </div>
           <div className="row button-contact p-4 grid grid-cols-2">
             <div className="row ">
-              {currentTimeLine < 5 &&
+              {currentTimeLine < 6 &&
               info.loaiHd === 0 &&
               info.trangThai != 5 ? (
                 <Button
@@ -402,7 +402,7 @@ export default function DetailHoaDon() {
               </Button>
               {listTimeLineOnline.length < 4 &&
                 info.loaiHd == !1 &&
-                info.trangThai(
+                info.trangThai < 4 && (
                   <Button className="me-4" color="red" onClick={cancelHD}>
                     Hủy Hóa Đơn
                   </Button>
@@ -674,25 +674,6 @@ export default function DetailHoaDon() {
   );
 }
 
-// const items = [
-//   `Chờ xác nhận`,
-//   `Xác Nhận`,
-//   `Chờ Thanh Toán`,
-//   `Chờ Vận Chuyển`,
-//   `Giao Hàng`,
-//   `Hoàn Thành`,
-//   `Hủy`,
-// ];
-
-// const items = [
-//   `Chờ xác nhận`,
-//   `Xác Nhận`,
-//   `Chờ Thanh Toán`,
-//   `Chờ Vận Chuyển`,
-//   `Giao Hàng`,
-//   `Hoàn Thành`,
-//   `Hủy`,
-// ];
 const listTitleTimline = [
   {
     title: `Chờ xác nhận`,

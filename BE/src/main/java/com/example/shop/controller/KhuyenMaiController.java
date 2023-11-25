@@ -5,6 +5,7 @@ import com.example.shop.entity.KhuyenMai;
 import com.example.shop.entity.KhuyenMaiSanPhamChiTiet;
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.ChiTietSanPhamRepository;
+import com.example.shop.repositories.KhuyenMaiRepository;
 import com.example.shop.repositories.KhuyenMaiSanPhamChiTietRepository;
 import com.example.shop.services.KhuyenMaiService;
 import com.example.shop.viewmodel.KhuyenMaiSPCTViewmodel;
@@ -26,6 +27,9 @@ public class KhuyenMaiController {
 
     @Autowired
     private KhuyenMaiService khuyenMaiService;
+
+    @Autowired
+    KhuyenMaiRepository khuyenMaiRepo;
 
     @Autowired
     private ChiTietSanPhamRepository chiTietSPRepo;
@@ -74,6 +78,7 @@ public class KhuyenMaiController {
                     existing.setGiaTriPhanTram(khuyenMai.getGiaTriPhanTram());
                     existing.setNgaySua(new Date());
                     existing.setDeleted(0);
+                    existing.setSwitchKM(khuyenMai.getSwitchKM());
                     khuyenMaiService.save(existing);
 
                     for (String maCTSP : listMaCTSP) {
@@ -94,6 +99,14 @@ public class KhuyenMaiController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khuyến mãi không tồn tại");
                 }
             } else {
+                Date currentDate = new Date();
+                List<KhuyenMai> khuyenMaiList = khuyenMaiService.findAll();
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(currentDate);
+                calendar.add(Calendar.DATE, 20); // Thêm 20 ngày vào currentDate
+
+                Date currentDatePlus20Days = calendar.getTime();
                 List<KhuyenMai> overlappingPromotions = khuyenMaiService.findOverlappingPromotions(
                         khuyenMai.getNgayBatDau(),
                         khuyenMai.getNgayKetThuc()
@@ -105,7 +118,19 @@ public class KhuyenMaiController {
                 khuyenMai.setNgayTao(new Date());
                 khuyenMai.setNgaySua(new Date());
                 khuyenMai.setDeleted(0);
-                khuyenMai.setSwitchKM("Đang diễn ra");
+                if (khuyenMai.getNgayBatDau().after(currentDatePlus20Days)) {
+                    khuyenMai.setSwitchKM("Chưa diễn ra");
+                    khuyenMai.setTrangThai("Chưa diễn ra");
+                } else if (khuyenMai.getNgayBatDau().after(currentDate)) {
+                    khuyenMai.setSwitchKM("Sắp diễn ra");
+                    khuyenMai.setTrangThai("Sắp diễn ra");
+                } else if (khuyenMai.getNgayKetThuc().before(currentDate)) {
+                    khuyenMai.setSwitchKM("Đã kết thúc");
+                    khuyenMai.setTrangThai("Đã kết thúc");
+                } else {
+                    khuyenMai.setSwitchKM("Đang diễn ra");
+                    khuyenMai.setTrangThai("Đang diễn ra");
+                }
                 khuyenMaiService.save(khuyenMai);
                 for (String maCTSP : listMaCTSP) {
                     List<SanPhamChiTiet> spctList = chiTietSPRepo.getSPCTByMaSPCT(Collections.singletonList(maCTSP));
@@ -170,9 +195,10 @@ public class KhuyenMaiController {
     public KhuyenMai batTatKhuyenMai(@PathVariable("id") KhuyenMai khuyenMai, @PathVariable String isSelected) {
         if (isSelected.equals("true")) {
             khuyenMai.setSwitchKM("Đã dừng");
+            System.out.println("Da dung");
         } else {
             khuyenMai.setSwitchKM("Đang diễn ra");
-            System.out.println("Đang diễn ra");
+            System.out.println("dang dien ra");
         }
         return khuyenMaiService.save(khuyenMai);
 
@@ -200,5 +226,6 @@ public class KhuyenMaiController {
         }
         return null;
     }
+
 
 }

@@ -59,6 +59,8 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
   const [maGiaoDich, setMaGiaoDich] = useState("");
   const [voucher, setVoucher] = useState(0);
   const [codeVC, setCodeVC] = useState("");
+  const [SLSP, setSLSP] = useState("");
+
   const [tienMatConfirmationOpen, setTienMatConfirmationOpen] = React.useState(false);
   const textRef = useRef('');
   const navigate = useNavigate();
@@ -336,7 +338,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
       if (typeof onDataSelect === 'function') {
         onDataSelect(data);
       }else {
-        toast.error(`404 Bát Rì Quét`)
+        toast.error(`404 `)
       }
       // getData();
       // getThanhToan();
@@ -652,7 +654,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
             footer={[]}
           >
             <div className="mt-5">
-              <TableHoaDon onDataSelected={handleDataSelected}/>
+              <TableHoaDon onDataSelected={handleDataSelected} setSLSP={setSLSP}/>
             </div>
           </Modal>
         </div>
@@ -666,7 +668,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
 
         <div className="flex justify-between mt-5 mb-3">
           <span className="poppins-font h-10 text-lg font-bold uppercase">
-            Khách hàng{" "}
+            Tài khoản{" "}
           </span>
           <Modal
             onOk={handleOkTK}

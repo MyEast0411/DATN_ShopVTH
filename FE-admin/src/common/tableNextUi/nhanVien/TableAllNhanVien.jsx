@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
   Table,
   TableHeader,
@@ -7,21 +7,16 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Input,
   Button,
   DropdownTrigger,
   Dropdown,
   DropdownMenu,
   DropdownItem,
   Chip,
-  Tooltip,
   Pagination,
-  Switch,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
+  Image,
+  Tooltip,
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -29,86 +24,62 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  TableCell as TableCellMui,
 } from "@mui/material";
-
+import { format } from "date-fns";
+// import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
+// import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
-import { EditIcon } from "../../otherComponents/EditIcon";
+import axios from "axios";
+import { toast } from "react-toastify";
 import { DeleteIcon } from "../../otherComponents/DeleteIcon";
 import { EyeIcon } from "../../otherComponents/EyeIcon";
-import {
-  getAllKhuyenMai,
-  deleteKhuyenMai,
-  searchByDate,
-  findKmspctByKhuyenMaiId,
-} from "../../../api/khuyenMai/KhuyenMaiApi";
-import { Settings } from "luxon";
-import { toast } from "react-toastify";
+// import { MdDeleteOutline } from "react-icons/md";
 import { TbInfoTriangle } from "react-icons/tb";
-import { format } from "date-fns";
-import axios from "axios";
+// import { LiaEyeSolid } from "react-icons/lia";
 
-Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "id", uid: "id", sortable: true },
-  { name: "Mã", uid: "ma", sortable: true },
-  { name: "Tên", uid: "ten", sortable: true },
-  { name: "Giá trị giảm (%)", uid: "giaTriPhanTram", sortable: true },
-  { name: "Ngày bắt đầu", uid: "ngayBatDau", sortable: true },
-  { name: "Ngày kết thúc", uid: "ngayKetThuc", sortable: true },
-  { name: "Trạng thái", uid: "trangThai", sortable: true },
+  { name: "Ảnh", uid: "hinhAnh", sortable: true, align: "center" },
+  { name: "Họ tên", uid: "hoTen", sortable: true },
+  { name: "Chức vụ", uid: "chucVu", sortable: true },
+  { name: "Số điện thoại", uid: "sdt", sortable: true },
+  { name: "Địa chỉ", uid: "ngaySinh", sortable: true },
+  { name: "Trạng thái", uid: "trangThai" },
   { name: "Hành Động", uid: "hanhDong" },
 ];
 
 const statusOptions = [
-  { name: "Đang diễn ra", uid: "Đang diễn ra" },
-  { name: "Đã kết thúc", uid: "Đã kết thúc" },
-  { name: "Sắp diễn ra", uid: "Sắp diễn ra" },
-  { name: "Chưa diễn ra", uid: "Chưa diễn ra" },
+  { name: "Đang làm", uid: "Đang làm" },
+  { name: "Đã nghỉ", uid: "Đã nghỉ" },
 ];
 
 const statusColorMap = {
   active: "success",
   paused: "danger",
   incoming: "warning",
-  notStarted: "primary",
 };
-statusColorMap["Sắp diễn ra"] = "warning";
-statusColorMap["Đang diễn ra"] = "success";
-statusColorMap["Đã kết thúc"] = "danger";
-statusColorMap["Chưa diễn ra"] = "primary";
-statusColorMap["Đã dừng"] = "danger";
+statusColorMap["Đang làm"] = "success";
+statusColorMap["Đã nghỉ"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
-  // "id",
-  "ma",
-  "ten",
-  "giaTriPhanTram",
-  "ngayBatDau",
-  "ngayKetThuc",
+  "hinhAnh",
+  "hoTen",
+  "chucVu",
+  "sdt",
+  "ngaySinh",
   "trangThai",
   "hanhDong",
 ];
 
-export default function TableAllKhuyenMai({ nbd, nkt, search }) {
+export default function App() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [khuyenMaiSPCT, setKhuyenMaiSPCT] = useState([]);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  const handleViewDetails = async (id) => {
-    onOpen();
-    try {
-      const response = await findKmspctByKhuyenMaiId(id);
-      console.log(response);
-      setKhuyenMaiSPCT(response);
-    } catch (error) {
-      console.error("Error fetching khuyenMaiSPCT details:", error);
-    }
-  };
+  const [rows, setRows] = React.useState([]);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
 
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
@@ -120,20 +91,17 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     setDeleteConfirmationOpen(false);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (idToDelete) {
-      deleteKhuyenMai(idToDelete)
+      await axios
+        .delete(`http://localhost:8080/khach-hang/delete/${idToDelete}`)
         .then((response) => {
-          console.log(`Delete successful for row ID: ${idToDelete}`);
           toast("🎉 Xóa thành công");
-          setKhuyenMais((prevKhuyenMais) =>
-            prevKhuyenMais.filter((item) => item.id !== idToDelete)
-          );
+          cancelDelete();
         })
         .catch((error) => {
-          console.error(`Error deleting record for ID: ${idToDelete}`, error);
+          toast("😢 Xóa thất bại");
         });
-
       cancelDelete();
     }
   };
@@ -150,52 +118,33 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
-  const [khuyenMais, setKhuyenMais] = useState([]);
+  const [sanPhams, setSanPhams] = React.useState([]);
 
-  async function fetchKhuyenMais() {
-    try {
-      if (nbd != "" && nkt != "") {
-        const dataSearch = await searchByDate(nbd, nkt);
-        const khuyenMaisFormatted = dataSearch.map((khuyenMai, index) => ({
-          ...khuyenMai,
-          id: khuyenMai.id,
+  React.useEffect(() => {
+    async function fetchChiTietSanPham() {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/nhan_vien/getAll"
+        );
+        console.log(response.data);
+        const updatedRows = response.data.map((item, index) => ({
+          id: item.id,
           stt: index + 1,
-          ngayBatDau: format(
-            new Date(khuyenMai.ngayBatDau),
-            "dd-MM-yyyy HH:mm"
-          ),
-          ngayKetThuc: format(
-            new Date(khuyenMai.ngayKetThuc),
-            "dd-MM-yyyy HH:mm"
-          ),
+          maKH: item.ma,
+          anh: item.anh,
+          hoTen: item.ten,
+          chucVu: item?.id_chuc_vu.ten,
+          sdt: item.sdt,
+          ngaySinh: item.diaChi,
+          trangThai: item.trang_thai == 1 ? "Đang làm" : "Đã nghỉ",
         }));
-        setKhuyenMais(khuyenMaisFormatted);
-      } else {
-        const data = await getAllKhuyenMai();
-        const khuyenMaisFormatted = data.map((khuyenMai, index) => ({
-          ...khuyenMai,
-          id: khuyenMai.id,
-          stt: index + 1,
-          ngayBatDau: format(
-            new Date(khuyenMai.ngayBatDau),
-            "dd-MM-yyyy HH:mm"
-          ),
-          ngayKetThuc: format(
-            new Date(khuyenMai.ngayKetThuc),
-            "dd-MM-yyyy HH:mm"
-          ),
-        }));
-        setKhuyenMais(khuyenMaisFormatted);
+        setSanPhams(updatedRows);
+      } catch (error) {
+        console.error("Lỗi khi gọi API: ", error);
       }
-    } catch (error) {
-      console.error("Lỗi khi gọi API: ", error);
     }
-  }
-
-  useEffect(() => {
-    fetchKhuyenMais();
-    setFilterValue(search);
-  }, [khuyenMais, nbd, nkt, search]);
+    fetchChiTietSanPham();
+  }, [sanPhams]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -209,24 +158,24 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
 
   const filteredItems = React.useMemo(() => {
     const filterText = filterValue.toLowerCase();
-    let filteredKhuyenMais = [...khuyenMais];
+    let filteredSanPhams = [...sanPhams];
 
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredKhuyenMais = filteredKhuyenMais.filter((khuyenMai) =>
-        Array.from(statusFilter).includes(khuyenMai.trangThai)
+      filteredSanPhams = filteredSanPhams.filter((sanPham) =>
+        Array.from(statusFilter).includes(sanPham.trangThai)
       );
-      return filteredKhuyenMais;
+      return filteredSanPhams;
     }
 
-    return khuyenMais.filter((khuyenMai) =>
-      Object.values(khuyenMai).some((value) =>
+    return sanPhams.filter((sanPham) =>
+      Object.values(sanPham).some((value) =>
         String(value).toLowerCase().includes(filterText)
       )
     );
-  }, [khuyenMais, filterValue, statusFilter]);
+  }, [sanPhams, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -247,105 +196,56 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     });
   }, [sortDescriptor, items]);
 
-  const [switchStates, setSwitchStates] = useState(
-    JSON.parse(localStorage.getItem("switchStates")) || true
-  );
-  useEffect(() => {
-    localStorage.setItem("switchStates", JSON.stringify(switchStates));
-  }, [switchStates]);
-
-  const renderCell = React.useCallback(
-    (khuyenMai, columnKey) => {
-      const cellValue = khuyenMai[columnKey];
-
-      switch (columnKey) {
-        case "trangThai":
-          return (
-            <Chip
-              // className="capitalize"
-              color={
-                khuyenMai.switchKM === "Đã dừng"
-                  ? "danger"
-                  : statusColorMap[khuyenMai.trangThai]
-              }
-              size="sm"
-              variant="flat"
-            >
-              {khuyenMai.switchKM === "Đã dừng" ? "Đã dừng" : cellValue}
-            </Chip>
-          );
-        case "hanhDong":
-          return (
-            <div className="relative flex items-center gap-2">
-              <Tooltip content="Xem" showArrow={true}>
+  const renderCell = React.useCallback((sanPham, columnKey) => {
+    const cellValue = sanPham[columnKey];
+    // console.log(sanPham);
+    switch (columnKey) {
+      case "hinhAnh":
+        const hinhAnhURL = sanPham.anh;
+        return (
+          <Image
+            style={{ height: "120px", width: "150px" }}
+            src={hinhAnhURL}
+            alt={sanPham.ten || "Ảnh sản phẩm"}
+            classNames="m-5"
+          />
+        );
+      case "trangThai":
+        return (
+          <Chip
+            // className="capitalize"
+            color={statusColorMap[sanPham.trangThai]}
+            size="sm"
+            variant="flat"
+          >
+            {cellValue}
+          </Chip>
+        );
+      case "hanhDong":
+        return (
+          <div className="relative flex items-center gap-4">
+            <Tooltip content="Xem" showArrow={true}>
+              <Link
+                to={`/edit-khach-hang/${sanPham.maKH}`}
+                // style={{ display: "block" }}
+                className="button-link group relative"
+              >
                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon onClick={() => handleViewDetails(khuyenMai.id)} />
+                  <EyeIcon />
                 </span>
-              </Tooltip>
-              <Tooltip content="Chỉnh sửa" showArrow={true}>
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <Link to={`/them-khuyen-mai/${khuyenMai.id}`}>
-                    <EditIcon />
-                  </Link>
-                </span>
-              </Tooltip>
-              <Tooltip color="danger" content="Xóa" showArrow={true}>
-                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <DeleteIcon onClick={() => handleDelete(khuyenMai.id)} />
-                </span>
-              </Tooltip>
-              {(khuyenMai.trangThai === "Đang diễn ra" ||
-                khuyenMai.switchKM === "Đã dừng") && (
-                <Tooltip
-                  showArrow={true}
-                  content={
-                    switchStates[khuyenMai.id]
-                      ? "Tắt khuyến mại"
-                      : "Bật khuyến mại"
-                  }
-                >
-                  <span className="text-lg inline-block  text-danger cursor-pointer active:opacity-50">
-                    <Switch
-                      defaultSelected={
-                        khuyenMai.switchKM === "Đã dừng" ? false : true
-                      }
-                      size="sm"
-                      color="success"
-                      className="inline-block"
-                      checked={switchStates[khuyenMai.id] || true}
-                      onChange={async () => {
-                        setSwitchStates((prevSwitchStates) => {
-                          const updatedStates = {
-                            ...prevSwitchStates,
-                            [khuyenMai.id]: !prevSwitchStates[khuyenMai.id],
-                          };
-                          return updatedStates;
-                        });
-
-                        await axios
-                          .put(
-                            `http://localhost:8080/khuyen-mai/batTatKhuyenMai/${
-                              khuyenMai.id
-                            }/${!switchStates[khuyenMai.id]}`,
-                            khuyenMai
-                          )
-                          .then((response) => {
-                            fetchKhuyenMais();
-                          });
-                      }}
-                    />
-                  </span>
-                </Tooltip>
-              )}
-            </div>
-          );
-
-        default:
-          return cellValue;
-      }
-    },
-    [switchStates]
-  );
+              </Link>
+            </Tooltip>
+            <Tooltip color="danger" content="Xóa" showArrow={true}>
+              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                <DeleteIcon onClick={() => handleDelete(sanPham.id)} />
+              </span>
+            </Tooltip>
+          </div>
+        );
+      default:
+        return cellValue;
+    }
+  }, []);
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -392,10 +292,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           /> */}
-          {/* <Input type="datetime-local" label="Từ ngày" />
-          <Input type="datetime-local" label="Đến ngày"/> */}
-
-          <div className="flex flex-end gap-3">
+          <div className="flex gap-3 items-end">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
@@ -448,7 +345,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            {/* Tổng {khuyenMais.length} khuyến mại */}
+            Tổng {sanPhams.length} nhân viên
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
@@ -469,7 +366,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    khuyenMais.length,
+    sanPhams.length,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -477,10 +374,11 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
-          Tổng số khuyến mại :{" "}
-          <span className="font-medium text-gray-950">{khuyenMais.length}</span>
-        </span>
+        {/* <span className="w-[30%] text-small text-default-400">
+          {selectedKeys === "all"
+            ? "Đã chọn tất cả"
+            : `${selectedKeys.size} khyến mại đã được chọn`}
+        </span> */}
         <Pagination
           isCompact
           showControls
@@ -489,6 +387,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
           page={page}
           total={totalPages}
           onChange={setPage}
+          style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -517,8 +416,8 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
       <Table
         style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
+        isHeaderSticky
         bottomContent={bottomContent}
-        // selectionMode="single"
         bottomContentPlacement="outside"
         classNames={{
           wrapper: "max-h-[382px]",
@@ -542,7 +441,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
           )}
         </TableHeader>
         <TableBody
-          emptyContent={"Không tìm thấy khuyến mại"}
+          emptyContent={"Không tìm thấy khách hàng nào!"}
           items={sortedItems}
         >
           {(item) => (
@@ -575,66 +474,18 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc muốn xóa khuyến mại này?
+            Bạn có chắc muốn xóa nhân viên này?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelDelete} color="warning">
             Hủy
           </Button>
-          <Button onClick={confirmDelete} color="primary">
+          <Button color="primary" onClick={confirmDelete}>
             Vẫn xóa
           </Button>
         </DialogActions>
       </Dialog>
-      <Modal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        isDismissable={false}
-        size={"5xl"}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                Thông tin khuyến mại
-              </ModalHeader>
-              <ModalBody>
-                {khuyenMaiSPCT.map((item, index) => (
-                  <div key={index} className="mx-auto">
-                    <p>
-                      Mã sản phẩm:{" "}
-                      <span className="font-medium">
-                        {item.id_chi_tiet_san_pham.ma}
-                      </span>
-                    </p>
-                    <p>
-                      Tên sản phẩm:{" "}
-                      <span className="font-medium">
-                        {item.id_chi_tiet_san_pham.ten}
-                      </span>
-                    </p>
-                    <p>
-                      Giá sản phẩm:{" "}
-                      <span className="font-medium">
-                        {item.id_chi_tiet_san_pham.giaBan}
-                      </span>
-                    </p>
-                  </div>
-                ))}
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Đóng
-                </Button>
-                {/* <Button color="primary" onPress={onClose}>
-                  Ok
-                </Button> */}
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
     </>
   );
 }

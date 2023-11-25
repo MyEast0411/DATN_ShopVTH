@@ -8,51 +8,54 @@ export default function Register() {
     <>
       <div className="main-sign-in flex justify-center">
         <div>
-          <Link to="/" className="flex justify-center align-center container-logo ctnlogo-signUp">
+          <Link
+            to="/"
+            className="flex justify-center align-center container-logo ctnlogo-signUp"
+          >
             <img className="logo cursor-pointer" src={Logo} alt="" />
             <div className="flex justify-center">Jordan VTH</div>
           </Link>
 
           <div className="sign-up-title mb-2">
-            Now let's make you a Jordan VTH Member.
+            Bây giờ hãy biến bạn thành Thành viên Jordan VTH.
           </div>
           <div className="send-code">
             <span>
-              We've sent a code to
+              Chúng tôi đã gửi mã tới
               <span className="email-sended-code">
                 {" "}
                 nguyenvanhoi2k3@gmail.com
               </span>
             </span>
             <a
-              href="#"
-              className="underline ml-2 inline-block font-normal sign-up-edit link-underline"
+              href="/sign-in"
+              className="underline inline-block font-normal sign-up-edit link-underline"
             >
-              Edit
+              Thay đổi email
             </a>
           </div>
           <form>
             <div className="inputGroupCodeSignUp">
               <input type="text" required autocomplete="off" />
-              <label for="Code">Code</label>
+              <label for="Code">Mã</label>
             </div>
             <div className="flex name-user justify-between">
               <div className="inputGroupCodeSignUp">
                 <input type="text" required autocomplete="off" />
-                <label for="First name">First name</label>
+                <label for="First name">Tên</label>
               </div>
               <div className="inputGroupCodeSignUp">
                 <input type="text" required autocomplete="off" />
-                <label for="Last name">Last name</label>
+                <label for="Last name">Họ, đệm</label>
               </div>
             </div>
             <div className="inputGroupCodeSignUp">
               <input type="password" required autocomplete="off" />
-              <label for="Password">Password</label>
+              <label for="Password">Mật khẩu</label>
             </div>
             <div className="inputGroupNoMove mt-8">
               <input type="date" required autocomplete="off" />
-              <label for="Date of birth">Date of birth</label>
+              <label for="Ngày sinh">Ngày sinh</label>
             </div>
 
             <div className="agree-sign-up">
@@ -63,8 +66,8 @@ export default function Register() {
                 color="default"
                 required
               >
-                Sign up for emails to get updates from Jordan VTH on products, offers
-                and your Member benefits.
+                Đăng ký email để nhận thông tin cập nhật từ Jordan VTH về sản
+                phẩm, ưu đãi và lợi ích Thành viên của bạn.
               </Checkbox>
               <Checkbox
                 defaultSelected={false}
@@ -73,14 +76,15 @@ export default function Register() {
                 color="default"
                 required
               >
-                I agree to Jordan VTH's{" "}
+                Chúng tôi đồng ý với{" "}
                 <a href="#" className="link-underline underline">
-                  Privacy Policy
+                  Điều khoản
                 </a>{" "}
-                and{" "}
+                và{" "}
                 <a href="#" className="link-underline underline">
-                  Teams of Use
+                  Chính sách bảo mật{" "}
                 </a>
+                của Jordan VTH.
               </Checkbox>
             </div>
             <div className="flex justify-end">
@@ -88,7 +92,7 @@ export default function Register() {
                 type="submit"
                 className="inline-block main-sign-up-button"
               >
-                Create Account
+                Tạo tài khoản
               </button>
             </div>
           </form>

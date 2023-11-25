@@ -65,7 +65,7 @@ export default function TabTrangThai({
       filterOptions(data).map((item, index) => {
         return {
           ...item,
-          id: index,
+          id: index + 1,
           ids: item.id,
           nhanVien: item?.id_nhan_vien?.ten,
           tenKhachHang: item?.id_khach_hang?.ten,
@@ -74,29 +74,6 @@ export default function TabTrangThai({
     );
     // console.log(res.data.content);
   };
-
-  // const listTitleTimline = [
-  //   {
-  //     title: `Chờ xác nhận`,
-  //     icon: { GiConfirmed },
-  //   },
-  //   {
-  //     title: `Xác Nhận`,
-  //     icon: { GiConfirmed },
-  //   },
-  //   {
-  //     title: `Chờ Vận Chuyển`,
-  //     icon: { FaShippingFast },
-  //   },
-  //   {
-  //     title: `Giao Hàng`,
-  //     icon: { LuPackageCheck },
-  //   },
-  //   {
-  //     title: `Hoàn Thành`,
-  //     icon: { LuPackageCheck },
-  //   },
-  // ];
   const items = [
     `Chờ xác nhận`,
     `Xác Nhận`,
