@@ -24,8 +24,8 @@ export default function TabTrangThai({
         if (dataInput === "") return hd;
         if (
           hd.ma.toLowerCase().includes(dataInput.toLowerCase()) ||
-          hd.tenKhachHang.toLowerCase().includes(dataInput.toLowerCase()) ||
-          hd.id_nhan_vien.ten.toLowerCase().includes(dataInput.toLowerCase())
+          hd.tenKhachHang?.toLowerCase().includes(dataInput.toLowerCase()) ||
+          hd.id_nhan_vien?.ten.toLowerCase().includes(dataInput.toLowerCase())
         )
           return hd;
       })
@@ -65,7 +65,7 @@ export default function TabTrangThai({
       filterOptions(data).map((item, index) => {
         return {
           ...item,
-          id: index,
+          id: index + 1,
           ids: item.id,
           nhanVien: item?.id_nhan_vien?.ten,
           tenKhachHang: item?.id_khach_hang?.ten,
@@ -77,7 +77,6 @@ export default function TabTrangThai({
   const items = [
     `Chờ xác nhận`,
     `Xác Nhận`,
-    `Chờ Thanh Toán`,
     `Chờ Vận Chuyển`,
     `Giao Hàng`,
     `Hoàn Thành`,

@@ -16,6 +16,9 @@ import {
 } from "react-component-export-image";
 import ComponentToPrint from "./InHoaDon";
 import { toast } from "react-toastify";
+import { FiLoader } from "react-icons/fi";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { MdCancel } from "react-icons/md";
 
 export default function DetailHoaDon() {
   const { id } = useParams();
@@ -79,6 +82,34 @@ export default function DetailHoaDon() {
     messageApi.open({
       type: "error",
       content: "Xóa Thất Bại",
+    });
+  };
+
+  const cancelHD = () => {
+    Modal.confirm({
+      title: `Bạn có muốn hủy hóa đơn này không ?`,
+      okText: "Yes",
+      okType: "danger",
+      onOk: async () => {
+        const data = await axios.post(
+          `http://localhost:8080/hoa_don/cancelHD/${id}`
+        );
+
+        if (data.data != null) {
+          await axios
+            .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
+              moTaHoaDon: "Hủy Hóa Đơn",
+              deleted: 0,
+              nguoiTao: "Cam",
+              ghiChu: note,
+            })
+            .then((response) => {
+              toast.success("Hủy Thành Công");
+            });
+        } else {
+          toast.success("Hủy Thất Bại");
+        }
+      },
     });
   };
 
@@ -203,7 +234,7 @@ export default function DetailHoaDon() {
           data.map((item, index) => {
             return {
               ...item,
-              description: listTitleTimline[index].title,
+              description: item.moTaHoaDon,
             };
           })
         );
@@ -211,11 +242,15 @@ export default function DetailHoaDon() {
 
         setListTimeLineOnline(
           data.map((item, index) => {
+            console.log(listTitleTimline[index].icon.FaShippingFast);
             return {
               ...item,
               subtitle: format(new Date(item.ngayTao), " hh:mm:ss ,dd-MM-yyyy"),
-              description: listTitleTimline[index].title,
-              icon: listTitleTimline[index].icon,
+              description: item.moTaHoaDon,
+              icon:
+                item.moTaHoaDon == "Hủy Hóa Đơn"
+                  ? MdCancel
+                  : listTitleTimline[index].icon,
             };
           })
         );
@@ -254,11 +289,12 @@ export default function DetailHoaDon() {
         <div className="row timeline bg-white">
           <div className="row timeline justify-center" style={{ height: 300 }}>
             {info.loaiHd === 0 ? (
-              <Timeline minEvents={6} placeholder>
-                {listTimeLineOnline.map((item) => (
+              <Timeline minEvents={5} placeholder>
+                {listTimeLineOnline.map((item, i) => (
                   <TimelineEvent
                     color="#9c2919"
-                    icon={GiConfirmed}
+                    // icon={<TbPackages />}
+                    icon={item.icon}
                     title={item.description}
                     subtitle={item.subtitle}
                   />
@@ -266,12 +302,14 @@ export default function DetailHoaDon() {
               </Timeline>
             ) : (
               <Timeline minEvents={1} placeholder>
-                <TimelineEvent
-                  color="#9c2919"
-                  icon={TbPackages}
-                  title="Thành công"
-                  subtitle="dfasda"
-                />
+                {listTimeLineOnline.map((item, i) => (
+                  <TimelineEvent
+                    color="#9c2919"
+                    icon={TbPackages}
+                    title="Thành công"
+                    subtitle={item.subtitle}
+                  />
+                ))}
               </Timeline>
             )}
           </div>
@@ -279,7 +317,7 @@ export default function DetailHoaDon() {
             <div className="row ">
               {currentTimeLine < 6 &&
               info.loaiHd === 0 &&
-              info.trangThai != 6 ? (
+              info.trangThai != 5 ? (
                 <Button
                   className="me-4"
                   color="blue"
@@ -362,9 +400,19 @@ export default function DetailHoaDon() {
               <Button className="me-4" color="green" onClick={showModalHD}>
                 Xuất hoá đơn
               </Button>
+              {listTimeLineOnline.length < 4 &&
+                info.loaiHd == !1 &&
+                info.trangThai < 4 && (
+                  <Button className="me-4" color="red" onClick={cancelHD}>
+                    Hủy Hóa Đơn
+                  </Button>
+                )}
             </div>
             <div className="row grid justify-items-end">
-              <Button className="me-4" color="red" onClick={showModalLichSu}>
+              <Button
+                className="me-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+                onClick={showModalLichSu}
+              >
                 Lịch Sử
               </Button>
 
@@ -626,45 +674,26 @@ export default function DetailHoaDon() {
   );
 }
 
-// const items = [
-//   `Chờ xác nhận`,
-//   `Xác Nhận`,
-//   `Chờ Thanh Toán`,
-//   `Chờ Vận Chuyển`,
-//   `Giao Hàng`,
-//   `Hoàn Thành`,
-//   `Hủy`,
-// ];
-
-// const items = [
-//   `Chờ xác nhận`,
-//   `Xác Nhận`,
-//   `Chờ Thanh Toán`,
-//   `Chờ Vận Chuyển`,
-//   `Giao Hàng`,
-//   `Hoàn Thành`,
-//   `Hủy`,
-// ];
 const listTitleTimline = [
   {
     title: `Chờ xác nhận`,
-    icon: { GiConfirmed },
+    icon: FiLoader,
   },
   {
     title: `Xác Nhận`,
-    icon: { GiConfirmed },
+    icon: GiConfirmed,
   },
   {
     title: `Chờ Vận Chuyển`,
-    icon: { FaShippingFast },
+    icon: FaShippingFast,
   },
   {
     title: `Giao Hàng`,
-    icon: { LuPackageCheck },
+    icon: FaMoneyBillTransfer,
   },
   {
     title: `Hoàn Thành`,
-    icon: { LuPackageCheck },
+    icon: LuPackageCheck,
   },
 ];
 
