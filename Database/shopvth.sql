@@ -3,7 +3,6 @@
 	use shopVTH;
 --     -- run intelliJ IDEA
 
-    
     ------------------------------
     
 	INSERT INTO khuyen_mai (id, ma, ten, ngay_bat_dau, ngay_ket_thuc,
@@ -17,6 +16,7 @@
     0,'Chưa diễn ra');
     
     ------------------------------
+
 
     INSERT INTO chat_lieu (id, deleted, ma, ngay_sua, ngay_tao,nguoi_sua,nguoi_tao, ten)
     VALUES

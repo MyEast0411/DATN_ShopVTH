@@ -7,10 +7,11 @@ import Register from "./components/Register";
 import EnterPassword from "./components/EnterPassword";
 import DetailProduct from "./components/DetailProduct";
 import SizeGuide from "./components/SizeGuide";
+import Checkout from "./components/Checkout";
+import BackToTopButton from "./other/BackToTopButton";
 import "primeicons/primeicons.css";
 import "primereact/resources/primereact.css";
 import "primereact/resources/themes/saga-blue/theme.css";
-import Checkout from "./components/Checkout";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/size-guide" element={<SizeGuide />} />
         <Route path="/checkout" element={<Checkout />} />
       </Routes>
+      <BackToTopButton />
     </>
   );
 }

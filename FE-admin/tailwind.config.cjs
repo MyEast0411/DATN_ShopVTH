@@ -10,12 +10,8 @@ module.exports = withMT({
   ],
   theme: {
     extend: {
-      fontFamily: {
-        Poppins: ["Poppins", "sans"],
-      },
     },
   },
   darkMode: "class",
   plugins: [nextui()],
-  // plugins: [require("tailwind-scrollbar")],
 });

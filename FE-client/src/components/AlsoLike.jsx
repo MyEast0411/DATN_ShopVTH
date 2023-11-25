@@ -5,7 +5,7 @@ export default function AlsoLike() {
   return (
     <>
       <div className="cart-also-like">
-        <h2 className="cart-also-like-title">You Might Also Like</h2>
+        <h2 className="cart-also-like-title">Có thể bạn sẽ thích</h2>
         <div className="main-shop-recommend main-popular">
           <div className="x-scroll-product flex snap-x overflow-x-auto w-full">
             <Link to="/shop" className="x-scroll-product-card snap-center">
@@ -15,9 +15,8 @@ export default function AlsoLike() {
                 alt=""
               />
               <h2>AIR JORDAN 1S</h2>
-              <p className="popular-des">MEN'S SHOES</p>
-              <p className="popular-price">$180</p>
-              <p className="popular-price-discount">$200</p>
+              <p className="popular-des">Giày nam</p>
+              <p className="popular-price">VNĐ 380.000</p>
             </Link>
             <Link to="/shop" className="x-scroll-product-card snap-center">
               <img
@@ -26,8 +25,8 @@ export default function AlsoLike() {
                 alt=""
               />
               <h2>AIR JORDAN 1 HIGH OG</h2>
-              <p className="popular-des">BIG KIDS' SHOES</p>
-              <p className="popular-price">$140</p>
+              <p className="popular-des">Giày trẻ em lớn</p>
+              <p className="popular-price">VNĐ 400.000</p>
             </Link>
             <Link to="/shop" className="x-scroll-product-card snap-center">
               <img
@@ -36,8 +35,8 @@ export default function AlsoLike() {
                 alt=""
               />
               <h2>JORDAN 1 RETRO HIGH OG</h2>
-              <p className="popular-des">LITTLE KIDS' SHOES</p>
-              <p className="popular-price">$80</p>
+              <p className="popular-des">Giày trẻ em nhỏ</p>
+              <p className="popular-price">VNĐ 380.000</p>
             </Link>
             <Link to="/shop" className="x-scroll-product-card snap-center">
               <img
@@ -46,8 +45,8 @@ export default function AlsoLike() {
                 alt=""
               />
               <h2>JORDAN 1 RETRO HIGH OG</h2>
-              <p className="popular-des">BABY/TODDLER SHOES</p>
-              <p className="popular-price">$70</p>
+              <p className="popular-des">Giày trẻ em nhỏ</p>
+              <p className="popular-price">VNĐ 290.000</p>
             </Link>
             <Link to="/shop" className="x-scroll-product-card snap-center">
               <img
@@ -56,8 +55,8 @@ export default function AlsoLike() {
                 alt=""
               />
               <h2>JORDAN 1</h2>
-              <p className="popular-des">BABY CRIB BOOTIE</p>
-              <p className="popular-price">$60</p>
+              <p className="popular-des">Giày trẻ em nhỏ</p>
+              <p className="popular-price">VNĐ 300.000</p>
             </Link>
           </div>
         </div>

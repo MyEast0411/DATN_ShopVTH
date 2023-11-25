@@ -5,13 +5,12 @@ import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../api/Location";
 import { Radio, Space, Input } from "antd";
 import { IoIosArrowBack } from "react-icons/io";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
-
 import { getAllHA } from "../api/SanPham";
-import { taoHoaDon } from "../api/HoaDon";
 import axios from "axios";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import IconGiaoHangNhanh from "../assets/iconGiaoHangNhanh.webp";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -22,8 +21,8 @@ export default function Checkout() {
   const [cartItems, setCartItems] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
   const [shippingCost, setShippingCost] = useState("");
-  const [hoaDon, setHoaDon] = useState({});
   const [tongTien, setTongTien] = useState(0);
+  const [value, setValue] = useState(1);
 
   const openNotificationWithIcon = (type, message) => {
     api[type]({
@@ -54,7 +53,6 @@ export default function Checkout() {
     setCartItems(cart);
   };
 
-  const [value, setValue] = useState(1);
   const onChange = (e) => {
     setValue(e.target.value);
   };
@@ -92,7 +90,7 @@ export default function Checkout() {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const localShippingCost = value === 2 ? 0 : 10;
+    const localShippingCost = value === 2 ? 0 : 50000;
     let updatedShippingCost;
 
     if (value === 2) {
@@ -112,6 +110,9 @@ export default function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ...
+    const email = e.target.elements.email.value;
     const hoTen = e.target.elements.hoTen.value;
     const soDienThoai = e.target.elements.soDienThoai.value;
     const diaChi = e.target.elements.diaChi.value;
@@ -129,48 +130,49 @@ export default function Checkout() {
       shippingCost === "Miễn phí"
         ? "Chuyển khoản qua ngân hàng"
         : "Thanh toán khi nhận hàng";
-    // console.log("ho ten: ", hoTen);
-    // console.log("sdt: ", soDienThoai);
-    // console.log("dia chi: ", diaChi);
-    // console.log("thanh pho: ", thanhPho);
-    // console.log("quan huyen: ", quanHuyen);
-    // console.log("xa phuong: ", xaPhuong);
-    // console.log("phuong thuc thanh toan: ", phuongThucThanhToan);
-    // console.log(cartItems);
-    // console.log(tongTien);
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon",
-        {
-          hoTen: hoTen,
-          sdt: soDienThoai,
-          diaChi: diaChi,
-          thanhPho: thanhPho,
-          huyen: quanHuyen,
-          xa: xaPhuong,
-          hinhThucThanhToan: phuongThucThanhToan,
-          gioHang: cartItems,
-          tongTien: tongTien,
-        }
-      );
-      console.log(response.data);
-      localStorage.clear();
-      openNotificationWithIcon("success", "Cảm ơn bạn đã mua hàng!");
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
-  useEffect(() => {
-    console.log("hoaDon vua tao: ", hoaDon);
-  }, [hoaDon]);
+    const confirmSubmission = () => {
+      axios
+        .post(
+          "http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon",
+          {
+            hoTen: hoTen,
+            sdt: soDienThoai,
+            diaChi: diaChi,
+            thanhPho: thanhPho,
+            huyen: quanHuyen,
+            xa: xaPhuong,
+            hinhThucThanhToan: phuongThucThanhToan,
+            gioHang: cartItems,
+            tongTien: tongTien,
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+          localStorage.clear();
+          openNotificationWithIcon("success", "Cảm ơn bạn đã mua hàng!");
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+    confirmDialog({
+      message: "Bạn có chắc muốn hoàn tất đơn hàng?",
+      header: "Xác nhận đơn hàng",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-success",
+      accept: confirmSubmission,
+    });
+  };
 
   return (
     <>
       {contextHolder}
+      <ConfirmDialog />
       <div className="main-checkout w-[80%] mx-auto">
         <div className="grid grid-cols-2 gap-4">
           <div className="checkout-left sticky-grid">
@@ -181,17 +183,17 @@ export default function Checkout() {
             <div className="breadcrumbs-cart text-[15px]">
               <Breadcrumbs className="my-3">
                 <BreadcrumbItem>
-                  <Link to="/">Home</Link>
+                  <Link to="/">Trang chủ</Link>
                 </BreadcrumbItem>
                 <BreadcrumbItem>
-                  <Link to="/shop">Shop</Link>
+                  <Link to="/shop">Sản phẩm</Link>
                 </BreadcrumbItem>
                 <BreadcrumbItem>
-                  <Link to="/cart">Cart</Link>
+                  <Link to="/cart">Giỏ hàng</Link>
                 </BreadcrumbItem>
                 <BreadcrumbItem>
                   <Link className="text-[#B4B4B3] cursor-default">
-                    Checkout
+                    Thủ tục thanh toán
                   </Link>
                 </BreadcrumbItem>
               </Breadcrumbs>
@@ -208,8 +210,12 @@ export default function Checkout() {
             </div>
             <form onSubmit={handleSubmit}>
               <div className="inputGroupCodeSignUp">
+                <input name="email" type="email" required autocomplete="off" />
+                <label for="email">Email</label>
+              </div>
+              <div className="inputGroupCodeSignUp">
                 <input name="hoTen" type="text" required autocomplete="off" />
-                <label for="Code">Họ và tên</label>
+                <label for="hoTen">Họ và tên</label>
               </div>
               <div className="inputGroupCodeSignUp">
                 <input
@@ -218,11 +224,11 @@ export default function Checkout() {
                   required
                   autocomplete="off"
                 />
-                <label for="Password">Số điện thoại</label>
+                <label for="soDienThoai">Số điện thoại</label>
               </div>
               <div className="inputGroupCodeSignUp">
                 <input name="diaChi" type="text" required autocomplete="off" />
-                <label for="Password">Địa chỉ</label>
+                <label for="diaChi">Địa chỉ</label>
               </div>
 
               <div className="flex justify-between gap-1 text-[13px]">
@@ -317,6 +323,11 @@ export default function Checkout() {
                   </Space>
                 </Radio.Group>
               </div>
+              <div className="giao-hang-nhanh flex items-center">
+                <img width={140} src={IconGiaoHangNhanh} alt="" />
+                <span>Thời gian dự kiến: &nbsp;</span>
+                <span className="font-medium">27/11/2023</span>
+              </div>
               <div className="flex justify-between items-center">
                 <Link
                   to={"/cart"}
@@ -359,7 +370,7 @@ export default function Checkout() {
                     {cart.product.kichCo}
                   </p>
                   <p className="cart-checkout-gia-ban font-medium">
-                    ${cart.product.giaBan}
+                    VNĐ {Intl.NumberFormat().format(cart.product.giaBan)}
                   </p>
                 </div>
               </div>
@@ -380,16 +391,18 @@ export default function Checkout() {
               <div className="checkout-tinhTien">
                 <div className="flex justify-between">
                   <h3>Tạm tính</h3>
-                  <p>${calculateSubtotal()}</p>
+                  <p>VNĐ {Intl.NumberFormat().format(calculateSubtotal())}</p>
                 </div>
                 <div className="flex justify-between">
                   <h3>Phí vận chuyển</h3>
-                  <p>{shippingCost}</p>
+                  <p>VNĐ {Intl.NumberFormat().format(shippingCost)}</p>
                 </div>
                 <div className="horizontal"></div>
                 <div className="flex justify-between">
                   <h3 className="font-medium text-[20px]">Tổng cộng</h3>
-                  <p className="text-[20px] font-medium">${calculateTotal()}</p>
+                  <p className="text-[20px] font-medium">
+                    VNĐ {Intl.NumberFormat().format(calculateTotal())}
+                  </p>
                 </div>
               </div>
             </div>

@@ -1,6 +1,5 @@
 package com.example.shop.repositories;
 
-import com.example.shop.dto.HoaDonCTTDTO;
 import com.example.shop.entity.HoaDon;
 import org.hibernate.Session;
 import org.springframework.data.domain.Page;
@@ -21,13 +20,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
     @Query("select u from HoaDon u where u.trangThai = 7 and u.deleted = 1")
     List<HoaDon> getHDChuaTT();
-
-    @Query(value = "select a.ma,a.id_khach_hang,a.id_nhan_vien,sum(b.so_luong) as so_luong,a.loai_hd,a.trang_thai\n" +
-            "from shopvth.hoa_don a join shopvth.hoa_don_chi_tiet b\n" +
-            "on a.id = b.id_hoa_don\n" +
-            "where a.trang_thai = 7 and a.deleted = 1\n" +
-            "group by a.ma,a.id_khach_hang,a.id_nhan_vien,a.loai_hd,a.trang_thai",nativeQuery = true)
-    List<Object[]> getSLSPByHDChuaTT();
 
     @Query(value = "select * from hoa_don u where u.deleted = 1 order by u.ngay_tao desc", nativeQuery = true)
     List<HoaDon> getPageDeleted();

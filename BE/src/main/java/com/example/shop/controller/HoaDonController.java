@@ -1,17 +1,13 @@
 package com.example.shop.controller;
 
-import com.example.shop.dto.HoaDonCTTDTO;
-import com.example.shop.dto.HoaDonDTO;
 import com.example.shop.dto.ThanhToanHoaDonDTO;
 import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.entity.Voucher;
 import com.example.shop.repositories.HoaDonRepository;
 import com.example.shop.repositories.KhachHangRepository;
-import com.example.shop.repositories.NhanVienRepository;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
-import com.example.shop.viewmodel.SanPhamVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("hoa_don")
@@ -49,77 +46,51 @@ public class HoaDonController {
     @Autowired
     private LichSuHoaDonService lichSuHoaDonService;
 
-    @Autowired
-    private NhanVienRepository ssNV;
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
 //            @RequestParam(name = "page" , defaultValue = "0")Integer numPage
-    ){
+    ) {
         List<HoaDon> page = hoaDonService.getHoaDons();
         return ResponseEntity.ok(page);
     }
 
     @GetMapping("getHoaDons/{trangThai}")
     public ResponseEntity<List<HoaDon>> getHDs(
-            @RequestParam(name = "page" , defaultValue = "0")Integer numPage,
+            @RequestParam(name = "page", defaultValue = "0") Integer numPage,
             @PathVariable Integer trangThai
-    ){
+    ) {
         List<HoaDon> page = hoaDonService.getHoaDons();
-        if(trangThai !=-1){
-            page   = hoaDonService.getHDs(trangThai);
+        if (trangThai != -1) {
+            page = hoaDonService.getHDs(trangThai);
         }
 
         return ResponseEntity.ok(page);
     }
 
     @GetMapping("getHoaDon/{id}")
-    public ResponseEntity<HoaDon> getHoaDon(@PathVariable("id")HoaDon hoaDon){
+    public ResponseEntity<HoaDon> getHoaDon(@PathVariable("id") HoaDon hoaDon) {
         return ResponseEntity.ok(hoaDon);
     }
-    public HoaDonCTTDTO convertHoaDonChuaTTDTO(Object[] row) {
-        HoaDonCTTDTO hd = new HoaDonCTTDTO();
-        hd.setMa((String) row[0]);
 
-        return hd;
-    }
     @GetMapping("getHoaDonCTT")
-    public ResponseEntity getHoaDonCTT(){
-        List<Object[]> resultList = hoaDonRepository.getSLSPByHDChuaTT();
-        List<HoaDonCTTDTO> list = new ArrayList<>();
-        for (Object[] row : resultList) {
-            String ma = (String) row[0];
-            String idKhachHang = (String) row[1];
-            String idNhanVien = (String) row[2];
-            BigDecimal soLuong = (BigDecimal) row[3];
-            Integer loaiHD = (Integer) row[4];
-            Integer trangThai = (Integer) row[5];
-            HoaDonCTTDTO hoaDonCTTDTO = HoaDonCTTDTO.builder()
-                    .ma(ma)
-                    .idKhachHang(idKhachHang == null ? null : ssKH.findById(idKhachHang).get())
-                    .idNhanVien(idNhanVien == null ? null : ssNV.findById(idNhanVien).get())
-                    .soLuong(soLuong.intValue())
-                    .loaiHd(loaiHD)
-                    .trangThai(trangThai)
-                    .build();
-            list.add(hoaDonCTTDTO);
-        }
-        return ResponseEntity.ok(list);
+    public ResponseEntity<List<HoaDon>> getHoaDonCTT() {
+        return ResponseEntity.ok(hoaDonRepository.getHDChuaTT());
     }
 
 
     @PostMapping("add")
     public ResponseEntity<HoaDon> addHoaDon(
             @RequestBody HoaDon hoaDon
-    ){
+    ) {
         HoaDon hoaDonSave = hoaDonService.addHoaDon(hoaDon);
         return new ResponseEntity<>(hoaDonSave, HttpStatus.CREATED);
     }
 
     @PostMapping("taoHoaDon")
-    public ResponseEntity<HoaDon> taoHoaDon(){
+    public ResponseEntity<HoaDon> taoHoaDon() {
         Integer maxMa = Integer.parseInt(hoaDonRepository.getMaxMa());
         HoaDon hoaDon = HoaDon.builder()
-                .ma("HD"+(maxMa+1))
+                .ma("HD" + (maxMa + 1))
                 .trangThai(7)
                 .deleted(1)
                 .loaiHd(1)
@@ -132,32 +103,32 @@ public class HoaDonController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<HoaDon> updateHoaDon(
-            @PathVariable("id")String id,
+            @PathVariable("id") String id,
             @RequestBody HoaDon hoaDon
-    ){
-        try{
+    ) {
+        try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
-            if (hoaDon1 != null){
+            if (hoaDon1 != null) {
                 hoaDon.setId(hoaDon.getId());
                 HoaDon updateHoaDon = hoaDonService.updateHoaDon(hoaDon);
-                return new ResponseEntity<>(updateHoaDon , HttpStatus.CREATED);
-            }else{
+                return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
+            } else {
                 throw new Exception("khong co id" + id);
             }
-        }catch (Exception exception){
+        } catch (Exception exception) {
             return null;
         }
     }
 
     @PutMapping("thanhToanHoaDon/{id}")
     public ResponseEntity thanhToanHoaDon(
-            @PathVariable("id")String id,
+            @PathVariable("id") String id,
             @RequestBody ThanhToanHoaDonDTO hoaDon
-    ){
-        try{
+    ) {
+        try {
             HoaDon hoaDon1 = hoaDonRepository.getHoaDonByMa(id);
             System.out.println(hoaDon.toString());
-            if(hoaDon.getTrangThai().equals("1") && hoaDon.getLoaiHd().equals("0")) {
+            if (hoaDon.getTrangThai().equals("1") && hoaDon.getLoaiHd().equals("0")) {
                 LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
                         .id_hoa_don(hoaDon1)
                         .moTaHoaDon("Chờ xác nhận")
@@ -177,7 +148,7 @@ public class HoaDonController {
                 System.out.println("true");
             }
 
-            if (hoaDon1 != null){
+            if (hoaDon1 != null) {
                 hoaDon1.setTrangThai(5);
                 hoaDon1.setLoaiHd(Integer.parseInt(hoaDon.getLoaiHd()));
                 hoaDon1.setTrangThai(Integer.parseInt(hoaDon.getTrangThai()));
@@ -188,31 +159,29 @@ public class HoaDonController {
                 hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
                 HoaDon updateHoaDon = hoaDonRepository.save(hoaDon1);
-                return new ResponseEntity<>(updateHoaDon , HttpStatus.CREATED);
-            }else{
+                return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
+            } else {
                 throw new Exception("khong co id" + id);
             }
-        }catch (Exception exception){
+        } catch (Exception exception) {
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> deleteHoaDon(@PathVariable("id")String id){
+    public ResponseEntity<String> deleteHoaDon(@PathVariable("id") String id) {
         String mess = "";
         HoaDon hoaDon = hoaDonService.getHoaDon(id);
-        if(hoaDon == null){
+        if (hoaDon == null) {
             mess = "Not find hoa don with " + id;
 
-        }else{
+        } else {
             Boolean kq = hoaDonService.deleteHoaDon(hoaDon);
-            mess = kq? "Delete success":"Delete fail";
+            mess = kq ? "Delete success" : "Delete fail";
         }
 //        System.out.println(mess);
-        return new ResponseEntity(mess , HttpStatus.OK);
+        return new ResponseEntity(mess, HttpStatus.OK);
     }
-
-
 
 
 }

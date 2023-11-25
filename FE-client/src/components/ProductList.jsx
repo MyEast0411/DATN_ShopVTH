@@ -59,7 +59,7 @@ export default function ProductList() {
             onMouseLeave={handleMouseLeave}
           >
             <img
-              src={selectedImage}
+            src={selectedImage==="" ? sanPham.defaultImg : selectedImage}
               alt="Ảnh sản phẩm"
               className="img-product"
             />
@@ -87,7 +87,8 @@ export default function ProductList() {
                 <h2 className="color-quantity">{`${hinhAnhs.length} Colors`}</h2>
               </>
             )}
-            <div className="price-product">${sanPham.maxPrice}</div>
+           <div className="price-product">VNĐ {sanPham.maxPrice.toLocaleString()}</div>
+
           </Link>
         ))}
       </div>

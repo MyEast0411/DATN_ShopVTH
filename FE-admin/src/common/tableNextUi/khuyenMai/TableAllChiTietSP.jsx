@@ -107,12 +107,12 @@ export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValue
           setChiTietSanPhams([]);
         } else {
           const response = await axios.get(url);
-          // console.log(response.data);
+          console.log(response.data);
           const updatedRows = response.data.map((item, index) => ({
             id: index + 1,
             stt: index + 1,
             ma: item.ma,
-            anh: "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/24750e81-85ed-4b0e-8cd8-becf0cd97b2f/air-jordan-1-mid-shoes-7cdjgS.png",
+            anh: item.defaultImg,
             kichThuoc: item.id_kich_co.ten,
             mauSac: item.id_mau_sac.ten,
             // tinhTrang: item.tinhTrang,
@@ -271,9 +271,7 @@ export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValue
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          {/* <Input type="datetime-local" label="Từ ngày" />
-          <Input type="datetime-local" label="Đến ngày"/> */}
-          <div className="flex gap-3">
+                 <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button

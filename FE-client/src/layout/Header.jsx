@@ -32,22 +32,16 @@ export default function Header() {
         <div className="menu">
           <ul className="flex">
             <li>
-              <a href="#">New & Featured</a>
+              <a href="#">Mới & Nổi bật</a>
             </li>
             <li>
-              <a href="#">Men</a>
+              <a href="#">Đàn ông</a>
             </li>
             <li>
-              <a href="#">Women</a>
+              <a href="#">Phụ nữ</a>
             </li>
             <li>
-              <a href="#">Kids</a>
-            </li>
-            <li>
-              <a href="#">Accessories</a>
-            </li>
-            <li>
-              <a href="#">Sales</a>
+              <a href="#">Trẻ em</a>
             </li>
           </ul>
         </div>
@@ -56,7 +50,7 @@ export default function Header() {
           <div className="container-input">
             <input
               type="text"
-              placeholder="Search"
+              placeholder="Tìm kiếm"
               name="text"
               className="input search"
             />

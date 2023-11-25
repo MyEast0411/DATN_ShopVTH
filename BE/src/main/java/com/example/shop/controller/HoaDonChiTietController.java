@@ -110,9 +110,9 @@ public class HoaDonChiTietController {
     public ResponseEntity addKH_HD(@RequestBody HoaDonKhDTO x) {
         try {
             HoaDon hd = ssHD.getHoaDonByMa(x.getMaHD());
-            if(x.getId_khach_hang().equals("")) {
+            if (x.getId_khach_hang().equals("")) {
                 hd.setId_khach_hang(null);
-            }else {
+            } else {
                 hd.setId_khach_hang(ssKH.findById(x.getId_khach_hang()).get());
             }
             ssHD.save(hd);
@@ -127,9 +127,9 @@ public class HoaDonChiTietController {
         System.out.println(x);
         try {
             HoaDon hd = ssHD.getHoaDonByMa(x.getMaHD());
-            if(x.getId_khach_hang().equals("")) {
+            if (x.getId_khach_hang().equals("")) {
                 hd.setId_voucher(null);
-            }else {
+            } else {
                 hd.setId_voucher(ssVC.findById(x.getId_khach_hang()).get());
             }
             ssHD.save(hd);
@@ -153,11 +153,17 @@ public class HoaDonChiTietController {
 
     //----------------------Hội--------------------------//
     @PostMapping("/addHoaDonChiTietToHoaDon")
-    public ResponseEntity addHoaDonChiTietToHoaDon(@RequestBody GioHangDTO giohang){
+    public ResponseEntity addHoaDonChiTietToHoaDon(@RequestBody GioHangDTO giohang) {
+        Integer maxMaInt;
         try {
-            Integer maxMa = Integer.parseInt(ssHD.getMaxMa());
+            String maxMa = ssHD.getMaxMa();
+            if (maxMa == null) {
+                maxMaInt = 0;
+            } else {
+                maxMaInt = Integer.parseInt(maxMa);
+            }
             HoaDon hoaDon = HoaDon.builder()
-                    .ma("HD"+(maxMa+1))
+                    .ma("HD" + (maxMaInt + 1))
                     .trangThai(0)
                     .deleted(1)
                     .loaiHd(0)
@@ -167,35 +173,36 @@ public class HoaDonChiTietController {
                     .build();
             ssHD.save(hoaDon);
             System.out.println(giohang);
-        for (Object gioHangItem : giohang.getGioHang()) {
-            if (gioHangItem instanceof Map) {
-                Map<?, ?> gioHangMap = (Map<?, ?>) gioHangItem;
+            for (Object gioHangItem : giohang.getGioHang()) {
+                if (gioHangItem instanceof Map) {
+                    Map<?, ?> gioHangMap = (Map<?, ?>) gioHangItem;
 
-                Object productObject = gioHangMap.get("product");
-                if (productObject instanceof Map) {
-                    Map<?, ?> productMap = (Map<?, ?>) productObject;
+                    Object productObject = gioHangMap.get("product");
+                    if (productObject instanceof Map) {
+                        Map<?, ?> productMap = (Map<?, ?>) productObject;
 
-                    String id = (String) productMap.get("id");
-                    Integer kichCo = Integer.parseInt(productMap.get("kichCo").toString());
-                    Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
-                    Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
+                        String id = (String) productMap.get("id");
+                        Integer kichCo = Integer.parseInt(productMap.get("kichCo").toString());
+                        Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
+                        Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
 
-                    System.out.println("kichCo: " + kichCo);
-                    System.out.println("id: " + id);
-                    System.out.println("giaBan: " + giaBan);
-                    System.out.println("soLuong: " + soLuong);
+                        System.out.println("kichCo: " + kichCo);
+                        System.out.println("id: " + id);
+                        System.out.println("giaBan: " + giaBan);
+                        System.out.println("soLuong: " + soLuong);
 
-                    HoaDonChiTiet hdct = new HoaDonChiTiet();
-                    hdct.setId_hoa_don(hoaDon);
-                    hdct.setId_chi_tiet_san_pham(ssSP.findById(id).get());
-                    hdct.setSoLuong(soLuong);
-                    hdct.setGiaTien(BigDecimal.valueOf(giaBan));
-                    ssHDCT.save(hdct);
+                        HoaDonChiTiet hdct = new HoaDonChiTiet();
+                        hdct.setId_hoa_don(hoaDon);
+                        hdct.setId_chi_tiet_san_pham(ssSP.findById(id).get());
+                        hdct.setSoLuong(soLuong);
+                        hdct.setGiaTien(BigDecimal.valueOf(giaBan));
+                        ssHDCT.save(hdct);
+                    }
                 }
             }
-        }
             return ResponseEntity.ok("Thành công");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
@@ -205,9 +212,6 @@ public class HoaDonChiTietController {
     public ResponseEntity<List<HoaDonChiTiet>> getHDCTByIDHD(@PathVariable("idHD") String idHD) {
         return ResponseEntity.ok(ssHDCT.getHDCT(idHD));
     }
-
-
-
 
 
 }

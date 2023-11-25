@@ -7,7 +7,7 @@ import Slider from "../../common/filter/sanPham/Slider";
 
 import { Button as ButtonAntd } from "antd";
 import { Link, useParams } from "react-router-dom";
-import { InputNumber } from 'antd';
+import { InputNumber } from "antd";
 //table
 import {
   Table,
@@ -90,7 +90,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 export default function ChiTietSanPham() {
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] =
+    React.useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
   const [selectedCTSP, setSelectedCTSP] = useState([]);
@@ -209,9 +210,7 @@ export default function ChiTietSanPham() {
         const updatedRows = response.data.map((item, index) => ({
           id: index + 1,
           stt: index + 1,
-          hinhAnh:
-            hinhAnh.find((x) => x.id_san_pham_chi_tiet.id == item.id)?.ten ||
-            "",
+          hinhAnh: item.defaultImg,
           mauSac: item.id_mau_sac.maMau,
           kichThuoc: item.id_kich_co.ten,
           soLuongTon: item.soLuongTon,
@@ -289,109 +288,110 @@ export default function ChiTietSanPham() {
     return <div className="discount-tag">{`${discount}% OFF`}</div>;
   };
 
-  const renderCell = React.useCallback((sanPham, columnKey) => {
-    const cellValue = sanPham[columnKey];
-    const giaGiam = sanPham.giaGiam;
-    const isSanPhamSelected = selectedKeys === "all" || selectedCTSP.some((selectedItem) => selectedItem.id === sanPham.id);
-    switch (columnKey) {
-      case "soLuongTon":
-        return isSanPhamSelected ? (
-          <InputNumber
-            value={sanPham.soLuongTon}
-          // onChange={handleInputChange}
-          />
-        ) : (
-          sanPham.soLuongTon
-        );
-      case "donGia":
-        return isSanPhamSelected ? (
-          <InputNumber
-            value={sanPham.donGia}
-          // onChange={handleInputChange}
-          />
-        ) : (
-          sanPham.donGia
-        );
-      case "hinhAnh":
-        const hinhAnhURL = sanPham.hinhAnh;
-        return (
-          <div
-            style={{
-              display: "inline-block",
-            }}
-          >
-            <Image
-              width={150}
-              height={100}
-              src={hinhAnhURL}
-              alt={sanPham.ten || "Ảnh sản phẩm"}
-              classNames="m-5 relative"
-              style={{
-                border: "1px solid #D8D9DA",
-                padding: "10px",
-              }}
+  const renderCell = React.useCallback(
+    (sanPham, columnKey) => {
+      const cellValue = sanPham[columnKey];
+      const giaGiam = sanPham.giaGiam;
+      const isSanPhamSelected =
+        selectedKeys === "all" ||
+        selectedCTSP.some((selectedItem) => selectedItem.id === sanPham.id);
+      switch (columnKey) {
+        case "soLuongTon":
+          return isSanPhamSelected ? (
+            <InputNumber
+              value={sanPham.soLuongTon}
+              // onChange={handleInputChange}
             />
-            <DiscountTag discount={giaGiam} />
-          </div>
-        );
-      case "trangThai":
-        return (
-          <Chip
-            // className="capitalize"
-            color={statusColorMap[sanPham.trangThai]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "mauSac":
-        return (
-          <Chip
-            color="white"
-            style={{
-              backgroundColor: sanPham.mauSac,
-              color: "white",
-              fontSize: "13px",
-              textAlign: "center",
-              padding: "1px 6px",
-              borderRadius: "5px",
-            }}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "hanhDong":
-        return (
-          <div className="relative flex items-center gap-4">
-            <Tooltip content="Chi tiết" showArrow={true}>
-              <Link
-                to={`/edit-san-pham/${sanPham.ma}`}
-                style={{ display: "block" }}
-                className="button-link group relative"
-              >
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon />
-                </span>
-              </Link>
-            </Tooltip>
-
-            <div className="group relative" style={{ position: "relative" }}>
-              <Tooltip color="danger" content="Xóa" showArrow={true}>
-                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <DeleteIcon onClick={() => handleDelete(sanPham.ma)} />
-                </span>
-              </Tooltip>
-              {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
+          ) : (
+            sanPham.soLuongTon
+          );
+        case "donGia":
+          return isSanPhamSelected ? (
+            <InputNumber
+              value={sanPham.donGia}
+              // onChange={handleInputChange}
+            />
+          ) : (
+            sanPham.donGia
+          );
+        case "hinhAnh":
+          const hinhAnhURL = sanPham.hinhAnh;
+          return (
+            <div
+              style={{
+                display: "inline-block",
+              }}
+            >
+              <Image
+                width={150}
+                height={100}
+                src={hinhAnhURL}
+                alt={sanPham.ten || "Ảnh sản phẩm"}
+                classNames="m-5 relative"
+              />
+              <DiscountTag discount={giaGiam} />
             </div>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, [selectedCTSP]);
+          );
+        case "trangThai":
+          return (
+            <Chip
+              // className="capitalize"
+              color={statusColorMap[sanPham.trangThai]}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue}
+            </Chip>
+          );
+        case "mauSac":
+          return (
+            <Chip
+              color="white"
+              style={{
+                backgroundColor: sanPham.mauSac,
+                color: "white",
+                fontSize: "13px",
+                textAlign: "center",
+                padding: "1px 6px",
+                borderRadius: "5px",
+              }}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue}
+            </Chip>
+          );
+        case "hanhDong":
+          return (
+            <div className="relative flex items-center gap-4">
+              <Tooltip content="Chi tiết" showArrow={true}>
+                <Link
+                  to={`/edit-san-pham/${sanPham.ma}`}
+                  style={{ display: "block" }}
+                  className="button-link group relative"
+                >
+                  <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                    <EyeIcon />
+                  </span>
+                </Link>
+              </Tooltip>
+
+              <div className="group relative" style={{ position: "relative" }}>
+                <Tooltip color="danger" content="Xóa" showArrow={true}>
+                  <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                    <DeleteIcon onClick={() => handleDelete(sanPham.ma)} />
+                  </span>
+                </Tooltip>
+                {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
+              </div>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    [selectedCTSP]
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -521,9 +521,7 @@ export default function ChiTietSanPham() {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? ""
-            : ``}
+          {selectedKeys === "all" ? "" : ``}
         </span>
         <Pagination
           isCompact
@@ -533,7 +531,7 @@ export default function ChiTietSanPham() {
           page={page}
           total={totalPages}
           onChange={setPage}
-        // style={{ paddingLeft: "730px" }}
+          // style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -565,14 +563,27 @@ export default function ChiTietSanPham() {
         }}
       >
         <div className="mb-2 font-normal border-gray-500 text-lg	flex items-center">
-          <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>⚙ Chi tiết sản phẩm</p>
+          <p
+            className="mt-1 mb-3"
+            style={{ fontSize: "30px", fontWeight: "bolder" }}
+          >
+            ⚙ Chi tiết sản phẩm
+          </p>
         </div>
         <div className="mb-2 border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
           <BiFilterAlt />
           <p className="ml-2 mt-1"> Bộ lọc</p>
         </div>
 
-        <div className="" style={{ fontSize: "8px", backgroundColor: "white", padding: "20px 10px", borderRadius: "8px" }}>
+        <div
+          className=""
+          style={{
+            fontSize: "8px",
+            backgroundColor: "white",
+            padding: "20px 10px",
+            borderRadius: "8px",
+          }}
+        >
           <div className="">
             <div className="flex items-center">
               <Input
@@ -606,7 +617,7 @@ export default function ChiTietSanPham() {
                       <option
                         key={x.id}
                         value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                       >
                         {x.ten}
                       </option>
@@ -634,7 +645,7 @@ export default function ChiTietSanPham() {
                       <option
                         key={x.id}
                         value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                       >
                         {x.ten}
                       </option>
@@ -662,7 +673,7 @@ export default function ChiTietSanPham() {
                       <option
                         key={x.id}
                         value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                       >
                         {x.ten}
                       </option>
@@ -690,7 +701,7 @@ export default function ChiTietSanPham() {
                       <option
                         key={x.id}
                         value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                       >
                         {x.ten}
                       </option>
@@ -718,7 +729,7 @@ export default function ChiTietSanPham() {
                       <option
                         key={x.id}
                         value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                       >
                         {x.ten}
                       </option>
@@ -748,7 +759,7 @@ export default function ChiTietSanPham() {
                       <option
                         key={x.id}
                         value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                       >
                         {x.ten}
                       </option>
@@ -772,8 +783,8 @@ export default function ChiTietSanPham() {
                     onChange={(e) => onChange(e)}
                   >
                     <option selected>Tất cả</option>
-                    <option >Đang bán</option>
-                    <option >Ngừng bán</option>
+                    <option>Đang bán</option>
+                    <option>Ngừng bán</option>
                   </select>
                 </div>
               </div>
@@ -794,7 +805,7 @@ export default function ChiTietSanPham() {
                 color: "#fff",
                 marginRight: "8px", // Adjust the margin as needed
               }}
-            >  
+            >
               Làm mới
             </ButtonAntd>
             <ButtonAntd
@@ -805,9 +816,7 @@ export default function ChiTietSanPham() {
                 color: "#fff",
               }}
             >
-              <Link to={"/quan-ly-san-pham/san-pham"}>
-                Quay lại
-              </Link>
+              <Link to={"/quan-ly-san-pham/san-pham"}>Quay lại</Link>
             </ButtonAntd>
           </div>
         </div>
@@ -823,7 +832,7 @@ export default function ChiTietSanPham() {
           selectedKeys={selectedKeys}
           selectionMode="multiple"
           rowSelection={{
-            columnTitle: 'Chọn',
+            columnTitle: "Chọn",
             fixed: false,
             checkStrictly: true,
           }}

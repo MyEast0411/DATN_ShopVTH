@@ -102,58 +102,34 @@ export default function App() {
 
   const getData = async () => {
     await axios.get(url + "getVouchers").then((res) => {
-      const rows =
-        // filterOptions(res.data)
-        res.data
-          .sort((a, b) => {
-            const first = a.ngayTao;
-            const second = b.ngayTao;
-            const cmp = first < second ? -1 : first > second ? 1 : 0;
-            return cmp;
-          })
-          .map((item, index) => {
-            return {
-              id: index + 1,
-              ids: item.id,
-              ma: item.ma,
-              ten: item.ten,
-              code: item.code,
-              ngayBatDau: item.ngayBatDau,
-              ngayKetThuc: item.ngayKetThuc,
-              soLuong: item.soLuong,
-              ngayTao: item.ngayTao,
-              giaTriMax: item.giaTriMax,
-              trangThai: item.trangThai,
-            };
-          });
+      const rows = res.data
+        .sort((a, b) => {
+          const first = a.ngayTao;
+          const second = b.ngayTao;
+          const cmp = first < second ? -1 : first > second ? 1 : 0;
+          return cmp;
+        })
+        .map((item, index) => {
+          return {
+            id: index + 1,
+            ids: item.id,
+            ma: item.ma,
+            ten: item.ten,
+            code: item.code,
+            ngayBatDau: item.ngayBatDau,
+            ngayKetThuc: item.ngayKetThuc,
+            soLuong: item.soLuong,
+            ngayTao: item.ngayTao,
+            giaTriMax: item.giaTriMax,
+            trangThai: item.trangThai,
+          };
+        });
       console.log(rows);
 
       setList(rows);
       // console.log(rows);
       setLoading(false);
     });
-  };
-
-  const filterOptions = (data) => {
-    return data
-      .filter((use) => {
-        if (dataInput === "") return hd;
-        if (
-          user.code.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.ten.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.ma.toLowerCase().includes(filterValue.toLowerCase())
-        )
-          return hd;
-      })
-      .filter((hd) => {
-        if (dataSelect === -1) return hd;
-        if (hd.loaiHd === dataSelect) return hd;
-      })
-      .filter((hd) => {
-        var ndata = Date.parse(new Date(hd.ngayTao));
-        if (ngayBatDau === "" || ngayKetThuc === "") return hd;
-        if (ngayBatDau <= ndata && ngayKetThuc >= ndata) return hd;
-      });
   };
 
   React.useEffect(() => {

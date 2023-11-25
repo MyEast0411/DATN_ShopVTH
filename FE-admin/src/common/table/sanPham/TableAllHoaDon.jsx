@@ -93,6 +93,7 @@ export default function App({ onDataSelected }) {
   };
 
   const handleDelete = () => {
+    
     setDeleteConfirmationOpen(true);
   };
 
@@ -126,12 +127,12 @@ export default function App({ onDataSelected }) {
       try {
         const response = await axios.get(url);
         const updatedRows = response.data.map((item, index) => ({
-          id: index + 1,
+          id: item.id,
           stt: index + 1,
           maHD : item.ma,
-          tenKhachHang : item.idKhachHang?.ten,
-          tenNhanVien : item.idNhanVien?.ten,
-          soLuong : item.soLuong,
+          tenKhachHang : item.id_khach_hang?.ten,
+          tenNhanVien : item.id_nhan_vien?.ten,
+          soLuong : "2",
           loaiHoaDon : item.loaiHd == 0 ? "Online" : "Tại quầy",
           trangThai : "Chờ thanh toán"
         }));
