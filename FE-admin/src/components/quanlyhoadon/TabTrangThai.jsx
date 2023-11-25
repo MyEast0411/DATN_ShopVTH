@@ -24,8 +24,8 @@ export default function TabTrangThai({
         if (dataInput === "") return hd;
         if (
           hd.ma.toLowerCase().includes(dataInput.toLowerCase()) ||
-          hd.tenKhachHang.toLowerCase().includes(dataInput.toLowerCase()) ||
-          hd.id_nhan_vien.ten.toLowerCase().includes(dataInput.toLowerCase())
+          hd.tenKhachHang?.toLowerCase().includes(dataInput.toLowerCase()) ||
+          hd.id_nhan_vien?.ten.toLowerCase().includes(dataInput.toLowerCase())
         )
           return hd;
       })

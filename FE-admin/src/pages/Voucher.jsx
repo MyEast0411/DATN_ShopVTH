@@ -1,5 +1,12 @@
-import React from "react";
-import { Tooltip, Tag, Modal } from "antd";
+import React, { useState } from "react";
+import {
+  Tooltip,
+  Tag,
+  Modal,
+  DatePicker,
+  Button as ButtonAntd,
+  Select,
+} from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -38,7 +45,6 @@ import { BiFilterAlt } from "react-icons/bi";
 import FilterMa from "../common/filter/sanPham/FilterMa";
 import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
 // import Slider from "../common/filter/sanPham/Slider";
-import { Button as ButtonAntd } from "antd";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { TbInfoTriangle } from "react-icons/tb";
@@ -46,6 +52,9 @@ import axios from "axios";
 import { format } from "date-fns";
 import { BsEye, BsTrash } from "react-icons/bs";
 import Switch from "@mui/material/Switch";
+import moment from "moment";
+// import { setOptions } from "react-chartjs-2/dist/utils";
+const { RangePicker } = DatePicker;
 
 const statusColorMap = {
   active: "success",
@@ -74,18 +83,123 @@ const INITIAL_VISIBLE_COLUMNS = [
   "code",
   "ngayBatDau",
   "ngayKetThuc",
+  "giaTriMax",
   "ngayTao",
+  "trangThai",
   "actions",
   "changeHD",
 ];
 
-export default function App() {
+export default function Voucher() {
   const url = "http://localhost:8080/voucher/";
   const [loading, setLoading] = React.useState(true);
   const [action, setAction] = React.useState(true);
 
   const [list, setList] = React.useState([]);
   const sizes = ["md"];
+  // const [filterValue, setFilterValue] = React.useState("");
+  // const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
+  // const [visibleColumns, setVisibleColumns] = React.useState(
+  //   new Set(INITIAL_VISIBLE_COLUMNS)
+  // );
+  // const [statusFilter, setStatusFilter] = React.useState("all");
+  // const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  // const [sortDescriptor, setSortDescriptor] = React.useState({
+  //   column: "ngayTao",
+  //   direction: "ascending",
+  // });
+  // const [page, setPage] = React.useState(1);
+  // const [totalPages, setTotalPages] = React.useState(1);
+
+  const [dataSelect, setDataSelect] = useState(-1);
+  const [ngayBatDau, setNgayBatDau] = useState("");
+  const [ngayKetThuc, setNgayKetThuc] = useState("");
+  const [priceOptions, setPriceOptions] = useState([]);
+
+  const onChangeDatePicker = (value, dateString) => {
+    console.log("Data: " + dateString);
+    // console.log("Ngay bat dau: " + typeof dateString[0]);
+    if (dateString[0] !== "" || dateString[1] !== "") {
+      let nbd = moment(dateString[0], "DD-MM-YYYY HH:mm").valueOf();
+      let nkt = moment(dateString[1], "DD-MM-YYYY HH:mm").valueOf();
+      console.log(nbd);
+      console.log(nkt);
+      setNgayBatDau(nbd);
+      setNgayKetThuc(nkt);
+    } else {
+      setNgayBatDau("");
+      setNgayKetThuc("");
+    }
+  };
+
+  const handleChange = (value) => {
+    setDataSelect(value);
+  };
+
+  const getData = async () => {
+    await axios.get(url + "getVouchers").then((res) => {
+      // filterOptions(res.data)
+
+      setList(
+        res.data.map((item, index) => {
+          return {
+            id: index + 1,
+            ids: item.id,
+            ma: item.ma,
+            ten: item.ten,
+            code: item.code,
+            ngayBatDau: item.ngayBatDau,
+            ngayKetThuc: item.ngayKetThuc,
+            soLuong: item.soLuong,
+            ngayTao: item.ngayTao,
+            giaTriMax: item.giaTriMax,
+            trangThai: item.trangThai,
+          };
+        })
+      );
+      res.data.join();
+      res.data.sort((a, b) => a.giaTriMax - b.giaTriMax);
+
+      console.log(
+        res.data[0].giaTriMax,
+        res.data[res.data.length - 1].giaTriMax
+      );
+      setPriceOptions(
+        res.data[0].giaTriMax,
+        res.data[res.data.length - 1].giaTriMax
+      );
+
+      // console.log(rows);
+      setLoading(false);
+    });
+  };
+
+  const filterOptions = (data) => {
+    return data
+      .filter((voucher) => {
+        if (filterValue === "") return voucher;
+        if (
+          voucher.code.toLowerCase().includes(filterValue.toLowerCase()) ||
+          voucher.ten.toLowerCase().includes(filterValue.toLowerCase()) ||
+          voucher.ma.toLowerCase().includes(filterValue.toLowerCase())
+        )
+          return voucher;
+      })
+      .filter((voucher) => {
+        if (dataSelect === -1) return voucher;
+        if (voucher.trangThai === dataSelect) return voucher;
+      })
+      .filter((voucher) => {
+        var ndata = Date.parse(new Date(voucher.ngayTao));
+        if (ngayBatDau === "" || ngayKetThuc === "") return voucher;
+        if (ngayBatDau <= ndata && ngayKetThuc >= ndata) return voucher;
+      });
+  };
+
+  React.useEffect(() => {
+    getData();
+  }, [action]);
+
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -94,71 +208,10 @@ export default function App() {
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "ngayTao",
+    column: "age",
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
-  const [totalPages, setTotalPages] = React.useState(1);
-
-  const getData = async () => {
-    await axios.get(url + "getVouchers").then((res) => {
-      const rows =
-        // filterOptions(res.data)
-        res.data
-          .sort((a, b) => {
-            const first = a.ngayTao;
-            const second = b.ngayTao;
-            const cmp = first < second ? -1 : first > second ? 1 : 0;
-            return cmp;
-          })
-          .map((item, index) => {
-            return {
-              id: index + 1,
-              ids: item.id,
-              ma: item.ma,
-              ten: item.ten,
-              code: item.code,
-              ngayBatDau: item.ngayBatDau,
-              ngayKetThuc: item.ngayKetThuc,
-              soLuong: item.soLuong,
-              ngayTao: item.ngayTao,
-              giaTriMax: item.giaTriMax,
-              trangThai: item.trangThai,
-            };
-          });
-      console.log(rows);
-
-      setList(rows);
-      // console.log(rows);
-      setLoading(false);
-    });
-  };
-
-  const filterOptions = (data) => {
-    return data
-      .filter((use) => {
-        if (dataInput === "") return hd;
-        if (
-          user.code.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.ten.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.ma.toLowerCase().includes(filterValue.toLowerCase())
-        )
-          return hd;
-      })
-      .filter((hd) => {
-        if (dataSelect === -1) return hd;
-        if (hd.loaiHd === dataSelect) return hd;
-      })
-      .filter((hd) => {
-        var ndata = Date.parse(new Date(hd.ngayTao));
-        if (ngayBatDau === "" || ngayKetThuc === "") return hd;
-        if (ngayBatDau <= ndata && ngayKetThuc >= ndata) return hd;
-      });
-  };
-
-  React.useEffect(() => {
-    getData();
-  }, [list]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -173,14 +226,16 @@ export default function App() {
   const filteredItems = React.useMemo(() => {
     let filteredUsers = [...list];
 
-    if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter(
-        (user) =>
-          user.code.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.ten.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.ma.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
+    // if (hasSearchFilter) {
+    //   filteredUsers = filteredUsers.filter(
+    //     (user) =>
+    //       user.code.toLowerCase().includes(filterValue.toLowerCase()) ||
+    //       user.ten.toLowerCase().includes(filterValue.toLowerCase()) ||
+    //       user.ma.toLowerCase().includes(filterValue.toLowerCase())
+    //   );
+    // }
+
+    filteredUsers = filterOptions(filteredUsers);
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
@@ -189,16 +244,9 @@ export default function App() {
         Array.from(statusFilter).includes(user.status)
       );
     }
-    const data = filteredUsers.map((el, i) => {
-      return {
-        ...el,
-        id: i + 1,
-      };
-    });
-    console.log(data);
 
-    return data;
-  }, [list, filterValue, statusFilter]);
+    return filteredUsers;
+  }, [list, filterValue, statusFilter, ngayBatDau, ngayKetThuc, dataSelect]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -210,10 +258,6 @@ export default function App() {
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
-    // const [sortDescriptor, setSortDescriptor] = React.useState({
-    //   column: "ngayTao",
-    //   direction: "descending",
-    // });
     return [...items].sort((a, b) => {
       const first = a[sortDescriptor.column];
       const second = b[sortDescriptor.column];
@@ -249,7 +293,7 @@ export default function App() {
       case "actions":
         return (
           <div className="container">
-            <div class="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <Tooltip title="Xem chi tiết" color="green">
                   <Link
@@ -388,15 +432,18 @@ export default function App() {
       <div className="flex flex-col gap-4">
         <div className="flex justify-end gap-3 items-end">
           {/* <Input
-          isClearable
-          className="w-full sm:max-w-[30%]"
-          placeholder="Tìm kiếm bất kỳ..."
-          startContent={<SearchIcon />}
-          value={filterValue}
-          onClear={() => onClear()}
-          onValueChange={onSearchChange}
-        /> */}
-          <div className="flex gap-3 items-end">
+            isClearable
+            className="w-full sm:max-w-[30%]"
+            placeholder="Tìm kiếm bất kỳ..."
+            startContent={<SearchIcon />}
+            value={filterValue}
+            onClear={() => onClear()}
+            onValueChange={onSearchChange}
+          /> */}
+          {/* <Input type="datetime-local" label="Từ ngày" />
+          <Input type="datetime-local" label="Đến ngày"/> */}
+
+          <div className="flex flex-end gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
@@ -479,39 +526,18 @@ export default function App() {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
-          Tổng {list.length} sản phẩm
+          Tổng số phiếu giảm giá :{" "}
+          <span className="font-medium text-gray-950">{list.length}</span>
         </span>
-        {/* <span className="w-[30%] text-small text-default-400">
-        {selectedKeys === "all"
-          ? "Đã chọn tất cả"
-          : `${selectedKeys.size} khyến mại đã được chọn`}
-      </span> */}
-        {/* <Pagination
-        isCompact
-        showControls
-        showShadow
-        color="primary"
-        page={page}
-        total={totalPages}
-        initialPage={1}
-        style={{paddingLeft : "730px"}}
-        onChange={setPage}
-      /> */}
-        <div className="flex flex-wrap gap-4 items-center">
-          {sizes.map((size) => (
-            <Pagination
-              isCompact
-              showControls
-              key={size}
-              // style={{ paddingLeft: "710px" }}
-              total={totalPages + 1}
-              initialPage={1}
-              size={size}
-              page={page}
-              onChange={setPage}
-            />
-          ))}
-        </div>
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          total={pages}
+          onChange={setPage}
+        />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
             isDisabled={pages === 1}
@@ -519,7 +545,7 @@ export default function App() {
             variant="flat"
             onPress={onPreviousPage}
           >
-            Trước
+            Previous
           </Button>
           <Button
             isDisabled={pages === 1}
@@ -527,7 +553,7 @@ export default function App() {
             variant="flat"
             onPress={onNextPage}
           >
-            Tiếp
+            Next
           </Button>
         </div>
       </div>
@@ -550,7 +576,7 @@ export default function App() {
             </div>
 
             <div
-              className="grid drop-shadow-lg grid-cols-1 md:grid-cols-3 gap-4"
+              className=""
               style={{
                 backgroundColor: "white",
                 padding: "10px",
@@ -562,47 +588,66 @@ export default function App() {
                 alignItems: "center",
               }}
             >
-              <div className="p-5 ml-32">
-                <Input
-                  isClearable
-                  className="w-full "
-                  placeholder="Tìm kiếm bất kỳ..."
-                  startContent={<SearchIcon />}
-                  value={filterValue}
-                  onClear={() => onClear()}
-                  onValueChange={onSearchChange}
-                />
-              </div>
-              <div className="p-5">
-                <div className="flex items-center">
-                  <span className="pr-2">Trạng thái:</span>
-                  <FilterTrangThai style={{ width: "100%" }} />
+              <div className="p-5 ml-32 flex gap-10">
+                <div className="w-1/2">
+                  {" "}
+                  <Input
+                    isClearable
+                    placeholder="Tìm kiếm bất kỳ..."
+                    startContent={<SearchIcon />}
+                    value={filterValue}
+                    onClear={() => onClear()}
+                    onValueChange={onSearchChange}
+                  />
+                </div>
+                <div className="w-1/2">
+                  <p className="mb-1 font-bold">Tình Trạng</p>
+                  <Select
+                    defaultValue="--Chọn tình trạng voucher--"
+                    className="w-full"
+                    // style={{ width: "100%" }}
+                    onChange={handleChange}
+                    // allowClear
+                    options={options}
+                  />
                 </div>
               </div>
-              <div className="p-5">
-                {/* <Slider style={{ width: "100%" }} /> */}
-                <Slider
-                  label="Price Range"
-                  step={50}
-                  minValue={0}
-                  maxValue={1000}
-                  defaultValue={[100, 500]}
-                  formatOptions={{ style: "currency", currency: "USD" }}
-                  className="max-w-md"
-                />
+
+              <div className="p-5 ml-32 flex gap-10">
+                <div className="w-1/2">
+                  <p className="mb-1 font-bold">Giá trị voucher</p>
+                  <Slider
+                    label="Giá trị(VND)"
+                    step={1000}
+                    minValue={0}
+                    maxValue={priceOptions[1] / 10}
+                    defaultValue={priceOptions}
+                    formatOptions={{ style: "currency", currency: "VND" }}
+                    className="max-w-md"
+                  />
+                </div>
+                <div className="w-1/2">
+                  <p className="mb-2 font-bold">Tìm kiếm theo ngày</p>
+                  <RangePicker
+                    showTime={{ format: "HH:mm" }}
+                    format="DD-MM-YYYY HH:mm"
+                    className="w-full"
+                    onChange={onChangeDatePicker}
+                  />
+                </div>
               </div>
-              {/* <div className="p-5 text-center mt-4">
-                <ButtonAntd
-                  type="primary"
-                  style={{
-                    backgroundColor: "#1976d2",
-                    marginBottom: "2px",
-                    marginLeft: "150%",
-                  }}
-                >
-                  Làm mới
-                </ButtonAntd>
-              </div> */}
+              <div className="w-full">
+                <div className="p-5 text-center mt-4">
+                  <ButtonAntd
+                    type="primary"
+                    style={{
+                      backgroundColor: "#1976d2",
+                    }}
+                  >
+                    Làm mới
+                  </ButtonAntd>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -666,7 +711,7 @@ export default function App() {
                 </TableHeader>
                 <TableBody
                   emptyContent={"Không tìm thấy voucher nào!"}
-                  items={sortedItems}
+                  items={items}
                 >
                   {(item) => (
                     <TableRow key={item.id}>
@@ -732,4 +777,10 @@ const columns = [
   { uid: "trangThai", name: "Trạng Thái" },
   { uid: "actions", name: "Thao Tác" },
   { uid: "changeHD", name: "Hoạt Động" },
+];
+
+const options = [
+  { value: -1, label: "--Chọn tình trạng voucher--" },
+  { value: 0, label: " Dừng Hoạt động" },
+  { value: 1, label: " Hoạt Động" },
 ];

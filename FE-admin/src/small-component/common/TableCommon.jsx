@@ -199,37 +199,23 @@ const GetTrangThai = ({ tinhTrang }) => {
     );
   if (tinhTrang == 3)
     return (
-      <Tag color="#008e00">
+      <Tag color="#C8D52D">
         {" "}
-        <span className=" text-sm ">Vận Chuyển</span>
+        <span className=" text-sm ">Giao Hàng</span>
       </Tag>
     );
   if (tinhTrang == 4)
-    return (
-      <Tag color="#00c0c0">
-        {" "}
-        <span className=" text-sm ">Thanh Toán</span>
-      </Tag>
-    );
-  if (tinhTrang == 5)
     return (
       <Tag color="#400098">
         {" "}
         <span className=" text-sm ">Hoàn Thành</span>
       </Tag>
     );
-  if (tinhTrang == 6)
+  if (tinhTrang == 5)
     return (
       <Tag color="#ff0000">
         {" "}
         <span className=" text-sm ">Hủy</span>
-      </Tag>
-    );
-  if (tinhTrang == 7)
-    return (
-      <Tag color="#ff0000">
-        {" "}
-        <span className=" text-sm ">Chờ thanh toán</span>
       </Tag>
     );
 };
