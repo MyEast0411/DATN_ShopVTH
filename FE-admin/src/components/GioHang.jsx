@@ -654,7 +654,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
             footer={[]}
           >
             <div className="mt-5">
-              <TableHoaDon onDataSelected={handleDataSelected} setSLSP={setSLSP}/>
+              <TableHoaDon onDataSelected={handleDataSelected}/>
             </div>
           </Modal>
         </div>

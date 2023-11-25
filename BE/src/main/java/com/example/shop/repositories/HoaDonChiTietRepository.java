@@ -19,14 +19,15 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , S
     @Query(value = "delete from hoa_don_chi_tiet u where u.id_hoa_don = :idHD and u.id_chi_tiet_san_pham = :idSPCT", nativeQuery = true)
     void deleteHDCT(@Param("idHD") String idHD , @Param("idSPCT")String idSPCT );
 
-    @Query("select u,anh.ten from HoaDonChiTiet u join HinhAnh anh on u.id_chi_tiet_san_pham = anh.id_san_pham_chi_tiet where u.id_hoa_don.ma = ?1")
+    @Query("select u from HoaDonChiTiet u where u.id_hoa_don.ma = ?1")
     List<HoaDonChiTiet> getHDCTByMA(String maHD);
     @Query(value = "select sum(b.so_luong) as so_luong\n" +
-            "from shopvth.hoa_don a join shopvth.hoa_don_chi_tiet b\n" +
+            "from hoa_don a join hoa_don_chi_tiet b\n" +
             "on a.id = b.id_hoa_don\n" +
             "where a.trang_thai = 7 and a.deleted = 1 and a.ma = :ma\n" +
             "group by a.ma,a.id_khach_hang,a.id_nhan_vien,a.loai_hd,a.trang_thai",nativeQuery = true)
     Integer getSLSP(@Param("ma")String ma);
+
     @Query(value = "SELECT id_chi_tiet_san_pham, SUM(so_luong) AS total_quantity\n" +
             "FROM hoa_don_chi_tiet\n" +
             "GROUP BY id_chi_tiet_san_pham\n" +

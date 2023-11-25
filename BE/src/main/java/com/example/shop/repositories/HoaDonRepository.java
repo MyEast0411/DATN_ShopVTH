@@ -16,10 +16,13 @@ import java.util.List;
 public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
     @Query(value = "select * from hoa_don u where u.trang_thai = ?1 and u.deleted =1 order by u.ngay_tao desc" , nativeQuery = true)
-    List<HoaDon> getPage(int trangThai );
+    List<HoaDon> getPage(int trangThai);
 
-    @Query("select u from HoaDon u where u.trangThai = 7 and u.deleted = 1")
-    List<HoaDon> getHDChuaTT();
+    @Query(value = "select a.ma,a.id_khach_hang,a.id_nhan_vien,sum(b.so_luong) as so_luong,a.loai_hd,a.trang_thai\n" +
+            "from hoa_don a join hoa_don_chi_tiet b on a.id = b.id_hoa_don\n" +
+            "where a.trang_thai = 7 and a.deleted = 1\n" +
+            "group by a.ma,a.id_khach_hang,a.id_nhan_vien,a.loai_hd,a.trang_thai",nativeQuery = true)
+    List<Object[]> getHDChuaTT();
 
     @Query(value = "select * from hoa_don u where u.deleted = 1 order by u.ngay_tao desc", nativeQuery = true)
     List<HoaDon> getPageDeleted();
@@ -27,7 +30,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
     HoaDon getHoaDonByMa(String ma);
 
     @Query(value = "SELECT MAX(CAST(SUBSTRING(ma, 3) AS UNSIGNED)) as maxMa\n" +
-            "FROM shopvth.hoa_don",nativeQuery = true)
+            "FROM hoa_don",nativeQuery = true)
     String getMaxMa();
 
     @Query(value = "select sum(hd.tong_tien) from hoa_don hd where month(hd.ngay_nhan) = ?1  and hd.deleted = 1",nativeQuery = true)

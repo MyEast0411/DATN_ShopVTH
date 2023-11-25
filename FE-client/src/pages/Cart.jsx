@@ -48,6 +48,7 @@ export default function Cart() {
   const fetchAllHinhAnh = async () => {
     try {
       const data = await getAllHA();
+      console.log(data);
       setHinhAnhs(data);
     } catch (error) {}
   };
@@ -188,7 +189,7 @@ export default function Cart() {
                     </div>
                     <div className="cart-item-card-color mb-2">
                       {hinhAnhs.find(
-                        (ha) => ha.id_san_pham_chi_tiet.id === cart.product.id
+                        (ha) => ha?.id_san_pham_chi_tiet?.id === cart.product.id
                       )?.mauSac || ""}
                     </div>
                     <div className="gia-ban-cartItem">

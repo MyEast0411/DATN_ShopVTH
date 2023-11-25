@@ -18,7 +18,7 @@ public class UploadAnh {
     private static final String IMGUR_CLIENT_ID = "9df5d9cecb5d8ee";
 
 //    public static void main(String[] args) {
-//        String imagePath = "C:\\Users\\Admin\\Pictures\\Saved Pictures\\hien2.jpg";
+//        String imagePath = "C:\\Users\\Admin\\Pictures\\Saved Pictures\\hoi_va_trang.jpg";
 //
 //        File imageFile = new File(imagePath);
 //
