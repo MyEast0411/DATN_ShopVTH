@@ -26,36 +26,33 @@ import {
   DialogTitle,
   TableCell as TableCellMui,
 } from "@mui/material";
+import { format } from "date-fns";
 // import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
-import { AiOutlinePlus } from "react-icons/ai";
-import { SearchIcon } from "../../otherComponents/SearchIcon";
+// import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
-import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { MdDeleteOutline } from "react-icons/md";
-import { LiaEyeSolid } from "react-icons/lia";
-import { getAllKMSPCT } from "../../../api/khuyenMai/KhuyenMaiApi"
 import { DeleteIcon } from "../../otherComponents/DeleteIcon";
 import { EyeIcon } from "../../otherComponents/EyeIcon";
-import numeral from "numeral";
-import { InputNumber } from "antd";
-import { Modal } from 'antd';
+// import { MdDeleteOutline } from "react-icons/md";
+import { TbInfoTriangle } from "react-icons/tb";
+// import { LiaEyeSolid } from "react-icons/lia";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "Mã hóa đơn", uid: "maHD", sortable: true },
-  { name: "Tên khách hàng", uid: "tenKhachHang", sortable: true },
-  { name: "Tên nhân viên", uid: "tenNhanVien", sortable: true },
-  { name: "Số lượng", uid: "soLuong", sortable: true },
-  { name: "Loại hóa đơn", uid: "loaiHoaDon", sortable: true },
-  { name: "Trạng thái", uid: "trangThai", sortable: true},
+  { name: "Ảnh", uid: "hinhAnh", sortable: true, align: "center" },
+  { name: "Họ tên", uid: "hoTen", sortable: true },
+  { name: "Chức vụ", uid: "chucVu", sortable: true },
+  { name: "Số điện thoại", uid: "sdt", sortable: true },
+  { name: "Địa chỉ", uid: "ngaySinh", sortable: true },
+  { name: "Trạng thái", uid: "trangThai" },
   { name: "Hành Động", uid: "hanhDong" },
 ];
 
 const statusOptions = [
-  { name: "Chờ thanh toán", uid: "Chờ thanh toán" }
+  { name: "Đang làm", uid: "Đang làm" },
+  { name: "Đã nghỉ", uid: "Đã nghỉ" },
 ];
 
 const statusColorMap = {
@@ -63,36 +60,29 @@ const statusColorMap = {
   paused: "danger",
   incoming: "warning",
 };
-statusColorMap["Chờ thanh toán"] = "success";
-statusColorMap["Ngừng bán"] = "danger";
+statusColorMap["Đang làm"] = "success";
+statusColorMap["Đã nghỉ"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
-  "maHD",
-  "tenKhachHang",
-  "tenNhanVien",
-  "soLuong",
-  "loaiHoaDon",
+  "hinhAnh",
+  "hoTen",
+  "chucVu",
+  "sdt",
+  "ngaySinh",
   "trangThai",
   "hanhDong",
 ];
 
-export default function App({ onDataSelected }) {
+export default function App() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [soLuong, setSoLuong] = useState("");
-  const [soLuongDat, setSoLuongDat] = useState("");
-  const [isModalOpenThemSL, setIsModalOpenThemSL] = useState(false);
+  const [rows, setRows] = React.useState([]);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
 
-  const handleOkThemSL = async () => {
-    
-  };
-  const handleCancelThemSL = () => {
-    setIsModalOpenThemSL(false);
-  };
-
-  const handleDelete = () => {
+  const handleDelete = (idToDelete) => {
+    setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);
   };
 
@@ -102,8 +92,18 @@ export default function App({ onDataSelected }) {
   };
 
   const confirmDelete = async () => {
-    onDataSelected(idToDelete);
-    cancelDelete();
+    if (idToDelete) {
+      await axios
+        .delete(`http://localhost:8080/khach-hang/delete/${idToDelete}`)
+        .then((response) => {
+          toast("🎉 Xóa thành công");
+          cancelDelete();
+        })
+        .catch((error) => {
+          toast("😢 Xóa thất bại");
+        });
+      cancelDelete();
+    }
   };
 
   const [filterValue, setFilterValue] = React.useState("");
@@ -120,20 +120,23 @@ export default function App({ onDataSelected }) {
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
 
-  const url = `http://localhost:8080/hoa_don/getHoaDonCTT`;
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
-        const response = await axios.get(url);
+        const response = await axios.get(
+          "http://localhost:8080/nhan_vien/getAll"
+        );
+        console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
-          id: index + 1,
+          id: item.id,
           stt: index + 1,
-          maHD : item.ma,
-          tenKhachHang : item.idKhachHang?.ten,
-          tenNhanVien : item.idNhanVien?.ten,
-          soLuong : item.soLuong,
-          loaiHoaDon : item.loaiHd == 0 ? "Online" : "Tại quầy",
-          trangThai : "Chờ thanh toán"
+          maKH: item.ma,
+          anh: item.anh,
+          hoTen: item.ten,
+          chucVu: item?.id_chuc_vu.ten,
+          sdt: item.sdt,
+          ngaySinh: item.diaChi,
+          trangThai: item.trang_thai == 1 ? "Đang làm" : "Đã nghỉ",
         }));
         setSanPhams(updatedRows);
       } catch (error) {
@@ -193,11 +196,20 @@ export default function App({ onDataSelected }) {
     });
   }, [sortDescriptor, items]);
 
-
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
-    
+    // console.log(sanPham);
     switch (columnKey) {
+      case "hinhAnh":
+        const hinhAnhURL = sanPham.anh;
+        return (
+          <Image
+            style={{ height: "120px", width: "150px" }}
+            src={hinhAnhURL}
+            alt={sanPham.ten || "Ảnh sản phẩm"}
+            classNames="m-5"
+          />
+        );
       case "trangThai":
         return (
           <Chip
@@ -208,52 +220,32 @@ export default function App({ onDataSelected }) {
           >
             {cellValue}
           </Chip>
-          
         );
-      
       case "hanhDong":
         return (
-          <div className="relative flex gap-4">
-            <Tooltip content="Chọn hóa đơn" showArrow={true}>
-                <span className="cursor-pointer active:opacity-50 w-16 text-center">
-                  <div
-                    className="p-2"
-                    style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {handleDelete(sanPham.soLuong);setIdToDelete(sanPham.maHD)}}
-                  >
-                    Chọn
-                  </div>
-                  
+          <div className="relative flex items-center gap-4">
+            <Tooltip content="Xem" showArrow={true}>
+              <Link
+                to={`/edit-khach-hang/${sanPham.maKH}`}
+                // style={{ display: "block" }}
+                className="button-link group relative"
+              >
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
                 </span>
+              </Link>
             </Tooltip>
-            <Tooltip content="Hủy hóa đơn" showArrow={true}>
-                <span className="cursor-pointer active:opacity-50 w-16 text-center">
-                  <div
-                    className="p-2"
-                    style={{
-                      backgroundColor: "red",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {}}
-                  >
-                    Hủy
-                  </div>
-                  
-                </span>
+            <Tooltip color="danger" content="Xóa" showArrow={true}>
+              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                <DeleteIcon onClick={() => handleDelete(sanPham.id)} />
+              </span>
             </Tooltip>
           </div>
         );
       default:
         return cellValue;
     }
-  }, [isModalOpenThemSL]);
+  }, []);
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -290,10 +282,8 @@ export default function App({ onDataSelected }) {
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <h1>Các hóa đơn đang chờ</h1>
-
-        <div className="flex justify-between gap-3 items-end">
-          <Input
+        <div className="flex justify-end gap-3 items-end">
+          {/* <Input
             isClearable
             className="w-full sm:max-w-[30%]"
             placeholder="Tìm kiếm bất kỳ..."
@@ -301,8 +291,7 @@ export default function App({ onDataSelected }) {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
-            // style={{margin : "100px 500px"}}
-          />
+          /> */}
           <div className="flex gap-3 items-end">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -356,7 +345,7 @@ export default function App({ onDataSelected }) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Tổng {sanPhams.length} hóa đơn
+            Tổng {sanPhams.length} nhân viên
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
@@ -385,11 +374,11 @@ export default function App({ onDataSelected }) {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
-          {/* {selectedKeys === "all"
+        {/* <span className="w-[30%] text-small text-default-400">
+          {selectedKeys === "all"
             ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`} */}
-        </span>
+            : `${selectedKeys.size} khyến mại đã được chọn`}
+        </span> */}
         <Pagination
           isCompact
           showControls
@@ -398,7 +387,7 @@ export default function App({ onDataSelected }) {
           page={page}
           total={totalPages}
           onChange={setPage}
-        //   style={{ paddingLeft: "730px" }}
+          style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -427,7 +416,7 @@ export default function App({ onDataSelected }) {
       <Table
         style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
-        // isHeaderSticky
+        isHeaderSticky
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{
@@ -452,7 +441,7 @@ export default function App({ onDataSelected }) {
           )}
         </TableHeader>
         <TableBody
-          emptyContent={"Không tìm thấy sản phẩm nào!"}
+          emptyContent={"Không tìm thấy khách hàng nào!"}
           items={sortedItems}
         >
           {(item) => (
@@ -464,7 +453,6 @@ export default function App({ onDataSelected }) {
           )}
         </TableBody>
       </Table>
-      
       <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
         <DialogTitle>
           <div
@@ -481,12 +469,12 @@ export default function App({ onDataSelected }) {
                 fontSize: "25px",
               }}
             />
-            <span>Xác nhận chọn</span>
+            <span>Xác nhận xóa</span>
           </div>
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc muốn chọn hóa đơn này?
+            Bạn có chắc muốn xóa nhân viên này?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -494,7 +482,7 @@ export default function App({ onDataSelected }) {
             Hủy
           </Button>
           <Button color="primary" onClick={confirmDelete}>
-            Vẫn chọn
+            Vẫn xóa
           </Button>
         </DialogActions>
       </Dialog>

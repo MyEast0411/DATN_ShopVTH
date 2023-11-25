@@ -12,6 +12,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ThemKhuyenMai from "./components/khuyenMai/ThemKhuyenMai";
 import ThemKhachHang from "./components/khachHang/ThemKhachHang";
+import ThemNhanVien from "./components/nhanVien/ThemNhanVien";
 import ThemSanPham from "./components/sanPham/ThemSanPham";
 import ChiTietSanPham from "./components/sanPham/ChiTietSanPham";
 import DetailSanPham from "./components/sanPham/DetailSanPham";
@@ -40,7 +41,7 @@ const App = () => {
           <Route path="/khuyen-mai" element={<KhuyenMai />} />
           <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
           <Route path="/them-khuyen-mai/:idKM" element={<ThemKhuyenMai />} />
-
+          <Route path="/them-nhan-vien" element={<ThemNhanVien />} />
           <Route path="/them-khach-hang" element={<ThemKhachHang />} />
           <Route path="/edit-khach-hang/:maKH" element={<DetailKhachHang />} />
 

@@ -442,7 +442,7 @@ export default function SanPham() {
               padding: "10px",
               borderRadius: "8px",
               width: "100%",
-              height: "230px",
+              height: "190px",
               boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
               transition: "transform 0.2s",
               justifyContent: "space-between",

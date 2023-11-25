@@ -28,6 +28,14 @@ public class NhanVien {
 
     @Column(name = "email")
     private String email;
+    @Column(name = "cccd")
+    private String cccd;
+
+    @Column(name = "ngay_sinh")
+    private Date ngaySinh;
+
+    @Column(name = "gioi_tinh")
+    private String gioiTinh;
 
     @Column(name = "mat_khau")
     private String matKhau;

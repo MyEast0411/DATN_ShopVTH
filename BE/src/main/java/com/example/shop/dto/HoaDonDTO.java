@@ -13,4 +13,5 @@ import java.util.List;
 public class HoaDonDTO {
     private String id;
     private List<HoaDonChiTiet> list;
+    private String soLuong;
 }

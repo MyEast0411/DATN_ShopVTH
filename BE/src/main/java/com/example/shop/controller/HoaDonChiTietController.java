@@ -49,6 +49,7 @@ public class HoaDonChiTietController {
             HoaDonDTO groupedDataDTO = new HoaDonDTO();
             groupedDataDTO.setId(maHD);
             groupedDataDTO.setList(entry.getValue());
+            groupedDataDTO.setSoLuong(""+ssHDCT.getSLSP(maHD));
             result.add(groupedDataDTO);
         }
         try {

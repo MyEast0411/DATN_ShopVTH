@@ -17,7 +17,7 @@ const columns = [
 const TabBanHang = () => {
   const [activeKey, setActiveKey] = useState("💖💖");
   const [selectData, setSelectData] = useState(null);
-
+  const [soLuongSP, setSoLuongSP] = useState(0);
   const handleDataSelect = async (data) => {
     setSelectData(data);
     await axios
@@ -25,8 +25,10 @@ const TabBanHang = () => {
       .then((res) => {
         console.log(res.data);
         const data = res.data.map((user, index) => {
+          console.log(user.soLuong);
           return {
             label: `${user?.id}`,
+            soLuong : `${user?.soLuong}`,
             children: (
               <Children
                 columns={columns}
@@ -34,6 +36,7 @@ const TabBanHang = () => {
                 activeKey={user?.id}
                 updateSoLuong={updateSoLuong}
                 onDataSelected={handleDataSelect}
+                setSoLuongSP={setSoLuongSP}
               />
             ),
             key: user?.id,
@@ -49,12 +52,14 @@ const TabBanHang = () => {
   const [items, setItems] = useState([
     {
       label: `Hóa đơn 1`,
+      soLuong : `0`,
       children: (
         <Children
           columns={columns}
           users={[]}
           activeKey={`💖💖`}
           onDataSelect={handleDataSelect}
+          setSoLuongSP={setSoLuongSP}
         />
       ),
       key: `💖💖`,
@@ -103,12 +108,14 @@ const TabBanHang = () => {
           ...prevItems,
           {
             label: res.data.ma,
+            soLuong : `0`,
             children: (
               <Children
                 columns={columns}
                 users={[]}
                 activeKey={res.data.ma}
                 updateSoLuong={updateSoLuong}
+                setSoLuongSP={setSoLuongSP}
                 // onDataSelected={handleDataSelected}
               />
             ),
@@ -183,7 +190,7 @@ const TabBanHang = () => {
                 <div style={{ position: "relative" }}>
                   <span>{pane.label}</span>
                   <Badge
-                    badgeContent={6}
+                    badgeContent={pane.soLuong}
                     color="primary"
                     max={5}
                     style={{
