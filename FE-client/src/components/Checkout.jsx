@@ -112,7 +112,7 @@ export default function Checkout() {
     e.preventDefault();
 
     // ...
-
+    const email = e.target.elements.email.value;
     const hoTen = e.target.elements.hoTen.value;
     const soDienThoai = e.target.elements.soDienThoai.value;
     const diaChi = e.target.elements.diaChi.value;
@@ -210,12 +210,12 @@ export default function Checkout() {
             </div>
             <form onSubmit={handleSubmit}>
               <div className="inputGroupCodeSignUp">
-                <input name="diaChi" type="email" required autocomplete="off" />
-                <label for="Password">Email</label>
+                <input name="email" type="email" required autocomplete="off" />
+                <label for="email">Email</label>
               </div>
               <div className="inputGroupCodeSignUp">
                 <input name="hoTen" type="text" required autocomplete="off" />
-                <label for="Code">Họ và tên</label>
+                <label for="hoTen">Họ và tên</label>
               </div>
               <div className="inputGroupCodeSignUp">
                 <input
@@ -224,11 +224,11 @@ export default function Checkout() {
                   required
                   autocomplete="off"
                 />
-                <label for="Password">Số điện thoại</label>
+                <label for="soDienThoai">Số điện thoại</label>
               </div>
               <div className="inputGroupCodeSignUp">
                 <input name="diaChi" type="text" required autocomplete="off" />
-                <label for="Password">Địa chỉ</label>
+                <label for="diaChi">Địa chỉ</label>
               </div>
 
               <div className="flex justify-between gap-1 text-[13px]">
