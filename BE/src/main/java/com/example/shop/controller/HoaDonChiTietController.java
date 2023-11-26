@@ -10,7 +10,7 @@ import com.example.shop.entity.HoaDonChiTiet;
 import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.*;
-import com.example.shop.service.LichSuHoaDonService;
+import com.example.shop.util.SendMail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +42,7 @@ public class HoaDonChiTietController {
     VoucherRepository ssVC;
 
     @Autowired
-    private LichSuHoaDonService lichSuHoaDonService;
+    LichSuHoaDonRepository ssLSHD;
 
     @GetMapping("/getHDCT/{maHD}")
     public ResponseEntity getHDCT(@PathVariable String maHD) {
@@ -102,6 +102,7 @@ public class HoaDonChiTietController {
                     .id_chi_tiet_san_pham(sp)
                     .soLuong(hoaDonChiTiet.getSo_luong())
                     .giaTien(tongTien)
+                    .deleted(1)
                     .build();
             System.out.println(hdct);
             ssHDCT.save(hdct);
@@ -167,29 +168,24 @@ public class HoaDonChiTietController {
             } else {
                 maxMaInt = Integer.parseInt(maxMa);
             }
-            Date date = new Date();
             HoaDon hoaDon = HoaDon.builder()
                     .ma("HD" + (maxMaInt + 1))
                     .trangThai(0)
                     .deleted(1)
                     .loaiHd(0)
-                    .ngayTao(date)
+                    .ngayTao(new Date())
                     .diaChi(giohang.getDiaChi() + "," + giohang.getThanhPho() + "," + giohang.getHuyen() + "," + giohang.getXa())
                     .tongTien(BigDecimal.valueOf(Double.parseDouble(giohang.getTongTien())))
                     .build();
-            HoaDon don = ssHD.save(hoaDon);
-
-
+            HoaDon hd1 = ssHD.save(hoaDon);
             LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                    .id_hoa_don(hd1)
                     .moTaHoaDon("Chờ xác nhận")
-                    .ghiChu("")
-                    .deleted(0)
-                    .id_hoa_don(don)
-                    .ngayTao(date)
-                    .nguoiTao("Cam")
+                    .deleted(1)
+                    .nguoiTao("Đông")
+                    .ngayTao(new Date(System.currentTimeMillis()))
                     .build();
-
-            lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
+            ssLSHD.save(lichSuHoaDon);
             System.out.println(giohang);
             for (Object gioHangItem : giohang.getGioHang()) {
                 if (gioHangItem instanceof Map) {
@@ -200,14 +196,9 @@ public class HoaDonChiTietController {
                         Map<?, ?> productMap = (Map<?, ?>) productObject;
 
                         String id = (String) productMap.get("id");
-//                        Integer kichCo = Integer.parseInt(productMap.get("kichCo").toString());
+                        Integer kichCo = Integer.parseInt(productMap.get("kichCo").toString());
                         Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
                         Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
-//
-//                        System.out.println("kichCo: " + kichCo);
-//                        System.out.println("id: " + id);
-//                        System.out.println("giaBan: " + giaBan);
-//                        System.out.println("soLuong: " + soLuong);
 
                         HoaDonChiTiet hdct = new HoaDonChiTiet();
                         hdct.setId_hoa_don(hoaDon);
@@ -218,6 +209,8 @@ public class HoaDonChiTietController {
                     }
                 }
             }
+            System.out.println(giohang.getThoiGianNhanHang());
+            SendMail.SenMail(giohang.getEmail(),giohang.getThoiGianNhanHang(),giohang.getPhiShip(), giohang.getTongTien());
             return ResponseEntity.ok("Thành công");
         } catch (Exception e) {
             e.printStackTrace();

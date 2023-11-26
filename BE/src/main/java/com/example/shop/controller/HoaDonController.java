@@ -1,11 +1,13 @@
 package com.example.shop.controller;
 
+import com.example.shop.dto.HoaDonCTTDTO;
 import com.example.shop.dto.ThanhToanHoaDonDTO;
 import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.entity.Voucher;
 import com.example.shop.repositories.HoaDonRepository;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.repositories.NhanVienRepository;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,9 @@ public class HoaDonController {
     private KhachHangRepository ssKH;
 
     @Autowired
+    private NhanVienRepository ssNV;
+
+    @Autowired
     private LichSuHoaDonService lichSuHoaDonService;
 
     @GetMapping("getHoaDons")
@@ -73,8 +78,28 @@ public class HoaDonController {
     }
 
     @GetMapping("getHoaDonCTT")
-    public ResponseEntity<List<HoaDon>> getHoaDonCTT() {
-        return ResponseEntity.ok(hoaDonRepository.getHDChuaTT());
+    public ResponseEntity getHoaDonCTT() {
+        List<Object[]> resultList = hoaDonRepository.getHDChuaTT();
+        List<HoaDonCTTDTO> list = new ArrayList<>();
+        for (Object[] row : resultList) {
+            String ma = (String) row[0];
+            String idKhachHang = (String) row[1];
+            String idNhanVien = (String) row[2];
+            BigDecimal soLuong = (BigDecimal) row[3];
+            Integer loaiHD = (Integer) row[4];
+            Integer trangThai = (Integer) row[5];
+
+            HoaDonCTTDTO hoaDon = HoaDonCTTDTO.builder()
+                    .ma(ma)
+                    .idKhachHang(idKhachHang == null ? null : ssKH.findById(idKhachHang).get())
+                    .idNhanVien(idNhanVien == null ? null : ssNV.findById(idNhanVien).get())
+                    .soLuong(soLuong.intValue())
+                    .loaiHd(loaiHD)
+                    .trangThai(trangThai)
+                    .build();
+            list.add(hoaDon);
+        }
+        return ResponseEntity.ok(list);
     }
 
 

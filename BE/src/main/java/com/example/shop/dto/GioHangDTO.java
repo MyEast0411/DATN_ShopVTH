@@ -19,4 +19,7 @@ public class GioHangDTO {
     private String hinhThucThanhToan;
     private List<Object> gioHang;
     private String tongTien;
+    private String email;
+    private String thoiGianNhanHang;
+    private String phiShip;
 }
