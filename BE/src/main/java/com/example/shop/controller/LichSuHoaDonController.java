@@ -56,7 +56,13 @@ public class LichSuHoaDonController {
                         .ngayTao(new Date(System.currentTimeMillis()))
                         .build();
         lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
-        hoaDon.setTrangThai(hoaDon.getTrangThai()+1);
+        System.out.println(lshd.getMoTaHoaDon());
+        if(lshd.getMoTaHoaDon().equals("Hủy Hóa Đơn")){
+            hoaDon.setTrangThai(5);
+        }else{
+            hoaDon.setTrangThai(hoaDon.getTrangThai()+1);
+        }
+
         hoaDonService.updateHoaDon(hoaDon);
         return ResponseEntity.ok(lichSuHoaDon);
     }

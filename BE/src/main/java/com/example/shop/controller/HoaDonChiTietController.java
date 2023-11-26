@@ -7,8 +7,10 @@ import com.example.shop.dto.HoaDonDTO;
 import com.example.shop.dto.HoaDonKhDTO;
 import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.HoaDonChiTiet;
+import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.*;
+import com.example.shop.service.LichSuHoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,9 @@ public class HoaDonChiTietController {
 
     @Autowired
     VoucherRepository ssVC;
+
+    @Autowired
+    private LichSuHoaDonService lichSuHoaDonService;
 
     @GetMapping("/getHDCT/{maHD}")
     public ResponseEntity getHDCT(@PathVariable String maHD) {
@@ -162,16 +167,29 @@ public class HoaDonChiTietController {
             } else {
                 maxMaInt = Integer.parseInt(maxMa);
             }
+            Date date = new Date();
             HoaDon hoaDon = HoaDon.builder()
                     .ma("HD" + (maxMaInt + 1))
                     .trangThai(0)
                     .deleted(1)
                     .loaiHd(0)
-                    .ngayTao(new Date())
+                    .ngayTao(date)
                     .diaChi(giohang.getDiaChi() + "," + giohang.getThanhPho() + "," + giohang.getHuyen() + "," + giohang.getXa())
                     .tongTien(BigDecimal.valueOf(Double.parseDouble(giohang.getTongTien())))
                     .build();
-            ssHD.save(hoaDon);
+            HoaDon don = ssHD.save(hoaDon);
+
+
+            LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                    .moTaHoaDon("Chờ xác nhận")
+                    .ghiChu("")
+                    .deleted(0)
+                    .id_hoa_don(don)
+                    .ngayTao(date)
+                    .nguoiTao("Cam")
+                    .build();
+
+            lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
             System.out.println(giohang);
             for (Object gioHangItem : giohang.getGioHang()) {
                 if (gioHangItem instanceof Map) {
@@ -182,14 +200,14 @@ public class HoaDonChiTietController {
                         Map<?, ?> productMap = (Map<?, ?>) productObject;
 
                         String id = (String) productMap.get("id");
-                        Integer kichCo = Integer.parseInt(productMap.get("kichCo").toString());
+//                        Integer kichCo = Integer.parseInt(productMap.get("kichCo").toString());
                         Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
                         Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
-
-                        System.out.println("kichCo: " + kichCo);
-                        System.out.println("id: " + id);
-                        System.out.println("giaBan: " + giaBan);
-                        System.out.println("soLuong: " + soLuong);
+//
+//                        System.out.println("kichCo: " + kichCo);
+//                        System.out.println("id: " + id);
+//                        System.out.println("giaBan: " + giaBan);
+//                        System.out.println("soLuong: " + soLuong);
 
                         HoaDonChiTiet hdct = new HoaDonChiTiet();
                         hdct.setId_hoa_don(hoaDon);
