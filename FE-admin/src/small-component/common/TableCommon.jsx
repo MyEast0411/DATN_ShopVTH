@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 import moment from "moment";
 
 import {
@@ -57,17 +57,30 @@ statusColorMap["Đã dừng"] = "danger";
 
 export default function TableCommon({ data }) {
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = React.useState(1);
-  const rowsPerPage = 6;
+
+  // const {data, isLoading} = useSWR(`https://swapi.py4e.com/api/people?page=${page}`, fetcher, {
+  //   keepPreviousData: true,
+  // });
+
+  const rowsPerPage = 5;
+
+  // const pages = useMemo(() => {
+  //   return data?.length ? Math.ceil(data.length / rowsPerPage) : 0;
+  // }, [data?.length, rowsPerPage]);
+
+  // const [page, setPage] = React.useState(1);
+  // const rowsPerPage = 4;
 
   const pages = Math.ceil(data.length / rowsPerPage);
 
-  const items = useMemo(() => {
+  const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
     return data.slice(start, end);
   }, [page, data]);
+
+  // const loadingState = isLoading || data?.results.length === 0 ? "loading" : "idle";
 
   const handleDelete = (id) => {
     Modal.confirm({
@@ -155,43 +168,39 @@ export default function TableCommon({ data }) {
 
   return (
     <Table
-      aria-label="Example table with dynamic content"
       style={{ height: "382px" }}
-      className="pb-4"
+      aria-label="Example table with custom cells, pagination and sorting"
       bottomContent={
-        <div className="flex w-full justify-center ">
-          <Pagination
-            isCompact
-            showControls
-            showShadow
-            page={page}
-            total={pages}
-            onChange={(page) => setPage(page)}
-          />
-          {/* <Pagination
-            showControls
-            color="success"
-            total={pages}
-            initialPage={page}
-            onChange={(page) => setPage(page)}
-          /> */}
-        </div>
+        pages > 0 ? (
+          <div className="flex w-full justify-center">
+            <Pagination
+              isCompact
+              showControls
+              showShadow
+              color="primary"
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        ) : null
       }
+      // bottomContentPlacement="outside"
       classNames={{
-        wrapper: "min-h-[222px]",
+        wrapper: "max-h-[382px]",
       }}
     >
       <TableHeader columns={columns}>
         {(column) => (
           <TableColumn
-            key={column.key}
-            align={column.key === "actions" ? "center" : "start"}
+            key={column.uid}
+            align={column.uid === "actions" ? "center" : "start"}
           >
-            {column.label}
+            {column.name}
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody items={items}>
+      <TableBody items={items} emptyContent={"Không tìm thấy hóa đơn 😞"}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
@@ -205,16 +214,16 @@ export default function TableCommon({ data }) {
 }
 
 const columns = [
-  { key: "id", label: "STT" },
-  { key: "ma", label: "Mã" },
-  { key: "tenKhachHang", label: "Tên Khách Hàng" },
-  { key: "nhanVien", label: "Tên Nhân Viên" },
-  { key: "loaiHd", label: "Loại HD" },
-  { key: "ngayTao", label: "Ngày Tạo" },
-  { key: "tienGiam", label: "Tiền Giảm " },
-  { key: "trangThai", label: "Trạng Thái" },
-  { key: "tongTien", label: "Tổng Tiền" },
-  { key: "actions", label: "Thao tác" },
+  { uid: "id", name: "STT" },
+  { uid: "ma", name: "Mã" },
+  { uid: "tenKhachHang", name: "Tên Khách Hàng" },
+  { uid: "nhanVien", name: "Tên Nhân Viên" },
+  { uid: "loaiHd", name: "Loại HD" },
+  { uid: "ngayTao", name: "Ngày Tạo" },
+  { uid: "tienGiam", name: "Tiền Giảm " },
+  { uid: "trangThai", name: "Trạng Thái" },
+  { uid: "tongTien", name: "Tổng Tiền" },
+  { uid: "actions", name: "Thao tác" },
 ];
 
 const GetTrangThai = ({ tinhTrang }) => {

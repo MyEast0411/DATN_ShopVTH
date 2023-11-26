@@ -94,18 +94,19 @@ const ThongKe = () => {
   const [totalSP, setTotalSP] = useState(0);
   const [top5HD, setTop5HD] = useState([]);
   const [top3SP, setTop3SP] = useState([]);
+  const [spctMin, setSPCTMin] = useState([]);
 
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 4;
 
-  const pages = Math.ceil(usersWeek.length / rowsPerPage);
+  const pages = Math.ceil(spctMin.length / rowsPerPage);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
-    return usersWeek.slice(start, end);
-  }, [page, usersWeek]);
+    return spctMin.slice(start, end);
+  }, [page, spctMin]);
 
   // change select columnchart
   const handleChange = (value) => {
@@ -162,8 +163,13 @@ const ThongKe = () => {
       case "avatar":
         return <Image width={50} alt="NextUI hero Image" src={cellValue} />;
       case "quantitySaled":
-        return (
-          <span className="text-black-700 font-bold">{cellValue} sản phẩm</span>
+        return cellValue <= 0 ? (
+          <span className="text-red-500 font-medium">Hết Hàng</span>
+        ) : (
+          <span className="text-black-700 font-medium">
+            <span className="text-red-500 font-bold ">{cellValue} </span>
+            sản phẩm
+          </span>
         );
 
       default:
@@ -210,13 +216,31 @@ const ThongKe = () => {
     });
   };
 
+  const getSPCTMin = async () => {
+    await axios.get(url + "SPCTMin").then((res) => {
+      console.log(res.data);
+      setSPCTMin(
+        res.data.map((item, i) => {
+          return {
+            id: i + 1,
+            name: item.ten,
+            price: item.giaBan,
+            avatar: item.defaultImg,
+            quantitySaled: item.soLuongTon,
+          };
+        })
+      );
+    });
+  };
+
   useEffect(() => {
     getTotal();
     getCountHD();
     getTop5HD();
     getTotalSP();
     getTop3SP();
-  }, [total, countHD, top5HD, totalSP]);
+    getSPCTMin();
+  }, [total, countHD, top5HD, totalSP, spctMin]);
 
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
@@ -520,7 +544,7 @@ const ThongKe = () => {
                 />
               </div>
             </div>
-            <div className="content">
+            <div className="content flex items-center">
               <ColumnChart value={valueColumnChart} />
             </div>
           </div>
@@ -572,7 +596,7 @@ const ThongKe = () => {
               </h5>
             </div>
             <div
-              className="content "
+              className="content  "
               style={{
                 marginTop: 18,
                 marginLeft: 18,
@@ -607,7 +631,7 @@ const ThongKe = () => {
                 </TableHeader>
                 <TableBody items={items}>
                   {(item) => (
-                    <TableRow key={item.name}>
+                    <TableRow key={item.id}>
                       {(columnKey) => (
                         <TableCell>{renderCell1(item, columnKey)}</TableCell>
                       )}
@@ -627,7 +651,9 @@ const ThongKe = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                margin: 24,
+                marginTop: 50,
+                marginLeft: 24,
+                marginRight: 24,
               }}
             >
               <h5
@@ -646,7 +672,7 @@ const ThongKe = () => {
             <div
               className="content "
               style={{
-                marginTop: 18,
+                marginTop: 100,
                 marginLeft: 18,
                 marginRight: 18,
                 marginBottom: 5,

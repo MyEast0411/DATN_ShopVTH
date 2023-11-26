@@ -75,14 +75,22 @@ public class HoaDonChiTietController {
 
     @DeleteMapping("/deleteHDCT/{id_hoa_don}/{id_san_pham}")
     public ResponseEntity deleteHDCT(@PathVariable String id_hoa_don, @PathVariable String id_san_pham) {
-        System.out.println("id hoa don " + id_hoa_don);
-        System.out.println("id san pham " + id_san_pham);
+
         try {
+            HoaDon don = ssHD.findById(id_hoa_don).get();
+            SanPhamChiTiet sanPhamChiTiet = ssSP.findById(id_san_pham).get();
+            double tongTien = 0;
             HoaDonChiTiet hdct = HoaDonChiTiet.builder()
-                    .id_hoa_don(ssHD.findById(id_hoa_don).get())
-                    .id_chi_tiet_san_pham(ssSP.findById(id_san_pham).get())
+                    .id_hoa_don(don)
+                    .id_chi_tiet_san_pham(sanPhamChiTiet)
                     .build();
             ssHDCT.delete(hdct);
+           List<HoaDonChiTiet> list =  ssHDCT.getHDCT(id_hoa_don);
+            for (HoaDonChiTiet donChiTiet: list) {
+                tongTien += donChiTiet.getSoLuong()* donChiTiet.getGiaTien().doubleValue();
+            }
+            don.setTongTien(new BigDecimal(tongTien+""));
+                ssHD.save(don);
             return ResponseEntity.ok("OK");
         } catch (Exception e) {
             e.printStackTrace();

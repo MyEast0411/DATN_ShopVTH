@@ -509,39 +509,41 @@ export default function Voucher() {
 
   const bottomContent = React.useMemo(() => {
     return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
-          Tổng số phiếu giảm giá :{" "}
-          <span className="font-medium text-gray-950">{list.length}</span>
-        </span>
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={pages}
-          onChange={setPage}
-        />
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
-            Previous
-          </Button>
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
-            Next
-          </Button>
+      list.length > 0 && (
+        <div className="py-2 px-2 flex justify-between items-center">
+          <span className="w-[30%] text-small text-default-400">
+            Tổng số phiếu giảm giá :{" "}
+            <span className="font-medium text-gray-950">{list.length}</span>
+          </span>
+          <Pagination
+            isCompact
+            showControls
+            showShadow
+            color="primary"
+            page={page}
+            total={pages}
+            onChange={setPage}
+          />
+          <div className="hidden sm:flex w-[30%] justify-end gap-2">
+            <Button
+              isDisabled={pages === 1}
+              size="sm"
+              variant="flat"
+              onPress={onPreviousPage}
+            >
+              Previous
+            </Button>
+            <Button
+              isDisabled={pages === 1}
+              size="sm"
+              variant="flat"
+              onPress={onNextPage}
+            >
+              Next
+            </Button>
+          </div>
         </div>
-      </div>
+      )
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
@@ -695,7 +697,7 @@ export default function Voucher() {
                   )}
                 </TableHeader>
                 <TableBody
-                  emptyContent={"Không tìm thấy voucher nào!"}
+                  emptyContent={"Không tìm thấy voucher nào 😞😞😞😞!"}
                   items={items}
                 >
                   {(item) => (
