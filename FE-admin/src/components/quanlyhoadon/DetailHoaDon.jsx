@@ -91,24 +91,31 @@ export default function DetailHoaDon() {
       okText: "Yes",
       okType: "danger",
       onOk: async () => {
-        const data = await axios.post(
-          `http://localhost:8080/hoa_don/cancelHD/${id}`
-        );
+        // const data = await axios.post(
+        //   `http://localhost:8080/hoa_don/cancelHD/${id}`,
+        //   {
+        //     trangThai: 5,
+        //   }
+        // );
 
-        if (data.data != null) {
-          await axios
-            .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
-              moTaHoaDon: "Hủy Hóa Đơn",
-              deleted: 0,
-              nguoiTao: "Cam",
-              ghiChu: note,
-            })
-            .then((response) => {
-              toast.success("Hủy Thành Công");
-            });
-        } else {
-          toast.success("Hủy Thất Bại");
-        }
+        // if (data.data != null) {
+        await axios
+          .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
+            moTaHoaDon: "Hủy Hóa Đơn",
+            deleted: 0,
+            nguoiTao: "Cam",
+            ghiChu: note,
+          })
+          .then((response) => {
+            toast.success("Hủy Thành Công");
+            getDataLichSuThanhToan();
+            getInfoHD();
+            getDataChiTietSanPham();
+            getDataLichSu();
+          });
+        // } else {
+        //   toast.success("Hủy Thất Bại");
+        // }
       },
     });
   };
@@ -131,7 +138,7 @@ export default function DetailHoaDon() {
   };
 
   const onHandleTimeLineChange = () => {
-    if (currentTimeLine <= 6) {
+    if (currentTimeLine < 6) {
       Modal.confirm({
         title: `Bạn có muốn ${listTitleTimline[currentTimeLine].title} không ?`,
         okText: "Yes",
@@ -229,7 +236,6 @@ export default function DetailHoaDon() {
       .get(`http://localhost:8080/lich_su_hoa_don/getLichSuHoaDons/${id}`)
       .then((res) => {
         const data = res.data;
-        console.log(res.data);
         setRowsLichSu(
           data.map((item, index) => {
             return {
@@ -242,7 +248,6 @@ export default function DetailHoaDon() {
 
         setListTimeLineOnline(
           data.map((item, index) => {
-            console.log(listTitleTimline[index].icon.FaShippingFast);
             return {
               ...item,
               subtitle: format(new Date(item.ngayTao), " hh:mm:ss ,dd-MM-yyyy"),
@@ -315,7 +320,7 @@ export default function DetailHoaDon() {
           </div>
           <div className="row button-contact p-4 grid grid-cols-2">
             <div className="row ">
-              {currentTimeLine < 6 &&
+              {currentTimeLine < 5 &&
               info.loaiHd === 0 &&
               info.trangThai != 5 ? (
                 <Button

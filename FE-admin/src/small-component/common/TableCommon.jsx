@@ -16,7 +16,12 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import { EyeIcon } from "../../common/otherComponents/EyeIcon";
-import { Tag } from "antd";
+import { Modal, Tag } from "antd";
+import { DeleteIcon } from "../../common/otherComponents/DeleteIcon";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+// import { DeleteIcon } from "../../otherComponents/DeleteIcon";
 
 // const items = [
 //   `Chờ xác nhận`,
@@ -64,6 +69,30 @@ export default function TableCommon({ data }) {
     return data.slice(start, end);
   }, [page, data]);
 
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: `bạn có muốn xóa  voucher không ?`,
+      okText: "Yes",
+      okType: "danger",
+      onOk: async () => {
+        axios
+          .delete(`http://localhost:8080/hoa_don/delete/${id}`)
+          .then((response) => {
+            toast.success(`Xóa thành công`, {
+              position: "top-right",
+              autoClose: 2000,
+            });
+          })
+          .catch((e) =>
+            toast.error(`Xóa  thất bại`, {
+              position: "top-right",
+              autoClose: 2000,
+            })
+          );
+      },
+    });
+  };
+
   const renderCell = useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
 
@@ -100,16 +129,22 @@ export default function TableCommon({ data }) {
         );
       case "actions":
         return (
-          <div className="flex justify-center">
-            <Tooltip content="Xem chi tiết" showArrow={true}>
+          <div className="relative flex items-center gap-4">
+            <Tooltip content="Xem chi  tiết" showArrow={true}>
               <Link
                 to={`/detail-hoa-don/${user.ids}`}
+                // style={{ display: "block" }}
                 className="button-link group relative"
               >
                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                   <EyeIcon />
                 </span>
               </Link>
+            </Tooltip>
+            <Tooltip color="danger" content="Xóa hóa đơn" showArrow={true}>
+              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                <DeleteIcon onClick={() => handleDelete(user.ids)} />
+              </span>
             </Tooltip>
           </div>
         );

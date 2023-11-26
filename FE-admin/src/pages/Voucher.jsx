@@ -35,24 +35,21 @@ import {
   DialogTitle,
   TableCell as TableCellMui,
 } from "@mui/material";
-import { PlusIcon } from "../components/voucher/common/PlusIcon";
-import { VerticalDotsIcon } from "../components/voucher/common/VerticalDotsIcon";
 import { SearchIcon } from "../components/voucher/common/SearchIcon";
 import { ChevronDownIcon } from "../components/voucher/common/ChevronDownIcon";
 import { statusOptions } from "../components/voucher/common/data";
 import { capitalize } from "../components/voucher/common/utils";
 import { BiFilterAlt } from "react-icons/bi";
-import FilterMa from "../common/filter/sanPham/FilterMa";
-import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
 // import Slider from "../common/filter/sanPham/Slider";
 import { HiOutlineClipboardList } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { format } from "date-fns";
-import { BsEye, BsTrash } from "react-icons/bs";
 import Switch from "@mui/material/Switch";
 import moment from "moment";
+import { DeleteIcon } from "../common/otherComponents/DeleteIcon";
+import { EyeIcon } from "../common/otherComponents/EyeIcon";
 // import { setOptions } from "react-chartjs-2/dist/utils";
 const { RangePicker } = DatePicker;
 
@@ -97,19 +94,6 @@ export default function Voucher() {
 
   const [list, setList] = React.useState([]);
   const sizes = ["md"];
-  // const [filterValue, setFilterValue] = React.useState("");
-  // const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  // const [visibleColumns, setVisibleColumns] = React.useState(
-  //   new Set(INITIAL_VISIBLE_COLUMNS)
-  // );
-  // const [statusFilter, setStatusFilter] = React.useState("all");
-  // const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  // const [sortDescriptor, setSortDescriptor] = React.useState({
-  //   column: "ngayTao",
-  //   direction: "ascending",
-  // });
-  // const [page, setPage] = React.useState(1);
-  // const [totalPages, setTotalPages] = React.useState(1);
 
   const [dataSelect, setDataSelect] = useState(-1);
   const [ngayBatDau, setNgayBatDau] = useState("");
@@ -196,9 +180,33 @@ export default function Voucher() {
       });
   };
 
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: `bạn có muốn xóa  voucher không ?`,
+      okText: "Yes",
+      okType: "danger",
+      onOk: async () => {
+        axios
+          .delete(url + `delete/${id}`)
+          .then((response) => {
+            toast.success(`Xóa thành công`, {
+              position: "top-right",
+              autoClose: 2000,
+            });
+          })
+          .catch((e) =>
+            toast.error(`Xóa  thất bại`, {
+              position: "top-right",
+              autoClose: 2000,
+            })
+          );
+      },
+    });
+  };
+
   React.useEffect(() => {
     getData();
-  }, [action]);
+  }, [action, list]);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -290,6 +298,7 @@ export default function Voucher() {
         ) : (
           <Tag color="green">Chưa Kích Hoạt</Tag>
         );
+
       case "actions":
         return (
           <div className="container">
@@ -300,7 +309,7 @@ export default function Voucher() {
                     to={`/detail-voucher/${user.ids}`}
                     className="button-link group relative"
                   >
-                    <BsEye
+                    <EyeIcon
                       description="Chi tiết"
                       className="cursor-pointer text-xl blue-hover mr-4"
                       style={{ color: "green" }}
@@ -310,32 +319,8 @@ export default function Voucher() {
               </div>
               <div>
                 <Tooltip title="Xóa voucher" color="red">
-                  <Link
-                    onClick={() => {
-                      Modal.confirm({
-                        title: `bạn có muốn xóa  voucher không ?`,
-                        okText: "Yes",
-                        okType: "danger",
-                        onOk: async () => {
-                          axios
-                            .delete(url + `delete/${user.ids}`)
-                            .then((response) => {
-                              toast.success(`Xóa thành công`, {
-                                position: "top-right",
-                                autoClose: 2000,
-                              });
-                            })
-                            .catch((e) =>
-                              toast.error(`Xóa  thất bại`, {
-                                position: "top-right",
-                                autoClose: 2000,
-                              })
-                            );
-                        },
-                      });
-                    }}
-                  >
-                    <BsTrash
+                  <Link onClick={() => handleDelete(user.ids)}>
+                    <DeleteIcon
                       description="Chi tiết"
                       className="cursor-pointer text-xl blue-hover mr-4"
                       style={{ color: "red" }}

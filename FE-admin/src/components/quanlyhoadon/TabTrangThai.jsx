@@ -14,9 +14,10 @@ export default function TabTrangThai({
 
   const [list, setList] = useState([]);
   const [size, setSize] = useState("large");
+  const [key1, setKey] = useState(-1);
   useEffect(() => {
-    getData();
-  }, [dataInput, dataSelect, ngayBatDau, ngayKetThuc]);
+    getData(key1);
+  }, [dataInput, dataSelect, ngayBatDau, ngayKetThuc, key1]);
 
   const filterOptions = (data) => {
     return data
@@ -40,10 +41,10 @@ export default function TabTrangThai({
       });
   };
 
-  const getData = async () => {
-    const res = await axios.get(url + "getHoaDons");
+  const getData = async (key) => {
+    const res = await axios.get(url + `getHoaDons/${key}`);
     const data = await res.data;
-    console.log(res.data);
+
     setList(
       filterOptions(data).map((item, index) => {
         return {
@@ -57,21 +58,23 @@ export default function TabTrangThai({
   };
 
   const onChange = async (key) => {
-    console.log(key);
-    const res = await axios.get(url + `getHoaDons/${key}`);
-    const data = res.data;
+    setKey(key);
+    getData(key);
 
-    setList(
-      filterOptions(data).map((item, index) => {
-        return {
-          ...item,
-          id: index + 1,
-          ids: item.id,
-          nhanVien: item?.id_nhan_vien?.ten,
-          tenKhachHang: item?.id_khach_hang?.ten,
-        };
-      })
-    );
+    // const res = await axios.get(url + `getHoaDons/${key}`);
+    // const data = res.data;
+
+    // setList(
+    //   filterOptions(data).map((item, index) => {
+    //     return {
+    //       ...item,
+    //       id: index + 1,
+    //       ids: item.id,
+    //       nhanVien: item?.id_nhan_vien?.ten,
+    //       tenKhachHang: item?.id_khach_hang?.ten,
+    //     };
+    //   })
+    // );
     // console.log(res.data.content);
   };
   const items = [
