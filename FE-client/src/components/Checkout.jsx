@@ -80,7 +80,7 @@ export default function Checkout() {
         console.error(error);
       });
   }, [diaChi]);
-  
+
   // lay id xa theo api theo id huyen
   useEffect(() => {
     const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id';
@@ -131,7 +131,7 @@ export default function Checkout() {
         const leadtimeDate = new Date(leadtimeTimestamp * 1000);
 
         const day = leadtimeDate.getDate();
-        const month = leadtimeDate.getMonth() + 1; 
+        const month = leadtimeDate.getMonth() + 1;
         const year = leadtimeDate.getFullYear();
 
         const formattedLeadtime = `${day}/${month}/${year}`;
@@ -146,8 +146,8 @@ export default function Checkout() {
   // Tính phí vận chuyển
   useEffect(() => {
     const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; 
-    const shopId = '190374 - 0964457125'; 
+    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48';
+    const shopId = '190374 - 0964457125';
 
     const requestData = {
       service_type_id: 2,
@@ -162,23 +162,24 @@ export default function Checkout() {
       coupon: null,
     };
 
-    axios.post(apiUrl, requestData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'ShopId': shopId,
-        'Token': token,
-      },
-    })
-      .then(response => {
-        console.log('API Response:', response.data);
+    axios
+      .post(apiUrl, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          ShopId: shopId,
+          Token: token,
+        },
+      })
+      .then((response) => {
+        console.log("API Response:", response.data);
         setShippingCost(response.data.data.total);
         setPhiVanChuyen(response.data.data.total);
       })
-      .catch(error => {
-        console.error('Error:', error);
+      .catch((error) => {
+        console.error("Error:", error);
       });
-  }, [idTP,idHuyen,idXa]);
-  
+  }, [idTP, idHuyen, idXa]);
+
   const openNotificationWithIcon = (type, message) => {
     api[type]({
       message,
@@ -285,7 +286,7 @@ export default function Checkout() {
     useEffect(() => {
       setPhiVanChuyen(updatedShippingCost);
       setTongTien(total);
-    }, [updatedShippingCost, total,shippingCost]);
+    }, [updatedShippingCost, total, shippingCost]);
 
     return total;
   };
@@ -327,9 +328,9 @@ export default function Checkout() {
             hinhThucThanhToan: phuongThucThanhToan,
             gioHang: cartItems,
             tongTien: tongTien,
-            email : email,
-            thoiGianNhanHang : deliveryTime+"",
-            phiShip : Intl.NumberFormat().format(phiVanChuyen)+""
+            email: email,
+            thoiGianNhanHang: deliveryTime + "",
+            phiShip: Intl.NumberFormat().format(phiVanChuyen) + "",
           }
         )
         .then((response) => {
@@ -416,12 +417,12 @@ export default function Checkout() {
                 <label for="diaChi">Địa chỉ</label>
               </div>
 
-              <div className="flex justify-between gap-1 text-[13px]">
+              <div className="flex gap-1 justify-between">
                 <div className="mb-6">
                   <select
                     name="thanhPho"
                     id="city"
-                    className="bg-gray-50 border border-gray-300 text-gray-900  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => handleProvinceChange(e.target.value)}
                     required
                   >
@@ -437,7 +438,7 @@ export default function Checkout() {
                   <select
                     id="District"
                     name="huyen"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => handleDistrictChange(e.target.value)}
                     required
                   >
@@ -453,7 +454,7 @@ export default function Checkout() {
                   <select
                     name="xaPhuong"
                     id="wards"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required
                     onChange={(e) => handleWardsChange(e.target.value)}
                   >
@@ -581,7 +582,12 @@ export default function Checkout() {
                 </div>
                 <div className="flex justify-between">
                   <h3>Phí vận chuyển</h3>
-                  <p>VNĐ {phiVanChuyen == "Miễn phí" ? "Miễn phí" : Intl.NumberFormat().format(phiVanChuyen)}</p>
+                  <p>
+                    VNĐ{" "}
+                    {phiVanChuyen == "Miễn phí"
+                      ? "Miễn phí"
+                      : Intl.NumberFormat().format(phiVanChuyen)}
+                  </p>
                 </div>
                 <div className="horizontal"></div>
                 <div className="flex justify-between">

@@ -43,6 +43,9 @@ export default function Header() {
             <li>
               <a href="#">Trẻ em</a>
             </li>
+            <li>
+              <a href="#">Tra cứu hóa đơn</a>
+            </li>
           </ul>
         </div>
 
