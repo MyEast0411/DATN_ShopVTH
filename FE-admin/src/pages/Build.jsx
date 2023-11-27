@@ -3,6 +3,10 @@ import { useParams } from "react-router-dom";
 import SanPham from "./SanPham";
 import TheLoai from "./TheLoai";
 import MauSac from "./MauSac";
+import ThuongHieu from "./ThuongHieu";
+import NhanHieu from "./NhanHieu";
+import KichCo from "./KichCo";
+import ChatLieu from "./ChatLieu";
 import DeGiay from "./DeGiay";
 import NhanVien from "./NhanVien";
 import KhachHang from "./KhachHang";
@@ -22,6 +26,14 @@ const Build = () => {
         return <MauSac />;
       case "de-giay":
         return <DeGiay />;
+      case "thuong-hieu":
+        return <ThuongHieu />;
+      case "chat-lieu":
+        return <ChatLieu />;
+      case "nhan-hieu":
+        return <NhanHieu />;
+      case "kich-co":
+        return <KichCo />;
       case "nhan-vien":
         return <NhanVien />;
       case "khach-hang":

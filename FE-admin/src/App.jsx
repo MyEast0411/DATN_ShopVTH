@@ -41,7 +41,7 @@ const App = () => {
           <Route path="/khuyen-mai" element={<KhuyenMai />} />
           <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
           <Route path="/them-khuyen-mai/:idKM" element={<ThemKhuyenMai />} />
-          <Route path="/them-nhan-vien" element={<ThemNhanVien />} />
+          <Route path="/quan-ly-tai-khoan/nhan-vien/them-nhan-vien" element={<ThemNhanVien />} />
           <Route path="/them-khach-hang" element={<ThemKhachHang />} />
           <Route path="/edit-khach-hang/:maKH" element={<DetailKhachHang />} />
 
@@ -61,6 +61,10 @@ const App = () => {
               <Route path="type" />
               <Route path="de-giay" />
               <Route path="mau-sac" />
+              <Route path="kich-co" />
+              <Route path="thuong-hieu" />
+              <Route path="chat-lieu" />
+              <Route path="nhan-hieu" />
             </Route>
           </Route>
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { QrReader } from "react-qr-reader";
-import { Modal } from "antd";
+import { Modal, Select } from "antd";
+const { Option } = Select;
 import {
   FormControl,
   FormLabel,
@@ -8,6 +9,7 @@ import {
   FormControlLabel,
   Radio,
 } from "@mui/material";
+import { AiOutlinePlus } from "react-icons/ai";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,8 +25,9 @@ import { Button } from "@nextui-org/react";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
-export default function ThemKhachHang() {
+export default function ThemNhanVien() {
   let navigate = useNavigate();
+  const [listChucVu, setListChucVu] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -40,6 +43,7 @@ export default function ThemKhachHang() {
   const cancelAdd = () => {
     setDeleteConfirmationOpen(false);
   };
+  
   useEffect(() => {
     getProvinces().then((data) => {
       setProvinces(data);
@@ -91,11 +95,12 @@ export default function ThemKhachHang() {
     sdt: "",
     ngay_sinh: "",
     email: "",
-    cccd: "",
+    chucVu: "Nhân viên",
     soNha: "",
     xa: "",
     huyen: "",
     thanhPho: "",
+    id_thuong_hieu : ""
   });
 
   const {
@@ -106,11 +111,12 @@ export default function ThemKhachHang() {
     sdt,
     ngay_sinh,
     email,
-    cccd,
+    chucVu,
     soNha,
     xa,
     huyen,
     tinh,
+    id_thuong_hieu
   } = khachHang;
 
   function parseDate(input) {
@@ -123,6 +129,55 @@ export default function ThemKhachHang() {
     }
     return null; // Trả về null nếu chuỗi không hợp lệ
   }
+  // modal thêm chức vụ 
+  const [isModalOpenCV, setIsModalOpenCV] = useState(false);
+  const [tenChucVu, setTenChucVu] = useState("");
+  const showModalCV = () => {
+    setIsModalOpenCV(true);
+  };
+  const handleOkCV = async () => {
+    await axios
+      .post("http://localhost:8080/nhan_vien/addChucVu", {
+        tenChucVu : tenChucVu
+      })
+      .then((response) => {
+        toast.success(`Thêm thành công`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      })
+      .catch((error) => {
+        toast.error(`Thêm thất bại`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      });
+    setIsModalOpenCV(false);
+  };
+  const handleCancelCV = () => {
+    setIsModalOpenCV(false);
+  };
+  const onChangeCV = (e) => {
+    setTenChucVu(e.target.value);
+    setKhachHang({ ...khachHang, "id_chuc_vu" : e.target.value });
+  };
+  const getAllChucVu = async () => {
+    await axios
+      .get("http://localhost:8080/nhan_vien/getAllChucVu")
+      .then((response) => {
+        setListChucVu(response.data)
+      });
+  };
+
+  useEffect(() => {
+    getAllChucVu();
+  },[listChucVu]);
+
+  const options = listChucVu.map(item => (
+    <Option key={item.id} value={item.id}>
+      {item.ten}
+    </Option>
+  ));
 
   const onChange = (e) => {
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
@@ -174,7 +229,6 @@ export default function ThemKhachHang() {
         console.log(khachHang);
         imgDivRef.current.style.backgroundImage = `url(${imageUrl})`;
         imgDivRef.current.style.backgroundSize = "cover";
-        // Sử dụng useRef để đặt nền ảnh
       };
       reader.readAsDataURL(file);
     }
@@ -182,16 +236,17 @@ export default function ThemKhachHang() {
 
   const onSubmit = async () => {
     await axios
-      .post("http://localhost:8080/khach-hang/add", khachHang)
+      .post("http://localhost:8080/nhan_vien/add", khachHang)
       .then((response) => {
         toast.success(`🎉 Thêm thành công`);
-        navigate("/quan-ly-tai-khoan/khach-hang");
+        navigate("/quan-ly-tai-khoan/nhan-vien");
       })
       .catch((error) => {
         toast.error(`😢 Thêm thất bại`);
       });
     cancelAdd();
   };
+
   return (
     <>
         <div className="mb-2 font-normal border-gray-500 text-lg flex items-center">
@@ -265,7 +320,7 @@ export default function ThemKhachHang() {
                                     rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                      w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                                       dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="Nhập tên khách hàng"
+                  placeholder="Nhập tên nhân viên"
                   required
                   onChange={(e) => {
                     onChange(e);
@@ -279,19 +334,59 @@ export default function ThemKhachHang() {
                 >
                   Chức vụ
                 </label>
-                <input
-                  type="number"
-                  value={cccd}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="CCCD"
-                  required
+                <div className="flex">
+                <Select
+                  placeholder="Chức vụ"
+                  value={chucVu}
+                  name="id_nhan_vien"
                   onChange={(e) => {
-                    onChange(e);
+                    setKhachHang({ ...khachHang, "chucVu": e});
                   }}
-                />
+                  style={{width : "90%", height : "40px" , marginRight : "10px", marginBottom : "54px"}}
+                  >
+                    {options}
+                </Select>
+                <div
+                    className="p-3"
+                    style={{
+                      backgroundColor: "#00C5CD",
+                      borderRadius: "5px",
+                      color: "white",
+                      cursor: "pointer",
+                      height : "40px"
+                    }}
+                    onClick={showModalCV}
+                  >
+                    <AiOutlinePlus />
+                  </div>
+                </div>
+                <Modal
+                  title="Thêm chức vụ"
+                  open={isModalOpenCV}
+                  onOk={handleOkCV}
+                  onCancel={handleCancelCV}
+                  cancelText="Hủy"
+                  okText="Thêm"
+                  style={{ position: "relative" }}
+                >
+                  <div>
+                    <label
+                      htmlFor="country"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Tên chức vụ
+                    </label>
+                    <input
+                      type="text"
+                      name="tenChucVu"
+                      value={tenChucVu}
+                      className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                      placeholder="Nhập tên chức vụ"
+                      onChange={(e) => onChangeCV(e)}
+                      style={{ borderRadius: "5px" }}
+                    />
+                  </div>
+                </Modal>
               </div>
               <div className="mb-8">
                 <label
@@ -545,7 +640,7 @@ export default function ThemKhachHang() {
               </div>
               <div className="mt-6 flex items-center justify-end gap-x-6">
                 <Link
-                  to="/quan-ly-tai-khoan/khach-hang"
+                  to="/quan-ly-tai-khoan/nhan-vien"
                   type="button"
                   className="text-sm rounded-md  font-semibold leading-6 text-gray-900"
                 >

@@ -185,7 +185,6 @@ export default function Delivery({ activeKey, khachHang,setKhachHang }) {
     axios.get(apiUrl, {
       headers: {
         'Content-Type': 'application/json',
-        // 'ShopId': shopId,
         'Token': token,
       },
       params: requestData,
@@ -202,7 +201,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang }) {
   // lay id xa theo api theo id huyen
   useEffect(() => {
     const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
+    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; 
 
     const requestData = {
       district_id : idHuyen
@@ -211,7 +210,6 @@ export default function Delivery({ activeKey, khachHang,setKhachHang }) {
     axios.post(apiUrl, requestData, {
       headers: {
         'Content-Type': 'application/json',
-        // 'ShopId': shopId,
         'Token': token,
       },
     })
