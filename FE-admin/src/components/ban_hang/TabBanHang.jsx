@@ -75,6 +75,7 @@ const TabBanHang = () => {
           ...prevItems,
           {
             label: res.data[0].id,
+            soLuong : res.data[0]?.soLuong,
             children: (
               <Children
                 columns={columns}

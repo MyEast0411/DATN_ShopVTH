@@ -7,8 +7,10 @@ import com.example.shop.dto.HoaDonDTO;
 import com.example.shop.dto.HoaDonKhDTO;
 import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.HoaDonChiTiet;
+import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.*;
+import com.example.shop.util.SendMail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,9 @@ public class HoaDonChiTietController {
 
     @Autowired
     VoucherRepository ssVC;
+
+    @Autowired
+    LichSuHoaDonRepository ssLSHD;
 
     @GetMapping("/getHDCT/{maHD}")
     public ResponseEntity getHDCT(@PathVariable String maHD) {
@@ -70,14 +75,22 @@ public class HoaDonChiTietController {
 
     @DeleteMapping("/deleteHDCT/{id_hoa_don}/{id_san_pham}")
     public ResponseEntity deleteHDCT(@PathVariable String id_hoa_don, @PathVariable String id_san_pham) {
-        System.out.println("id hoa don " + id_hoa_don);
-        System.out.println("id san pham " + id_san_pham);
+
         try {
+            HoaDon don = ssHD.findById(id_hoa_don).get();
+            SanPhamChiTiet sanPhamChiTiet = ssSP.findById(id_san_pham).get();
+            double tongTien = 0;
             HoaDonChiTiet hdct = HoaDonChiTiet.builder()
-                    .id_hoa_don(ssHD.findById(id_hoa_don).get())
-                    .id_chi_tiet_san_pham(ssSP.findById(id_san_pham).get())
+                    .id_hoa_don(don)
+                    .id_chi_tiet_san_pham(sanPhamChiTiet)
                     .build();
             ssHDCT.delete(hdct);
+           List<HoaDonChiTiet> list =  ssHDCT.getHDCT(id_hoa_don);
+            for (HoaDonChiTiet donChiTiet: list) {
+                tongTien += donChiTiet.getSoLuong()* donChiTiet.getGiaTien().doubleValue();
+            }
+            don.setTongTien(new BigDecimal(tongTien+""));
+                ssHD.save(don);
             return ResponseEntity.ok("OK");
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,6 +110,7 @@ public class HoaDonChiTietController {
                     .id_chi_tiet_san_pham(sp)
                     .soLuong(hoaDonChiTiet.getSo_luong())
                     .giaTien(tongTien)
+                    .deleted(1)
                     .build();
             System.out.println(hdct);
             ssHDCT.save(hdct);
@@ -171,7 +185,15 @@ public class HoaDonChiTietController {
                     .diaChi(giohang.getDiaChi() + "," + giohang.getThanhPho() + "," + giohang.getHuyen() + "," + giohang.getXa())
                     .tongTien(BigDecimal.valueOf(Double.parseDouble(giohang.getTongTien())))
                     .build();
-            ssHD.save(hoaDon);
+            HoaDon hd1 = ssHD.save(hoaDon);
+            LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                    .id_hoa_don(hd1)
+                    .moTaHoaDon("Chờ xác nhận")
+                    .deleted(1)
+                    .nguoiTao("Đông")
+                    .ngayTao(new Date(System.currentTimeMillis()))
+                    .build();
+            ssLSHD.save(lichSuHoaDon);
             System.out.println(giohang);
             for (Object gioHangItem : giohang.getGioHang()) {
                 if (gioHangItem instanceof Map) {
@@ -186,11 +208,6 @@ public class HoaDonChiTietController {
                         Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
                         Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
 
-                        System.out.println("kichCo: " + kichCo);
-                        System.out.println("id: " + id);
-                        System.out.println("giaBan: " + giaBan);
-                        System.out.println("soLuong: " + soLuong);
-
                         HoaDonChiTiet hdct = new HoaDonChiTiet();
                         hdct.setId_hoa_don(hoaDon);
                         hdct.setId_chi_tiet_san_pham(ssSP.findById(id).get());
@@ -200,6 +217,8 @@ public class HoaDonChiTietController {
                     }
                 }
             }
+            System.out.println(giohang.getThoiGianNhanHang());
+            SendMail.SenMail(giohang.getEmail(),giohang.getThoiGianNhanHang(),giohang.getPhiShip(), giohang.getTongTien());
             return ResponseEntity.ok("Thành công");
         } catch (Exception e) {
             e.printStackTrace();

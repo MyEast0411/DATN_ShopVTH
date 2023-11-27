@@ -68,22 +68,22 @@ export default function DetailHoaDon() {
     setOpenTimeLine(false);
   };
   // xóa spct
-  const success = (mess) => {
-    messageApi.open({
-      type: "success",
-      content: mess,
-    });
-    getDataLichSuThanhToan();
-    getInfoHD();
-    getDataChiTietSanPham();
-  };
+  // const success = (mess) => {
+  //   messageApi.open({
+  //     type: "success",
+  //     content: mess,
+  //   });
+  //   getDataLichSuThanhToan();
+  //   getInfoHD();
+  //   getDataChiTietSanPham();
+  // };
 
-  const error = () => {
-    messageApi.open({
-      type: "error",
-      content: "Xóa Thất Bại",
-    });
-  };
+  // const error = () => {
+  //   messageApi.open({
+  //     type: "error",
+  //     content: "Xóa Thất Bại",
+  //   });
+  // };
 
   const cancelHD = () => {
     Modal.confirm({
@@ -91,24 +91,20 @@ export default function DetailHoaDon() {
       okText: "Yes",
       okType: "danger",
       onOk: async () => {
-        const data = await axios.post(
-          `http://localhost:8080/hoa_don/cancelHD/${id}`
-        );
-
-        if (data.data != null) {
-          await axios
-            .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
-              moTaHoaDon: "Hủy Hóa Đơn",
-              deleted: 0,
-              nguoiTao: "Cam",
-              ghiChu: note,
-            })
-            .then((response) => {
-              toast.success("Hủy Thành Công");
-            });
-        } else {
-          toast.success("Hủy Thất Bại");
-        }
+        await axios
+          .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
+            moTaHoaDon: "Hủy Hóa Đơn",
+            deleted: 0,
+            nguoiTao: "Cam",
+            ghiChu: note,
+          })
+          .then((response) => {
+            toast.success("Hủy Thành Công");
+            getDataLichSuThanhToan();
+            getInfoHD();
+            getDataChiTietSanPham();
+            getDataLichSu();
+          });
       },
     });
   };
@@ -131,7 +127,7 @@ export default function DetailHoaDon() {
   };
 
   const onHandleTimeLineChange = () => {
-    if (currentTimeLine <= 6) {
+    if (currentTimeLine < 6) {
       Modal.confirm({
         title: `Bạn có muốn ${listTitleTimline[currentTimeLine].title} không ?`,
         okText: "Yes",
@@ -195,7 +191,7 @@ export default function DetailHoaDon() {
     setRowsSPCT(
       data.map((item, index) => {
         return {
-          id: item.id_chi_tiet_san_pham.ids,
+          id: item.id_chi_tiet_san_pham.id,
           imageUrl: item.id_chi_tiet_san_pham.defaultImg,
           name: item.id_chi_tiet_san_pham.id_san_pham.ten,
           kichco: item.id_chi_tiet_san_pham.id_kich_co.ten,
@@ -218,7 +214,11 @@ export default function DetailHoaDon() {
             `http://localhost:8080/hoa_don_chi_tiet/deleteHDCT/${id}/${idSPCT}`
           )
           .then((response) => {
-            response.data == true ? success("Xóa thành công") : error();
+            getDataLichSuThanhToan();
+            getInfoHD();
+            getDataChiTietSanPham();
+            getDataLichSu();
+            toast.success("Xóa thành công");
           })
           .catch((e) => error());
       },
@@ -229,7 +229,6 @@ export default function DetailHoaDon() {
       .get(`http://localhost:8080/lich_su_hoa_don/getLichSuHoaDons/${id}`)
       .then((res) => {
         const data = res.data;
-        console.log(res.data);
         setRowsLichSu(
           data.map((item, index) => {
             return {
@@ -242,7 +241,6 @@ export default function DetailHoaDon() {
 
         setListTimeLineOnline(
           data.map((item, index) => {
-            console.log(listTitleTimline[index].icon.FaShippingFast);
             return {
               ...item,
               subtitle: format(new Date(item.ngayTao), " hh:mm:ss ,dd-MM-yyyy"),
@@ -315,7 +313,7 @@ export default function DetailHoaDon() {
           </div>
           <div className="row button-contact p-4 grid grid-cols-2">
             <div className="row ">
-              {currentTimeLine < 6 &&
+              {currentTimeLine < 5 &&
               info.loaiHd === 0 &&
               info.trangThai != 5 ? (
                 <Button
@@ -572,30 +570,30 @@ export default function DetailHoaDon() {
                       style={{ marginRight: 200 }}
                     >
                       <div className=" sm:mt-0" style={{ marginRight: 300 }}>
-                        <h2 className="text-lg font-bold text-gray-900 mb-3">
+                        <h2 className="text-lg font-medium text-gray-900 mb-3">
                           {item.name}
                           {item.mausac.substring(3)}
                         </h2>
-                        <p className="mb-3  font-bold text-gray-900">
+                        <p className="mb-3  font-medium text-gray-900">
                           Size: {item.kichco}
                         </p>
-                        <p className="font-bold text-gray-900 mb-3">
+                        <p className="font-medium text-gray-900 mb-3">
                           Số lượng :{" "}
-                          <span className="font-bold text-red-500 mb-3">
+                          <span className="font-medium text-red-500 mb-3">
                             {item.quantity}
                           </span>{" "}
                           sản phẩm
                         </p>
-                        <p className="font-bold text-gray-900 mb-3">
+                        <p className="font-medium text-gray-900 mb-3">
                           Đơn giá :{" "}
-                          <span className="font-bold text-red-500 mb-3">
+                          <span className="font-medium text-red-500 mb-3">
                             {Intl.NumberFormat().format(item.price)} &nbsp;₫
                           </span>
                         </p>
                       </div>
 
-                      <div className=" space-x-4 mt-4">
-                        <p className="font-bold text-red-500">
+                      <div className=" space-x-4 mt-4 me-4">
+                        <p className="font-medium text-red-500">
                           {Intl.NumberFormat().format(
                             item.price * item.quantity
                           )}
@@ -607,8 +605,9 @@ export default function DetailHoaDon() {
                         <Button
                           color="red"
                           onClick={() => onHandleDelete(item.id)}
+                          disabled
                         >
-                          Xóa
+                          Trả Hàng
                         </Button>
                       </div>
 
@@ -618,54 +617,60 @@ export default function DetailHoaDon() {
                 ))}
               </div>
 
-              <div class="grid grid-rows-3 grid-flow-col gap-4">
+              <div class="flex justify-end me-4">
+                <div>
+                  <div className="grid grid-cols-2 gap-1  pt-3">
+                    <p className="font-normal text-lg">Tiền Hàng : </p>
+                    <p
+                      className="font-normal text-red-500"
+                      style={{ fontSize: "16px" }}
+                    >
+                      {Intl.NumberFormat().format(money.tienHang)}&nbsp;₫
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1  ">
+                    <p className="font-normal text-lg"> Phí Vận Chuyển : </p>
+                    <p
+                      className="font-normal text-red-500"
+                      style={{ fontSize: "16px" }}
+                    >
+                      {Intl.NumberFormat().format(money.tienShip)}&nbsp;₫
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1  ">
+                    <p className="font-normal text-lg"> Tien Giam : </p>
+                    <p
+                      className="font-normal text-red-500"
+                      style={{ fontSize: "16px" }}
+                    >
+                      {Intl.NumberFormat().format(money.tienGiam)}&nbsp;₫
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1  pe-3  ">
+                    <p className="font-normal text-lg"> Tổng Tiền : </p>
+                    <p
+                      className="font-normal text-red-500"
+                      style={{ fontSize: "16px" }}
+                    >
+                      {Intl.NumberFormat().format(money.tongTien)}&nbsp;₫
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* <div class="grid grid-rows-3 grid-flow-col gap-4">
                 <div class="row-start-2 row-span-2 ..."></div>
                 <div class="row-end-3 row-span-2 ..."></div>
 
                 <div class="row-start-1 row-end-4 ...">
                   <div className="grid grid-cols-1 gap-x-8 gap-y-4 space-y-3">
-                    <div className="grid grid-cols-2 gap-1  pt-3">
-                      <p className="font-bold text-lg">Tiền Hàng : </p>
-                      <p
-                        className="font-bold text-red-500"
-                        style={{ fontSize: "25px" }}
-                      >
-                        {Intl.NumberFormat().format(money.tienHang)}&nbsp;₫
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-1  ">
-                      <p className="font-bold text-lg"> Phí Vận Chuyển : </p>
-                      <p
-                        className="font-bold text-red-500"
-                        style={{ fontSize: "20px" }}
-                      >
-                        {Intl.NumberFormat().format(money.tienShip)}&nbsp;₫
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-1  ">
-                      <p className="font-bold text-lg"> Tien Giam : </p>
-                      <p
-                        className="font-bold text-red-500"
-                        style={{ fontSize: "20px" }}
-                      >
-                        {Intl.NumberFormat().format(money.tienGiam)}&nbsp;₫
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-1  pe-3  ">
-                      <p className="font-bold text-lg"> Tổng Tiền : </p>
-                      <p
-                        className="font-bold text-red-500"
-                        style={{ fontSize: "25px" }}
-                      >
-                        {Intl.NumberFormat().format(money.tongTien)}&nbsp;₫
-                      </p>
-                    </div>
+                    
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

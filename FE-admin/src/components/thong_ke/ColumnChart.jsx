@@ -266,7 +266,7 @@ export function TableTheoOption({ value }) {
           </p>
         );
       case "avatar":
-        return <Image width={100} alt="NextUI hero Image" src={cellValue} />;
+        return <Image width={70} alt="NextUI hero Image" src={cellValue} />;
       case "quantitySaled":
         return (
           <span className="text-black-700 font-bold">{cellValue} sản phẩm</span>
@@ -294,20 +294,24 @@ export function TableTheoOption({ value }) {
   }, [value]);
 
   return (
-    <Table isStriped aria-label="Example static collection table">
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.uid}>{column.name}</TableColumn>}
-      </TableHeader>
-      <TableBody items={data}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <div className="content flex items-center">
+      <Table aria-label="Example table with client side pagination">
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.uid}>{column.name}</TableColumn>
+          )}
+        </TableHeader>
+        <TableBody items={data}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 

@@ -14,7 +14,7 @@ import TabTrangThai from "../components/quanlyhoadon/TabTrangThai";
 import { useState } from "react";
 
 export default function QuanLyHoaDon() {
-  const [filterValue, setFilterValue] = useState("");
+  const [dataInput, setFilterValue] = useState("");
   const [dataSelect, setDataSelect] = useState(-1);
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
@@ -92,7 +92,7 @@ export default function QuanLyHoaDon() {
                   className="w-full "
                   placeholder="Tìm kiếm bất kỳ..."
                   startContent={<SearchIcon />}
-                  value={filterValue}
+                  value={dataInput}
                   // onClear={() => onClear()}
                   onChange={(e) => setFilterValue(e.target.value)}
                 />
@@ -186,7 +186,7 @@ export default function QuanLyHoaDon() {
           >
             <div>
               <TabTrangThai
-                dataInput={filterValue}
+                dataInput={dataInput}
                 dataSelect={dataSelect}
                 ngayBatDau={ngayBatDau}
                 ngayKetThuc={ngayKetThuc}

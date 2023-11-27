@@ -501,7 +501,7 @@ export default function SanPham() {
               marginBottom: "2px",
             }}
           >
-            <Link to={"/them-san-pham"}>+ Tạo sản phẩm</Link>
+            <Link to={"/quan-ly-san-pham/san-pham/them-san-pham"}>+ Tạo sản phẩm</Link>
           </ButtonAntd>
         </div>
         <div

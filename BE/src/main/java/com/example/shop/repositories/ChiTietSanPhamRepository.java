@@ -70,4 +70,9 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
     List<SanPhamChiTiet> getAllSanPhamChiTietByIdList(@Param("idList") List<String> idList);
     //---------------Hội----------------//
 
+
+    @Query(value = "select * from  san_pham_chi_tiet where so_luong_ton <= 10" , nativeQuery = true)
+    List<SanPhamChiTiet> getAllSPCTMin();
+
+
 }

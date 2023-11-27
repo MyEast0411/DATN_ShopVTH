@@ -15,6 +15,8 @@ import IconGiaoHangNhanh from "../assets/iconGiaoHangNhanh.webp";
 export default function Checkout() {
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
+  const [deliveryTime, setDeliveryTime] = useState(null);
+  const [phiVanChuyen, setPhiVanChuyen] = useState("");
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -23,7 +25,160 @@ export default function Checkout() {
   const [shippingCost, setShippingCost] = useState("");
   const [tongTien, setTongTien] = useState(0);
   const [value, setValue] = useState(1);
+  const [idTP, setIdTP] = useState("");
+  const [idHuyen, setIdHuyen] = useState("");
+  const [idXa, setIdXa] = useState("");
+  const [diaChi, setDiaChi] = useState({
+    thanhPho : "",
+    huyen : "",
+    xa : ""
+  });
 
+  // lay id tp
+  useEffect(() => {
+    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province';
+    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
+
+    axios.get(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Token': token,
+      }
+    })
+      .then(response => {
+        const id_tp = response.data.data.find(item => diaChi.thanhPho.includes(item.ProvinceName))?.ProvinceID;
+        console.log(id_tp);
+        setIdTP(id_tp);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, [diaChi]);
+
+  // lay id huyen theo api theo id tp
+  useEffect(() => {
+    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district';
+    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
+
+    const requestData = {
+      province_id : idTP
+    };
+
+    axios.get(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        // 'ShopId': shopId,
+        'Token': token,
+      },
+      params: requestData,
+    })
+      .then(response => {
+        const id_huyen = response.data.data.find(item => item.DistrictName === diaChi.huyen)?.DistrictID;
+        setIdHuyen(id_huyen);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, [diaChi]);
+  
+  // lay id xa theo api theo id huyen
+  useEffect(() => {
+    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id';
+    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
+
+    const requestData = {
+      district_id : idHuyen
+    };
+
+    axios.post(apiUrl, requestData, {
+      headers: {
+        'Content-Type': 'application/json',
+        // 'ShopId': shopId,
+        'Token': token,
+      },
+    })
+      .then(response => {
+        const id_xa = response.data.data.find(item => item.WardName === diaChi.xa)?.WardCode;
+        setIdXa(id_xa);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, [diaChi,idHuyen]);
+  // Tính thời gian dự kiến
+  useEffect(() => {
+    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime';
+    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
+    const shopId = '190374 - 0964457125'; // Thay YOUR_SHOP_ID bằng ID cửa hàng của bạn
+    const requestData = {
+      from_district_id: 1804,
+      from_ward_code: "1B2211",
+      to_district_id: idHuyen,
+      to_ward_code: idXa,
+      service_id: 53320,
+    };
+
+    axios.post(apiUrl, requestData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'ShopId': shopId,
+        'Token': token,
+      },
+    })
+      .then(response => {
+        console.log(response.data.data.leadtime);
+        const leadtimeTimestamp = response.data.data.leadtime;
+        const leadtimeDate = new Date(leadtimeTimestamp * 1000);
+
+        const day = leadtimeDate.getDate();
+        const month = leadtimeDate.getMonth() + 1; 
+        const year = leadtimeDate.getFullYear();
+
+        const formattedLeadtime = `${day}/${month}/${year}`;
+
+        console.log(formattedLeadtime);
+        setDeliveryTime(formattedLeadtime);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, [idTP,idHuyen,idXa]);
+  // Tính phí vận chuyển
+  useEffect(() => {
+    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee';
+    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; 
+    const shopId = '190374 - 0964457125'; 
+
+    const requestData = {
+      service_type_id: 2,
+      from_district_id: 1804,
+      to_district_id: idHuyen,
+      to_ward_code: idXa,
+      height: 20,
+      length: 30,
+      weight: 1000,
+      width: 40,
+      insurance_value: 0,
+      coupon: null,
+    };
+
+    axios.post(apiUrl, requestData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'ShopId': shopId,
+        'Token': token,
+      },
+    })
+      .then(response => {
+        console.log('API Response:', response.data);
+        setShippingCost(response.data.data.total);
+        setPhiVanChuyen(response.data.data.total);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }, [idTP,idHuyen,idXa]);
+  
   const openNotificationWithIcon = (type, message) => {
     api[type]({
       message,
@@ -69,17 +224,43 @@ export default function Checkout() {
   }, []);
 
   const handleProvinceChange = (provinceCode) => {
+    provinces.map((item) => {
+      if (item.code == provinceCode) {
+        setDiaChi((prevDiaChi) => ({
+          ...prevDiaChi,
+          thanhPho: item.name,
+        }));
+      }
+    });
     getDistricts(provinceCode).then((data) => {
       setDistricts(data);
     });
   };
 
   const handleDistrictChange = (districtCode) => {
+    districts.map((item) => {
+      if (item.code == districtCode) {
+        setDiaChi((prevDiaChi) => ({
+          ...prevDiaChi,
+          huyen: item.name,
+        }));
+      }
+    });
     getWards(districtCode).then((data) => {
       setWards(data);
     });
   };
 
+  const handleWardsChange = (wardsCode) => {
+    wards.map((item) => {
+      if (item.code == wardsCode) {
+        setDiaChi((prevDiaChi) => ({
+          ...prevDiaChi,
+          xa: item.name,
+        }));
+      }
+    });
+  };
   const calculateSubtotal = () => {
     const subtotal = cartItems.reduce(
       (total, cart) => total + cart.product.soLuong * cart.product.giaBan,
@@ -90,27 +271,28 @@ export default function Checkout() {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const localShippingCost = value === 2 ? 0 : 50000;
+    const localShippingCost = value === 2 ? 0 : shippingCost;
     let updatedShippingCost;
 
     if (value === 2) {
       updatedShippingCost = "Miễn phí";
     } else {
-      updatedShippingCost = localShippingCost.toString();
+      updatedShippingCost = localShippingCost;
     }
     const total = parseFloat(subtotal) + localShippingCost;
+    console.log(updatedShippingCost);
 
     useEffect(() => {
-      setShippingCost(updatedShippingCost);
-      setTongTien(total.toFixed(0));
-    }, [updatedShippingCost, total]);
+      setPhiVanChuyen(updatedShippingCost);
+      setTongTien(total);
+    }, [updatedShippingCost, total,shippingCost]);
 
-    return total.toFixed(0);
+    return total;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log(deliveryTime);
     // ...
     const email = e.target.elements.email.value;
     const hoTen = e.target.elements.hoTen.value;
@@ -145,6 +327,9 @@ export default function Checkout() {
             hinhThucThanhToan: phuongThucThanhToan,
             gioHang: cartItems,
             tongTien: tongTien,
+            email : email,
+            thoiGianNhanHang : deliveryTime+"",
+            phiShip : Intl.NumberFormat().format(phiVanChuyen)+""
           }
         )
         .then((response) => {
@@ -236,7 +421,7 @@ export default function Checkout() {
                   <select
                     name="thanhPho"
                     id="city"
-                    className="bg-gray-50 border border-gray-300 text-gray-900  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => handleProvinceChange(e.target.value)}
                     required
                   >
@@ -252,7 +437,7 @@ export default function Checkout() {
                   <select
                     id="District"
                     name="huyen"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => handleDistrictChange(e.target.value)}
                     required
                   >
@@ -268,8 +453,9 @@ export default function Checkout() {
                   <select
                     name="xaPhuong"
                     id="wards"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required
+                    onChange={(e) => handleWardsChange(e.target.value)}
                   >
                     <option value="">Chọn xã phường</option>
                     {wards.map((ward) => (
@@ -326,7 +512,7 @@ export default function Checkout() {
               <div className="giao-hang-nhanh flex items-center">
                 <img width={140} src={IconGiaoHangNhanh} alt="" />
                 <span>Thời gian dự kiến: &nbsp;</span>
-                <span className="font-medium">27/11/2023</span>
+                <span className="font-medium">{deliveryTime}</span>
               </div>
               <div className="flex justify-between items-center">
                 <Link
@@ -362,7 +548,7 @@ export default function Checkout() {
                   <p className="cart-checkout-mau-sac link-underline text-[14px]">
                     <span className="text-[#0F0E0E]">Màu sắc: </span>
                     {hinhAnhs.find(
-                      (ha) => ha.id_san_pham_chi_tiet.id === cart.product.id
+                      (ha) => ha?.id_san_pham_chi_tiet?.id === cart.product.id
                     )?.mauSac || ""}
                   </p>
                   <p className="cart-checkout-size link-underline text-[14px]">
@@ -395,7 +581,7 @@ export default function Checkout() {
                 </div>
                 <div className="flex justify-between">
                   <h3>Phí vận chuyển</h3>
-                  <p>VNĐ {Intl.NumberFormat().format(shippingCost)}</p>
+                  <p>VNĐ {phiVanChuyen == "Miễn phí" ? "Miễn phí" : Intl.NumberFormat().format(phiVanChuyen)}</p>
                 </div>
                 <div className="horizontal"></div>
                 <div className="flex justify-between">
