@@ -201,22 +201,23 @@ public class HoaDonController {
             mess = "Not find hoa don with " + id;
 
         } else {
-            Boolean kq = hoaDonService.deleteHoaDon(hoaDon);
-            mess = kq ? "Delete success" : "Delete fail";
+            hoaDon.setDeleted(0);
+           hoaDonService.updateHoaDon(hoaDon);
+            mess = "delete success";
         }
 //        System.out.println(mess);
         return new ResponseEntity(mess, HttpStatus.OK);
     }
 
     @PostMapping("cancelHD/{id}")
-    public ResponseEntity cancelHD(@PathVariable("id")String id){
-
+    public ResponseEntity cancelHD(@PathVariable("id")String id , @RequestBody Object trangThai){
+        System.out.println(trangThai);
         HoaDon hoaDon = hoaDonService.getHoaDon(id);
         hoaDon.setTrangThai(5);
-        hoaDonService.updateHoaDon(hoaDon);
-
+        HoaDon don = hoaDonService.updateHoaDon(hoaDon);
+        System.out.println(don);
 //        System.out.println(mess);
-        return new ResponseEntity("Hủy Thành công" , HttpStatus.OK);
+        return new ResponseEntity(don , HttpStatus.OK);
     }
 
 

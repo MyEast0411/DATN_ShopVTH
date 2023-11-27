@@ -3,7 +3,10 @@ package com.example.shop.controller;
 import com.example.shop.dto.BieuDoThongKe;
 import com.example.shop.dto.HoaDonThongKeDTO;
 import com.example.shop.entity.HoaDon;
+import com.example.shop.entity.HoaDonChiTiet;
 import com.example.shop.entity.HoaDonThanhToanId;
+import com.example.shop.entity.SanPhamChiTiet;
+import com.example.shop.repositories.ChiTietSanPhamRepository;
 import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,9 @@ public class ThongKeController {
     private HoaDonService hoaDonService;
     @Autowired
     private HoaDonChiTietService hoaDonChiTietService;
+
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
     @GetMapping("/{option}")
     public ResponseEntity<List<BieuDoThongKe>> getTotalByThang(@PathVariable("option")String option) {
         List<BieuDoThongKe> dataBieuDo = new ArrayList<>();
@@ -68,6 +74,11 @@ public class ThongKeController {
     @GetMapping("/totalSPSaled")
     public ResponseEntity<Integer> totalSPSaled(){
         return ResponseEntity.ok(hoaDonChiTietService.totalSPSaled());
+    }
+
+    @GetMapping("/SPCTMin")
+    public ResponseEntity<List<SanPhamChiTiet>> spctMin(){
+        return ResponseEntity.ok(chiTietSanPhamRepository.getAllSPCTMin());
     }
 
 }
