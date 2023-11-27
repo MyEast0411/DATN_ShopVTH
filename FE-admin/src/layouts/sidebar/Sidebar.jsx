@@ -209,6 +209,7 @@ const Sidebar = () => {
       <div className="m-3 md:hidden  " onClick={() => setOpen(true)}>
         <MdMenu size={25} />
       </div>
+      
     </div>
   );
 };
