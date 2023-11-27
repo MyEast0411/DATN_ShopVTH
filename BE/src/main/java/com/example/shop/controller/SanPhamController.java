@@ -69,7 +69,10 @@ public class SanPhamController {
         nhanHieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
         return repo.findAll();
     }
-
+    @GetMapping("/getAllSP")
+    List<SanPham> getAllSP() {
+        return sanPhamRepository.getAll();
+    }
     @GetMapping("/getAllMS")
     List<MauSac> getAllMS() {
         return mauSacRepository.findAll();
@@ -206,19 +209,19 @@ public class SanPhamController {
             list.add(x);
         }
         SanPham sp = new SanPham();
-        Boolean check = false;
-        for (SanPham x :
-                sanPhamRepository.findAll()) {
-            if (x.getTen().equals(list.get(0).getTen())) {
-                sp.setId(x.getId());
-                check = true;
-            }
-        }
-        if (!check) {
-            Integer maxMa = Integer.parseInt(sanPhamRepository.findMaxMa().replace("SP", ""));
-            sp = new SanPham(null, "SP" + (maxMa + 1), list.get(0).getTen(), new Date(), null, "", "", 1);
-            sp = sanPhamRepository.save(sp);
-        }
+//        Boolean check = false;
+//        for (SanPham x :
+//                sanPhamRepository.findAll()) {
+//            if (x.getTen().equals(list.get(0).getTen())) {
+//                sp.setId(x.getId());
+//                check = true;
+//            }
+//        }
+//        if (!check) {
+//            Integer maxMa = Integer.parseInt(sanPhamRepository.findMaxMa().replace("SP", ""));
+//            sp = new SanPham(null, "SP" + (maxMa + 1), list.get(0).getTen(), new Date(), null, "", "", 1);
+//            sp = sanPhamRepository.save(sp);
+//        }
         for (ChiTietSanPhamVM x :
                 list) {
             int seconds = (int) (System.currentTimeMillis() / 1000);
@@ -339,11 +342,8 @@ public class SanPhamController {
     public ResponseEntity addKichCo(@RequestBody KichCoRequest request) {
         try {
             KichCo kichCo = new KichCo();
-            int seconds = (int) System.currentTimeMillis() / 1000;
-            Random random = new Random();
-            int number = random.nextInt(seconds + 1);
-            String threeNumbers = String.valueOf(number).substring(0, 3);
-            kichCo.setMa("KC" + threeNumbers);
+            Integer maxMa = Integer.parseInt(kichCoRepository.getMaxMa());
+            kichCo.setMa("KC" + (maxMa + 1));
             kichCo.setTen(request.getTenKichCo());
             kichCo.setDeleted(1);
             kichCoRepository.save(kichCo);

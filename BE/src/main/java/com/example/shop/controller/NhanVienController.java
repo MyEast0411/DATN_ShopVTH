@@ -1,10 +1,12 @@
 package com.example.shop.controller;
 
+import com.example.shop.entity.ChucVu;
 import com.example.shop.entity.DiaChi;
 import com.example.shop.entity.KhachHang;
 import com.example.shop.entity.NhanVien;
 import com.example.shop.repositories.ChucVuRepository;
 import com.example.shop.repositories.NhanVienRepository;
+import com.example.shop.requests.ChucVuRequest;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.KhachHangVM;
 import com.example.shop.viewmodel.NhanVienVM;
@@ -28,17 +30,36 @@ public class NhanVienController {
 
     @GetMapping("/getAll")
     public ResponseEntity getAllNhanVien() {
-        return ResponseEntity.ok(nhanVienRepository.findAll());
+        return ResponseEntity.ok(nhanVienRepository.getAllNhanVien());
     }
-
-    @PostMapping("/nhan-vien/add")
+    @GetMapping("/getAllChucVu")
+    public ResponseEntity getAllChucVu() {
+        return ResponseEntity.ok(chucVuRepository.findAll());
+    }
+    @PostMapping("/addChucVu")
+    public ResponseEntity addChucVu(@RequestBody ChucVuRequest request) {
+        try {
+            Integer maxMa = chucVuRepository.getMaxMa() == null ? 1 : Integer.parseInt(chucVuRepository.getMaxMa());
+            ChucVu chucVu = ChucVu.builder()
+                    .ma("CV"+(maxMa + 1))
+                    .nguoiTao("Đông")
+                    .ten(request.getTenChucVu())
+                    .deleted(1)
+                    .build();
+            chucVuRepository.save(chucVu);
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
+    @PostMapping("add")
     public ResponseEntity add(@RequestBody NhanVienVM khachHang) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
         Integer maxMa = Integer.parseInt(nhanVienRepository.findMaxMa());
-
+        System.out.println(khachHang);
         try {
             NhanVien kh = new NhanVien();
-            String urlImg = UploadAnh.upload(khachHang.getAnh());
+            String urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
             kh.setAnh(urlImg);
             kh.setMa("NV"+(maxMa + 1));
             kh.setTen(khachHang.getTen());
@@ -46,8 +67,10 @@ public class NhanVienController {
             kh.setGioiTinh(khachHang.getGioi_tinh());
             kh.setNgaySinh(dateFormat.parse(khachHang.getNgay_sinh()));
             kh.setSdt(khachHang.getSdt());
+            kh.setDiaChi(khachHang.getSoNha() + "," + khachHang.getXa() + "," + khachHang.getHuyen());
             kh.setTrang_thai("1");
-            kh.setId_chuc_vu(chucVuRepository.findById(khachHang.getId_chuc_vu()).get());
+            kh.setDeleted(1);
+            kh.setId_chuc_vu(chucVuRepository.findById(khachHang.getChucVu()).get());
             System.out.println(kh);
             nhanVienRepository.save(kh);
             return ResponseEntity.ok("Thành công");
@@ -55,5 +78,11 @@ public class NhanVienController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
+    }
+
+    @PutMapping("/deleteSoft/{id}")
+    public NhanVien deleteSoft(@PathVariable("id") NhanVien nhanVien) {
+        nhanVien.setDeleted(0);
+        return nhanVienRepository.save(nhanVien);
     }
 }

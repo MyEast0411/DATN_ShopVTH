@@ -22,7 +22,7 @@ public class NhanVienVM {
 
     private String gioi_tinh;
 
-    private String anh;
+    private String anhNguoiDung;
 
     private String soNha;
 
@@ -32,5 +32,5 @@ public class NhanVienVM {
 
     private String thanhPho;
 
-    private String id_chuc_vu;
+    private String chucVu;
 }

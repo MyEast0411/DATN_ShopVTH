@@ -161,6 +161,7 @@ public class HoaDonChiTietController {
     @PostMapping("/addHoaDonChiTietToHoaDon")
     public ResponseEntity addHoaDonChiTietToHoaDon(@RequestBody GioHangDTO giohang) {
         Integer maxMaInt;
+        List<HoaDonChiTiet> listHDCT = new ArrayList<>();
         try {
             String maxMa = ssHD.getMaxMa();
             if (maxMa == null) {
@@ -205,12 +206,13 @@ public class HoaDonChiTietController {
                         hdct.setId_chi_tiet_san_pham(ssSP.findById(id).get());
                         hdct.setSoLuong(soLuong);
                         hdct.setGiaTien(BigDecimal.valueOf(giaBan));
+                        listHDCT.add(hdct);
                         ssHDCT.save(hdct);
                     }
                 }
             }
             System.out.println(giohang.getThoiGianNhanHang());
-            SendMail.SenMail(giohang.getEmail(),giohang.getThoiGianNhanHang(),giohang.getPhiShip(), giohang.getTongTien());
+            SendMail.SenMail(giohang.getEmail(),giohang.getThoiGianNhanHang(),giohang.getPhiShip(), giohang.getTotal(),listHDCT);
             return ResponseEntity.ok("Thành công");
         } catch (Exception e) {
             e.printStackTrace();

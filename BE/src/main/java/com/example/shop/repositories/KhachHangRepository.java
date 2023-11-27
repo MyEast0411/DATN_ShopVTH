@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface KhachHangRepository extends JpaRepository<KhachHang,String> {
+    @Query(value = "SELECT kh FROM KhachHang kh where kh.deleted = 1")
+    List<KhachHang> getAllKh();
 
     KhachHang findByMa(String ma);
 

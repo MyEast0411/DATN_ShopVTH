@@ -1,5 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+
+//filter
+import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
+import FilterMa from "../common/filter/sanPham/FilterMa";
+import axios from "axios";
+
+import { Button as ButtonAntd } from "antd";
+import { Link } from "react-router-dom";
+
+//table
 import {
   Table,
   TableHeader,
@@ -15,7 +24,7 @@ import {
   DropdownItem,
   Chip,
   Pagination,
-  Image,
+  Slider,
   Tooltip,
 } from "@nextui-org/react";
 import {
@@ -26,33 +35,33 @@ import {
   DialogTitle,
   TableCell as TableCellMui,
 } from "@mui/material";
-import { format } from "date-fns";
-// import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
-// import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
-import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
-import { capitalize } from "../../otherComponents/utils";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { DeleteIcon } from "../../otherComponents/DeleteIcon";
-import { EyeIcon } from "../../otherComponents/EyeIcon";
-// import { MdDeleteOutline } from "react-icons/md";
-import { TbInfoTriangle } from "react-icons/tb";
-// import { LiaEyeSolid } from "react-icons/lia";
 
+//icon
+import { BiFilterAlt } from "react-icons/bi";
+import { ChevronDownIcon } from "../common/otherComponents/ChevronDownIcon";
+import { SearchIcon } from "../common/otherComponents/SearchIcon";
+import { capitalize } from "../common/otherComponents/utils";
+import { TbInfoTriangle } from "react-icons/tb";
+import { toast } from "react-toastify";
+
+import { DeleteIcon } from "../common/otherComponents/DeleteIcon";
+import { EyeIcon } from "../common/otherComponents/EyeIcon";
+import { HiOutlineClipboardList } from "react-icons/hi";
+
+//other
+
+const url = "http://localhost:8080/kich-co/getAllKichCo";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "Ảnh", uid: "hinhAnh", sortable: true, align: "center" },
-  { name: "Họ tên", uid: "hoTen", sortable: true },
-  { name: "CCCD", uid: "cccd", sortable: true },
-  { name: "Số điện thoại", uid: "sdt", sortable: true },
-  { name: "Ngày sinh", uid: "ngaySinh", sortable: true },
-  { name: "Trạng thái", uid: "trangThai" },
+  { name: "Mã", uid: "ma", sortable: true },
+  { name: "Tên", uid: "ten", sortable: true },
+  { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Hành Động", uid: "hanhDong" },
 ];
 
 const statusOptions = [
-  { name: "Kích hoạt", uid: "Kích hoạt" },
-  { name: "Chưa kích hoạt", uid: "Chưa kích hoạt" },
+  { name: "Hoạt động", uid: "Hoạt động" },
+  { name: "Không hoạt động", uid: "Hoạt động" },
 ];
 
 const statusColorMap = {
@@ -60,26 +69,20 @@ const statusColorMap = {
   paused: "danger",
   incoming: "warning",
 };
-statusColorMap["Kích hoạt"] = "success";
-statusColorMap["Chưa kích hoạt"] = "danger";
+statusColorMap["Hoạt động"] = "success";
+statusColorMap["Không hoạt động"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
-  "hinhAnh",
-  "hoTen",
-  "cccd",
-  "sdt",
-  "ngaySinh",
+  "ma",
+  "ten",
   "trangThai",
   "hanhDong",
 ];
-
-export default function App() {
+export default function KichCo() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [rows, setRows] = React.useState([]);
-  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
 
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
@@ -94,7 +97,7 @@ export default function App() {
   const confirmDelete = async () => {
     if (idToDelete) {
       await axios
-        .put(`http://localhost:8080/khach-hang/delete/${idToDelete}`)
+        .delete(`http://localhost:8080/delete/${idToDelete}`)
         .then((response) => {
           toast("🎉 Xóa thành công");
           cancelDelete();
@@ -106,6 +109,7 @@ export default function App() {
     }
   };
 
+  const sizes = ["md"];
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -123,19 +127,13 @@ export default function App() {
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
-        const response = await axios.get(
-          "http://localhost:8080/khach-hang/getAll"
-        );
+        const response = await axios.get(url);
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
-          maKH: item.ma,
-          anh: item.anhNguoiDung,
-          hoTen: item.ten,
-          cccd: item.cccd,
-          sdt: item.sdt,
-          ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
-          trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
+          ma: item.ma,
+          ten: item.ten,
+          trangThai: item.deleted == 1 ? "Hoạt động" : "Không hoạt động",
         }));
         setSanPhams(updatedRows);
       } catch (error) {
@@ -197,18 +195,7 @@ export default function App() {
 
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
-    // console.log(sanPham);
     switch (columnKey) {
-      case "hinhAnh":
-        const hinhAnhURL = sanPham.anh;
-        return (
-          <Image
-            style={{ height: "120px", width: "150px" }}
-            src={hinhAnhURL}
-            alt={sanPham.ten || "Ảnh sản phẩm"}
-            classNames="m-5"
-          />
-        );
       case "trangThai":
         return (
           <Chip
@@ -223,10 +210,10 @@ export default function App() {
       case "hanhDong":
         return (
           <div className="relative flex items-center gap-4">
-            <Tooltip content="Xem" showArrow={true}>
+            <Tooltip content="Chi tiết" showArrow={true}>
               <Link
-                to={`/edit-khach-hang/${sanPham.maKH}`}
-                // style={{ display: "block" }}
+                to={`/edit-san-pham/${sanPham.ma}`}
+                style={{ display: "block" }}
                 className="button-link group relative"
               >
                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
@@ -234,11 +221,15 @@ export default function App() {
                 </span>
               </Link>
             </Tooltip>
-            <Tooltip color="danger" content="Xóa" showArrow={true}>
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon onClick={() => handleDelete(sanPham.id)} />
-              </span>
-            </Tooltip>
+
+            <div className="group relative" style={{ position: "relative" }}>
+              <Tooltip color="danger" content="Xóa" showArrow={true}>
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <DeleteIcon onClick={() => handleDelete(sanPham.ma)} />
+                </span>
+              </Tooltip>
+              {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
+            </div>
           </div>
         );
       default:
@@ -344,7 +335,7 @@ export default function App() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Tổng {sanPhams.length} khách hàng
+            {/* Tổng {khuyenMais.length} khuyến mại */}
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
@@ -373,21 +364,40 @@ export default function App() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
+        <span className="w-[30%] text-small text-default-400">
+          Tổng {sanPhams.length} kích cỡ
+        </span>
         {/* <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
             : `${selectedKeys.size} khyến mại đã được chọn`}
         </span> */}
-        <Pagination
+        {/* <Pagination
           isCompact
           showControls
           showShadow
           color="primary"
           page={page}
           total={totalPages}
+          initialPage={1}
+          style={{paddingLeft : "730px"}}
           onChange={setPage}
-          style={{ paddingLeft: "730px" }}
-        />
+        /> */}
+        <div className="flex flex-wrap gap-4 items-center">
+          {sizes.map((size) => (
+            <Pagination
+              isCompact
+              showControls
+              key={size}
+              // style={{ paddingLeft: "710px" }}
+              total={pages}
+              initialPage={1}
+              size={size}
+              page={page}
+              onChange={setPage}
+            />
+          ))}
+        </div>
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
             isDisabled={pages === 1}
@@ -409,82 +419,184 @@ export default function App() {
       </div>
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
-
   return (
     <>
-      <Table
-        style={{ height: "382px" }}
-        aria-label="Example table with custom cells, pagination and sorting"
-        isHeaderSticky
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        classNames={{
-          wrapper: "max-h-[382px]",
-        }}
-        selectedKeys={selectedKeys}
-        sortDescriptor={sortDescriptor}
-        topContent={topContent}
-        topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader columns={headerColumns}>
-          {(column) => (
-            <TableColumn
-              key={column.uid}
-              align={column.uid === "hanhDong" ? "center" : "start"}
-              allowsSorting={column.sortable}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody
-          emptyContent={"Không tìm thấy khách hàng nào!"}
-          items={sortedItems}
-        >
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
-        <DialogTitle>
+      <div>
+        <h2 className="mb-5 font-bold text-2xl">Quản Lý Kích Cỡ</h2>
+        <div>
+          <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex items-center">
+            <BiFilterAlt />
+            <p className="ml-2 mt-1"> Bộ lọc</p>
+          </div>
+
           <div
+            className="grid drop-shadow-lg grid-cols-1 md:grid-cols-3 gap-4"
             style={{
-              display: "flex",
+              backgroundColor: "white",
+              padding: "10px",
+              borderRadius: "8px",
+              width: "100%",
+              height: "190px",
+              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+              transition: "transform 0.2s",
+              justifyContent: "space-between",
               alignItems: "center",
-              paddingBottom: "15px",
             }}
           >
-            <TbInfoTriangle
-              className="mr-2"
-              style={{
-                color: "red",
-                fontSize: "25px",
-              }}
-            />
-            <span>Xác nhận xóa</span>
+            <div className="p-5 ml-32">
+              <Input
+                isClearable
+                className="w-full "
+                placeholder="Tìm kiếm bất kỳ..."
+                startContent={<SearchIcon />}
+                value={filterValue}
+                onClear={() => onClear()}
+                onValueChange={onSearchChange}
+              />
+            </div>
+            <div className="p-5">
+              <div className="flex items-center">
+                <span className="pr-2">Trạng thái:</span>
+                <FilterTrangThai style={{ width: "100%" }} />
+              </div>
+            </div>
+            <div className="p-5">
+                <Slider 
+                  label="Khoảng kích cỡ"
+                  size="sm"
+                  step={1} 
+                  minValue={0} 
+                  maxValue={50} 
+                  defaultValue={[0, 50]} 
+                  className="max-w-md w-1/2"
+                />
+            </div>
+            {/* <div className="p-5 text-center mt-4">
+              <ButtonAntd
+                type="primary"
+                style={{
+                  backgroundColor: "#1976d2",
+                  marginBottom: "2px",
+                  marginLeft: "150%",
+                }}
+              >
+                Làm mới
+              </ButtonAntd>
+            </div> */}
           </div>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn xóa khách hàng này?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} color="warning">
-            Hủy
-          </Button>
-          <Button color="primary" onClick={confirmDelete}>
-            Vẫn xóa
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </div>
+
+        <div className="mb-2 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg	flex items-center">
+          <div className="flex items-center">
+            <HiOutlineClipboardList />
+            <p className="ml-2 mt-1"> Danh sách kích cỡ</p>
+          </div>
+
+          <ButtonAntd
+            type="primary"
+            style={{
+              backgroundColor: "#1976d2",
+              marginBottom: "2px",
+            }}
+          >
+            <Link to={"/quan-ly-san-pham/san-pham/them-san-pham"}>+ Tạo kích cỡ</Link>
+          </ButtonAntd>
+        </div>
+        <div
+          className="drop-shadow-lg font-normal border-gray-500 text-lg	"
+          style={{
+            backgroundColor: "white",
+            padding: "10px",
+            borderRadius: "8px",
+            width: "100%",
+            paddingLeft: "10px",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+            transition: "transform 0.2s",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <Table
+              style={{ height: "382px" }}
+              aria-label="Example table with custom cells, pagination and sorting"
+              isHeaderSticky
+              bottomContent={bottomContent}
+              bottomContentPlacement="outside"
+              classNames={{
+                wrapper: "max-h-[382px]",
+              }}
+              selectedKeys={selectedKeys}
+              sortDescriptor={sortDescriptor}
+              topContent={topContent}
+              topContentPlacement="outside"
+              onSelectionChange={setSelectedKeys}
+              onSortChange={setSortDescriptor}
+            >
+              <TableHeader columns={headerColumns}>
+                {(column) => (
+                  <TableColumn
+                    key={column.uid}
+                    align={column.uid === "hanhDong" ? "center" : "start"}
+                    allowsSorting={column.sortable}
+                  >
+                    {column.name}
+                  </TableColumn>
+                )}
+              </TableHeader>
+              <TableBody
+                emptyContent={"Không tìm thấy sản phẩm nào!"}
+                items={sortedItems}
+              >
+                {(item) => (
+                  <TableRow key={item.id}>
+                    {(columnKey) => (
+                      <TableCell>{renderCell(item, columnKey)}</TableCell>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            <Dialog
+              open={deleteConfirmationOpen}
+              onClose={cancelDelete}
+              fullWidth
+            >
+              <DialogTitle>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    paddingBottom: "15px",
+                  }}
+                >
+                  <TbInfoTriangle
+                    className="mr-2"
+                    style={{
+                      color: "red",
+                      fontSize: "25px",
+                    }}
+                  />
+                  <span>Xác nhận xóa</span>
+                </div>
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Bạn có chắc muốn xóa kích cỡ này?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={cancelDelete} color="warning">
+                  Hủy
+                </Button>
+                <Button color="primary" onClick={confirmDelete}>
+                  Vẫn xóa
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

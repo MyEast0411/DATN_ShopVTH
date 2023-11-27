@@ -29,7 +29,7 @@ public class KhachHangController {
 
     @GetMapping("/khach-hang/getAll")
     List<KhachHang> getAll(){
-        return khachHangRepository.findAll();
+        return khachHangRepository.getAllKh();
     }
 
     @GetMapping("/khach-hang/detail/{id}")

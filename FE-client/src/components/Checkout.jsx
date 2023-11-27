@@ -329,7 +329,8 @@ export default function Checkout() {
             tongTien: tongTien,
             email : email,
             thoiGianNhanHang : deliveryTime+"",
-            phiShip : Intl.NumberFormat().format(phiVanChuyen)+""
+            phiShip : Intl.NumberFormat().format(phiVanChuyen)+"",
+            total : Intl.NumberFormat().format(tongTien)+""
           }
         )
         .then((response) => {
