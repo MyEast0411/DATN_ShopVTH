@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Logo from "../assets/logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useHistory } from "react-router-dom";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../api/Location";
-import { Radio, Space, Input } from "antd";
+import { Radio, Space, Spin } from "antd";
 import { IoIosArrowBack } from "react-icons/io";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
@@ -29,87 +29,109 @@ export default function Checkout() {
   const [idHuyen, setIdHuyen] = useState("");
   const [idXa, setIdXa] = useState("");
   const [diaChi, setDiaChi] = useState({
-    thanhPho : "",
-    huyen : "",
-    xa : ""
+    thanhPho: "",
+    huyen: "",
+    xa: "",
   });
+
+  const [spinning, setSpinning] = React.useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const history = useHistory();
+
+  const showLoader = (callback) => {
+    setSpinning(true);
+    callback(); // call the callback to indicate loading has started
+  };
 
   // lay id tp
   useEffect(() => {
-    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48"; // Thay YOUR_TOKEN bằng token của bạn
 
-    axios.get(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Token': token,
-      }
-    })
-      .then(response => {
-        const id_tp = response.data.data.find(item => diaChi.thanhPho.includes(item.ProvinceName))?.ProvinceID;
+    axios
+      .get(apiUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          Token: token,
+        },
+      })
+      .then((response) => {
+        const id_tp = response.data.data.find((item) =>
+          diaChi.thanhPho.includes(item.ProvinceName)
+        )?.ProvinceID;
         console.log(id_tp);
         setIdTP(id_tp);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   }, [diaChi]);
 
   // lay id huyen theo api theo id tp
   useEffect(() => {
-    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48"; // Thay YOUR_TOKEN bằng token của bạn
 
     const requestData = {
-      province_id : idTP
+      province_id: idTP,
     };
 
-    axios.get(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        // 'ShopId': shopId,
-        'Token': token,
-      },
-      params: requestData,
-    })
-      .then(response => {
-        const id_huyen = response.data.data.find(item => item.DistrictName === diaChi.huyen)?.DistrictID;
+    axios
+      .get(apiUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          // 'ShopId': shopId,
+          Token: token,
+        },
+        params: requestData,
+      })
+      .then((response) => {
+        const id_huyen = response.data.data.find(
+          (item) => item.DistrictName === diaChi.huyen
+        )?.DistrictID;
         setIdHuyen(id_huyen);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   }, [diaChi]);
 
   // lay id xa theo api theo id huyen
   useEffect(() => {
-    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48"; // Thay YOUR_TOKEN bằng token của bạn
 
     const requestData = {
-      district_id : idHuyen
+      district_id: idHuyen,
     };
 
-    axios.post(apiUrl, requestData, {
-      headers: {
-        'Content-Type': 'application/json',
-        // 'ShopId': shopId,
-        'Token': token,
-      },
-    })
-      .then(response => {
-        const id_xa = response.data.data.find(item => item.WardName === diaChi.xa)?.WardCode;
+    axios
+      .post(apiUrl, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          // 'ShopId': shopId,
+          Token: token,
+        },
+      })
+      .then((response) => {
+        const id_xa = response.data.data.find(
+          (item) => item.WardName === diaChi.xa
+        )?.WardCode;
         setIdXa(id_xa);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
-  }, [diaChi,idHuyen]);
+  }, [diaChi, idHuyen]);
   // Tính thời gian dự kiến
   useEffect(() => {
-    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
-    const shopId = '190374 - 0964457125'; // Thay YOUR_SHOP_ID bằng ID cửa hàng của bạn
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48"; // Thay YOUR_TOKEN bằng token của bạn
+    const shopId = "190374 - 0964457125"; // Thay YOUR_SHOP_ID bằng ID cửa hàng của bạn
     const requestData = {
       from_district_id: 1804,
       from_ward_code: "1B2211",
@@ -118,14 +140,15 @@ export default function Checkout() {
       service_id: 53320,
     };
 
-    axios.post(apiUrl, requestData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'ShopId': shopId,
-        'Token': token,
-      },
-    })
-      .then(response => {
+    axios
+      .post(apiUrl, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          ShopId: shopId,
+          Token: token,
+        },
+      })
+      .then((response) => {
         console.log(response.data.data.leadtime);
         const leadtimeTimestamp = response.data.data.leadtime;
         const leadtimeDate = new Date(leadtimeTimestamp * 1000);
@@ -139,15 +162,16 @@ export default function Checkout() {
         console.log(formattedLeadtime);
         setDeliveryTime(formattedLeadtime);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
-  }, [idTP,idHuyen,idXa]);
+  }, [idTP, idHuyen, idXa]);
   // Tính phí vận chuyển
   useEffect(() => {
-    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48';
-    const shopId = '190374 - 0964457125';
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+    const shopId = "190374 - 0964457125";
 
     const requestData = {
       service_type_id: 2,
@@ -194,6 +218,7 @@ export default function Checkout() {
         />
       ),
     });
+    setShowNotification(true);
   };
 
   const fetchAllHinhAnh = async () => {
@@ -293,71 +318,74 @@ export default function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(deliveryTime);
-    // ...
-    const email = e.target.elements.email.value;
-    const hoTen = e.target.elements.hoTen.value;
-    const soDienThoai = e.target.elements.soDienThoai.value;
-    const diaChi = e.target.elements.diaChi.value;
-    const thanhPho =
-      e.target.elements.city.options[e.target.elements.city.selectedIndex].text;
-    const quanHuyen =
-      e.target.elements.District.options[
-        e.target.elements.District.selectedIndex
-      ].text;
-    const xaPhuong =
-      e.target.elements.wards.options[e.target.elements.wards.selectedIndex]
-        .text;
+    showLoader(() => {
+      // ...
+      const email = e.target.elements.email.value;
+      const hoTen = e.target.elements.hoTen.value;
+      const soDienThoai = e.target.elements.soDienThoai.value;
+      const diaChi = e.target.elements.diaChi.value;
+      const thanhPho =
+        e.target.elements.city.options[e.target.elements.city.selectedIndex]
+          .text;
+      const quanHuyen =
+        e.target.elements.District.options[
+          e.target.elements.District.selectedIndex
+        ].text;
+      const xaPhuong =
+        e.target.elements.wards.options[e.target.elements.wards.selectedIndex]
+          .text;
 
-    const phuongThucThanhToan =
-      shippingCost === "Miễn phí"
-        ? "Chuyển khoản qua ngân hàng"
-        : "Thanh toán khi nhận hàng";
+      const phuongThucThanhToan =
+        shippingCost === "Miễn phí"
+          ? "Chuyển khoản qua ngân hàng"
+          : "Thanh toán khi nhận hàng";
 
-    const confirmSubmission = () => {
-      axios
-        .post(
-          "http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon",
-          {
-            hoTen: hoTen,
-            sdt: soDienThoai,
-            diaChi: diaChi,
-            thanhPho: thanhPho,
-            huyen: quanHuyen,
-            xa: xaPhuong,
-            hinhThucThanhToan: phuongThucThanhToan,
-            gioHang: cartItems,
-            tongTien: tongTien,
-            email : email,
-            thoiGianNhanHang : deliveryTime+"",
-            phiShip : Intl.NumberFormat().format(phiVanChuyen)+"",
-            total : Intl.NumberFormat().format(tongTien)+""
-          }
-        )
-        .then((response) => {
-          console.log(response.data);
-          localStorage.clear();
-          openNotificationWithIcon("success", "Cảm ơn bạn đã mua hàng!");
-          setTimeout(() => {
-            navigate("/");
-          }, 2000);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    };
+      const confirmSubmission = () => {
+        axios
+          .post(
+            "http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon",
+            {
+              hoTen: hoTen,
+              sdt: soDienThoai,
+              diaChi: diaChi,
+              thanhPho: thanhPho,
+              huyen: quanHuyen,
+              xa: xaPhuong,
+              hinhThucThanhToan: phuongThucThanhToan,
+              gioHang: cartItems,
+              tongTien: tongTien,
+              email: email,
+              thoiGianNhanHang: deliveryTime + "",
+              phiShip: Intl.NumberFormat().format(phiVanChuyen) + "",
+              total: Intl.NumberFormat().format(tongTien) + "",
+            }
+          )
+          .then((response) => {
+            console.log(response.data);
+            localStorage.clear();
+            openNotificationWithIcon("success", "Cảm ơn bạn đã mua hàng!");
+          })
+          .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => {
+            setSpinning(false);
+          });
+      };
 
-    confirmDialog({
-      message: "Bạn có chắc muốn hoàn tất đơn hàng?",
-      header: "Xác nhận đơn hàng",
-      icon: "pi pi-info-circle",
-      acceptClassName: "p-button-success",
-      accept: confirmSubmission,
+      confirmDialog({
+        message: "Bạn có chắc muốn hoàn tất đơn hàng?",
+        header: "Xác nhận đơn hàng",
+        icon: "pi pi-info-circle",
+        acceptClassName: "p-button-success",
+        accept: confirmSubmission,
+      });
     });
   };
 
   return (
     <>
+      <Spin spinning={spinning} fullscreen />
       {contextHolder}
       <ConfirmDialog />
       <div className="main-checkout w-[80%] mx-auto">

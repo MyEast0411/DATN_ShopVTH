@@ -55,10 +55,10 @@
   position: absolute;
   right: -1px;
   color: #fff;
-  border-radius: 50%;
+  border-radius: 50% !important;
   width: 20px;
-  font-size: 13px;
   height: 20px;
+  font-size: 13px;
   display: flex;
   justify-content: center;
   align-items: center;

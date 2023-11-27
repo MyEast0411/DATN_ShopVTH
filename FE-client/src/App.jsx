@@ -12,6 +12,7 @@ import BackToTopButton from "./other/BackToTopButton";
 import "primeicons/primeicons.css";
 import "primereact/resources/primereact.css";
 import "primereact/resources/themes/saga-blue/theme.css";
+import '@coreui/coreui/dist/css/coreui.min.css'
 
 function App() {
   return (
