@@ -279,9 +279,10 @@ export default function DetailProduct() {
             <div className="interested flex justify-center text-center mt-10">
               <div>
                 Đăng nhập để nhận nhiều ưu đãi {""}
-                <a href="/sign-in" className="underline link-underline">
+                <Link to="/sign-in" className="size-guide underline">
+                  {" "}
                   Đăng nhập
-                </a>
+                </Link>
               </div>
             </div>
             <div

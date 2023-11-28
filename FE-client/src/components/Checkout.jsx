@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Logo from "../assets/logo.png";
-import { Link, useNavigate, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../api/Location";
 import { Radio, Space, Spin } from "antd";
@@ -36,7 +36,6 @@ export default function Checkout() {
 
   const [spinning, setSpinning] = React.useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const history = useHistory();
 
   const showLoader = (callback) => {
     setSpinning(true);
@@ -364,6 +363,9 @@ export default function Checkout() {
             console.log(response.data);
             localStorage.clear();
             openNotificationWithIcon("success", "Cảm ơn bạn đã mua hàng!");
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
           })
           .catch((error) => {
             console.error(error);
