@@ -12,4 +12,5 @@ public interface HoaDonChiTietService {
     void deleteHDCT(String idHD , String idSPCT) ;
     List<SanPhamChiTietDTO> getTop3();
      Integer totalSPSaled();
+    List<SanPhamChiTietDTO> getTop5Year();
 }

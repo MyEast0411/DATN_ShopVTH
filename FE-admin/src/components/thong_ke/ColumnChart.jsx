@@ -12,9 +12,11 @@ import {
   Tooltip,
   Image,
   getKeyValue,
+  Spinner,
 } from "@nextui-org/react";
 
 import { Chart as ChartJS } from "chart.js/auto";
+import axios from "axios";
 // export
 const UserDataWeek = [
   {
@@ -176,81 +178,77 @@ const colors = [
   "#8959A3",
 ];
 export function ColumnChart({ value }) {
-  const [userData, setUserData] = useState({
-    labels: UserDataWeek.map((data) => data.year),
-    datasets: [
-      {
-        label: ` Đơn vị  tính (1.000 ₫) : `,
-        data: UserDataWeek.map((data) => data.userGain),
-        backgroundColor: colors,
-        borderColor: "black",
-        borderWidth: 2,
-        borderRadius: 5,
-      },
-    ],
-  });
+  const [userData, setUserData] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [data, setData] = useState({});
-
+  const getData = async () => {
+    await axios
+      .get(`http://localhost:8080/thong-ke/column/${value}`)
+      .then((response) => {
+        setIsLoading(false);
+        setUserData({
+          labels: response.data.map((data) => data.name),
+          datasets: [
+            {
+              label: ` Đơn vị  tính (1.000₫) : `,
+              data: response.data.map((data) => data.soTien),
+              backgroundColor: colors,
+              borderColor: "black",
+              borderWidth: 2,
+              borderRadius: 5,
+            },
+          ],
+        });
+      });
+  };
   useEffect(() => {
-    if (value == "week") {
-      setUserData({
-        labels: UserDataWeek.map((data) => data.year),
-        datasets: [
-          {
-            label: ` Đơn vị  tính (1.000₫) : `,
-            data: UserDataWeek.map((data) => data.userGain),
-            backgroundColor: colors,
-            borderColor: "black",
-            borderWidth: 2,
-            borderRadius: 5,
-          },
-        ],
-      });
-    }
-
-    if (value == "month") {
-      setUserData({
-        labels: UserDataMonth.map((data) => data.year),
-        datasets: [
-          {
-            label: ` Đơn vị  tính (1.000 ₫) : `,
-            data: UserDataMonth.map((data) => data.userGain),
-            backgroundColor: colors,
-            borderColor: "black",
-            borderWidth: 2,
-            borderRadius: 5,
-          },
-        ],
-      });
-    }
-
-    if (value == "year") {
-      setUserData({
-        labels: UserDataYear.map((data) => data.year),
-        datasets: [
-          {
-            label: ` Đơn vị  tính (1.000₫) : `,
-            data: UserDataYear.map((data) => data.userGain),
-            backgroundColor: colors,
-            borderColor: "black",
-            borderWidth: 2,
-            borderRadius: 5,
-          },
-        ],
-      });
-    }
+    getData();
   }, [value]);
 
   return (
     <div style={{ width: 600, height: 271, marginLeft: 60 }}>
-      <Bar data={userData} />
+      {isLoading ? (
+        <div style={{ marginLeft: "25%", marginTop: "25%" }}>
+          <Spinner
+            size="sm"
+            label="Đang tải dữ liệu chờ tý 👌👌👌"
+            color="warning"
+          />
+        </div>
+      ) : (
+        <Bar data={userData} />
+      )}
     </div>
   );
 }
 
 export function TableTheoOption({ value }) {
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getTop5SP = async () => {
+    await axios
+      .get(`http://localhost:8080/thong-ke/table/${value}`)
+      .then((res) => {
+        console.log(res.data);
+        setIsLoading(false);
+        setData(
+          res.data.map((item, i) => {
+            return {
+              id: item.id + 1,
+              name: item.sanPhamChiTiet.ten,
+              price: item.sanPhamChiTiet.giaBan,
+              avatar: item.sanPhamChiTiet.defaultImg,
+              quantitySaled: item.soLuong,
+            };
+          })
+        );
+      });
+  };
+
+  useEffect(() => {
+    getTop5SP();
+  }, [value]);
 
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
@@ -277,40 +275,40 @@ export function TableTheoOption({ value }) {
     }
   }, []);
 
-  useEffect(() => {
-    // setData(usersWeek);
-
-    if (value == "week") {
-      setData(usersWeek);
-    }
-
-    if (value == "month") {
-      setData(usersMonth);
-    }
-
-    if (value == "year") {
-      setData(usersYear);
-    }
-  }, [value]);
-
   return (
     <div className="content flex items-center">
-      <Table aria-label="Example table with client side pagination">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.uid}>{column.name}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={data}>
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      {isLoading ? (
+        <div style={{ marginLeft: "25%", marginTop: "25%" }}>
+          <Spinner
+            size="sm"
+            label="Đang tải dữ liệu chờ tý 👌👌👌"
+            color="warning"
+          />
+        </div>
+      ) : (
+        <Table
+          aria-label="Example table with client side pagination"
+          style={{ height: "100%" }}
+          classNames={{
+            wrapper: "max-h-[100%] p-0",
+          }}
+        >
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn key={column.uid}>{column.name}</TableColumn>
+            )}
+          </TableHeader>
+          <TableBody items={data}>
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => (
+                  <TableCell>{renderCell(item, columnKey)}</TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }

@@ -90,4 +90,55 @@ public class SendMail {
             throw new RuntimeException(e);
         }
     }
+
+    public static void SendMailOptions(String toMail,String contentBody) {
+        final String username = "uandcshop111@gmail.com";
+        final String password = "hdbepdrofxwmxyyg";
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(prop,
+                new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("uandcshop111@gmail.com"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toMail));
+            message.setSubject("Cảm ơn bạn đã mua hàng ủng hộ chúng tôi !!!");
+
+            String htmlBody = contentBody;
+            MimeBodyPart htmlBodyPart = new MimeBodyPart();
+            htmlBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
+
+            MimeBodyPart imageBodyPart = new MimeBodyPart();
+//            DataSource source = new FileDataSource("C:\\Users\\Admin\\Pictures\\Saved Pictures\\logo.png");
+            //Hoi
+            //DataSource source = new FileDataSource("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\logo.png");
+            DataSource source = new FileDataSource("C:\\Users\\Admin\\Desktop\\chup-anh-dep-bang-dien-thoai-25.jpg");
+
+            imageBodyPart.setDataHandler(new DataHandler(source));
+            imageBodyPart.setFileName("Hóa đơn của bạn");
+            imageBodyPart.setHeader("Content-ID", "<image_cid>");
+
+
+            MimeMultipart multipart = new MimeMultipart();
+            multipart.addBodyPart(htmlBodyPart);
+            multipart.addBodyPart(imageBodyPart);
+
+            message.setContent(multipart);
+            Transport.send(message);
+            System.out.println("Thành công !");
+        } catch (AddressException e) {
+            throw new RuntimeException(e);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

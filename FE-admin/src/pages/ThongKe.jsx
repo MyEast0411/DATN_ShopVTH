@@ -197,7 +197,6 @@ const ThongKe = () => {
 
   const getTop3SP = async () => {
     await axios.get(url + "top3SP").then((res) => {
-      console.log(res.data);
       setTop3SP(res.data);
     });
   };
@@ -218,7 +217,6 @@ const ThongKe = () => {
 
   const getSPCTMin = async () => {
     await axios.get(url + "SPCTMin").then((res) => {
-      console.log(res.data);
       setSPCTMin(
         res.data.map((item, i) => {
           return {
@@ -606,7 +604,7 @@ const ThongKe = () => {
             >
               <Table
                 aria-label="Example table with client side pagination"
-                style={{ height: "382px" }}
+                style={{ height: "100%" }}
                 bottomContent={
                   <div className="flex w-full justify-center">
                     <Pagination
@@ -621,7 +619,7 @@ const ThongKe = () => {
                   </div>
                 }
                 classNames={{
-                  wrapper: "min-h-[385px] p-0",
+                  wrapper: "min-h-[100%] p-0",
                 }}
               >
                 <TableHeader columns={columns1}>
