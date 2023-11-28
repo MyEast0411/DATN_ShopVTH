@@ -52,6 +52,22 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     }
 
     @Override
+    public  List<SanPhamChiTietDTO> getTop5Year() {
+        List<SanPhamChiTietDTO> list = new ArrayList<>();
+        int i = 0;
+        for (Object[] o: repository.top5SPYear()
+        ) {
+            SanPhamChiTietDTO sanPhamChiTietDTO = new SanPhamChiTietDTO();
+            sanPhamChiTietDTO.setSoLuong(Integer.parseInt(o[1].toString()));
+            sanPhamChiTietDTO.setSanPhamChiTiet(chiTietSanPhamRepository.findById(o[0].toString()).get());
+            sanPhamChiTietDTO.setId(i++);
+            list.add(sanPhamChiTietDTO);
+        }
+        return list;
+    }
+
+
+    @Override
     public Integer totalSPSaled() {
         return repository.totalSPSaled();
     }

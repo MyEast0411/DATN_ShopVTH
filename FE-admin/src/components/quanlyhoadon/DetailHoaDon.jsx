@@ -19,8 +19,10 @@ import { toast } from "react-toastify";
 import { FiLoader } from "react-icons/fi";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { MdCancel } from "react-icons/md";
+import { Spinner, Skeleton } from "@nextui-org/react";
 
 export default function DetailHoaDon() {
+  const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
   const [info, setInfo] = useState({});
   const [note, setNote] = useState("");
@@ -94,7 +96,7 @@ export default function DetailHoaDon() {
         await axios
           .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
             moTaHoaDon: "Hủy Hóa Đơn",
-            deleted: 0,
+            deleted: 1,
             nguoiTao: "Cam",
             ghiChu: note,
           })
@@ -110,18 +112,20 @@ export default function DetailHoaDon() {
   };
 
   const addLichSuHoaDon = async () => {
+    setIsLoading(true);
+    hideModal();
     await axios
       .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
         moTaHoaDon: listTitleTimline[currentTimeLine].title,
-        deleted: 0,
+        deleted: 1,
         nguoiTao: "Cam",
         ghiChu: note,
       })
       .then((response) => {
+        setIsLoading(false);
         setCurrentTimeLine(currentTimeLine + 1);
         toast.success(`${listTitleTimline[currentTimeLine].title} thành công`);
         // success(`${listTitleTimline[currentTimeLine].title} thành công`);
-        hideModal();
         getDataLichSu();
       });
   };
@@ -229,6 +233,7 @@ export default function DetailHoaDon() {
       .get(`http://localhost:8080/lich_su_hoa_don/getLichSuHoaDons/${id}`)
       .then((res) => {
         const data = res.data;
+        setIsLoading(true);
         setRowsLichSu(
           data.map((item, index) => {
             return {
@@ -287,17 +292,19 @@ export default function DetailHoaDon() {
         <div className="row timeline bg-white">
           <div className="row timeline justify-center" style={{ height: 300 }}>
             {info.loaiHd === 0 ? (
-              <Timeline minEvents={5} placeholder>
-                {listTimeLineOnline.map((item, i) => (
-                  <TimelineEvent
-                    color="#9c2919"
-                    // icon={<TbPackages />}
-                    icon={item.icon}
-                    title={item.description}
-                    subtitle={item.subtitle}
-                  />
-                ))}
-              </Timeline>
+              <Skeleton isLoaded={isLoading} className="rounded-lg">
+                <Timeline minEvents={5} placeholder>
+                  {listTimeLineOnline.map((item, i) => (
+                    <TimelineEvent
+                      color="#9c2919"
+                      // icon={<TbPackages />}
+                      icon={item.icon}
+                      title={item.description}
+                      subtitle={item.subtitle}
+                    />
+                  ))}
+                </Timeline>
+              </Skeleton>
             ) : (
               <Timeline minEvents={1} placeholder>
                 {listTimeLineOnline.map((item, i) => (
@@ -311,6 +318,7 @@ export default function DetailHoaDon() {
               </Timeline>
             )}
           </div>
+
           <div className="row button-contact p-4 grid grid-cols-2">
             <div className="row ">
               {currentTimeLine < 5 &&

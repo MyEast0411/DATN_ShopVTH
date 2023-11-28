@@ -1,14 +1,11 @@
 package com.example.shop.repositories;
 
 import com.example.shop.entity.HoaDon;
-import org.hibernate.Session;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +30,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             "FROM hoa_don",nativeQuery = true)
     String getMaxMa();
 
-    @Query(value = "select sum(hd.tong_tien) from hoa_don hd where month(hd.ngay_nhan) = ?1  and hd.deleted = 1",nativeQuery = true)
+    @Query(value = "select sum(hd.tong_tien) from hoa_don hd where month(hd.ngay_tao) = ?1  and hd.deleted = 1",nativeQuery = true)
     Double  getTotalByThang(int thang);
     @Query(value = "select sum(hd.tong_tien) from hoa_don hd ",nativeQuery = true)
     Double  getTotalAll();
@@ -44,11 +41,16 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
     List<HoaDon>  top5HDMoi();
 
     @Query(value = "SELECT SUM(tong_tien) FROM hoa_don\n" +
-            "WHERE ngay_tao >= ?1 AND ngay_tao <= ?2;",nativeQuery = true)
-    Double  getTotalTuanTheoThang(Date ngayBD , Date ngayKT);
+            "WHERE ngay_tao >= :ngayBD AND ngay_tao <= :ngayKT",nativeQuery = true)
+    Double  getTotalTuanTheoThang(@Param("ngayBD")String ngayBD , @Param("ngayKT")String ngayKT);
 
     @Query(value = "select count(*)  from hoa_don  where trang_thai != 6;",nativeQuery = true)
     Integer  countHD();
+
+    @Query(value = "SELECT SUM(tong_tien) FROM hoa_don\n" +
+            "WHERE ngay_tao  like :ngayTao",nativeQuery = true)
+    Double  getDayInWeek(@Param("ngayTao")String ngayTao );
+
 
 
 }

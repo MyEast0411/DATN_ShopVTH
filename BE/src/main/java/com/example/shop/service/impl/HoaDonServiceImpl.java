@@ -10,13 +10,19 @@ import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.HoaDonChiTietRepository;
 import com.example.shop.repositories.HoaDonRepository;
 import com.example.shop.service.HoaDonService;
+import com.example.shop.util.GetDateTiemThongKe;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -75,7 +81,7 @@ public class HoaDonServiceImpl implements HoaDonService {
 
             for (int i = 0; i < 12; i++) {
                 BieuDoThongKe  bieuDoThongKe = new BieuDoThongKe();
-                bieuDoThongKe.setName(i+"");
+                bieuDoThongKe.setName((i+1)+"");
                 bieuDoThongKe.setId(i);
                 if (hoaDonRepository.getTotalByThang(i+1) == null){
                     bieuDoThongKe.setSoTien(0.0);
@@ -112,12 +118,62 @@ public class HoaDonServiceImpl implements HoaDonService {
 
 
     @Override
-    public List<Double> getTotalTuanTheoThang() {
-       List<Double> list = new ArrayList<>();
-       double a = 0;
+    public List<BieuDoThongKe> getWeekInMonth() {
+        List<LocalDate> list = GetDateTiemThongKe.getWeekInMonth();
+        List<BieuDoThongKe> tongGia = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        int nam = Calendar.getInstance().get(Calendar.YEAR); // Năm muốn kiểm tra
+        int thang = Calendar.getInstance().get(Calendar.MONTH)+1; // Tháng muốn kiểm tra
+        YearMonth yearMonth = YearMonth.of(nam, thang);
+        LocalDate lastDayOfSpecificMonth = yearMonth.atEndOfMonth();
+        Date ngayKT =  new Date();
+        for (int i = 0; i < list.size(); i++) {
+          Date ngayBD =  Date.from(list.get(i).atStartOfDay(ZoneId.systemDefault()).toInstant());
+            if (list.get(i).plusDays(6).getMonthValue() == thang){
+                ngayKT = Date.from(list.get(i).plusDays(6).atStartOfDay(ZoneId.systemDefault()).toInstant());
+            }else {
+                ngayKT = Date.from(lastDayOfSpecificMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            }
 
-        return list;
 
+           Double tong  =  hoaDonRepository.getTotalTuanTheoThang(format.format(ngayBD),format.format(ngayKT));
+           tong = tong == null ? 0 : tong;
+
+           BieuDoThongKe bieuDoThongKe = new BieuDoThongKe();
+           bieuDoThongKe.setId(i);
+           bieuDoThongKe.setSoTien(tong);
+           bieuDoThongKe.setName("Tuần "+(i+1));
+           tongGia.add(bieuDoThongKe);
+        }
+
+     return tongGia;
+    }
+
+    @Override
+    public List<BieuDoThongKe> getDayInWeek() {
+        List<LocalDate> list = GetDateTiemThongKe.getDayInWeek();
+        List<BieuDoThongKe> tongGia = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (int i = 0; i < list.size(); i++) {
+            Date ngayTao =  Date.from(list.get(i).atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            Double tong  =  hoaDonRepository.getDayInWeek(format.format(ngayTao)+"%");
+            tong = tong == null ? 0 : tong;
+
+            BieuDoThongKe bieuDoThongKe = new BieuDoThongKe();
+            bieuDoThongKe.setId(i);
+            bieuDoThongKe.setSoTien(tong);
+            if (i==6){
+                bieuDoThongKe.setName("Chủ Nhật ");
+            }else{
+                bieuDoThongKe.setName("Thứ "+(i+2));
+            }
+
+            tongGia.add(bieuDoThongKe);
+        }
+
+        return tongGia;
     }
 
     @Override

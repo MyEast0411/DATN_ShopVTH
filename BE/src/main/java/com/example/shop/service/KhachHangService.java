@@ -12,6 +12,6 @@ public interface KhachHangService {
     KhachHang getKhachHang(String id);
     KhachHang addKhachHang(KhachHang khachHang);
     KhachHang updateKhachHang(KhachHang khachHang);
-
     Boolean deleteKhachHang(KhachHang khachHang);
+
 }
