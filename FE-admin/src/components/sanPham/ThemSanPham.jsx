@@ -14,9 +14,10 @@ import {
   DialogTitle,
 } from "@mui/material";
 //icon
+const { Option } = Select;
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdDeleteOutline } from "react-icons/md";
-import { Button, Modal, Table, Tooltip } from "antd";
+import { Button, Modal, Table, Tooltip, Select } from "antd";
 import { Table as TableImg } from "antd";
 import Badge from "@mui/material/Badge";
 import { PlusIcon } from "../../common/otherComponents/PlusIcon";
@@ -55,6 +56,7 @@ export default function ThemSanPham() {
     moTa: "",
     giaNhap: "",
     giaBan: "",
+    id_san_pham: "",
     id_mau_sac: "",
     id_kich_co: "",
     id_chat_lieu: "",
@@ -71,6 +73,12 @@ export default function ThemSanPham() {
     tenKichCo: "",
   });
 
+  const [sanPhamModal, setSanPhamModal] = useState({
+    tenSanPham: "",
+  });
+  const { tenSanPham } = sanPhamModal;
+
+
   const [hinhAnhModal, setHinhAnhModal] = useState({
     imgUrl: "",
     mauSac: "",
@@ -86,6 +94,7 @@ export default function ThemSanPham() {
     moTa,
     giaBan,
     giaNhap,
+    id_san_pham,
     id_thuong_hieu,
     id_chat_lieu,
     id_de_giay,
@@ -269,7 +278,7 @@ export default function ThemSanPham() {
                   await axios
                     .get(`http://localhost:8080/getHinhAnhByMau/${tenSP}`)
                     .then((response) => {
-                      setLoading(false);
+                      console.log(tenSP);
                       setImg(response.data);
                     });
                   showModalHA();
@@ -471,7 +480,57 @@ export default function ThemSanPham() {
       removeImageByColor(selectMau, imageUrl);
     }
   };
+  // modal san pham
+  const [listSanPham, setListSanPham] = useState([]);
 
+  const getAllSP = async () => {
+    await axios
+      .get("http://localhost:8080/getAllSP")
+      .then((response) => {
+        setListSanPham(response.data);
+      });
+  };
+
+  useEffect(() => {
+    getAllSP();
+  }, []);
+
+  const options = listSanPham.map(item => (
+    <Option key={item.id} value={item.id}>
+      {item.ten}
+    </Option>
+  ));
+
+  const [isModalOpenSP, setIsModalOpenSP] = useState(false);
+
+  const showModalSP = () => {
+    setIsModalOpenSP(true);
+  };
+  const handleOkSP = async () => {
+    await axios
+      .post("http://localhost:8080/addSanPham", kichCoModal)
+      .then((response) => {
+        toast.success(`Thêm thành công`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+        getAllSP();
+      })
+      .catch((error) => {
+        toast.error(error.response.data, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      });
+    setIsModalOpenSP(false);
+  };
+  const handleCancelSP = () => {
+    setIsModalOpenSP(false);
+  };
+  const onChangeSP = (e) => {
+    console.log(e.target.value);
+    setSanPhamModal({ [e.target.name]: e.target.value });
+  };
   // ------------------------modal mau sac-------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -692,7 +751,7 @@ export default function ThemSanPham() {
     e.preventDefault();
     const data = tableData.map((sp) => [
       sp.id,
-      sp.ten,
+      sp.id_san_pham,
       sp.tenSanPham,
       sp.soLuongTon,
       sp.khoiLuong,
@@ -708,23 +767,23 @@ export default function ThemSanPham() {
       tableImg,
     ]);
     console.log(data);
-    if (isConfirmed) {
-      await axios
-        .post("http://localhost:8080/san-pham/add", data)
-        .then((response) => {
-          toast.success(`Thêm thành công`, {
-            position: "top-right",
-            autoClose: 2000,
-          });
-          navigate("/quan-ly-san-pham/san-pham");
-        })
-        .catch((error) => {
-          toast.error(`Thêm thất bại`, {
-            position: "top-right",
-            autoClose: 2000,
-          });
-        });
-    }
+    // if (isConfirmed) {
+    //   await axios
+    //     .post("http://localhost:8080/san-pham/add", data)
+    //     .then((response) => {
+    //       toast.success(`Thêm thành công`, {
+    //         position: "top-right",
+    //         autoClose: 2000,
+    //       });
+    //       navigate("/quan-ly-san-pham/san-pham");
+    //     })
+    //     .catch((error) => {
+    //       toast.error(`Thêm thất bại`, {
+    //         position: "top-right",
+    //         autoClose: 2000,
+    //       });
+    //     });
+    // }
   };
 
   const handleRemoveColor = (maMau) => {
@@ -775,14 +834,53 @@ export default function ThemSanPham() {
 
                     <div className="mt-2 flex">
                       <div className="rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset sm:max-w-md">
-                        <input
+                        {/* <input
                           type="text"
                           name="ten"
                           value={ten}
                           className="block p-2 flex-1 border-0 w-96 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                           placeholder="Nhập tên sản phẩm"
                           onChange={(e) => onChange(e)}
-                        />
+                        /> */}
+                        <Select
+                          placeholder="Sản phẩm"
+                          value={id_san_pham}
+                          name="id_san_pham"
+                          onChange={(e) => {
+                            console.log(e);
+                            setSanPham({ ...sanPham, "id_san_pham": e});
+                          }}
+                          style={{width : "400px"}}
+                          >
+                            {options}
+                        </Select>
+                        <Modal
+                          title="Thêm sản phẩm"
+                          open={isModalOpenSP}
+                          onOk={handleOkSP}
+                          onCancel={handleCancelSP}
+                          cancelText="Hủy"
+                          okText="Thêm"
+                          style={{ position: "relative" }}
+                        >
+                          <div>
+                            <label
+                              htmlFor="country"
+                              className="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Tên sản phẩm
+                            </label>
+                            <input
+                              type="text"
+                              name="tenSanPham"
+                              value={tenSanPham}
+                              className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                              placeholder="Nhập tên sản phẩm"
+                              onChange={(e) => onChangeSP(e)}
+                              style={{ borderRadius: "5px" }}
+                            />
+                          </div>
+                        </Modal>
                       </div>
                       <div
                           className="p-2"
@@ -793,8 +891,9 @@ export default function ThemSanPham() {
                             cursor: "pointer",
                             marginLeft: "10px",
                           }}
+                          onClick={showModalSP}
                         >
-                          <AiOutlinePlus />
+                          <AiOutlinePlus/>
                         </div>
                     </div>
                   </div>

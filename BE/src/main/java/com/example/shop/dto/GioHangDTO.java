@@ -22,4 +22,5 @@ public class GioHangDTO {
     private String email;
     private String thoiGianNhanHang;
     private String phiShip;
+    private String total;
 }

@@ -43,6 +43,9 @@ export default function Header() {
             <li>
               <a href="#">Trẻ em</a>
             </li>
+            <li>
+              <a href="#">Tra cứu hóa đơn</a>
+            </li>
           </ul>
         </div>
 
@@ -72,7 +75,9 @@ export default function Header() {
           <div className="icon-container">
             <Link to="/cart" className="relative">
               <BsBagDash className="bag" />
-              <div className="badge">{badge}</div>
+              <div className="badge flex items-center justify-center">
+                {badge}
+              </div>
             </Link>
           </div>
         </div>

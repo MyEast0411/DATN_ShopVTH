@@ -77,7 +77,7 @@ export default function NhanVien() {
             <HiOutlineClipboardList />
             <p className="ml-2 mt-1"> Danh sách nhân viên</p>
           </div>
-          <Link to={"/them-nhan-vien"}>
+          <Link to={"/quan-ly-tai-khoan/nhan-vien/them-nhan-vien"}>
             <Button
               type="primary"
               style={{

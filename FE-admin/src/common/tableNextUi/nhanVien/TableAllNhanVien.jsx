@@ -94,7 +94,7 @@ export default function App() {
   const confirmDelete = async () => {
     if (idToDelete) {
       await axios
-        .delete(`http://localhost:8080/khach-hang/delete/${idToDelete}`)
+        .put(`http://localhost:8080/nhan_vien/deleteSoft/${idToDelete}`)
         .then((response) => {
           toast("🎉 Xóa thành công");
           cancelDelete();
@@ -126,7 +126,6 @@ export default function App() {
         const response = await axios.get(
           "http://localhost:8080/nhan_vien/getAll"
         );
-        console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,

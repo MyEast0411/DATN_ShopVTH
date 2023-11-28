@@ -233,9 +233,9 @@ export default function App({ gioHang }) {
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
-          hinhAnh:
-            hinhAnh.find((x) => x.id_san_pham_chi_tiet.id == item.id)?.ten ||
-            "",
+          hinhAnh: item.defaultImg,
+            // hinhAnh.find((x) => x.id_san_pham_chi_tiet.id == item.id)?.ten ||
+            // "",
           mauSac: item.id_mau_sac.maMau,
           kichThuoc: item.id_kich_co.ten,
           soLuongTon: item.soLuongTon,
@@ -252,7 +252,7 @@ export default function App({ gioHang }) {
       }
     }
     fetchChiTietSanPham();
-  }, []);
+  }, [sanPhams]);
 
   const hasSearchFilter = Boolean(filterValue);
 
