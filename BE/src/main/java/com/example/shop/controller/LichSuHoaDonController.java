@@ -1,6 +1,7 @@
 package com.example.shop.controller;
 
 import com.example.shop.entity.HoaDon;
+import com.example.shop.entity.KhachHang;
 import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
@@ -99,8 +100,11 @@ public class LichSuHoaDonController {
                 +list.get(hoaDon.getTrangThai()) +" vào lúc " +format.format(lichSuHoaDon.getNgayTao())+"</p>"+
                  "</body>" +
                 "</html>" ;
-//        String emailKH = hoaDon.getId_khach_hang().getEmail();
-       SendMail.SenMailOptions("camhoang1811@gmail.com" , contentBody);
+        KhachHang khachHang = hoaDon.getId_khach_hang();
+        if (khachHang == null)
+       SendMail.SendMailOptions("camhoang1811@gmail.com" , contentBody);
+        else
+            SendMail.SendMailOptions(khachHang.getEmail() , contentBody);
 
         return ResponseEntity.ok(lichSuHoaDon);
     }
