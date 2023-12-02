@@ -43,7 +43,7 @@ export default function ThemNhanVien() {
   const cancelAdd = () => {
     setDeleteConfirmationOpen(false);
   };
-  
+
   useEffect(() => {
     getProvinces().then((data) => {
       setProvinces(data);
@@ -100,7 +100,7 @@ export default function ThemNhanVien() {
     xa: "",
     huyen: "",
     thanhPho: "",
-    id_thuong_hieu : ""
+    id_thuong_hieu: "",
   });
 
   const {
@@ -116,7 +116,7 @@ export default function ThemNhanVien() {
     xa,
     huyen,
     tinh,
-    id_thuong_hieu
+    id_thuong_hieu,
   } = khachHang;
 
   function parseDate(input) {
@@ -129,7 +129,7 @@ export default function ThemNhanVien() {
     }
     return null; // Trả về null nếu chuỗi không hợp lệ
   }
-  // modal thêm chức vụ 
+  // modal thêm chức vụ
   const [isModalOpenCV, setIsModalOpenCV] = useState(false);
   const [tenChucVu, setTenChucVu] = useState("");
   const showModalCV = () => {
@@ -138,7 +138,7 @@ export default function ThemNhanVien() {
   const handleOkCV = async () => {
     await axios
       .post("http://localhost:8080/nhan_vien/addChucVu", {
-        tenChucVu : tenChucVu
+        tenChucVu: tenChucVu,
       })
       .then((response) => {
         toast.success(`Thêm thành công`, {
@@ -159,21 +159,21 @@ export default function ThemNhanVien() {
   };
   const onChangeCV = (e) => {
     setTenChucVu(e.target.value);
-    setKhachHang({ ...khachHang, "id_chuc_vu" : e.target.value });
+    setKhachHang({ ...khachHang, id_chuc_vu: e.target.value });
   };
   const getAllChucVu = async () => {
     await axios
       .get("http://localhost:8080/nhan_vien/getAllChucVu")
       .then((response) => {
-        setListChucVu(response.data)
+        setListChucVu(response.data);
       });
   };
 
   useEffect(() => {
     getAllChucVu();
-  },[listChucVu]);
+  }, [listChucVu]);
 
-  const options = listChucVu.map(item => (
+  const options = listChucVu.map((item) => (
     <Option key={item.id} value={item.id}>
       {item.ten}
     </Option>
@@ -225,6 +225,7 @@ export default function ThemNhanVien() {
       reader.onload = (e) => {
         console.log(file.name);
         const imageUrl = e.target.result;
+        console.log(imageUrl);
         setKhachHang({ ...khachHang, anhNguoiDung: file.name });
         console.log(khachHang);
         imgDivRef.current.style.backgroundImage = `url(${imageUrl})`;
@@ -249,9 +250,14 @@ export default function ThemNhanVien() {
 
   return (
     <>
-        <div className="mb-2 font-normal border-gray-500 text-lg flex items-center">
-        <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>👥 Thêm nhân viên</p>
-        </div>
+      <div className="mb-2 font-normal border-gray-500 text-lg flex items-center">
+        <p
+          className="mt-1 mb-3"
+          style={{ fontSize: "30px", fontWeight: "bolder" }}
+        >
+          👥 Thêm nhân viên
+        </p>
+      </div>
       <div
         class="grid grid-cols-3 gap-4 m-5"
         style={{
@@ -335,25 +341,30 @@ export default function ThemNhanVien() {
                   Chức vụ
                 </label>
                 <div className="flex">
-                <Select
-                  placeholder="Chức vụ"
-                  value={chucVu}
-                  name="id_nhan_vien"
-                  onChange={(e) => {
-                    setKhachHang({ ...khachHang, "chucVu": e});
-                  }}
-                  style={{width : "90%", height : "40px" , marginRight : "10px", marginBottom : "54px"}}
+                  <Select
+                    placeholder="Chức vụ"
+                    value={chucVu}
+                    name="id_nhan_vien"
+                    onChange={(e) => {
+                      setKhachHang({ ...khachHang, chucVu: e });
+                    }}
+                    style={{
+                      width: "90%",
+                      height: "40px",
+                      marginRight: "10px",
+                      marginBottom: "54px",
+                    }}
                   >
                     {options}
-                </Select>
-                <div
+                  </Select>
+                  <div
                     className="p-3"
                     style={{
                       backgroundColor: "#00C5CD",
                       borderRadius: "5px",
                       color: "white",
                       cursor: "pointer",
-                      height : "40px"
+                      height: "40px",
                     }}
                     onClick={showModalCV}
                   >
@@ -646,7 +657,7 @@ export default function ThemNhanVien() {
                 >
                   Cancel
                 </Link>
-                
+
                 <ButtonAnt
                   type="primary"
                   style={{

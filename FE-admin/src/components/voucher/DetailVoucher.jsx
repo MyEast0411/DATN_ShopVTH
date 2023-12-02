@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { Tag, Table, Space, Modal, Input } from "antd";
 import { Button } from "@material-tailwind/react";
+import moment from "moment/moment";
 
 export default function DetailVoucher() {
   const { id } = useParams();
@@ -16,16 +17,17 @@ export default function DetailVoucher() {
         .get(`http://localhost:8080/voucher/getVoucher/${id}`)
         .then((response) => {
           console.log(response.data);
+          const nbd = moment(new Date(response.data.ngayBatDau)).format(
+            "  HH:mm:ss   , DD-MM-YYYY"
+          );
+          const nkt = moment(new Date(response.data.ngayKetThuc)).format(
+            "  HH:mm:ss   , DD-MM-YYYY"
+          );
           setVoucherDetail({
             ...response.data,
-            ngayBatDau: format(
-              new Date(response.data.ngayBatDau),
-              "yyyy-MM-dd hh:mm:ss"
-            ),
-            ngayKetThuc: format(
-              new Date(response.data.ngayKetThuc),
-              "yyyy-MM-dd hh:mm:ss"
-            ),
+            ngayBatDau: nbd,
+
+            ngayKetThuc: nkt,
           });
 
           setTrangThai(
