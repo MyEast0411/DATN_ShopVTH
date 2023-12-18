@@ -225,34 +225,32 @@ export default function App({ gioHang }) {
   const { ma } = useParams();
 
   const url = `http://localhost:8080/getAllSPCT`;
-  React.useEffect(() => {
-    async function fetchChiTietSanPham() {
-      try {
-        const response = await axios.get(url);
+  // React.useEffect(() => {
+  //   async function fetchChiTietSanPham() {
+  //     try {
+  //       const response = await axios.get(url);
 
-        const updatedRows = response.data.map((item, index) => ({
-          id: item.id,
-          stt: index + 1,
-          hinhAnh: item.defaultImg,
-            // hinhAnh.find((x) => x.id_san_pham_chi_tiet.id == item.id)?.ten ||
-            // "",
-          mauSac: item.id_mau_sac.maMau,
-          kichThuoc: item.id_kich_co.ten,
-          soLuongTon: item.soLuongTon,
-          deGiay: item.id_de_giay.ten,
-          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
-          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
-            ?.id_khuyen_mai.giaTriPhanTram,
-        }));
+  //       const updatedRows = response.data.map((item, index) => ({
+  //         id: item.id,
+  //         stt: index + 1,
+  //         hinhAnh: item.defaultImg,
+  //         mauSac: item.id_mau_sac.maMau,
+  //         kichThuoc: item.id_kich_co.ten,
+  //         soLuongTon: item.soLuongTon,
+  //         deGiay: item.id_de_giay.ten,
+  //         donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
+  //         trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+  //         giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+  //           ?.id_khuyen_mai.giaTriPhanTram,
+  //       }));
 
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
-    }
-    fetchChiTietSanPham();
-  }, [sanPhams]);
+  //       setSanPhams(updatedRows);
+  //     } catch (error) {
+  //       console.error("Lỗi khi gọi API: ", error);
+  //     }
+  //   }
+  //   fetchChiTietSanPham();
+  // }, [sanPhams]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -459,9 +457,7 @@ export default function App({ gioHang }) {
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
-          hinhAnh:
-            hinhAnh.find((x) => x.id_san_pham_chi_tiet.id == item.id)?.ten ||
-            "",
+          hinhAnh: item.defaultImg,
           mauSac: item.id_mau_sac.maMau,
           kichThuoc: item.id_kich_co.ten,
           soLuongTon: item.soLuongTon,
@@ -483,7 +479,6 @@ export default function App({ gioHang }) {
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <h2 className="mb-5 font-bold text-2xl">Quản Lý Nhân Viên</h2>
 
         <div className="justify-between gap-3 items-end">
           <Input
@@ -832,7 +827,7 @@ export default function App({ gioHang }) {
           showShadow
           color="primary"
           page={page}
-          total={totalPages}
+          total={pages}
           onChange={setPage}
           style={{ paddingLeft: "730px" }}
         />

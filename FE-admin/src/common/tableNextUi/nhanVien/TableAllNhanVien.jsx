@@ -440,7 +440,7 @@ export default function App() {
           )}
         </TableHeader>
         <TableBody
-          emptyContent={"Không tìm thấy khách hàng nào!"}
+          emptyContent={"Không tìm thấy nhân viên nào!"}
           items={sortedItems}
         >
           {(item) => (

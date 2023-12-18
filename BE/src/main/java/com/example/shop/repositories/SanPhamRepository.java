@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SanPhamRepository extends JpaRepository<SanPham, String> {
-
+    @Query(value = "SELECT MAX(CAST(SUBSTRING(ma, 3) AS UNSIGNED)) as maxMa\n" +
+            "FROM san_pham",nativeQuery = true)
+    String getMaxMa();
     @Query(value = "SELECT sp FROM SanPham sp WHERE sp.deleted = 1")
     List<SanPham> getAll();
     SanPham findByMa(String ma);

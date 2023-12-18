@@ -87,6 +87,7 @@ public class KhachHangController {
             kh.setGioiTinh(khachHang.getGioi_tinh());
             kh.setNgaySinh(dateFormat.parse(khachHang.getNgay_sinh()));
             kh.setSdt(khachHang.getSdt());
+            kh.setDeleted(1);
             kh.setTrangThai(1);
             System.out.println(kh);
             KhachHang khNew = khachHangRepository.save(kh);

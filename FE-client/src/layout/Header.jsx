@@ -30,7 +30,7 @@ export default function Header() {
           <div className="flex justify-center">Jordan VTH</div>
         </Link>
         <div className="menu">
-          <ul className="flex">
+          <ul className="flex" style={{marginRight : "170px"}}>
             <li>
               <a href="#">Mới & Nổi bật</a>
             </li>
@@ -42,6 +42,9 @@ export default function Header() {
             </li>
             <li>
               <a href="#">Trẻ em</a>
+            </li>
+            <li>
+              <a href="#">Tra cứu đơn hàng</a>
             </li>
           </ul>
         </div>

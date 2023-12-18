@@ -174,7 +174,7 @@ public class HoaDonController {
             }
 
             if (hoaDon1 != null) {
-                hoaDon1.setTrangThai(4);
+//                hoaDon1.setTrangThai(4);
                 hoaDon1.setLoaiHd(Integer.parseInt(hoaDon.getLoaiHd()));
                 hoaDon1.setTrangThai(Integer.parseInt(hoaDon.getTrangThai()));
                 hoaDon1.setDiaChi(hoaDon.getDiaChi());

@@ -32,12 +32,17 @@ export default function KhachHang() {
 
           <div
             className="grid drop-shadow-lg grid-cols-1 md:grid-cols-3 gap-4"
-            style={{
-              fontSizfe: "8px",
-              backgroundColor: "white",
-              padding: "20px 10px",
-              borderRadius: "8px",
-            }}
+              style={{
+                backgroundColor: "white",
+                padding: "10px",
+                borderRadius: "8px",
+                width: "100%",
+                height : "170px",
+                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+                transition: "transform 0.2s",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
           >
             <div className="p-5 ml-32">
               <FilterMa style={{ width: "100%" }} />

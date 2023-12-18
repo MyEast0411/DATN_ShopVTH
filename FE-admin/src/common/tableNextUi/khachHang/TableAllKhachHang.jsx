@@ -415,7 +415,7 @@ export default function App() {
       <Table
         style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
-        isHeaderSticky
+        // isHeaderSticky
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{

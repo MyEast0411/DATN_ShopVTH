@@ -239,7 +239,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         soTien : inputValue,
         maKH : khachHang.maKH,
         tongTien : tongTien,
-        trangThai : 5,
+        trangThai : 4,
         loaiHd : 1, //1 - tại quầy 0 - online
         });
         toast("🎉 Thanh toán thành công");

@@ -14,6 +14,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
     @Query(value = "SELECT b.ma, b.ten AS ten_san_pham, SUM(a.so_luong_ton) AS so_luong_ton, a.trang_thai\n" +
             "FROM san_pham_chi_tiet a\n" +
             "JOIN san_pham b ON a.id_san_pham = b.id\n" +
+            "WHERE b.deleted = 1 and a.deleted = 1\n" +
             "GROUP BY b.ma, b.ten, a.trang_thai\n" +
             "ORDER BY MAX(b.ngay_tao) DESC\n" +
             "LIMIT 0, 1000", nativeQuery = true)
@@ -22,10 +23,10 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
     @Query(value = "select a.*\n" +
             "FROM san_pham_chi_tiet a\n" +
             "JOIN san_pham b ON a.id_san_pham = b.id\n" +
-            "where b.ma = :ma", nativeQuery = true)
+            "where b.ma = :ma and a.deleted = 1", nativeQuery = true)
     List<SanPhamChiTiet> getByMa(@Param("ma") String ma);
 
-    @Query(value = "select * from `shopvth`.`san_pham_chi_tiet`\n" +
+    @Query(value = "select * from san_pham_chi_tiet\n" +
             "where ma = :ma", nativeQuery = true)
     SanPhamChiTiet findByMa(@Param("ma") String ma);
 
@@ -33,8 +34,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
     String findMaxMa();
 
     @Query(value = "SELECT *\n" +
-            "FROM shopvth.san_pham_chi_tiet\n" +
-            "WHERE trang_thai = :trang_thai AND (\n" +
+            "FROM san_pham_chi_tiet\n" +
+            "WHERE trang_thai = :trang_thai AND deleted = 1 AND (\n" +
             "  (id_chat_lieu = :id_chat_lieu OR :id_chat_lieu IS NULL OR :id_chat_lieu = '')\n" +
             "  AND (id_thuong_hieu = :id_thuong_hieu OR :id_thuong_hieu IS NULL OR :id_thuong_hieu = '')\n" +
             "  AND (id_de_giay = :id_de_giay OR :id_de_giay IS NULL OR :id_de_giay = '')\n" +
@@ -54,24 +55,24 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
 
 
     //---------------Hội----------------//
-    @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList")
+    @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList and c.deleted = 1")
     List<SanPhamChiTiet> getSanPhamChiTietByMaList(@Param("maList") List<String> maList);
 
-    @Query(value = "SELECT * FROM san_pham_chi_tiet  WHERE ma IN :maList ", nativeQuery = true)
+    @Query(value = "SELECT * FROM san_pham_chi_tiet  WHERE ma IN :maList and deleted = 1", nativeQuery = true)
     List<SanPhamChiTiet> getSPCTByMaSPCT(@Param("maList") List<String> maList);
 
     @Query(value = "select * from san_pham_chi_tiet where san_pham_chi_tiet.id_san_pham = :idSP and deleted = 1", nativeQuery = true)
     List<SanPhamChiTiet> getAllSanPhamChiTietByIdSanPham(@Param("idSP") String idSP);
 
-    @Query(value = "SELECT x FROM SanPhamChiTiet x where x.id_san_pham.id = :id")
+    @Query(value = "SELECT x FROM SanPhamChiTiet x where x.id_san_pham.id = :id and x.deleted = 1")
     List<SanPhamChiTiet> getSanPhamChiTietByIdSanPham(@Param("id") String id);
 
-    @Query(value = "SELECT s FROM SanPhamChiTiet s WHERE s.id IN :idList")
+    @Query(value = "SELECT s FROM SanPhamChiTiet s WHERE s.id IN :idList and s.deleted = 1")
     List<SanPhamChiTiet> getAllSanPhamChiTietByIdList(@Param("idList") List<String> idList);
     //---------------Hội----------------//
 
 
-    @Query(value = "select * from  san_pham_chi_tiet where so_luong_ton <= 10" , nativeQuery = true)
+    @Query(value = "select * from  san_pham_chi_tiet where so_luong_ton <= 10 and deleted = 1" , nativeQuery = true)
     List<SanPhamChiTiet> getAllSPCTMin();
 
 
