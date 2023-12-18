@@ -142,7 +142,7 @@ export default function Voucher() {
         })
       );
       res.data.join();
-      res.data.sort((a, b) => a.giaTriMax - b.giaTriMax);
+      res.data.sort((a, b) => a?.giaTriMax - b?.giaTriMax);
 
       // console.log(
       //   res.data[0]?.giaTriMax,
@@ -279,10 +279,18 @@ export default function Voucher() {
     const cellValue = user[columnKey];
     switch (columnKey) {
       case "ngayBatDau":
-        return <p>{format(new Date(cellValue), " hh:mm ,   dd-MM-yyyy")}</p>;
+        return (
+          <p>
+            {moment(new Date(cellValue)).format("  HH:mm:ss   , DD-MM-YYYY")}
+          </p>
+        );
 
       case "ngayKetThuc":
-        return <p>{format(new Date(cellValue), " hh:mm ,   dd-MM-yyyy")}</p>;
+        return (
+          <p>
+            {moment(new Date(cellValue)).format("  HH:mm:ss   , DD-MM-YYYY")}
+          </p>
+        );
       case "giaTriMax":
         return (
           <p style={{ color: "red" }}>
@@ -291,7 +299,11 @@ export default function Voucher() {
           </p>
         );
       case "ngayTao":
-        return <p>{format(new Date(cellValue), " hh:mm ,   dd-MM-yyyy")}</p>;
+        return (
+          <p>
+            {moment(new Date(cellValue)).format("  HH:mm:ss   , DD-MM-YYYY")}
+          </p>
+        );
       case "trangThai":
         return cellValue === 1 ? (
           <Tag color="red">Kích Hoạt</Tag>

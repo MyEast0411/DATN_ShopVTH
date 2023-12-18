@@ -21,12 +21,12 @@ public interface HoaDonService  {
     HoaDon addHoaDon(HoaDon hoaDon);
     HoaDon updateHoaDon(HoaDon hoaDon);
     Boolean deleteHoaDon(HoaDon hoaDon);
-
     List<HoaDon> getHDs(int page );
     List<BieuDoThongKe>  getTotalByThang();
     BigDecimal getTotalAll();
     List<HoaDonThongKeDTO>  top5HDMoi();
-    List<Double>  getTotalTuanTheoThang();
+    List<BieuDoThongKe>  getWeekInMonth();
+    List<BieuDoThongKe>  getDayInWeek();
     Integer countHD();
 
 

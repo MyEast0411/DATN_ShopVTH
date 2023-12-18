@@ -33,17 +33,31 @@ public class ThongKeController {
 
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepository;
-    @GetMapping("/{option}")
-    public ResponseEntity<List<BieuDoThongKe>> getTotalByThang(@PathVariable("option")String option) {
-        List<BieuDoThongKe> dataBieuDo = new ArrayList<>();
+    @GetMapping("/column/{option}")
+    public ResponseEntity getTotalByThang(@PathVariable("option")String option) {
+//        List<BieuDoThongKe> dataBieuDo = new ArrayList<>();
      if (option.equals("year")){
-          dataBieuDo =   hoaDonService.getTotalByThang();
+         return ResponseEntity.ok(hoaDonService.getTotalByThang());
      }else if (option.equals("month")){
-         dataBieuDo =   hoaDonService.getTotalByThang();
+         return ResponseEntity.ok(hoaDonService.getWeekInMonth());
      }else{
-        dataBieuDo =   hoaDonService.getTotalByThang();
+         return ResponseEntity.ok(hoaDonService.getDayInWeek());
      }
-        return ResponseEntity.ok(dataBieuDo);
+
+    }
+
+
+    @GetMapping("/table/{option}")
+    public ResponseEntity getDataTable(@PathVariable("option")String option) {
+//        List<BieuDoThongKe> dataBieuDo = new ArrayList<>();
+        if (option.equals("year")){
+            return ResponseEntity.ok(hoaDonChiTietService.getTop5Year());
+        }else if (option.equals("month")){
+            return ResponseEntity.ok(hoaDonChiTietService.getTop5Year());
+        }else{
+            return ResponseEntity.ok(hoaDonChiTietService.getTop5Year());
+        }
+
     }
 
     @GetMapping("/top5HDNew")
@@ -79,6 +93,11 @@ public class ThongKeController {
     @GetMapping("/SPCTMin")
     public ResponseEntity<List<SanPhamChiTiet>> spctMin(){
         return ResponseEntity.ok(chiTietSanPhamRepository.getAllSPCTMin());
+    }
+
+    @GetMapping("/getWeekInMonth")
+    public ResponseEntity<List<BieuDoThongKe>> getWeekInMonth(){
+        return ResponseEntity.ok(hoaDonService.getWeekInMonth());
     }
 
 }

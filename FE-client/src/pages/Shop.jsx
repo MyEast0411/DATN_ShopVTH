@@ -3,9 +3,13 @@ import InfoTop from "../layout/InfoTop";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import { Link } from "react-router-dom";
-import { Accordion, AccordionItem } from "@nextui-org/react";
-import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { Checkbox } from "@nextui-org/react";
+import {
+  Accordion,
+  AccordionItem,
+  Checkbox,
+  Breadcrumbs,
+  BreadcrumbItem,
+} from "@nextui-org/react";
 import ProductList from "../components/ProductList";
 import { CiSliderHorizontal } from "react-icons/ci";
 import { DownOutlined } from "@ant-design/icons";

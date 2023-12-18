@@ -39,6 +39,14 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , S
     Integer totalSPSaled();
 
 
+    @Query(value = "SELECT id_chi_tiet_san_pham, SUM(so_luong) AS total_quantity\n" +
+            "FROM hoa_don_chi_tiet\n" +
+            "GROUP BY id_chi_tiet_san_pham\n" +
+            "order by total_quantity desc \n" +
+            " limit 5 " , nativeQuery = true)
+    List<Object[]> top5SPYear();
+
+
 
 
 

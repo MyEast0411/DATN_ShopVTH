@@ -164,12 +164,14 @@ export default function ThemKhachHang() {
   const imgDivRef = useRef(null);
   const imgLink = "https://i.ibb.co/TKQqYvT/";
   const handleImageUpload = (e) => {
+    console.log(e);
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         console.log(file.name);
         const imageUrl = e.target.result;
+        console.log(imageUrl);
         setKhachHang({ ...khachHang, anhNguoiDung: file.name });
         console.log(khachHang);
         imgDivRef.current.style.backgroundImage = `url(${imageUrl})`;
@@ -548,7 +550,7 @@ export default function ThemKhachHang() {
                 >
                   Cancel
                 </Link>
-                
+
                 <ButtonAnt
                   type="primary"
                   style={{

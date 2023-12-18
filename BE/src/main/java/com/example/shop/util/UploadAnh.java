@@ -50,7 +50,7 @@ public class UploadAnh {
 //        }
 //    }
     public static String upload(String urlImg) {
-        //urlImg = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
+//        urlImg = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
         File imageFile = new File("C:\\Users\\Admin\\Pictures\\Saved Pictures\\"+urlImg);
 
 //        File imageFile = new File("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\"+urlImg);
