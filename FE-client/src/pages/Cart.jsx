@@ -26,7 +26,7 @@ export default function Cart() {
   const [api, contextHolder] = notification.useNotification();
   const [cartItems, setCartItems] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
-  const [kichCo, setKichCo] = useState(25);
+  // const [kichCo, setKichCo] = useState(25);
   const [isCartEmpty, setIsCartEmpty] = useState(false);
 
   const openNotificationWithIcon = (type, message) => {
@@ -50,7 +50,9 @@ export default function Cart() {
       const data = await getAllHA();
       console.log(data);
       setHinhAnhs(data);
-    } catch (error) {}
+    } catch (error) {
+      return;
+    }
   };
 
   const getCartItems = () => {

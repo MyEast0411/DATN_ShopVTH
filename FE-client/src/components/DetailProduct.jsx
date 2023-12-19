@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import InfoTop from "../layout/InfoTop";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
@@ -24,7 +24,7 @@ export default function DetailProduct() {
   const [sanPhamChiTiets, setSanPhamChiTiets] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
   const [selectedImage, setSelectedImage] = useState("");
-  const [selectedImageGocChup, setSelectedImageGocChup] = useState("");
+  // const [selectedImageGocChup, setSelectedImageGocChup] = useState("");
   const [selectedImageDisplay, setSelectedImageDisplay] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedIdSPCT, setSelectedIdSPCT] = useState("");
@@ -46,7 +46,7 @@ export default function DetailProduct() {
       }
     };
     fetchSPCTByIdSP();
-  }, []);
+  }, [idSP]);
   const openNotificationWithIcon = (type, message) => {
     api[type]({
       message,
@@ -130,37 +130,40 @@ export default function DetailProduct() {
     setSelectedSize(size);
   };
 
-  const fetchSanPhamById = async () => {
-    try {
-      const data = await getAllSanPhamChiTietByIdSanPham(idSP);
-      // console.log("fetchSanPhamById:", data);
-      setSanPhamChiTiets(data);
-      setSelectedIdSPCT(data[0].id);
-      if (!runFirstTime) {
-        setSelectedImage(data.length > 0 ? data[0].defaultImg : "");
-        setSelectedImageDisplay(data.length > 0 ? data[0].defaultImg : "");
-        setSelectedGiaBan(data.length > 0 ? data[0].giaBan : "");
-        setSelectedTheLoai(data.length > 0 ? data[0].id_the_loai.ten : "");
-        setRunFirstTime(true);
-      }
-    } catch (error) {
-      console.error("Error fetchSanPham():", error);
-    }
-  };
+  useEffect(() => {
+    const fetchSanPhamById = async () => {
+      try {
+        const data = await getAllSanPhamChiTietByIdSanPham(idSP);
+        setSanPhamChiTiets(data);
+        setSelectedIdSPCT(data[0].id);
 
-  const fetchHinhAnhByIdSPCT = async () => {
+        if (!runFirstTime) {
+          setSelectedImage(data.length > 0 ? data[0].defaultImg : "");
+          setSelectedImageDisplay(data.length > 0 ? data[0].defaultImg : "");
+          setSelectedGiaBan(data.length > 0 ? data[0].giaBan : "");
+          setSelectedTheLoai(data.length > 0 ? data[0].id_the_loai.ten : "");
+          setRunFirstTime(true);
+        }
+      } catch (error) {
+        console.error("Error fetchSanPhamById:", error);
+      }
+    };
+
+    fetchSanPhamById();
+  }, [idSP, runFirstTime]);
+
+  const fetchHinhAnhByIdSPCT = useCallback(async () => {
     try {
       const data = await getHinhAnhByIdSPCT(selectedIdSPCT);
-      // console.log("ha: ", data);
       setHinhAnhs(data);
     } catch (error) {
-      console.error("Error fetchHinhAnhByIdSPCT():", error);
+      console.error("Error fetchHinhAnhByIdSPCT:", error);
     }
-  };
+  }, [selectedIdSPCT]);
+
   useEffect(() => {
-    fetchSanPhamById();
     fetchHinhAnhByIdSPCT();
-  }, [idSP]);
+  }, [fetchHinhAnhByIdSPCT, idSP]);
 
   useEffect(() => {
     if (runFirstTime && selectedImage) {
@@ -170,10 +173,10 @@ export default function DetailProduct() {
       setSelectedIdSPCT(selectedId);
       fetchHinhAnhByIdSPCT();
     }
-  }, [selectedImage, runFirstTime]);
+  }, [selectedImage, runFirstTime, sanPhamChiTiets, fetchHinhAnhByIdSPCT]);
 
   const handleImageHover = (image) => {
-    setSelectedImageGocChup(image);
+    // setSelectedImageGocChup(image);
     setSelectedImageDisplay(image);
   };
 

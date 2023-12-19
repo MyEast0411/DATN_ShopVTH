@@ -1,5 +1,5 @@
 import { IoIosArrowUp } from "react-icons/io";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./backToTopButton.css";
 
 export default function BackToTopButton() {
