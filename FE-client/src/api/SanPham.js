@@ -7,6 +7,26 @@ export const getAllSanPham = async () => {
     return response.data;
 }
 
+export const getSanPhamChiTietByDefaultImg = async (urlImg) => {
+    const response = await axios.post(
+        `${API_BASE_URL}/getSanPhamChiTietByDefaultImg`,
+        { urlImg }, // Pass the urlImg as an object
+        {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }
+    );
+    return response.data;
+
+};
+
+export const getSanPhamChiTietByMaListSPCT = async (maList) => {
+    const response = await axios.get(`${API_BASE_URL}/getSanPhamChiTietByMaListSPCT/${maList.join(',')}`);
+    return response.data;
+};
+
+
 export const getAllHA = async () => {
     const response = await axios.get(`${API_BASE_URL}/getAllHA`);
     return response.data;

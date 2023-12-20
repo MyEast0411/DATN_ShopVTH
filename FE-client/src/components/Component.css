@@ -260,11 +260,11 @@
 .choose-color-img-pro {
   width: 70px;
   border-radius: 6px;
-  height: 70px;
   margin-right: 10px;
   margin-top: 10px;
   object-fit: cover;
   cursor: pointer;
+  border: 2px solid transparent;
 }
 
 .choose-color-img-pro:hover {
@@ -292,6 +292,10 @@
 
 .detail-pro-select-size-button:hover {
   border: 2px solid black;
+}
+
+.cart-item-card .cart-item-card-img-product {
+  border-radius: 3px;
 }
 
 .selected-border {
@@ -440,3 +444,4 @@
   background-color: #3f3e3e !important;
   transition: 0.2s;
 }
+

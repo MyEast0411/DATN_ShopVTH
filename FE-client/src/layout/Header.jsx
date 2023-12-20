@@ -8,7 +8,7 @@ export default function Header() {
   const [badge, setBadge] = useState(0);
   useEffect(() => {
     const updateCartBadge = () => {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const cart = JSON.parse(localStorage.getItem("maList")) || [];
       setBadge(cart.length);
     };
 

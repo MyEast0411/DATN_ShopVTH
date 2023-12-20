@@ -10,30 +10,31 @@ import { FaStarHalfAlt } from "react-icons/fa";
 import {
   getAllSanPhamChiTietByIdSanPham,
   getHinhAnhByIdSPCT,
-  getSPCTbyId,
+  // getSPCTbyId,
   getSPCTByIdSP,
+  getSanPhamChiTietByDefaultImg,
 } from "../api/SanPham";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import AlsoLike from "./AlsoLike";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
-import { v4 as uuidv4 } from "uuid";
+import errorIcon from "../assets/errorIcon.png";
 
 export default function DetailProduct() {
   const { idSP } = useParams();
   const [sanPhamChiTiets, setSanPhamChiTiets] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
   const [selectedImage, setSelectedImage] = useState("");
-  // const [selectedImageGocChup, setSelectedImageGocChup] = useState("");
   const [selectedImageDisplay, setSelectedImageDisplay] = useState("");
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedSize, setSelectedSize] = useState([]);
   const [selectedIdSPCT, setSelectedIdSPCT] = useState("");
   const [runFirstTime, setRunFirstTime] = useState(false);
   const [selectedGiaBan, setSelectedGiaBan] = useState(0);
   const [selectedTheLoai, setSelectedTheLoai] = useState("");
-  const [cartItem, setCartItem] = useState({});
-
+  const [cartItem, setCartItem] = useState([]);
   const [api, contextHolder] = notification.useNotification();
+  const [sizeBorder, setSizeBorder] = useState("");
+  const [ma, setMa] = useState("");
 
   useEffect(() => {
     const fetchSPCTByIdSP = async () => {
@@ -47,13 +48,13 @@ export default function DetailProduct() {
     };
     fetchSPCTByIdSP();
   }, [idSP]);
-  const openNotificationWithIcon = (type, message) => {
+  const openNotificationWithIcon = (type, message, icon) => {
     api[type]({
       message,
       duration: 1.3,
       icon: (
         <img
-          src={successIcon}
+          src={icon}
           alt=""
           style={{
             width: "7%",
@@ -63,72 +64,90 @@ export default function DetailProduct() {
     });
   };
 
-  const fetchSPCTbyId = async (id) => {
-    try {
-      const data = await getSPCTbyId(id);
-      setCartItem(data);
-    } catch (error) {
-      console.error("Error fetchSPCTbyId():", error);
-    }
-  };
+  useEffect(() => {
+    const fetchSPCTbyUrlImg = async () => {
+      try {
+        const data = await getSanPhamChiTietByDefaultImg(selectedImage);
+        console.log("data:", data);
+        setCartItem(data);
 
-  const renderID = () => {
-    const uniqueID = uuidv4();
-    return uniqueID;
-  };
+        setSelectedGiaBan(data[0].giaBan);
+        setSelectedSize(data.map((item) => item.id_kich_co.ten));
+        setSelectedTheLoai(data[0].id_the_loai.ten);
+        setSelectedIdSPCT(data[0].id);
+      } catch (error) {
+        console.error("fetchSPCTbyUrlImg:", error);
+      }
+    };
+    fetchSPCTbyUrlImg();
+  }, [selectedImage]);
 
   const addToCart = () => {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    if (!selectedSize) {
-      openNotificationWithIcon("error", "Vui lòng chọn kích cỡ!");
+    console.log(sizeBorder);
+    if (!sizeBorder) {
+      openNotificationWithIcon("error", "Vui lòng chọn kích cỡ!", errorIcon);
       return;
     }
 
-    const existingItemIndex = cart.findIndex(
-      (item) =>
-        item.product.id === cartItem.id && item.product.kichCo === selectedSize
-    );
+    // Lấy dữ liệu từ localStorage (nếu có)
+    let maList = localStorage.getItem("maList");
 
-    if (existingItemIndex !== -1) {
-      cart[existingItemIndex].product.soLuong += 1;
+    // Kiểm tra xem đã có dữ liệu trong localStorage chưa
+    if (maList) {
+      // Chuyển dữ liệu từ chuỗi JSON thành mảng JavaScript
+      maList = JSON.parse(maList);
+
+      // Tìm xem sản phẩm đã có trong giỏ hàng chưa
+      const existingItem = maList.find(
+        (item) => item.ma === ma && item.size === sizeBorder
+      );
+
+      if (existingItem) {
+        // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng lên 1
+        existingItem.quantity += 1;
+      } else {
+        // Nếu sản phẩm chưa có trong giỏ hàng, thêm vào mảng mới
+        maList.push({ ma, size: sizeBorder, quantity: 1 });
+      }
     } else {
-      console.log("selectedGiaBan:", selectedGiaBan);
-
-      cart.push({
-        product: {
-          ids: renderID(),
-          id: cartItem.id,
-          defaultImg: selectedImageDisplay,
-          ten: sanPhamChiTiets[0].ten,
-          kichCo: selectedSize,
-          soLuong: 1,
-          theLoai: selectedTheLoai,
-          giaBan: selectedGiaBan,
-        },
-      });
+      // Nếu chưa có dữ liệu, tạo một mảng mới
+      maList = [{ ma, size: sizeBorder, quantity: 1 }];
     }
 
-    console.log("cart: ", cart);
-    localStorage.setItem("cart", JSON.stringify(cart));
+    // Lưu lại mảng đã cập nhật vào localStorage
+    localStorage.setItem("maList", JSON.stringify(maList));
 
     if (typeof window.cartUpdatedCallback === "function") {
       window.cartUpdatedCallback();
     }
-    openNotificationWithIcon("success", "Đã thêm vào giỏ hàng!");
+
+    openNotificationWithIcon("success", "Đã thêm vào giỏ hàng!", successIcon);
   };
 
-  const handleImageClick = (spct) => {
-    setSelectedImage(spct.defaultImg);
-    setSelectedImageDisplay(spct.defaultImg);
-    setSelectedGiaBan(spct.giaBan);
-    setSelectedTheLoai(spct.id_the_loai.ten);
-    setSelectedIdSPCT(spct.id);
-    fetchSPCTbyId(spct.id);
+  const handleImageClick = (img) => {
+    setSizeBorder("");
+    setSelectedImageDisplay(img);
+    setSelectedImage(img);
   };
 
   const handleSizeClick = (size) => {
-    setSelectedSize(size);
+    setSizeBorder(size);
   };
+
+  useEffect(() => {
+    const filterIdSP = async () => {
+      if (Array.isArray(cartItem)) {
+        const data = cartItem.filter(
+          (item) => item.id_kich_co.ten === sizeBorder
+        );
+        setMa(data[0].ma);
+        return data[0].ma;
+      } else {
+        return null;
+      }
+    };
+    filterIdSP();
+  }, [cartItem, sizeBorder]);
 
   useEffect(() => {
     const fetchSanPhamById = async () => {
@@ -183,6 +202,14 @@ export default function DetailProduct() {
   if (sanPhamChiTiets.length === 0) {
     return null;
   }
+
+  const uniqueArraySize = [
+    ...new Set(sanPhamChiTiets.map((item) => item.id_kich_co.ten)),
+  ];
+
+  const uniqueArrayImg = [
+    ...new Set(sanPhamChiTiets.map((item) => item.defaultImg)),
+  ];
 
   return (
     <>
@@ -241,17 +268,16 @@ export default function DetailProduct() {
             <div className="detail-pro-price mt-5">
               VNĐ {Intl.NumberFormat().format(selectedGiaBan)}
             </div>
-            <div className="choose-color-product flex">
-              {/* Tổng Sản phẩm chi tiết phải tương ứng với tổng số màu sắc*/}
-              {sanPhamChiTiets.map((spct) => (
+            <div className="choose-color-product flex flex-wrap">
+              {uniqueArrayImg.map((img) => (
                 <img
-                  key={spct.id}
-                  src={spct.defaultImg}
+                  key={img}
+                  src={img}
                   alt=""
                   className={`choose-color-img-pro ${
-                    selectedImage === spct.defaultImg ? "selected-border" : ""
+                    selectedImage === img ? "selected-border" : ""
                   }`}
-                  onClick={() => handleImageClick(spct)}
+                  onClick={() => handleImageClick(img)}
                 />
               ))}
             </div>
@@ -263,21 +289,22 @@ export default function DetailProduct() {
               </Link>
             </div>
             <div className="detail-pro-select-size-button-choose grid grid-cols-2 gap-4">
-              {sanPhamChiTiets.map((spct) => (
+              {uniqueArraySize.map((size) => (
                 <div
-                  key={spct.id}
-                  id={spct.id}
+                  key={size}
+                  id={size}
                   className={`detail-pro-select-size-button text-center ${
-                    selectedSize === spct.id_kich_co.ten
+                    selectedSize.includes(size) && sizeBorder === size
                       ? "selected-border"
-                      : ""
+                      : selectedSize.includes(size)
+                      ? "..."
+                      : "out-of-size cursor-not-allowed"
                   }`}
-                  onClick={() => handleSizeClick(spct.id_kich_co.ten)}
+                  onClick={() => handleSizeClick(size)}
                 >
-                  {spct.id_kich_co.ten}
+                  {size}
                 </div>
               ))}
-              <div className="out-of-size text-center">46.5</div>
             </div>
             <div className="interested flex justify-center text-center mt-10">
               <div>
