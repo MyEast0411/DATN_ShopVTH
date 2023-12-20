@@ -1,4 +1,3 @@
-import React from "react";
 import InfoTop from "./InfoTop";
 import Header from "./Header";
 import Popular from "./Popular";

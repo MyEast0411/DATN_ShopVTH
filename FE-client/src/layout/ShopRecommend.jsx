@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 export default function ShopRecommend() {
@@ -21,7 +20,7 @@ export default function ShopRecommend() {
               src="https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/05b0d7e9-9688-49db-8266-8ee16fa33307/air-jordan-5-navy-mens-shoes-Qw4dtb.png"
               alt=""
             />
-            <h2>AIR JORDAN 12 "WHEAT"</h2>
+            <h2>AIR JORDAN 12 &quot;WHEAT&quot;</h2>
           </Link>
           <Link to="/shop" className="x-scroll-product-card snap-center">
             <img
@@ -29,7 +28,7 @@ export default function ShopRecommend() {
               src="https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/b0a8292e-84b1-4a70-b5d1-43529af31b2f/air-jordan-1-high-og-big-kids-shoes-r70xJ0.png"
               alt=""
             />
-            <h2>AIR JORDAN "CELEBRATION"</h2>
+            <h2>AIR JORDAN &quot;CELEBRATION&quot;</h2>
           </Link>
           <Link to="/shop" className="x-scroll-product-card snap-center">
             <img
@@ -45,7 +44,7 @@ export default function ShopRecommend() {
               src="https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/83e2954a-26e4-49ff-9c8d-271d6ba871ce/air-jordan-4-craft-olive-mens-shoes.png"
               alt=""
             />
-            <h2>AIR JORDAN 3 "OFF Noir"</h2>
+            <h2>AIR JORDAN 3 &quot;OFF Noir&quot;</h2>
           </Link>
         </div>
       </div>

@@ -16,26 +16,13 @@
   font-weight: bold;
 }
 
-.container-logo {
-  margin-right: 14%;
-}
-
 .menu {
   font-weight: 500;
 }
 
-.menu .flex li {
-  margin-right: 30px;
-}
-
 .heart {
-  font-size: 25px;
-  margin: 0 10px;
+  font-size: 26px;
   cursor: pointer;
-}
-
-.container-input {
-  margin-left: 10%;
 }
 
 .bag {

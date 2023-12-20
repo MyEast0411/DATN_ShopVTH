@@ -16,18 +16,20 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
-import { MdHorizontalRule } from "react-icons/md";
+// import { MdHorizontalRule } from "react-icons/md";
 import { AiOutlineHeart } from "react-icons/ai"; //heart icon
 import { CgTrashEmpty } from "react-icons/cg"; //trash icon
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { getAllHA } from "../api/SanPham";
+import { getAllHA, getSanPhamChiTietByMaListSPCT } from "../api/SanPham";
 
 export default function Cart() {
   const [api, contextHolder] = notification.useNotification();
   const [cartItems, setCartItems] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
-  const [kichCo, setKichCo] = useState(25);
+  const [arrayLocal, setArrayLocal] = useState([]);
   const [isCartEmpty, setIsCartEmpty] = useState(false);
+
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set([""]));
 
   const openNotificationWithIcon = (type, message) => {
     api[type]({
@@ -48,94 +50,132 @@ export default function Cart() {
   const fetchAllHinhAnh = async () => {
     try {
       const data = await getAllHA();
-      console.log(data);
       setHinhAnhs(data);
-    } catch (error) {}
+    } catch (error) {
+      return;
+    }
   };
 
-  const getCartItems = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartItems(cart);
-    console.log("cart", cart);
-    setIsCartEmpty(cart.length === 0);
+  const fetchCartItemsFromLocalStorage = () => {
+    try {
+      const data = localStorage.getItem("maList");
+      setArrayLocal(data);
+      const maList = data ? JSON.parse(data).map((item) => item.ma) : [];
+
+      const fetchAllCartItem = async () => {
+        try {
+          if (maList.length > 0) {
+            const data = await getSanPhamChiTietByMaListSPCT(maList);
+            setCartItems(data);
+          } else {
+            setCartItems([]);
+            setIsCartEmpty(true);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      fetchAllCartItem();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
     fetchAllHinhAnh();
-    getCartItems();
+    fetchCartItemsFromLocalStorage();
   }, []);
 
-  const handleDelete = (product) => {
+  const handleDelete = (cart) => {
+    console.log("arrayLocal", arrayLocal);
+    console.log("cart:", cart);
     confirmDialog({
       message: "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
       header: "Xác nhận xóa",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
       accept: () => {
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
-        const updatedCart = cart.filter(
-          (item) => item.product.ids !== product.ids
-        );
-        localStorage.setItem("cart", JSON.stringify(updatedCart));
-        getCartItems();
-        if (window.cartUpdatedCallback) {
-          window.cartUpdatedCallback();
+        try {
+          const maList = localStorage.getItem("maList");
+          const arrayLocal = maList ? JSON.parse(maList) : [];
+
+          const indexToDelete = arrayLocal.findIndex(
+            (item) => item.ma === cart.ma
+          );
+
+          if (indexToDelete !== -1) {
+            arrayLocal.splice(indexToDelete, 1);
+
+            localStorage.setItem("maList", JSON.stringify(arrayLocal));
+
+            fetchCartItemsFromLocalStorage();
+            if (window.cartUpdatedCallback) {
+              window.cartUpdatedCallback();
+            }
+            openNotificationWithIcon("success", "Xóa thành công!");
+          } else {
+            console.log("Item not found in arrayLocal");
+          }
+        } catch (error) {
+          console.error(error);
         }
-        openNotificationWithIcon("success", "Xóa thành công!");
       },
     });
   };
 
-  const [selectedKeysQuantity, setSelectedKeysQuantity] = React.useState(
-    new Set([""])
-  );
+  const handleQuantityChange = (soLuong, ma) => {
+    setSelectedKeys(new Set([soLuong]));
 
-  const selectedValueQuantity = React.useMemo(
-    () => Array.from(selectedKeysQuantity).join(", ").replaceAll("_", " "),
-    [selectedKeysQuantity]
-  );
+    console.log("soLuong:", soLuong);
+    console.log("ma:", ma);
 
-  const handleQuantityChange = (selected) => {
-    setSelectedKeysQuantity(new Set([selected]));
+    updateCartItemQuantity(soLuong, ma);
   };
 
-  const updateCartItemQuantity = (productId, newQuantity) => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const updatedCart = cart.map((item) => {
-      if (item.product.ids === productId) {
-        return {
-          ...item,
-          product: {
-            ...item.product,
-            soLuong: newQuantity,
-          },
-        };
+  const updateCartItemQuantity = (soLuong, ma) => {
+    try {
+      const maList = localStorage.getItem("maList")
+        ? JSON.parse(localStorage.getItem("maList"))
+        : [];
+
+      console.log("maList:", maList);
+      const indexToUpdate = maList.findIndex((item) => item.ma === ma);
+      console.log("indexToUpdate", indexToUpdate);
+
+      if (indexToUpdate !== -1) {
+        maList[indexToUpdate].quantity = soLuong;
+        localStorage.setItem("maList", JSON.stringify(maList));
+        console.log("Updated maList:", maList);
+        openNotificationWithIcon("success", "Cập nhật số lượng thành công!");
+      } else {
+        console.log("Item not found in maList");
       }
-      return item;
-    });
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    getCartItems();
-    if (window.cartUpdatedCallback) {
-      window.cartUpdatedCallback();
+      fetchCartItemsFromLocalStorage();
+    } catch (error) {
+      console.error(error);
     }
-    openNotificationWithIcon("success", "Cập nhật số lượng thành công!");
   };
+
   const calculateSubtotal = () => {
     let subtotal = 0;
 
     cartItems.forEach((cart) => {
-      const quantity =
-        parseInt(selectedValueQuantity) || parseInt(cart.product.soLuong);
-      subtotal += quantity * cart.product.giaBan;
+      const quantity = JSON.parse(arrayLocal).find(
+        (item) => item.ma === cart.ma
+      )?.quantity || 1;
+
+      subtotal += cart.giaBan * quantity;
     });
 
     return subtotal;
   };
 
   const calculateTotal = () => {
-    const subtotal = parseFloat(calculateSubtotal());
-    const total = subtotal;
-    return Intl.NumberFormat().format(total);
+    const subtotal = calculateSubtotal();
+    const tax = 25000;
+    const total = subtotal + tax;
+    return total;
   };
 
   return (
@@ -176,24 +216,22 @@ export default function Cart() {
               <div className="cart-item-card" key={cart.id}>
                 <div className="flex justify-flex-start gap-4">
                   <img
-                    src={cart.product.defaultImg}
+                    src={cart.defaultImg}
                     alt=""
                     className="cart-item-card-img-product"
                   />
                   <div className="cart-item-card-info">
-                    <h2 className="cart-item-card-name-product">
-                      {cart.product.ten}
-                    </h2>
+                    <h2 className="cart-item-card-name-product">{cart.ten}</h2>
                     <div className="cart-item-card-gender">
-                      {cart.product.theLoai}
+                      {cart.id_san_pham.theLoai}
                     </div>
                     <div className="cart-item-card-color mb-2">
                       {hinhAnhs.find(
-                        (ha) => ha?.id_san_pham_chi_tiet?.id === cart.product.id
+                        (ha) => ha?.id_san_pham_chi_tiet?.id === cart.id
                       )?.mauSac || ""}
                     </div>
                     <div className="gia-ban-cartItem">
-                      VNĐ {Intl.NumberFormat().format(cart.product.giaBan)}
+                      VNĐ {Intl.NumberFormat().format(cart.giaBan)}
                     </div>
                     <div className="cart-item-card-size flex align-center">
                       <h2 className="cart-item-card-size-title mr-2">
@@ -207,7 +245,7 @@ export default function Cart() {
                               className="capitalize"
                               style={{ fontSize: "13px", padding: "0 12px" }}
                             >
-                              {cart.product.kichCo}
+                              {cart.id_kich_co.ten}
                             </Button>
                           </DropdownTrigger>
                         </Dropdown>
@@ -225,8 +263,9 @@ export default function Cart() {
                                   className="capitalize"
                                   style={{ fontSize: "13px", padding: "0" }}
                                 >
-                                  {selectedValueQuantity ||
-                                    cart.product.soLuong}
+                                  {JSON.parse(arrayLocal).find(
+                                    (item) => item.ma === cart.ma
+                                  )?.quantity || "1"}
                                 </Button>
                               </DropdownTrigger>
                               <DropdownMenu
@@ -234,23 +273,12 @@ export default function Cart() {
                                 variant="flat"
                                 disallowEmptySelection
                                 selectionMode="single"
-                                selectedKeys={
-                                  selectedKeysQuantity[cart.product.ids] ||
-                                  new Set([""])
-                                }
+                                selectedKeys={selectedKeys}
                                 onSelectionChange={(selected) => {
-                                  handleQuantityChange(selected);
-                                  const productId = cart.product.ids;
-                                  const newQuantity = selected.currentKey;
-                                  setSelectedKeysQuantity((prev) => ({
-                                    ...prev,
-                                    [productId]: new Set([
-                                      newQuantity.toString(),
-                                    ]),
-                                  }));
-                                  updateCartItemQuantity(
-                                    productId,
-                                    newQuantity
+                                  setSelectedKeys(selected);
+                                  handleQuantityChange(
+                                    selected.currentKey,
+                                    cart.ma
                                   );
                                 }}
                               >
@@ -274,7 +302,7 @@ export default function Cart() {
                       <AiOutlineHeart className="cart-item-card-icon-heart" />
                       <CgTrashEmpty
                         className="cart-item-card-icon-trash"
-                        onClick={() => handleDelete(cart.product)}
+                        onClick={() => handleDelete(cart)}
                       />
                     </div>
                   </div>
@@ -330,7 +358,8 @@ export default function Cart() {
             <div className="flex justify-between">
               <h2 className="subtotal-title">Thuế ước tính</h2>
               <div className="price-subtotal">
-                <MdHorizontalRule />
+                {/* <MdHorizontalRule /> */}
+                VNĐ 25000
               </div>
             </div>
             <div className="horizontal"></div>
@@ -341,13 +370,13 @@ export default function Cart() {
             <div className="horizontal"></div>
             <Link
               to={"/checkout"}
-              className="checkout-button mb-5 flex justify-center"
+              className="checkout-button mb-4 flex justify-center"
             >
               <button>Thanh toán</button>
             </Link>
             <div className="paypal-button flex justify-center">
               <img
-                src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR.png"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/PayPal_logo.svg/2560px-PayPal_logo.svg.png"
                 alt=""
               />
             </div>
