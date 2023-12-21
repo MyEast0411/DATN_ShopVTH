@@ -357,8 +357,26 @@ public class SanPhamController {
     //-------------Hội-----------------
     @GetMapping("/get-chiTietSP-by-ListMa/{maList}")
     public ResponseEntity<List<SanPhamChiTiet>> getByListMa(@PathVariable List<String> maList) {
-        List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaList(maList);
-        return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
+        try{
+            List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaList(maList);
+            return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/getSanPhamChiTietByMaListSPCT/{maList}")
+    public ResponseEntity<List<SanPhamChiTiet>> getSanPhamChiTietByMaListSPCT(@PathVariable List<String> maList) {
+        try{
+            List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaListSPCT(maList);
+            return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @GetMapping("/get-all-san-pham")
@@ -434,6 +452,19 @@ public class SanPhamController {
     @GetMapping("/getAllSanPhamChiTietByIdList")
     public List<SanPhamChiTiet> getAllSanPhamChiTietByIdList(@RequestParam List<String> idList) {
         return repo.getAllSanPhamChiTietByIdList(idList);
+    }
+
+    @PostMapping("/getSanPhamChiTietByDefaultImg")
+    public ResponseEntity<List<SanPhamChiTiet>> getSanPhamChiTietByDefaultImg(@RequestBody Map<String, String> requestBody) {
+        try{
+            String urlImg = requestBody.get("urlImg");
+
+            return ResponseEntity.ok(repo.getSanPhamChiTietByDefaultImg(urlImg));
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     //-------------Hội-----------------
