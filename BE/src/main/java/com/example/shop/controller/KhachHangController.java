@@ -90,6 +90,7 @@ public class KhachHangController {
             kh.setDeleted(1);
             kh.setTrangThai(1);
             System.out.println(kh);
+
             KhachHang khNew = khachHangRepository.save(kh);
 
             DiaChi diaChi = new DiaChi();

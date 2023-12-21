@@ -878,13 +878,13 @@ export default function ChiTietSanPham() {
                     >
                       Khoảng giá :
                     </label>
-                    <div className="flex p-5 w-[200px]" >
+                    <div className="flex p-5 w-[200px]">
                     <Slider 
                       label="Khoảng giá"
                       size="sm"
                       step={50} 
                       minValue={0} 
-                      maxValue={2000} 
+                      maxValue={2000}
                       defaultValue={[0, 2000]} 
                       className="max-w-md"
                     />

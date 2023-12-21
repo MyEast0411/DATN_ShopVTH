@@ -255,16 +255,17 @@ export default function ThemKhachHang() {
                   htmlFor="phone"
                   className="block  text-xl font-medium text-gray-900"
                 >
-                  Tên khách hàng
+                  Họ khách hàng
                 </label>
                 <input
                   value={ten}
+                  name="ten"
                   type="text"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                      w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                                       dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="Nhập tên khách hàng"
+                  placeholder="Nhập họ khách hàng"
                   required
                   onChange={(e) => {
                     onChange(e);
@@ -276,7 +277,7 @@ export default function ThemKhachHang() {
                   htmlFor="phone"
                   className="block text-xl font-medium text-gray-900"
                 >
-                  Căn cước công dân
+                  Tên khách hàng
                 </label>
                 <input
                   type="number"
@@ -285,7 +286,7 @@ export default function ThemKhachHang() {
                                     rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                      w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                                       dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="CCCD"
+                  placeholder="Nhập tên khách hàng"
                   required
                   onChange={(e) => {
                     onChange(e);

@@ -216,7 +216,7 @@ export default function SanPham() {
           <div className="relative flex items-center gap-4">
             <Tooltip content="Chi tiết" showArrow={true}>
               <Link
-                to={`/edit-san-pham/${sanPham.ma}`}
+                to={`/quan-ly-san-pham/san-pham/edit-san-pham/${sanPham.ma}`}
                 style={{ display: "block" }}
                 className="button-link group relative"
               >
