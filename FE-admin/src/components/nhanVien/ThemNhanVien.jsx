@@ -2,25 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import { Modal, Select } from "antd";
 const { Option } = Select;
-import {
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@mui/material";
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import { AiOutlinePlus } from "react-icons/ai";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { Button as ButtonAnt } from "antd";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { Button } from "@nextui-org/react";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
@@ -91,7 +79,7 @@ export default function ThemNhanVien() {
     ma: "",
     ten: "",
     anhNguoiDung: "",
-    gioi_tinh: "",
+    gioi_tinh: "Nam",
     sdt: "",
     ngay_sinh: "",
     email: "",
@@ -103,21 +91,7 @@ export default function ThemNhanVien() {
     id_thuong_hieu: "",
   });
 
-  const {
-    ma,
-    ten,
-    anhNguoiDung,
-    gioi_tinh,
-    sdt,
-    ngay_sinh,
-    email,
-    chucVu,
-    soNha,
-    xa,
-    huyen,
-    tinh,
-    id_thuong_hieu,
-  } = khachHang;
+  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, chucVu, soNha, xa, huyen, tinh, id_thuong_hieu } = khachHang;
 
   function parseDate(input) {
     var parts = input.match(/(\d{2})(\d{2})(\d{4})/);
@@ -162,11 +136,9 @@ export default function ThemNhanVien() {
     setKhachHang({ ...khachHang, id_chuc_vu: e.target.value });
   };
   const getAllChucVu = async () => {
-    await axios
-      .get("http://localhost:8080/nhan_vien/getAllChucVu")
-      .then((response) => {
-        setListChucVu(response.data);
-      });
+    await axios.get("http://localhost:8080/nhan_vien/getAllChucVu").then((response) => {
+      setListChucVu(response.data);
+    });
   };
 
   useEffect(() => {
@@ -180,6 +152,7 @@ export default function ThemNhanVien() {
   ));
 
   const onChange = (e) => {
+    console.log(e.target.value);
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -234,27 +207,85 @@ export default function ThemNhanVien() {
       reader.readAsDataURL(file);
     }
   };
-
+  const [errTen, setErrTen] = useState("");
+  const [errSdt, setErrSDT] = useState("");
+  const [errEmail, setErrEmail] = useState("");
+  const [errSoNha, setErrSoNha] = useState("");
+  // sdt
+  function validatePhoneNumber(phoneNumber) {
+    var regex = /^(0[2-9][0-9]{8})$/;
+    return regex.test(phoneNumber);
+  }
+  // email
+  function validateEmail(email) {
+    // Biểu thức chính quy cho địa chỉ email
+    var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    // Kiểm tra xem email có khớp với định dạng không
+    return regex.test(email);
+  }
   const onSubmit = async () => {
-    await axios
-      .post("http://localhost:8080/nhan_vien/add", khachHang)
-      .then((response) => {
-        toast.success(`🎉 Thêm thành công`);
-        navigate("/quan-ly-tai-khoan/nhan-vien");
-      })
-      .catch((error) => {
-        toast.error(`😢 Thêm thất bại`);
-      });
+    // check validate
+    // ten
+    var check = true;
+    if (khachHang.ten == "") {
+      setErrTen("* Không được để trống tên");
+      check = false;
+    } else {
+      setErrTen("");
+    }
+    // so nha
+    var check = true;
+    if (khachHang.soNha == "") {
+      setErrSoNha("* Không được để trống số nhà/ngõ/đường");
+      check = false;
+    } else {
+      setErrSoNha("");
+    }
+    // sdt
+
+    if (khachHang.sdt == "") {
+      setErrSDT("* Không được để trống số điện thoại");
+      check = false;
+    } else {
+      if (validatePhoneNumber(khachHang.sdt)) {
+        setErrSDT("");
+      } else {
+        setErrSDT("* SDT không hợp lệ");
+        check = false;
+      }
+    }
+
+    // email
+    if (khachHang.email == "") {
+      setErrEmail("* Không được để trống email");
+      check = false;
+    } else {
+      if (validateEmail(khachHang.email)) {
+        setErrEmail("");
+      } else {
+        setErrEmail("* Email không hợp lệ");
+        check = false;
+      }
+    }
+
+    if (check) {
+      await axios
+        .post("http://localhost:8080/nhan_vien/add", khachHang)
+        .then((response) => {
+          toast.success(`🎉 Thêm thành công`);
+          navigate("/quan-ly-tai-khoan/nhan-vien");
+        })
+        .catch((error) => {
+          toast.error(`😢 Thêm thất bại`);
+        });
+    }
     cancelAdd();
   };
 
   return (
     <>
       <div className="mb-2 font-normal border-gray-500 text-lg flex items-center">
-        <p
-          className="mt-1 mb-3"
-          style={{ fontSize: "30px", fontWeight: "bolder" }}
-        >
+        <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>
           👥 Thêm nhân viên
         </p>
       </div>
@@ -288,39 +319,26 @@ export default function ThemNhanVien() {
               }}
               ref={imgDivRef}
             >
-              <span
-                className="absolute text-4xl"
-                style={{ top: "40%", left: "47%" }}
-              >
+              <span className="absolute text-4xl" style={{ top: "40%", left: "47%" }}>
                 +
               </span>
               <div className="absolute" style={{ top: "54%", left: "42%" }}>
-                <button onClick={() => fileInputRef.current.click()}>
-                  Tải ảnh
-                </button>
+                <button onClick={() => fileInputRef.current.click()}>Tải ảnh</button>
               </div>
             </div>
           </div>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-            ref={fileInputRef}
-          />
+          <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} ref={fileInputRef} />
         </div>
         <div className="col-span-2 m-10">
           <div className="grid grid-cols-2 gap-4">
             <div className="left">
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block  text-xl font-medium text-gray-900"
-                >
+                <label htmlFor="phone" className="block  text-xl font-medium text-gray-900">
                   Tên nhân viên
                 </label>
                 <input
                   value={ten}
+                  name="ten"
                   type="text"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg focus:ring-blue-500 focus:border-blue-500 block
@@ -332,12 +350,10 @@ export default function ThemNhanVien() {
                     onChange(e);
                   }}
                 />
+                <p style={{ color: "red" }}>{errTen}</p>
               </div>
-              <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block text-xl font-medium text-gray-900"
-                >
+              <div className="mb-8" style={{ display: "block" }}>
+                <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
                   Chức vụ
                 </label>
                 <div className="flex">
@@ -381,10 +397,7 @@ export default function ThemNhanVien() {
                   style={{ position: "relative" }}
                 >
                   <div>
-                    <label
-                      htmlFor="country"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
+                    <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
                       Tên chức vụ
                     </label>
                     <input
@@ -400,10 +413,7 @@ export default function ThemNhanVien() {
                 </Modal>
               </div>
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block pt-2 text-xl font-medium text-gray-900"
-                >
+                <label htmlFor="phone" className="block pt-2 text-xl font-medium text-gray-900">
                   Email
                 </label>
                 <input
@@ -420,12 +430,10 @@ export default function ThemNhanVien() {
                     onChange(e);
                   }}
                 />
+                <p style={{ color: "red" }}>{errEmail}</p>
               </div>
               <div className="mb-8">
-                <label
-                  htmlFor="city"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
+                <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Chọn thành phố
                 </label>
                 <select
@@ -442,10 +450,7 @@ export default function ThemNhanVien() {
                 </select>
               </div>
               <div className="mb-6">
-                <label
-                  htmlFor="wards"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
+                <label htmlFor="wards" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Chọn xã phường
                 </label>
                 <select
@@ -465,10 +470,7 @@ export default function ThemNhanVien() {
 
             <div className="right relative">
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block text-xl font-medium text-gray-900"
-                >
+                <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
                   Ngày sinh
                 </label>
                 <input
@@ -478,11 +480,7 @@ export default function ThemNhanVien() {
                                   dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
                   type="date"
                   name="ngay_sinh"
-                  value={
-                    parseDate(ngay_sinh)
-                      ? parseDate(ngay_sinh).toISOString().slice(0, 10)
-                      : ""
-                  }
+                  value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ngay_sinh}
                   id="dateInput"
                   style={{
                     width: "100%",
@@ -505,19 +503,10 @@ export default function ThemNhanVien() {
                   className="bg-blue-500 text-white rounded w-32 h-10"
                   onClick={showModal}
                 >
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/241/241521.png"
-                    className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2"
-                  />
+                  <img src="https://cdn-icons-png.flaticon.com/512/241/241521.png" className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2" />
                   <span className="ml-8">Quét QR</span>
                 </button>
-                <Modal
-                  open={isModalOpen}
-                  onOk={handleOk}
-                  onCancel={handleCancel}
-                  style={{ position: "relative" }}
-                  className=""
-                >
+                <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ position: "relative" }} className="">
                   <div>
                     <QrReader
                       onResult={(data) => {
@@ -564,6 +553,7 @@ export default function ThemNhanVien() {
                     aria-labelledby="demo-controlled-radio-buttons-group"
                     name="controlled-radio-buttons-group"
                     value={value}
+                    checked={gioi_tinh === "Nam"}
                     onChange={handleChange}
                   >
                     <div style={{ display: "flex", alignItems: "center" }}>
@@ -573,22 +563,15 @@ export default function ThemNhanVien() {
                         label="Nam"
                         checked={gioi_tinh === "Nam"}
                         style={{ marginRight: "10px" }}
+                        name="gioi_tinh"
                       />
-                      <FormControlLabel
-                        value="Nữ"
-                        checked={gioi_tinh === "Nữ"}
-                        control={<Radio />}
-                        label="Nữ"
-                      />
+                      <FormControlLabel value="Nữ" name="gioi_tinh" checked={gioi_tinh === "Nữ"} control={<Radio />} label="Nữ" />
                     </div>
                   </RadioGroup>
                 </FormControl>
               </div>
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block pt-14 text-xl font-medium text-gray-900"
-                >
+                <label htmlFor="phone" className="block pt-14 text-xl font-medium text-gray-900">
                   Số điện thoại
                 </label>
                 <input
@@ -605,13 +588,11 @@ export default function ThemNhanVien() {
                     onChange(e);
                   }}
                 />
+                <p style={{ color: "red" }}>{errSdt}</p>
               </div>
 
               <div className="mb-6">
-                <label
-                  htmlFor="District"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
+                <label htmlFor="District" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Chọn huyện
                 </label>
                 <select
@@ -628,10 +609,7 @@ export default function ThemNhanVien() {
                 </select>
               </div>
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block mb-2 text-xl font-medium text-gray-900"
-                >
+                <label htmlFor="phone" className="block mb-2 text-xl font-medium text-gray-900">
                   Số nhà/Ngõ/Đường
                 </label>
                 <input
@@ -648,13 +626,10 @@ export default function ThemNhanVien() {
                     onChange(e);
                   }}
                 />
+                <p style={{ color: "red" }}>{errSoNha}</p>
               </div>
               <div className="mt-6 flex items-center justify-end gap-x-6">
-                <Link
-                  to="/quan-ly-tai-khoan/nhan-vien"
-                  type="button"
-                  className="text-sm rounded-md  font-semibold leading-6 text-gray-900"
-                >
+                <Link to="/quan-ly-tai-khoan/nhan-vien" type="button" className="text-sm rounded-md  font-semibold leading-6 text-gray-900">
                   Cancel
                 </Link>
 
@@ -693,9 +668,7 @@ export default function ThemNhanVien() {
           </div>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn thêm nhân viên này?
-          </DialogContentText>
+          <DialogContentText>Bạn có chắc muốn thêm nhân viên này?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelAdd} color="warning">

@@ -148,3 +148,12 @@ input[type="number"] {
 .link-underline {
   color: #7a7979;
 }
+
+/* position ant notification */
+:where(
+    .css-dev-only-do-not-override-1adbn6x
+  ).ant-notification-topRight.ant-notification-stack
+  > .ant-notification-notice-wrapper {
+  top: 40px;
+  right: 20px;
+}

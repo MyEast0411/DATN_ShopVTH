@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
+import java.util.Random;
 
 @RestController
 @CrossOrigin("*")
@@ -54,6 +55,18 @@ public class NhanVienController {
     }
     @PostMapping("add")
     public ResponseEntity add(@RequestBody NhanVienVM khachHang) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder(6);
+        Random random = new Random();
+
+        for (int i = 0; i < 6; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+
+        String randomString = sb.toString();
+        System.out.println(randomString);
+        //
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
         Integer maxMa = Integer.parseInt(nhanVienRepository.findMaxMa());
         System.out.println(khachHang);
@@ -71,6 +84,7 @@ public class NhanVienController {
             kh.setTrang_thai("1");
             kh.setDeleted(1);
             kh.setId_chuc_vu(chucVuRepository.findById(khachHang.getChucVu()).get());
+            kh.setMatKhau(randomString);
             System.out.println(kh);
             nhanVienRepository.save(kh);
             return ResponseEntity.ok("Thành công");

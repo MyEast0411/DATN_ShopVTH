@@ -1,4 +1,3 @@
-import React from "react";
 import Logo from "../assets/logo.png";
 import { BsFacebook } from "react-icons/bs";
 import { AiFillInstagram } from "react-icons/ai";
@@ -10,7 +9,7 @@ export default function Footer() {
     <>
       <footer className="bg-gray-100">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="flex font-medium text-black align-center justify-center text-teal-600">
+          <div className="flex font-medium align-center justify-center text-teal-600">
             <img src={Logo} className="logo" alt="" />
             <span>JORDAN VTH</span>
           </div>

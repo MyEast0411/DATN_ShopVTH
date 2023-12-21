@@ -41,7 +41,9 @@ const App = () => {
           <Route path="/khuyen-mai" element={<KhuyenMai />} />
           <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
           <Route path="/them-khuyen-mai/:idKM" element={<ThemKhuyenMai />} />
+
           <Route path="/quan-ly-tai-khoan/nhan-vien/them-nhan-vien" element={<ThemNhanVien />} />
+          
           <Route path="/them-khach-hang" element={<ThemKhachHang />} />
           <Route path="/edit-khach-hang/:maKH" element={<DetailKhachHang />} />
 

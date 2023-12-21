@@ -89,6 +89,7 @@ public class KhachHangController {
             kh.setSdt(khachHang.getSdt());
             kh.setDeleted(1);
             kh.setTrangThai(1);
+
             System.out.println(kh);
 
             KhachHang khNew = khachHangRepository.save(kh);
@@ -102,6 +103,10 @@ public class KhachHangController {
             diaChi.setQuocGia("Việt Nam");
             diaChi.setId_khach_hang(khNew);
             diaChiRepository.save(diaChi);
+
+            //gui mail
+
+
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();

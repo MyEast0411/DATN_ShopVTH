@@ -35,7 +35,7 @@ export default function Checkout() {
   });
 
   const [spinning, setSpinning] = React.useState(false);
-  const [showNotification, setShowNotification] = useState(false);
+  // const [showNotification, setShowNotification] = useState(false);
 
   const showLoader = (callback) => {
     setSpinning(true);
@@ -217,14 +217,16 @@ export default function Checkout() {
         />
       ),
     });
-    setShowNotification(true);
+    // setShowNotification(true);
   };
 
   const fetchAllHinhAnh = async () => {
     try {
       const data = await getAllHA();
       setHinhAnhs(data);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getCartItems = () => {
@@ -307,10 +309,11 @@ export default function Checkout() {
     const total = parseFloat(subtotal) + localShippingCost;
     console.log(updatedShippingCost);
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       setPhiVanChuyen(updatedShippingCost);
       setTongTien(total);
-    }, [updatedShippingCost, total, shippingCost]);
+    }, [updatedShippingCost, total]);
 
     return total;
   };
@@ -427,25 +430,25 @@ export default function Checkout() {
             </div>
             <form onSubmit={handleSubmit}>
               <div className="inputGroupCodeSignUp">
-                <input name="email" type="email" required autocomplete="off" />
-                <label for="email">Email</label>
+                <input name="email" type="email" required autoComplete="off" />
+                <label htmlFor="email">Email</label>
               </div>
               <div className="inputGroupCodeSignUp">
-                <input name="hoTen" type="text" required autocomplete="off" />
-                <label for="hoTen">Họ và tên</label>
+                <input name="hoTen" type="text" required autoComplete="off" />
+                <label htmlFor="hoTen">Họ và tên</label>
               </div>
               <div className="inputGroupCodeSignUp">
                 <input
                   name="soDienThoai"
                   type="number"
                   required
-                  autocomplete="off"
+                  autoComplete="off"
                 />
-                <label for="soDienThoai">Số điện thoại</label>
+                <label htmlFor="soDienThoai">Số điện thoại</label>
               </div>
               <div className="inputGroupCodeSignUp">
-                <input name="diaChi" type="text" required autocomplete="off" />
-                <label for="diaChi">Địa chỉ</label>
+                <input name="diaChi" type="text" required autoComplete="off" />
+                <label htmlFor="diaChi">Địa chỉ</label>
               </div>
 
               <div className="flex gap-1 justify-between">
@@ -564,7 +567,7 @@ export default function Checkout() {
           </div>
           <div className="checkout-right">
             {cartItems.map((cart) => (
-              <div className="cart-checkout flex gap-4 mb-3">
+              <div className="cart-checkout flex gap-4 mb-3" key={cart.id}>
                 <div className="relative inline-block">
                   <img
                     className="cart-checkout-img"

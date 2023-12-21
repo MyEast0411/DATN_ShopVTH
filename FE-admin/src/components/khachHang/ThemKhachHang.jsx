@@ -1,24 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import { Modal } from "antd";
-import {
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@mui/material";
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { Button as ButtonAnt } from "antd";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { Button } from "@nextui-org/react";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
@@ -87,7 +75,7 @@ export default function ThemKhachHang() {
     ma: "",
     ten: "",
     anhNguoiDung: "",
-    gioi_tinh: "",
+    gioi_tinh: "Nam",
     sdt: "",
     ngay_sinh: "",
     email: "",
@@ -98,20 +86,7 @@ export default function ThemKhachHang() {
     thanhPho: "",
   });
 
-  const {
-    ma,
-    ten,
-    anhNguoiDung,
-    gioi_tinh,
-    sdt,
-    ngay_sinh,
-    email,
-    cccd,
-    soNha,
-    xa,
-    huyen,
-    tinh,
-  } = khachHang;
+  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, cccd, soNha, xa, huyen, tinh } = khachHang;
 
   function parseDate(input) {
     var parts = input.match(/(\d{2})(\d{2})(\d{4})/);
@@ -181,17 +156,92 @@ export default function ThemKhachHang() {
       reader.readAsDataURL(file);
     }
   };
-
+  const [errTen, setErrTen] = useState("");
+  const [errSdt, setErrSDT] = useState("");
+  const [errEmail, setErrEmail] = useState("");
+  const [errSoNha, setErrSoNha] = useState("");
+  const [errNgaySinh, setErrNgaySinh] = useState("");
+  // sdt
+  function validatePhoneNumber(phoneNumber) {
+    var regex = /^(0[2-9][0-9]{8})$/;
+    return regex.test(phoneNumber);
+  }
+  // email
+  function validateEmail(email) {
+    // Biểu thức chính quy cho địa chỉ email
+    var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    // Kiểm tra xem email có khớp với định dạng không
+    return regex.test(email);
+  }
   const onSubmit = async () => {
-    await axios
-      .post("http://localhost:8080/khach-hang/add", khachHang)
-      .then((response) => {
-        toast.success(`🎉 Thêm thành công`);
-        navigate("/quan-ly-tai-khoan/khach-hang");
-      })
-      .catch((error) => {
-        toast.error(`😢 Thêm thất bại`);
-      });
+    var currentDate = new Date();
+    var dateObject = new Date(khachHang.ngay_sinh);
+    // Lấy thông tin ngày, tháng và năm
+    var day = currentDate.getDate();
+    var month = currentDate.getMonth() + 1; // Lưu ý: Tháng trong JavaScript bắt đầu từ 0
+    var year = currentDate.getFullYear();
+    var check = true;
+
+    console.log(dateObject);
+    console.log(khachHang.ngay_sinh);
+    if (currentDate < dateObject) {
+      setErrNgaySinh("*Ngày sinh không được lớn hơn ngày hiện tại!");
+      check = false;
+    } else {
+      setErrNgaySinh("");
+    }
+    // ten
+
+    if (khachHang.ten == "") {
+      setErrTen("* Không được để trống tên");
+      check = false;
+    } else {
+      setErrTen("");
+    }
+    // so nha
+    var check = true;
+    if (khachHang.soNha == "") {
+      setErrSoNha("* Không được để trống số nhà/ngõ/đường");
+      check = false;
+    } else {
+      setErrSoNha("");
+    }
+    // email
+    if (khachHang.email == "") {
+      setErrEmail("* Không được để trống email");
+      check = false;
+    } else {
+      if (validateEmail(khachHang.email)) {
+        setErrEmail("");
+      } else {
+        setErrEmail("* Email không hợp lệ");
+        check = false;
+      }
+    }
+    // sdt
+
+    if (khachHang.sdt == "") {
+      setErrSDT("* Không được để trống số điện thoại");
+      check = false;
+    } else {
+      if (validatePhoneNumber(khachHang.sdt)) {
+        setErrSDT("");
+      } else {
+        setErrSDT("* SDT không hợp lệ");
+        check = false;
+      }
+    }
+    if (check) {
+      await axios
+        .post("http://localhost:8080/nhan_vien/add", khachHang)
+        .then((response) => {
+          toast.success(`🎉 Thêm thành công`);
+          navigate("/quan-ly-tai-khoan/nhan-vien");
+        })
+        .catch((error) => {
+          toast.error(`😢 Thêm thất bại`);
+        });
+    }
     cancelAdd();
   };
   return (
@@ -226,62 +276,27 @@ export default function ThemKhachHang() {
               }}
               ref={imgDivRef}
             >
-              <span
-                className="absolute text-4xl"
-                style={{ top: "40%", left: "47%" }}
-              >
+              <span className="absolute text-4xl" style={{ top: "40%", left: "47%" }}>
                 +
               </span>
               <div className="absolute" style={{ top: "54%", left: "42%" }}>
-                <button onClick={() => fileInputRef.current.click()}>
-                  Tải ảnh
-                </button>
+                <button onClick={() => fileInputRef.current.click()}>Tải ảnh</button>
               </div>
             </div>
           </div>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-            ref={fileInputRef}
-          />
+          <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} ref={fileInputRef} />
         </div>
         <div className="col-span-2 m-10">
           <div className="grid grid-cols-2 gap-4">
             <div className="left">
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block  text-xl font-medium text-gray-900"
-                >
-                  Họ khách hàng
+                <label htmlFor="phone" className="block  text-xl font-medium text-gray-900">
+                  Tên khách hàng
                 </label>
                 <input
                   value={ten}
                   name="ten"
                   type="text"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="Nhập họ khách hàng"
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-              </div>
-              <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block text-xl font-medium text-gray-900"
-                >
-                  Tên khách hàng
-                </label>
-                <input
-                  type="number"
-                  value={cccd}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                     rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                      w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
@@ -292,12 +307,28 @@ export default function ThemKhachHang() {
                     onChange(e);
                   }}
                 />
+                <p style={{ color: "red" }}>{errTen}</p>
               </div>
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block pt-2 text-xl font-medium text-gray-900"
-                >
+                <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
+                  Căn cước công dân
+                </label>
+                <input
+                  type="number"
+                  value={cccd}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
+                  placeholder="CCCD"
+                  required
+                  onChange={(e) => {
+                    onChange(e);
+                  }}
+                />
+              </div>
+              <div className="mb-8">
+                <label htmlFor="phone" className="block pt-2 text-xl font-medium text-gray-900">
                   Email
                 </label>
                 <input
@@ -314,12 +345,10 @@ export default function ThemKhachHang() {
                     onChange(e);
                   }}
                 />
+                <p style={{ color: "red" }}>{errEmail}</p>
               </div>
               <div className="mb-8">
-                <label
-                  htmlFor="city"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
+                <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Chọn thành phố
                 </label>
                 <select
@@ -336,10 +365,7 @@ export default function ThemKhachHang() {
                 </select>
               </div>
               <div className="mb-6">
-                <label
-                  htmlFor="wards"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
+                <label htmlFor="wards" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Chọn xã phường
                 </label>
                 <select
@@ -359,10 +385,7 @@ export default function ThemKhachHang() {
 
             <div className="right relative">
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block text-xl font-medium text-gray-900"
-                >
+                <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
                   Ngày sinh
                 </label>
                 <input
@@ -372,11 +395,7 @@ export default function ThemKhachHang() {
                                   dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
                   type="date"
                   name="ngay_sinh"
-                  value={
-                    parseDate(ngay_sinh)
-                      ? parseDate(ngay_sinh).toISOString().slice(0, 10)
-                      : ""
-                  }
+                  value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ngay_sinh}
                   id="dateInput"
                   style={{
                     width: "100%",
@@ -386,6 +405,7 @@ export default function ThemKhachHang() {
                     onChange(e);
                   }}
                 />
+                <p style={{ color: "red" }}>{errNgaySinh}</p>
                 <button
                   type="button"
                   style={{
@@ -399,19 +419,10 @@ export default function ThemKhachHang() {
                   className="bg-blue-500 text-white rounded w-32 h-10"
                   onClick={showModal}
                 >
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/241/241521.png"
-                    className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2"
-                  />
+                  <img src="https://cdn-icons-png.flaticon.com/512/241/241521.png" className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2" />
                   <span className="ml-8">Quét QR</span>
                 </button>
-                <Modal
-                  open={isModalOpen}
-                  onOk={handleOk}
-                  onCancel={handleCancel}
-                  style={{ position: "relative" }}
-                  className=""
-                >
+                <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ position: "relative" }} className="">
                   <div>
                     <QrReader
                       onResult={(data) => {
@@ -461,28 +472,14 @@ export default function ThemKhachHang() {
                     onChange={handleChange}
                   >
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <FormControlLabel
-                        value="Nam"
-                        control={<Radio />}
-                        label="Nam"
-                        checked={gioi_tinh === "Nam"}
-                        style={{ marginRight: "10px" }}
-                      />
-                      <FormControlLabel
-                        value="Nữ"
-                        checked={gioi_tinh === "Nữ"}
-                        control={<Radio />}
-                        label="Nữ"
-                      />
+                      <FormControlLabel value="Nam" control={<Radio />} label="Nam" checked={gioi_tinh === "Nam"} style={{ marginRight: "10px" }} />
+                      <FormControlLabel value="Nữ" checked={gioi_tinh === "Nữ"} control={<Radio />} label="Nữ" />
                     </div>
                   </RadioGroup>
                 </FormControl>
               </div>
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block pt-14 text-xl font-medium text-gray-900"
-                >
+                <label htmlFor="phone" className="block pt-14 text-xl font-medium text-gray-900">
                   Số điện thoại
                 </label>
                 <input
@@ -499,13 +496,11 @@ export default function ThemKhachHang() {
                     onChange(e);
                   }}
                 />
+                <p style={{ color: "red" }}>{errSdt}</p>
               </div>
 
               <div className="mb-6">
-                <label
-                  htmlFor="District"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
+                <label htmlFor="District" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Chọn huyện
                 </label>
                 <select
@@ -522,10 +517,7 @@ export default function ThemKhachHang() {
                 </select>
               </div>
               <div className="mb-8">
-                <label
-                  htmlFor="phone"
-                  className="block mb-2 text-xl font-medium text-gray-900"
-                >
+                <label htmlFor="phone" className="block mb-2 text-xl font-medium text-gray-900">
                   Số nhà/Ngõ/Đường
                 </label>
                 <input
@@ -542,13 +534,10 @@ export default function ThemKhachHang() {
                     onChange(e);
                   }}
                 />
+                <p style={{ color: "red" }}>{errSoNha}</p>
               </div>
               <div className="mt-6 flex items-center justify-end gap-x-6">
-                <Link
-                  to="/quan-ly-tai-khoan/khach-hang"
-                  type="button"
-                  className="text-sm rounded-md  font-semibold leading-6 text-gray-900"
-                >
+                <Link to="/quan-ly-tai-khoan/khach-hang" type="button" className="text-sm rounded-md  font-semibold leading-6 text-gray-900">
                   Cancel
                 </Link>
 
@@ -587,9 +576,7 @@ export default function ThemKhachHang() {
           </div>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn thêm khách hàng này?
-          </DialogContentText>
+          <DialogContentText>Bạn có chắc muốn thêm khách hàng này?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelAdd} color="warning">

@@ -59,4 +59,6 @@ public class KhachHang {
 
     @Column(name = "deleted")
     private Integer deleted;
+
+
 }
