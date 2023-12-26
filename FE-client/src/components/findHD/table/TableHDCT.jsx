@@ -12,6 +12,7 @@ import {
 } from "@nextui-org/react";
 
 import { columns, users } from "./data";
+import { Image } from "antd";
 
 const statusColorMap = {
   active: "success",
@@ -24,45 +25,37 @@ export default function TableHDCT({ listHDCT }) {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "anh":
+      case "thongtin":
         return (
-          <User
-            avatarProps={{
-              radius: "lg",
-              src: user.id_chi_tiet_san_pham.defaultImg,
-            }}
-            // description={user.email}
-            name={cellValue}
-          >
-            {user.id_chi_tiet_san_pham.ten}
-          </User>
-        );
-      case "giaTien":
-        return (
-          <User
-            avatarProps={{ radius: "lg", src: user.avatar }}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </User>
+          <div className="flex" style={{ width: 300 }}>
+            <div className="w-1/3 me-1">
+              <Image
+                width={50}
+                src={user.id_chi_tiet_san_pham.defaultImg}
+                style={{ borderRadius: 5 }}
+              />
+            </div>
+            <div className="w-2/3 ">
+              <p className="mb-2">{user.id_chi_tiet_san_pham.ten}</p>
+              <p className="text-red-400 font-medium">
+                {Intl.NumberFormat().format(user.giaTien)} ₫
+              </p>
+            </div>
+          </div>
         );
       case "soLuong":
         return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{user.soLuong} đôi</p>
-          </div>
+          <p>
+            <span className="text-red-400 font-medium">{cellValue}</span> cái
+          </p>
         );
-      case "status":
+      case "total":
         return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[user.status]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
+          <>
+            <span className="text-red-400 font-medium">
+              {Intl.NumberFormat().format(user.soLuong * user.giaTien)} ₫
+            </span>
+          </>
         );
 
       default:

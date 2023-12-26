@@ -56,7 +56,7 @@ function InForHD({ item }) {
           <p>
             Khách hàng :{" "}
             <span className="italic font-light">
-              &nbsp;&nbsp; {item.hoaDon?.id_khach_hang}
+              &nbsp;&nbsp; {item.hoaDon?.id_khach_hang.ten}
             </span>
           </p>
           <p>
@@ -136,12 +136,12 @@ function InForHD({ item }) {
             </span>{" "}
           </p>
 
-          <p>
+          {/* <p>
             Trạng Thái :
             <span className="italic font-light">
               &nbsp;&nbsp; {item.hoaDon.trangThai}
             </span>{" "}
-          </p>
+          </p> */}
 
           <p>
             Chi tiết đơn hàng :&nbsp;&nbsp;
@@ -158,7 +158,7 @@ function InForHD({ item }) {
           </p>
 
           <Modal
-            size="md"
+            size="3xl"
             isOpen={isOpen}
             onOpenChange={onOpenChange}
             // placement="top-center"
@@ -221,7 +221,7 @@ function InForHD({ item }) {
                       <ModalHeader className="flex flex-col gap-1">
                         Hóa đơn chi tiết
                       </ModalHeader>
-                      <ModalBody>
+                      <ModalBody className="w-full">
                         <TableHDCT listHDCT={item.hoaDonChiTiets} />
                       </ModalBody>
                       <ModalFooter>
@@ -240,36 +240,43 @@ function InForHD({ item }) {
       <hr />
       <div className=" timeline mt-5">
         <div className="w-[32rem]">
-          <Timeline>
-            {item.lichSuHoaDons.map((lshd, i) => (
-              <>
-                <TimelineItem key={i + 1}>
-                  <TimelineConnector />
-                  <TimelineHeader className="h-3">
-                    <TimelineIcon />
-                    <Typography
-                      variant="h6"
-                      color="blue-gray"
-                      className="leading-none"
-                    >
-                      {lshd.moTaHoaDon}
-                    </Typography>
-                  </TimelineHeader>
-                  <TimelineBody className="pb-8">
-                    <Typography
-                      variant="small"
-                      color="gary"
-                      className="font-normal text-gray-600"
-                    >
-                      {format(new Date(lshd.ngayTao), "dd-MM-yyyy HH:mm")}
-
-                      {lshd.nguoiTao}
-                    </Typography>
-                  </TimelineBody>
-                </TimelineItem>
-              </>
-            ))}
-          </Timeline>
+          {item.lichSuHoaDons.length == 0 ? (
+            ""
+          ) : (
+            <>
+              <Timeline>
+                {item.lichSuHoaDons.map((lshd, i) => (
+                  <>
+                    <TimelineItem key={i + 1}>
+                      <TimelineConnector />
+                      <TimelineHeader className="h-3">
+                        <TimelineIcon />
+                        <Typography
+                          variant="h6"
+                          color="blue-gray"
+                          className="leading-none"
+                        >
+                          {lshd.moTaHoaDon}
+                        </Typography>
+                      </TimelineHeader>
+                      <TimelineBody className="pb-8">
+                        <Typography
+                          variant="small"
+                          color="gary"
+                          className="font-normal text-gray-600"
+                        >
+                          <p>
+                            {format(new Date(lshd.ngayTao), "dd-MM-yyyy HH:mm")}
+                          </p>
+                          <p>Người tạo : {lshd.nguoiTao}</p>
+                        </Typography>
+                      </TimelineBody>
+                    </TimelineItem>
+                  </>
+                ))}
+              </Timeline>
+            </>
+          )}
         </div>
       </div>
     </div>

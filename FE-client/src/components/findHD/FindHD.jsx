@@ -17,15 +17,19 @@ import {
 
 import { CiSliderHorizontal } from "react-icons/ci";
 import { ArrowRightOutlined, DownOutlined } from "@ant-design/icons";
-import { Dropdown, Space, Input, Result } from "antd";
-import { useState } from "react";
+import { Dropdown, Space, Input, Result, notification } from "antd";
+import React, { useState } from "react";
 import axios from "axios";
 import InForHD from "./InForHD";
 
+const Context = React.createContext({
+  name: "",
+});
+
 function FindHD() {
-  // const url = "http://localhost:8080/hoa_don/";
-  const [hoadon, setHoaDon] = useState([]);
-  const [maHD, setMaHD] = useState("");
+  const [api, contextHolder] = notification.useNotification();
+  const [hoadon, setHoaDon] = React.useState([]);
+  const [maHD, setMaHD] = React.useState("");
 
   const handleSearch = (e) => {
     const text = e.target.value.replaceAll(" ", "");
@@ -34,8 +38,7 @@ function FindHD() {
 
   const handleSubmit = async () => {
     if (maHD == "") {
-      // thong bao
-      console.log("khongo dfeer trong");
+      openNotification("topRight");
       return;
     }
     await axios
@@ -54,8 +57,22 @@ function FindHD() {
       behavior: "smooth",
     });
   };
+
+  const openNotification = (placement) => {
+    api.error({
+      message: "Thông báo ",
+      description: (
+        <Context.Consumer>
+          {({ name }) => `Yêu cầu nhập mã hóa đơn để tìm`}
+        </Context.Consumer>
+      ),
+      placement,
+    });
+  };
+
   return (
     <>
+      {contextHolder}
       <InfoTop />
       <Header />
       <div
@@ -451,7 +468,7 @@ function FindHD() {
                   <Result
                     status="404"
                     title="404"
-                    subTitle="Chưa có hóa đơn"
+                    subTitle="Không có hóa đơn"
                     // extra={<Button type="primary">Search</Button>}
                     extra={
                       <Button type="primary" onClick={scrollUp}>
