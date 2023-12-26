@@ -55,24 +55,28 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
 
 
     //---------------Hội----------------//
-    @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList and c.deleted = 1")
+    @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList")
     List<SanPhamChiTiet> getSanPhamChiTietByMaList(@Param("maList") List<String> maList);
 
-    @Query(value = "SELECT * FROM san_pham_chi_tiet  WHERE ma IN :maList and deleted = 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM san_pham_chi_tiet  WHERE ma IN :maList ", nativeQuery = true)
     List<SanPhamChiTiet> getSPCTByMaSPCT(@Param("maList") List<String> maList);
 
     @Query(value = "select * from san_pham_chi_tiet where san_pham_chi_tiet.id_san_pham = :idSP and deleted = 1", nativeQuery = true)
     List<SanPhamChiTiet> getAllSanPhamChiTietByIdSanPham(@Param("idSP") String idSP);
 
-    @Query(value = "SELECT x FROM SanPhamChiTiet x where x.id_san_pham.id = :id and x.deleted = 1")
+    @Query(value = "SELECT x FROM SanPhamChiTiet x where x.id_san_pham.id = :id")
     List<SanPhamChiTiet> getSanPhamChiTietByIdSanPham(@Param("id") String id);
 
-    @Query(value = "SELECT s FROM SanPhamChiTiet s WHERE s.id IN :idList and s.deleted = 1")
+    @Query(value = "SELECT s FROM SanPhamChiTiet s WHERE s.id IN :idList")
     List<SanPhamChiTiet> getAllSanPhamChiTietByIdList(@Param("idList") List<String> idList);
+
+
+    @Query(value = "select * from san_pham_chi_tiet where default_img = :urlImg",nativeQuery = true)
+    List<SanPhamChiTiet> getSanPhamChiTietByDefaultImg(@Param("urlImg") String urlImg);
     //---------------Hội----------------//
 
 
-    @Query(value = "select * from  san_pham_chi_tiet where so_luong_ton <= 10 and deleted = 1" , nativeQuery = true)
+    @Query(value = "select * from  san_pham_chi_tiet where so_luong_ton <= 10" , nativeQuery = true)
     List<SanPhamChiTiet> getAllSPCTMin();
 
 
