@@ -113,7 +113,11 @@ public class HoaDonController {
 
     @PostMapping("taoHoaDon")
     public ResponseEntity<HoaDon> taoHoaDon() {
-        Integer maxMa = Integer.parseInt(hoaDonRepository.getMaxMa());
+        String maxMaString = hoaDonRepository.getMaxMa();
+        Integer maxMa = (maxMaString != null) ? Integer.parseInt(maxMaString) : null;
+        if (maxMa == null) {
+            maxMa = 1;
+        }
         HoaDon hoaDon = HoaDon.builder()
                 .ma("HD" + (maxMa + 1))
                 .trangThai(7)
