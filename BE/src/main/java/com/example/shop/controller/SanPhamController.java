@@ -6,6 +6,7 @@ import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.requests.DeGiayRequest;
 import com.example.shop.requests.KichCoRequest;
+//import com.example.shop.requests.SanPhamRequest;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.ChiTietSanPhamVM;
 import com.example.shop.viewmodel.HinhAnhVM;
@@ -95,7 +96,7 @@ public class SanPhamController {
 
     @GetMapping("/getAllKC")
     List<KichCo> getAllKC() {
-        return kichCoRepository.findAll();
+        return kichCoRepository.getAll();
     }
 
     @GetMapping("/getAllNH")
@@ -196,7 +197,8 @@ public class SanPhamController {
         List<SanPhamChiTiet> lst = new ArrayList<>();
         for (Object[] row : sanPham) {
             ChiTietSanPhamVM x = new ChiTietSanPhamVM();
-            x.setTen((String) row[1]);
+            x.setId_san_pham((String) row[1]);
+            x.setTen((String) row[2]);
             x.setSoLuongTon((Integer) row[3]);
             x.setMoTa((String) row[5]);
             x.setGiaBan(BigDecimal.valueOf(Double.parseDouble(row[7].toString())));
@@ -208,20 +210,6 @@ public class SanPhamController {
             x.setId_de_giay((String) row[13]);
             list.add(x);
         }
-        SanPham sp = new SanPham();
-//        Boolean check = false;
-//        for (SanPham x :
-//                sanPhamRepository.findAll()) {
-//            if (x.getTen().equals(list.get(0).getTen())) {
-//                sp.setId(x.getId());
-//                check = true;
-//            }
-//        }
-//        if (!check) {
-//            Integer maxMa = Integer.parseInt(sanPhamRepository.findMaxMa().replace("SP", ""));
-//            sp = new SanPham(null, "SP" + (maxMa + 1), list.get(0).getTen(), new Date(), null, "", "", 1);
-//            sp = sanPhamRepository.save(sp);
-//        }
         for (ChiTietSanPhamVM x :
                 list) {
             int seconds = (int) (System.currentTimeMillis() / 1000);
@@ -233,7 +221,8 @@ public class SanPhamController {
             spct.setMa("SPCT" + threeNumbers);
             String uuid = UUID.randomUUID().toString();
             spct.setId(uuid);
-            spct.setId_san_pham(sanPhamRepository.findById(sp.getId()).get());
+            spct.setTen(x.getTen());
+            spct.setId_san_pham(sanPhamRepository.findById(x.getId_san_pham()).get());
             spct.setId_mau_sac(mauSacRepository.findByMaMau(x.getId_mau_sac()));
             spct.setId_de_giay(deGiayRepository.findById(x.getId_de_giay()).get());
             spct.setId_kich_co(kichCoRepository.findByTen(x.getId_kich_co()));
@@ -247,8 +236,7 @@ public class SanPhamController {
             spct.setKhoiLuong(x.getKhoiLuong());
             spct.setSoLuongTon(x.getSoLuongTon());
             spct.setTrangThai("1");
-            lst.add(spct);
-
+            spct.setDeleted(1);
             Pattern pattern = Pattern.compile("(Màu [^=]+)=\\[([^\\]]+)]");
             Matcher matcher = pattern.matcher(hinhAnh);
             while (matcher.find()) {
@@ -262,10 +250,12 @@ public class SanPhamController {
                         anh.setMauSac(colorName);
                         anh.setTen(link);
                         anh.setId_san_pham_chi_tiet(spct);
+                        spct.setDefaultImg(link);
                         listHinhAnh.add(anh);
                     }
                 }
             }
+            lst.add(spct);
         }
         try {
             repo.saveAll(lst);
@@ -354,11 +344,46 @@ public class SanPhamController {
 
     }
 
+//    @PostMapping("/addSanPham")
+//    public ResponseEntity addKichCo(@RequestBody SanPhamRequest request) {
+//        System.out.println(request.getTenSanPham());
+//        try {
+//            SanPham sanPham = new SanPham();
+//            Integer maxMa = Integer.parseInt(sanPhamRepository.getMaxMa());
+//            sanPham.setMa("SP" + (maxMa + 1));
+//            sanPham.setTen(request.getTenSanPham());
+//            sanPham.setDeleted(1);
+//            sanPhamRepository.save(sanPham);
+//            return ResponseEntity.ok("Thành công");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại sản phẩm này!");
+//        }
+//
+//    }
+
     //-------------Hội-----------------
     @GetMapping("/get-chiTietSP-by-ListMa/{maList}")
     public ResponseEntity<List<SanPhamChiTiet>> getByListMa(@PathVariable List<String> maList) {
-        List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaList(maList);
-        return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
+        try{
+            List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaList(maList);
+            return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/getSanPhamChiTietByMaListSPCT/{maList}")
+    public ResponseEntity<List<SanPhamChiTiet>> getSanPhamChiTietByMaListSPCT(@PathVariable List<String> maList) {
+        try{
+            List<SanPhamChiTiet> detailedProducts = repo.getAllSanPhamChiTietByIdList(maList);
+            return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @GetMapping("/get-all-san-pham")
@@ -374,7 +399,7 @@ public class SanPhamController {
 
     @GetMapping("/get-all-san-pham-enhanced")
     public List<Map<String, Object>> getAllSanPhamEnhanced() {
-        List<SanPham> sanPhams = sanPhamRepository.findAll();
+        List<SanPham> sanPhams = sanPhamRepository.getAll();
 
         return sanPhams.stream().map(sanPham -> {
             Map<String, Object> sanPhamInfo = new HashMap<>();
@@ -434,6 +459,19 @@ public class SanPhamController {
     @GetMapping("/getAllSanPhamChiTietByIdList")
     public List<SanPhamChiTiet> getAllSanPhamChiTietByIdList(@RequestParam List<String> idList) {
         return repo.getAllSanPhamChiTietByIdList(idList);
+    }
+
+    @PostMapping("/getSanPhamChiTietByDefaultImg")
+    public ResponseEntity<List<SanPhamChiTiet>> getSanPhamChiTietByDefaultImg(@RequestBody Map<String, String> requestBody) {
+        try{
+            String urlImg = requestBody.get("urlImg");
+
+            return ResponseEntity.ok(repo.getSanPhamChiTietByDefaultImg(urlImg));
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     //-------------Hội-----------------
