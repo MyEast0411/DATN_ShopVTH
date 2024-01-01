@@ -692,10 +692,10 @@ const listTitleTimline = [
     title: `Chờ xác nhận`,
     icon: FiLoader,
   },
-  {
-    title: `Xác Nhận`,
-    icon: GiConfirmed,
-  },
+  // {
+  //   title: `Xác Nhận`,
+  //   icon: GiConfirmed,
+  // },
   {
     title: `Chờ Vận Chuyển`,
     icon: FaShippingFast,
