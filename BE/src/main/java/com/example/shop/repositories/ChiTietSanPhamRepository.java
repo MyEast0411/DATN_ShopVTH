@@ -57,7 +57,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
     //---------------Hội----------------//
     @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList")
     List<SanPhamChiTiet> getSanPhamChiTietByMaList(@Param("maList") List<String> maList);
-
+    @Query(value = "select c from SanPhamChiTiet c where c.ma in :maList")
+    List<SanPhamChiTiet> getSanPhamChiTietByMaListSPCT(@Param("maList") List<String> maList);
     @Query(value = "SELECT * FROM san_pham_chi_tiet  WHERE ma IN :maList ", nativeQuery = true)
     List<SanPhamChiTiet> getSPCTByMaSPCT(@Param("maList") List<String> maList);
 
