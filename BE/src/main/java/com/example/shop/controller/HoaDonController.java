@@ -1,13 +1,17 @@
 package com.example.shop.controller;
 
 import com.example.shop.dto.HoaDonCTTDTO;
+import com.example.shop.dto.HoaDonClientDTO;
 import com.example.shop.dto.ThanhToanHoaDonDTO;
 import com.example.shop.entity.HoaDon;
+import com.example.shop.entity.HoaDonChiTiet;
 import com.example.shop.entity.LichSuHoaDon;
 import com.example.shop.entity.Voucher;
 import com.example.shop.repositories.HoaDonRepository;
 import com.example.shop.repositories.KhachHangRepository;
 import com.example.shop.repositories.NhanVienRepository;
+import com.example.shop.requests.HoaDonRequest;
+import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +54,8 @@ public class HoaDonController {
 
     @Autowired
     private LichSuHoaDonService lichSuHoaDonService;
+    @Autowired
+    private HoaDonChiTietService hoaDonChiTietService;
 
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
@@ -218,6 +224,27 @@ public class HoaDonController {
         System.out.println(don);
 //        System.out.println(mess);
         return new ResponseEntity(don , HttpStatus.OK);
+    }
+
+
+    @PostMapping("findHoaDons")
+    public ResponseEntity<List<HoaDonClientDTO>> findHD(@RequestBody HoaDonRequest hoaDonRequest){
+        List<String> requestData =  hoaDonRequest.getData();
+        List<HoaDonClientDTO> list =  new ArrayList<>();
+        for (String maHD : requestData) {
+            HoaDon hoaDon = hoaDonRepository.getHoaDonByMa(maHD);
+            if (hoaDon != null){
+                List<LichSuHoaDon> lichSuHoaDons = lichSuHoaDonService.getLichSuHoaDons(hoaDon.getId());
+                List<HoaDonChiTiet> hoaDonChiTiets = hoaDonChiTietService.getHDCT(hoaDon.getId());
+                HoaDonClientDTO dto = new HoaDonClientDTO();
+                dto.setLichSuHoaDons(lichSuHoaDons);
+                dto.setHoaDon(hoaDon);
+                dto.setHoaDonChiTiets(hoaDonChiTiets);
+                list.add(dto);
+            }
+        }
+
+        return ResponseEntity.ok(list);
     }
 
 
