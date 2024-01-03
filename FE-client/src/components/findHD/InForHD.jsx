@@ -56,7 +56,7 @@ function InForHD({ item }) {
           <p>
             Khách hàng :{" "}
             <span className="italic font-light">
-              &nbsp;&nbsp; {item.hoaDon?.id_khach_hang.ten}
+              &nbsp;&nbsp; {item.hoaDon?.id_khach_hang?.ten}
             </span>
           </p>
           <p>

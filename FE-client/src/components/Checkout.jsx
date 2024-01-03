@@ -309,7 +309,6 @@ export default function Checkout() {
     const total = parseFloat(subtotal) + localShippingCost;
     console.log(updatedShippingCost);
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       setPhiVanChuyen(updatedShippingCost);
       setTongTien(total);
@@ -567,15 +566,15 @@ export default function Checkout() {
           </div>
           <div className="checkout-right">
             {cartItems.map((cart) => (
-              <div className="cart-checkout flex gap-4 mb-3" key={cart.id}>
+              <div className="cart-checkout flex gap-4 mb-3" key={cart.ids}>
                 <div className="relative inline-block">
                   <img
                     className="cart-checkout-img"
-                    src={cart.product.defaultImg}
+                    src={cart?.product.defaultImg}
                     alt=""
                   />
                   <p className="badge badge-cart-checkout absolute">
-                    {cart.product.soLuong}
+                    {cart?.product.soLuong}
                   </p>
                 </div>
                 <div className="cart-checkout-info text-[16px] font-normal">

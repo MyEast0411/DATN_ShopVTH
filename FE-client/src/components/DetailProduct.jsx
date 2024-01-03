@@ -19,6 +19,7 @@ import AlsoLike from "./AlsoLike";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
 import errorIcon from "../assets/errorIcon.png";
+import { v4 as uuidv4 } from "uuid";
 
 export default function DetailProduct() {
   const { idSP } = useParams();
@@ -81,7 +82,10 @@ export default function DetailProduct() {
     };
     fetchSPCTbyUrlImg();
   }, [selectedImage]);
-
+  const renderID = () => {
+    const uniqueID = uuidv4();
+    return uniqueID;
+  };
   const addToCart = () => {
     console.log(sizeBorder);
     if (!sizeBorder) {
@@ -91,6 +95,7 @@ export default function DetailProduct() {
 
     // Lấy dữ liệu từ localStorage (nếu có)
     let maList = localStorage.getItem("maList");
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     // Kiểm tra xem đã có dữ liệu trong localStorage chưa
     if (maList) {
@@ -116,6 +121,21 @@ export default function DetailProduct() {
 
     // Lưu lại mảng đã cập nhật vào localStorage
     localStorage.setItem("maList", JSON.stringify(maList));
+    cart.push({
+      product: {
+        ids: renderID(),
+        ma: ma,
+        defaultImg: selectedImageDisplay,
+        ten: sanPhamChiTiets[0].ten,
+        kichCo: selectedSize,
+        soLuong: 1,
+        theLoai: selectedTheLoai,
+        giaBan: selectedGiaBan,
+      },
+    });
+
+    console.log("cart: ", cart);
+    localStorage.setItem("cart", JSON.stringify(cart));
 
     if (typeof window.cartUpdatedCallback === "function") {
       window.cartUpdatedCallback();

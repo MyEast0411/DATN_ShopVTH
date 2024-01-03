@@ -180,8 +180,8 @@ export default function TableCommon({ data }) {
               color="primary"
               page={page}
               total={pages}
-              onChange={(page) => setPage(page)}
-            />
+              onChange={(newPage) => setPage(newPage)}
+              />
           </div>
         ) : null
       }
