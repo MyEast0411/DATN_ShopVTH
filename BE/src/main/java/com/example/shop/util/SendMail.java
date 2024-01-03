@@ -69,9 +69,9 @@ public class SendMail {
             htmlBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
 
             MimeBodyPart imageBodyPart = new MimeBodyPart();
-//            DataSource source = new FileDataSource("C:\\Users\\Admin\\Pictures\\Saved Pictures\\logo.png");
+            DataSource source = new FileDataSource("C:\\Users\\Admin\\Pictures\\Saved Pictures\\logo.png");
             //Hoi
-            DataSource source = new FileDataSource("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\logo.png");
+//            DataSource source = new FileDataSource("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\logo.png");
             imageBodyPart.setDataHandler(new DataHandler(source));
             imageBodyPart.setFileName("Hóa đơn của bạn");
             imageBodyPart.setHeader("Content-ID", "<image_cid>");
@@ -90,7 +90,71 @@ public class SendMail {
             throw new RuntimeException(e);
         }
     }
+    public static void sendMailNhanVien(String toMail, String pass) {
+        final String username = "uandcshop111@gmail.com";
+        final String password = "hdbepdrofxwmxyyg";
 
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(prop,
+                new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("uandcshop111@gmail.com"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toMail));
+            message.setSubject("Tạo tài khoản shop VTH thành công !!!");
+
+            String htmlBody = "<html>"
+                    + "<head>"
+                    + "<style>"
+                    + "body { font-family: Arial, sans-serif; background-color: #007bff; color: #ffffff; padding: 20px; }"
+                    + ".container { max-width: 600px; margin: 0 auto; background-color: #fff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 4px; padding: 20px; }"
+                    + "h1 { text-align: center; color: #000000; }"
+                    + "img.logo { display: block; margin: 0 auto; }"
+                    + ".form-group { text-align: center; }"
+                    + "label { display: block; font-weight: bold; margin-bottom: 5px; }"
+                    + "input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }"
+                    + "button { background-color: #0056b3; color: #fff; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }"
+                    + "button:hover { background-color: #003d80; }"
+                    + "</style>"
+                    + "</head>"
+                    + "<body>"
+                    + "<div class='container'>"
+                    + "<h1> Shop VTH</h1>"
+                    + "<form>"
+                    + "<div class='form-group'>"
+                    + "<label for='username'>Tài khoản :&nbsp;" + toMail + " </label>"
+                    + "</div>"
+                    + "<div class='form-group'>"
+                    + "<label for='password'>Mật khẩu :&nbsp;" + pass + "</label>"
+                    + "</div>"
+                    + "</form>"
+                    + "</div>"
+                    + "</body>"
+                    + "</html>";
+            MimeBodyPart htmlBodyPart = new MimeBodyPart();
+            htmlBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
+
+            MimeMultipart multipart = new MimeMultipart();
+            multipart.addBodyPart(htmlBodyPart);
+
+            message.setContent(multipart);
+            Transport.send(message);
+            System.out.println("Thành công !");
+        } catch (AddressException e) {
+            throw new RuntimeException(e);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static void SendMailOptions(String toMail,String contentBody) {
         final String username = "uandcshop111@gmail.com";
         final String password = "hdbepdrofxwmxyyg";

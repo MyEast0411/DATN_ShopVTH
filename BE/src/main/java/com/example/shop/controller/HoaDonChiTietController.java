@@ -204,14 +204,14 @@ public class HoaDonChiTietController {
                     if (productObject instanceof Map) {
                         Map<?, ?> productMap = (Map<?, ?>) productObject;
 
-                        String id = (String) productMap.get("id");
+                        String id = (String) productMap.get("ma");
 //                        Integer kichCo = Integer.parseInt(productMap.get("kichCo").toString());
                         Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
                         Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
 
                         HoaDonChiTiet hdct = new HoaDonChiTiet();
                         hdct.setId_hoa_don(hoaDon);
-                        hdct.setId_chi_tiet_san_pham(ssSP.findById(id).get());
+                        hdct.setId_chi_tiet_san_pham(ssSP.findByMa(id));
                         hdct.setSoLuong(soLuong);
                         hdct.setGiaTien(BigDecimal.valueOf(giaBan));
                         listHDCT.add(hdct);

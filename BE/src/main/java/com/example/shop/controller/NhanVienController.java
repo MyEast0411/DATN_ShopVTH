@@ -7,6 +7,7 @@ import com.example.shop.entity.NhanVien;
 import com.example.shop.repositories.ChucVuRepository;
 import com.example.shop.repositories.NhanVienRepository;
 import com.example.shop.requests.ChucVuRequest;
+import com.example.shop.util.SendMail;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.KhachHangVM;
 import com.example.shop.viewmodel.NhanVienVM;
@@ -85,7 +86,7 @@ public class NhanVienController {
             kh.setDeleted(1);
             kh.setId_chuc_vu(chucVuRepository.findById(khachHang.getChucVu()).get());
             kh.setMatKhau(randomString);
-            System.out.println(kh);
+            SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
             nhanVienRepository.save(kh);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {

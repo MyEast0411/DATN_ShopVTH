@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { QrReader } from "react-qr-reader";
-import { Modal } from "antd";
+import { Modal, Form, Input } from "antd";
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
@@ -100,6 +100,7 @@ export default function ThemKhachHang() {
   }
 
   const onChange = (e) => {
+    console.log(e.target.name);
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -231,17 +232,17 @@ export default function ThemKhachHang() {
         check = false;
       }
     }
-    if (check) {
+    // if (check) {
       await axios
-        .post("http://localhost:8080/nhan_vien/add", khachHang)
+        .post("http://localhost:8080/khach-hang/add", khachHang)
         .then((response) => {
           toast.success(`🎉 Thêm thành công`);
-          navigate("/quan-ly-tai-khoan/nhan-vien");
+          navigate("/quan-ly-tai-khoan/khach-hang");
         })
         .catch((error) => {
           toast.error(`😢 Thêm thất bại`);
         });
-    }
+    // }
     cancelAdd();
   };
   return (
@@ -289,65 +290,94 @@ export default function ThemKhachHang() {
         <div className="col-span-2 m-10">
           <div className="grid grid-cols-2 gap-4">
             <div className="left">
-              <div className="mb-8">
-                <label htmlFor="phone" className="block  text-xl font-medium text-gray-900">
-                  Tên khách hàng
-                </label>
-                <input
-                  value={ten}
-                  name="ten"
-                  type="text"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="Nhập tên khách hàng"
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-                <p style={{ color: "red" }}>{errTen}</p>
-              </div>
-              <div className="mb-8">
-                <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
-                  Căn cước công dân
-                </label>
-                <input
-                  type="number"
-                  value={cccd}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="CCCD"
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-              </div>
-              <div className="mb-8">
-                <label htmlFor="phone" className="block pt-2 text-xl font-medium text-gray-900">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  name="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="Email"
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-                <p style={{ color: "red" }}>{errEmail}</p>
-              </div>
-              <div className="mb-8">
+              <Form
+                initialValues={{
+                  remember: true,
+                }}
+                // onFinish={onFinish}
+              >
+                <div className="mb-20">
+                  <p className="pb-2">Họ khách hàng</p>
+                  <Form.Item
+                    name="ho"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Họ khách hàng không được để trống!',
+                      },
+                      {
+                        pattern: /^[^\d]*$/,
+                        message: 'Họ khách hàng không hợp lệ! Không được nhập số.',
+                      }
+                    ]}
+                  >
+                    <Input
+                      value={ten}
+                      name="ho"
+                      style={{height : "42px"}}
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                      placeholder="Nhập họ khách hàng"
+                    />
+                    </Form.Item>
+                </div>
+
+                <div className="mb-20">
+                  <p className="pb-2 text-xl">Tên khách hàng</p>
+                  <Form.Item
+                    name="ten"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Tên khách hàng không hợp lệ!",
+                      },
+                      {
+                        pattern: /^[^\d]*$/,
+                        message: 'Tên khách hàng không hợp lệ! Không được nhập số.',
+                      }
+                    ]}
+                  >
+                    <Input
+                      value={ten}
+                      name="ten"
+                      style={{height : "42px"}}
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                      placeholder="Nhập tên khách hàng"
+                    />
+                    </Form.Item>
+                </div>
+
+                <div className="mb-8">
+                  <p className="pb-2 text-xl">Email khách hàng</p>
+                  <Form.Item
+                    name="email"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Email khách hàng đang trống!",
+                      },
+                      {
+                        pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                        message: 'Email khách hàng không hợp lệ!',
+                      }
+                    ]}
+                  >
+                    <Input
+                      value={email}
+                      name="email"
+                      style={{height : "42px"}}
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                      placeholder="Nhập email khách hàng"
+                    />
+                    </Form.Item>
+                </div>
+              </Form>
+              <div className="mb-8 mt-20">
                 <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Chọn thành phố
                 </label>
@@ -384,11 +414,13 @@ export default function ThemKhachHang() {
             </div>
 
             <div className="right relative">
-              <div className="mb-8">
-                <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
+              <Form>
+
+              <div className="mb-12">
+                <label htmlFor="phone" className="block text-xl font-bold">
                   Ngày sinh
                 </label>
-                <input
+                <Input
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                 rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                  w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
@@ -400,6 +432,7 @@ export default function ThemKhachHang() {
                   style={{
                     width: "100%",
                   }}
+                  max={new Date().toISOString().slice(0, 10)}
                   required
                   onChange={(e) => {
                     onChange(e);
@@ -450,7 +483,7 @@ export default function ThemKhachHang() {
                   </div>
                 </Modal>
               </div>
-              <div className="mb-8 flex">
+              <div className="flex" style={{marginBottom : "87px"}}>
                 <FormControl>
                   <FormLabel
                     id="demo-controlled-radio-buttons-group"
@@ -478,26 +511,32 @@ export default function ThemKhachHang() {
                   </RadioGroup>
                 </FormControl>
               </div>
-              <div className="mb-8">
-                <label htmlFor="phone" className="block pt-14 text-xl font-medium text-gray-900">
-                  Số điện thoại
-                </label>
-                <input
-                  type="number"
-                  name="sdt"
-                  value={sdt}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20  dark:focus:border-blue-500"
-                  placeholder="Số điện thoại"
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-                <p style={{ color: "red" }}>{errSdt}</p>
-              </div>
+              <div className="mb-20">
+                  <p className="pb-2 text-xl">Số điện thoại</p>
+                  <Form.Item
+                    name="sdt"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Số điện thoại đang trống!",
+                      },
+                      {
+                        pattern: /^[^\D]*$/,
+                        message: 'Số điện thoại không hợp lệ! Không được nhập chữ.',
+                      }
+                    ]}
+                  >
+                    <Input
+                      value={sdt}
+                      name="sdt"
+                      style={{height : "42px"}}
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                      placeholder="Nhập số điện thoại"
+                    />
+                    </Form.Item>
+                </div>
 
               <div className="mb-6">
                 <label htmlFor="District" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -536,6 +575,9 @@ export default function ThemKhachHang() {
                 />
                 <p style={{ color: "red" }}>{errSoNha}</p>
               </div>
+              </Form>
+              
+
               <div className="mt-6 flex items-center justify-end gap-x-6">
                 <Link to="/quan-ly-tai-khoan/khach-hang" type="button" className="text-sm rounded-md  font-semibold leading-6 text-gray-900">
                   Cancel

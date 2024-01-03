@@ -4,6 +4,7 @@ import com.example.shop.entity.DiaChi;
 import com.example.shop.entity.KhachHang;
 import com.example.shop.repositories.DiaChiRepository;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.util.SendMail;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.KhachHangVM;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,12 +74,27 @@ public class KhachHangController {
     @PostMapping("/khach-hang/add")
     public ResponseEntity add(@RequestBody KhachHangVM khachHang) {
         System.out.println(khachHang);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Integer maxMa = Integer.parseInt(khachHangRepository.findMaxMa());
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder(6);
+        Random random = new Random();
 
+        for (int i = 0; i < 6; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+
+        String randomString = sb.toString();
+        String urlImg = "";
         try {
             KhachHang kh = new KhachHang();
-            String urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
+            if(khachHang.getAnhNguoiDung() == null || khachHang.getAnhNguoiDung().equals("")) {
+                urlImg= "https://i.ibb.co/Zfpv5xv/z4990910514033-c5e7b06a688bc0bd64e7d55442f212a6.jpg";
+            }else {
+                urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
+            }
+
             kh.setAnhNguoiDung(urlImg);
             kh.setMa("KH"+(maxMa + 1));
             kh.setCccd(khachHang.getCccd());
@@ -89,7 +105,7 @@ public class KhachHangController {
             kh.setSdt(khachHang.getSdt());
             kh.setDeleted(1);
             kh.setTrangThai(1);
-
+            kh.setMatKhau(randomString);
             System.out.println(kh);
 
             KhachHang khNew = khachHangRepository.save(kh);
@@ -105,7 +121,7 @@ public class KhachHangController {
             diaChiRepository.save(diaChi);
 
             //gui mail
-
+            SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
 
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
