@@ -16,13 +16,15 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
-// import { MdHorizontalRule } from "react-icons/md";
 import { AiOutlineHeart } from "react-icons/ai"; //heart icon
 import { CgTrashEmpty } from "react-icons/cg"; //trash icon
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getAllHA, getSanPhamChiTietByMaListSPCT } from "../api/SanPham";
 
 export default function Cart() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [api, contextHolder] = notification.useNotification();
   const [cartItems, setCartItems] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
@@ -161,9 +163,9 @@ export default function Cart() {
     let subtotal = 0;
 
     cartItems.forEach((cart) => {
-      const quantity = JSON.parse(arrayLocal).find(
-        (item) => item.ma === cart.ma
-      )?.quantity || 1;
+      const quantity =
+        JSON.parse(arrayLocal).find((item) => item.ma === cart.ma)?.quantity ||
+        1;
 
       subtotal += cart.giaBan * quantity;
     });
@@ -173,8 +175,8 @@ export default function Cart() {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const tax = 25000;
-    const total = subtotal + tax;
+    // const tax = 25000;
+    const total = subtotal;
     return total;
   };
 
@@ -357,10 +359,7 @@ export default function Cart() {
 
             <div className="flex justify-between">
               <h2 className="subtotal-title">Thuế ước tính</h2>
-              <div className="price-subtotal">
-                {/* <MdHorizontalRule /> */}
-                VNĐ 25000
-              </div>
+              <div className="price-subtotal items-center">_</div>
             </div>
             <div className="horizontal"></div>
             <div className="flex justify-between">
@@ -368,12 +367,21 @@ export default function Cart() {
               <div className="price-subtotal">VNĐ {calculateTotal()}</div>
             </div>
             <div className="horizontal"></div>
-            <Link
-              to={"/checkout"}
-              className="checkout-button mb-4 flex justify-center"
-            >
-              <button>Thanh toán</button>
-            </Link>
+            {calculateTotal() > 0 ? (
+              <Link
+                to={"/checkout"}
+                className="checkout-button mb-4 flex justify-center"
+              >
+                <button>Thanh toán</button>
+              </Link>
+            ) : (
+              <div className="checkout-button mb-4 flex justify-center cursor-not-allowed">
+                <button className="cursor-not-allowed" disabled>
+                  Thanh toán
+                </button>
+              </div>
+            )}
+
             <div className="paypal-button flex justify-center">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/PayPal_logo.svg/2560px-PayPal_logo.svg.png"

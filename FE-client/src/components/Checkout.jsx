@@ -11,6 +11,8 @@ import { getAllHA } from "../api/SanPham";
 import axios from "axios";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import IconGiaoHangNhanh from "../assets/iconGiaoHangNhanh.webp";
+import { getSanPhamChiTietByMaListSPCT } from "../api/SanPham";
+import Header from "../layout/Header";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -20,7 +22,6 @@ export default function Checkout() {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
   const [shippingCost, setShippingCost] = useState("");
   const [tongTien, setTongTien] = useState(0);
@@ -33,13 +34,15 @@ export default function Checkout() {
     huyen: "",
     xa: "",
   });
+  const [sanPhams, setSanPhams] = useState([]);
+  const [dataLocal, setDataLocal] = useState([]);
 
   const [spinning, setSpinning] = React.useState(false);
   // const [showNotification, setShowNotification] = useState(false);
 
   const showLoader = (callback) => {
     setSpinning(true);
-    callback(); // call the callback to indicate loading has started
+    callback();
   };
 
   // lay id tp
@@ -220,20 +223,37 @@ export default function Checkout() {
     // setShowNotification(true);
   };
 
-  const fetchAllHinhAnh = async () => {
-    try {
-      const data = await getAllHA();
-      setHinhAnhs(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    const fetchAllHinhAnh = async () => {
+      try {
+        const data = await getAllHA();
+        setHinhAnhs(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAllHinhAnh();
+  }, []);
 
-  const getCartItems = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    console.log(cart);
-    setCartItems(cart);
-  };
+  useEffect(() => {
+    const fetchSanPham = async () => {
+      try {
+        const data = localStorage.getItem("maList") || "[]";
+        const maList = JSON.parse(data).map((item) => item.ma);
+        const dataJson = JSON.parse(data);
+        setDataLocal(dataJson);
+        if (maList.length > 0) {
+          const sanPhams = await getSanPhamChiTietByMaListSPCT(maList);
+          setSanPhams(sanPhams);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchSanPham();
+  }, []);
+  console.log("sanPhams:", sanPhams);
 
   const onChange = (e) => {
     setValue(e.target.value);
@@ -243,11 +263,6 @@ export default function Checkout() {
     getProvinces().then((data) => {
       setProvinces(data);
     });
-  }, []);
-
-  useEffect(() => {
-    fetchAllHinhAnh();
-    getCartItems();
   }, []);
 
   const handleProvinceChange = (provinceCode) => {
@@ -288,12 +303,13 @@ export default function Checkout() {
       }
     });
   };
+
   const calculateSubtotal = () => {
-    const subtotal = cartItems.reduce(
-      (total, cart) => total + cart.product.soLuong * cart.product.giaBan,
-      0
-    );
-    return subtotal.toFixed(0);
+    return sanPhams.reduce((subtotal, sanPham) => {
+      const quantity =
+        dataLocal.find((item) => item.ma === sanPham.ma)?.quantity || 0;
+      return subtotal + sanPham.giaBan * quantity;
+    }, 0);
   };
 
   const calculateTotal = () => {
@@ -309,6 +325,7 @@ export default function Checkout() {
     const total = parseFloat(subtotal) + localShippingCost;
     console.log(updatedShippingCost);
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       setPhiVanChuyen(updatedShippingCost);
       setTongTien(total);
@@ -353,7 +370,7 @@ export default function Checkout() {
               huyen: quanHuyen,
               xa: xaPhuong,
               hinhThucThanhToan: phuongThucThanhToan,
-              gioHang: cartItems,
+              gioHang: sanPhams,
               tongTien: tongTien,
               email: email,
               thoiGianNhanHang: deliveryTime + "",
@@ -392,31 +409,28 @@ export default function Checkout() {
       <Spin spinning={spinning} fullscreen />
       {contextHolder}
       <ConfirmDialog />
-      <div className="main-checkout w-[80%] mx-auto">
+      <Header />
+      <div className="main-checkout mt-1 w-[80%] mx-auto">
+        <div className="breadcrumbs-cart pb-4 text-[15px]">
+          <Breadcrumbs className="my-3">
+            <BreadcrumbItem>
+              <Link to="/">Trang chủ</Link>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <Link to="/shop">Sản phẩm</Link>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <Link to="/cart">Giỏ hàng</Link>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <Link className="text-[#B4B4B3] cursor-default">
+                Thủ tục thanh toán
+              </Link>
+            </BreadcrumbItem>
+          </Breadcrumbs>
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="checkout-left sticky-grid">
-            <Link to={"/"} className="flex container-logo">
-              <img className="logo cursor-pointer" src={Logo} alt="" />
-              <div className="flex justify-center">Jordan VTH</div>
-            </Link>
-            <div className="breadcrumbs-cart text-[15px]">
-              <Breadcrumbs className="my-3">
-                <BreadcrumbItem>
-                  <Link to="/">Trang chủ</Link>
-                </BreadcrumbItem>
-                <BreadcrumbItem>
-                  <Link to="/shop">Sản phẩm</Link>
-                </BreadcrumbItem>
-                <BreadcrumbItem>
-                  <Link to="/cart">Giỏ hàng</Link>
-                </BreadcrumbItem>
-                <BreadcrumbItem>
-                  <Link className="text-[#B4B4B3] cursor-default">
-                    Thủ tục thanh toán
-                  </Link>
-                </BreadcrumbItem>
-              </Breadcrumbs>
-            </div>
             <div className="flex">
               <span>Bạn đã có tài khoản?</span>
               <Link
@@ -565,32 +579,36 @@ export default function Checkout() {
             </form>
           </div>
           <div className="checkout-right">
-            {cartItems.map((cart) => (
-              <div className="cart-checkout flex gap-4 mb-3" key={cart.ids}>
+            {sanPhams.map((sanPham) => (
+              <div className="cart-checkout flex gap-4 mb-3" key={sanPham.id}>
                 <div className="relative inline-block">
                   <img
                     className="cart-checkout-img"
-                    src={cart?.product.defaultImg}
+                    src={sanPham.defaultImg}
                     alt=""
                   />
                   <p className="badge badge-cart-checkout absolute">
-                    {cart?.product.soLuong}
+                    {dataLocal.map((item) => {
+                      if (item.ma == sanPham.ma) {
+                        return item.quantity;
+                      }
+                    })}
                   </p>
                 </div>
                 <div className="cart-checkout-info text-[16px] font-normal">
-                  <h2 className="mb-2">{cart.product.ten}</h2>
+                  <h2 className="mb-2">{sanPham.ten}</h2>
                   <p className="cart-checkout-mau-sac link-underline text-[14px]">
                     <span className="text-[#0F0E0E]">Màu sắc: </span>
                     {hinhAnhs.find(
-                      (ha) => ha?.id_san_pham_chi_tiet?.id === cart.product.id
+                      (ha) => ha?.id_san_pham_chi_tiet?.id === sanPham.id
                     )?.mauSac || ""}
                   </p>
                   <p className="cart-checkout-size link-underline text-[14px]">
                     <span className="text-[#0F0E0E]">Kích cỡ: </span>
-                    {cart.product.kichCo}
+                    {sanPham.id_kich_co.ten}
                   </p>
                   <p className="cart-checkout-gia-ban font-medium">
-                    VNĐ {Intl.NumberFormat().format(cart.product.giaBan)}
+                    VNĐ {Intl.NumberFormat().format(sanPham.giaBan)}
                   </p>
                 </div>
               </div>

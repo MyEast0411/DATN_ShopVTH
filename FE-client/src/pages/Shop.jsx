@@ -17,6 +17,9 @@ import { Dropdown, Space } from "antd";
 import { countAllSanPham } from "../api/SanPham";
 
 export default function Shop() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [countSanPham, setCountSanPham] = useState(0);
   const fetchCountSanPham = async () => {
     try {
