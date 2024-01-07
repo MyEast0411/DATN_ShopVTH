@@ -5,10 +5,7 @@ import com.example.shop.dto.GioHangDTO;
 import com.example.shop.dto.HoaDonChiTietDTO;
 import com.example.shop.dto.HoaDonDTO;
 import com.example.shop.dto.HoaDonKhDTO;
-import com.example.shop.entity.HoaDon;
-import com.example.shop.entity.HoaDonChiTiet;
-import com.example.shop.entity.LichSuHoaDon;
-import com.example.shop.entity.SanPhamChiTiet;
+import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.util.SendMail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -67,8 +61,31 @@ public class HoaDonChiTietController {
     @GetMapping("/getHDCTByMa/{maHD}")
     public ResponseEntity getHDCTByMa(@PathVariable String maHD) {
         try {
+            HoaDon hoaDon = ssHD.getHoaDonByMa(maHD);
+            Double tongTien = ssHD.getTongTien(maHD) == null ? null : ssHD.getTongTien(maHD);
+            List<Voucher> voucherList = ssVC.getVoucherByGiaTriMin(ssHD.getTongTien(maHD));
+            Optional<Double> maxGiaTri = voucherList.stream()
+                    .map(Voucher::getGiaTriMax)
+                    .max(Comparator.naturalOrder());
+            voucherList.sort(Comparator.comparingDouble(Voucher::getGiaTriMax));
+
+            if(voucherList.isEmpty()) {
+                hoaDon.setId_voucher(null);
+                ssHD.save(hoaDon);
+                return ResponseEntity.ok(ssHDCT.getHDCTByMA(maHD));
+            }
+            for (Voucher x:
+                 voucherList) {
+                if(tongTien >= x.getGiaTriMin() && x.getGiaTriMax() >= maxGiaTri.get()) {
+                    hoaDon.setId_voucher(x);
+                    ssHD.save(hoaDon);
+                }else {
+                    hoaDon.setId_voucher(null);
+                }
+            }
             return ResponseEntity.ok(ssHDCT.getHDCTByMA(maHD));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("ERROR");
         }
     }

@@ -20,6 +20,11 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             "where a.trang_thai = 7 and a.deleted = 1\n" +
             "group by a.ma,a.id_khach_hang,a.id_nhan_vien,a.loai_hd,a.trang_thai",nativeQuery = true)
     List<Object[]> getHDChuaTT();
+    @Query(value = "select sum(gia_tien) as tong_tien from hoa_don a \n" +
+            "    join hoa_don_chi_tiet b on a.id = b.id_hoa_don \n" +
+            "    where a.ma = :ma \n" +
+            "    group by a.ma",nativeQuery = true)
+    Double getTongTien(@Param("ma")String ma);
 
     @Query(value = "select * from hoa_don u where u.deleted = 1 order by u.ngay_tao desc", nativeQuery = true)
     List<HoaDon> getPageDeleted();
