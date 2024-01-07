@@ -76,7 +76,7 @@ export default function KhachHang() {
             <HiOutlineClipboardList />
             <p className="ml-2 mt-1"> Danh sách khách hàng</p>
           </div>
-          <Link to={"/them-khach-hang"}>
+          <Link to={"/quan-ly-tai-khoan/khach-hang/them-khach-hang"}>
             <Button
               type="primary"
               style={{

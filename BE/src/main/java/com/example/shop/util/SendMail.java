@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class SendMail {
-    public static void SenMail(String toMail, String thoiGianNhanHang, String phiShip, String tongTien, List<HoaDonChiTiet> list) {
+    public static void SenMail(String toMail, String maHoaDon,String thoiGianNhanHang, String phiShip, String tongTien, List<HoaDonChiTiet> list) {
         final String username = "uandcshop111@gmail.com";
         final String password = "hdbepdrofxwmxyyg";
 
@@ -38,6 +38,7 @@ public class SendMail {
                     "<div style='position: absolute; top: 0; left: 0;'><img src='cid:image_cid' style='width: 200px; height: auto;'></div>" +
                     "<p>Xin chào, Đây là đơn hàng bạn đã đặt </p>" +
                     "<p>Thời gian dự kiến nhận hàng: " + thoiGianNhanHang + "</p>" +
+                    "<p>Đây là mã hóa đơn để bạn theo dõi đơn hàng : "+ maHoaDon +"</p>" +
                     "<p>Phí ship: " + phiShip + " VND </p>" +
                     "<p>Tổng tiền: " + tongTien + " VND </p></body></html>" +
                     "<table style='border-collapse: collapse; width: 60%;'>" +
@@ -181,20 +182,9 @@ public class SendMail {
             MimeBodyPart htmlBodyPart = new MimeBodyPart();
             htmlBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
 
-            MimeBodyPart imageBodyPart = new MimeBodyPart();
-//            DataSource source = new FileDataSource("C:\\Users\\Admin\\Pictures\\Saved Pictures\\logo.png");
-            //Hoi
-            //DataSource source = new FileDataSource("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\logo.png");
-            DataSource source = new FileDataSource("C:\\Users\\Admin\\Desktop\\chup-anh-dep-bang-dien-thoai-25.jpg");
-
-            imageBodyPart.setDataHandler(new DataHandler(source));
-            imageBodyPart.setFileName("Hóa đơn của bạn");
-            imageBodyPart.setHeader("Content-ID", "<image_cid>");
-
 
             MimeMultipart multipart = new MimeMultipart();
             multipart.addBodyPart(htmlBodyPart);
-            multipart.addBodyPart(imageBodyPart);
 
             message.setContent(multipart);
             Transport.send(message);

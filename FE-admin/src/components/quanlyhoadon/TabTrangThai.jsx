@@ -80,7 +80,7 @@ export default function TabTrangThai({
   };
   const items = [
     `Chờ xác nhận`,
-    // `Xác Nhận`,
+    `Xác Nhận`,
     `Chờ Vận Chuyển`,
     `Giao Hàng`,
     `Hoàn Thành`,

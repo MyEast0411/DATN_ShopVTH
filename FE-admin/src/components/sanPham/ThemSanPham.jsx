@@ -242,12 +242,20 @@ export default function ThemSanPham() {
       dataIndex: "hanhDong",
       title: "Hành động",
       width: 200,
-      render: (params) => (
+      render: (index, record) => (
         <div className="flex items-center">
           <div className="group relative">
             <MdDeleteOutline
               className="cursor-pointer text-xl delete-hover relative"
-              onClick={() => {console.log(params)}}
+              onClick={() => {
+                console.log(record.id);
+                console.log(tables[record.id_mau_sac]);
+                const updatedProducts = tables[record.id_mau_sac].filter(product => product.id !== record.id);
+                setTables((prevTables) => ({
+                  ...prevTables,
+                  [record.id_mau_sac]: updatedProducts,
+                }));
+              }}
             />
             <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">
               Xóa

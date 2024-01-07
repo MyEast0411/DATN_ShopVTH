@@ -175,6 +175,7 @@ export default function ThemKhachHang() {
     return regex.test(email);
   }
   const onSubmit = async () => {
+    
     var currentDate = new Date();
     var dateObject = new Date(khachHang.ngay_sinh);
     // Lấy thông tin ngày, tháng và năm
@@ -202,7 +203,7 @@ export default function ThemKhachHang() {
     // so nha
     var check = true;
     if (khachHang.soNha == "") {
-      setErrSoNha("* Không được để trống số nhà/ngõ/đường");
+      // setErrSoNha("* Không được để trống số nhà/ngõ/đường");
       check = false;
     } else {
       setErrSoNha("");
@@ -220,7 +221,6 @@ export default function ThemKhachHang() {
       }
     }
     // sdt
-
     if (khachHang.sdt == "") {
       setErrSDT("* Không được để trống số điện thoại");
       check = false;
@@ -228,11 +228,10 @@ export default function ThemKhachHang() {
       if (validatePhoneNumber(khachHang.sdt)) {
         setErrSDT("");
       } else {
-        setErrSDT("* SDT không hợp lệ");
         check = false;
       }
     }
-    // if (check) {
+    if (check) {
       await axios
         .post("http://localhost:8080/khach-hang/add", khachHang)
         .then((response) => {
@@ -242,7 +241,7 @@ export default function ThemKhachHang() {
         .catch((error) => {
           toast.error(`😢 Thêm thất bại`);
         });
-    // }
+    }
     cancelAdd();
   };
   return (
@@ -257,7 +256,8 @@ export default function ThemKhachHang() {
           boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
           transition: "transform 0.2s",
         }}
-      >
+        >
+        
         <div
           className="border-r-4 text-center pt-5"
           style={{
@@ -287,15 +287,15 @@ export default function ThemKhachHang() {
           </div>
           <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} ref={fileInputRef} />
         </div>
+        
         <div className="col-span-2 m-10">
+        <Form
+          initialValues={{
+            remember: true,
+          }}
+        >
           <div className="grid grid-cols-2 gap-4">
             <div className="left">
-              <Form
-                initialValues={{
-                  remember: true,
-                }}
-                // onFinish={onFinish}
-              >
                 <div className="mb-20">
                   <p className="pb-2">Họ khách hàng</p>
                   <Form.Item
@@ -330,7 +330,7 @@ export default function ThemKhachHang() {
                     rules={[
                       {
                         required: true,
-                        message: "Tên khách hàng không hợp lệ!",
+                        message: "Tên khách hàng không được để trống!",
                       },
                       {
                         pattern: /^[^\d]*$/,
@@ -357,7 +357,7 @@ export default function ThemKhachHang() {
                     rules={[
                       {
                         required: true,
-                        message: "Email khách hàng đang trống!",
+                        message: "Email khách hàng đang để trống!",
                       },
                       {
                         pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
@@ -376,7 +376,6 @@ export default function ThemKhachHang() {
                     />
                     </Form.Item>
                 </div>
-              </Form>
               <div className="mb-8 mt-20">
                 <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Chọn thành phố
@@ -414,8 +413,6 @@ export default function ThemKhachHang() {
             </div>
 
             <div className="right relative">
-              <Form>
-
               <div className="mb-12">
                 <label htmlFor="phone" className="block text-xl font-bold">
                   Ngày sinh
@@ -433,7 +430,6 @@ export default function ThemKhachHang() {
                     width: "100%",
                   }}
                   max={new Date().toISOString().slice(0, 10)}
-                  required
                   onChange={(e) => {
                     onChange(e);
                   }}
@@ -568,34 +564,31 @@ export default function ThemKhachHang() {
                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                                     dark:focus:ring-blue-500 mb-20 mt-4 dark:focus:border-blue-500"
                   placeholder="Số nhà/Ngõ/Đường"
-                  required
                   onChange={(e) => {
                     onChange(e);
                   }}
                 />
                 <p style={{ color: "red" }}>{errSoNha}</p>
               </div>
-              </Form>
-              
-
               <div className="mt-6 flex items-center justify-end gap-x-6">
                 <Link to="/quan-ly-tai-khoan/khach-hang" type="button" className="text-sm rounded-md  font-semibold leading-6 text-gray-900">
                   Cancel
                 </Link>
 
                 <ButtonAnt
-                  type="primary"
+                  htmlType="submit"
                   style={{
                     backgroundColor: "#1976d2",
                     marginBottom: "2px",
                   }}
-                  onClick={handleAdd}
+                  onClick={onSubmit}
                 >
                   Hoàn tất
                 </ButtonAnt>
               </div>
             </div>
           </div>
+        </Form>
         </div>
       </div>
       <Dialog open={deleteConfirmationOpen} onClose={cancelAdd} fullWidth>

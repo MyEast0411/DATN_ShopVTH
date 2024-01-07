@@ -43,7 +43,7 @@ const columns = [
   { name: "STT", uid: "stt", sortable: true },
   { name: "Ảnh", uid: "hinhAnh", sortable: true, align: "center" },
   { name: "Họ tên", uid: "hoTen", sortable: true },
-  { name: "CCCD", uid: "cccd", sortable: true },
+  { name: "Email", uid: "cccd", sortable: true },
   { name: "Số điện thoại", uid: "sdt", sortable: true },
   { name: "Ngày sinh", uid: "ngaySinh", sortable: true },
   { name: "Trạng thái", uid: "trangThai" },
@@ -94,7 +94,7 @@ export default function App() {
   const confirmDelete = async () => {
     if (idToDelete) {
       await axios
-        .put(`http://localhost:8080/khach-hang/delete/${idToDelete}`)
+        .put(`http://localhost:8080/khach-hang/deleteSoft/${idToDelete}`)
         .then((response) => {
           toast("🎉 Xóa thành công");
           cancelDelete();
@@ -132,7 +132,7 @@ export default function App() {
           maKH: item.ma,
           anh: item.anhNguoiDung,
           hoTen: item.ten,
-          cccd: item.cccd,
+          cccd: item.email,
           sdt: item.sdt,
           ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
           trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
@@ -225,7 +225,7 @@ export default function App() {
           <div className="relative flex items-center gap-4">
             <Tooltip content="Xem" showArrow={true}>
               <Link
-                to={`/edit-khach-hang/${sanPham.maKH}`}
+                to={`/quan-ly-tai-khoan/khach-hang/edit-khach-hang/${sanPham.maKH}`}
                 // style={{ display: "block" }}
                 className="button-link group relative"
               >

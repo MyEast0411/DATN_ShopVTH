@@ -740,7 +740,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
           </div>
           <div className="w-6/12 space-y-8 block">
             <p className="font-bold text-lg">
-              <span>💝 Thông tin thanh toán</span>{" "}
+              <span>Thông tin thanh toán</span>{" "}
             </p>
 
             <div class="flex gap-20">

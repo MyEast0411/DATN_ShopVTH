@@ -151,10 +151,10 @@ export default function AddVoucher() {
       voucherNew.giaTriMin > voucherNew.giaTriMax
       // !voucherNew.hinhAnhVoucher //Không cần nhất thiết phải thêm ảnh
     ) {
-      toast.error(`Giá trị tối thiểu đang lớn hơn giá trị tối đa!`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      // toast.error(`Giá trị tối thiểu đang lớn hơn giá trị tối đa!`, {
+      //   position: "top-right",
+      //   autoClose: 2000,
+      // });
       return;
     }
 

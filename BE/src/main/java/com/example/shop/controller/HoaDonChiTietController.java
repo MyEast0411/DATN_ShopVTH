@@ -220,7 +220,7 @@ public class HoaDonChiTietController {
                 }
             }
             System.out.println(giohang.getThoiGianNhanHang());
-            SendMail.SenMail(giohang.getEmail(),giohang.getThoiGianNhanHang(),giohang.getPhiShip(), giohang.getTotal(),listHDCT);
+            SendMail.SenMail(giohang.getEmail(),hoaDon.getMa(),giohang.getThoiGianNhanHang(),giohang.getPhiShip(), giohang.getTotal(),listHDCT);
             return ResponseEntity.ok("Thành công");
         } catch (Exception e) {
             e.printStackTrace();

@@ -456,6 +456,7 @@ export default function SanPham() {
                 maxValue={Math.max(
                   ...sanPhams.map((sanPham) => sanPham.soLuongTon)
                 )}
+                setSanPhams={setSanPhams}
               />
             </div>
             {/* <div className="p-5 text-center mt-4">

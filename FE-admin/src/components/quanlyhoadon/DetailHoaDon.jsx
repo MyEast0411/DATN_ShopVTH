@@ -138,6 +138,10 @@ export default function DetailHoaDon() {
         okType: "danger",
         onOk: () => {
           addLichSuHoaDon();
+          getDataLichSuThanhToan();
+          getInfoHD();
+          getDataChiTietSanPham();
+          getDataLichSu();
         },
       });
     }
@@ -692,10 +696,10 @@ const listTitleTimline = [
     title: `Chờ xác nhận`,
     icon: FiLoader,
   },
-  // {
-  //   title: `Xác Nhận`,
-  //   icon: GiConfirmed,
-  // },
+  {
+    title: `Xác Nhận`,
+    icon: GiConfirmed,
+  },
   {
     title: `Chờ Vận Chuyển`,
     icon: FaShippingFast,
