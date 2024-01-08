@@ -262,7 +262,8 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         navigate('/quan-ly-hoa-don');
       }
     }catch(error) {
-      toast.error("😢 404 Request");
+      toast.error(error.response.data);
+      cancelThanhToan();
     };
   };
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
@@ -495,8 +496,8 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         setCodeVC(codeVoucher);
         setVoucher(vc);
         setTienHang(tongTien);
-        setTongTien(tongTien - voucher);
-
+        //if((tongTien - voucher) > 1000) setTienShip(0)
+        setTongTien(tongTien - voucher + tienShip);
         // setKhachCanTra(tongTien);
       });
   };
@@ -763,7 +764,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         <div class="flex justify-between mt-7">
           <div className={`relative ${!isBlur ? "h-0 overflow-hidden" : ""}`}>
           <div className="delivery-content">
-            <Delivery activeKey={activeKey} khachHang={khachHang} setKhachHang={setKhachHang}/>
+            <Delivery activeKey={activeKey} khachHang={khachHang} setKhachHang={setKhachHang} tongTien={tongTien} setTienShip={setTienShip}/>
           </div>
           </div>
           <div className="w-6/12 space-y-8 block">
@@ -874,7 +875,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
               <div class="w-2/6 ...">
                 <span style={{ color: "red", fontWeight: "bold", fontSize : "20px"  }}>
                   {" "}
-                  {Intl.NumberFormat().format(0)}&nbsp;₫
+                  {Intl.NumberFormat().format(tienShip)}&nbsp;₫
                 </span>
               </div>
             </div>

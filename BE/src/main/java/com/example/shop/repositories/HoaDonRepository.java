@@ -1,6 +1,7 @@
 package com.example.shop.repositories;
 
 import com.example.shop.entity.HoaDon;
+import com.example.shop.entity.HoaDonChiTiet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +27,9 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             "    group by a.ma",nativeQuery = true)
     Double getTongTien(@Param("ma")String ma);
 
+    @Query(value = "select id_chi_tiet_san_pham,so_luong from hoa_don_chi_tiet hdct\n" +
+            "where hdct.id_hoa_don = :idHD",nativeQuery = true)
+    List<Object[]> getHDCTByMaHD(@Param("idHD")String idHD);
     @Query(value = "select * from hoa_don u where u.deleted = 1 order by u.ngay_tao desc", nativeQuery = true)
     List<HoaDon> getPageDeleted();
 

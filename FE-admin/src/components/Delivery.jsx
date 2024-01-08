@@ -3,7 +3,7 @@ import { getProvinces, getDistricts, getWards } from "../api/Location";
 import axios from "axios";
 import { Select } from "antd";
 const { Option } = Select;
-export default function Delivery({ activeKey, khachHang,setKhachHang }) {
+export default function Delivery({ activeKey, khachHang,setKhachHang, tongTien, setTienShip }) {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -115,8 +115,8 @@ export default function Delivery({ activeKey, khachHang,setKhachHang }) {
 
   useEffect(() => {
     const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
-    const shopId = '190374 - 0964457125'; // Thay YOUR_SHOP_ID bằng ID cửa hàng của bạn
+    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; 
+    const shopId = '190374 - 0964457125'; 
     const requestData = {
       from_district_id: 1804,
       from_ward_code: "1B2211",
@@ -221,7 +221,43 @@ export default function Delivery({ activeKey, khachHang,setKhachHang }) {
         console.error(error);
       });
   }, [diaChi,idHuyen]);
+  // Tính phí vận chuyển
+  useEffect(() => {
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+    const shopId = "190374 - 0964457125";
 
+    const requestData = {
+      service_type_id: 2,
+      from_district_id: 1804,
+      to_district_id: idHuyen,
+      to_ward_code: idXa,
+      height: 20,
+      length: 30,
+      weight: 1000,
+      width: 40,
+      insurance_value: 0,
+      coupon: null,
+    };
+
+    axios
+      .post(apiUrl, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          ShopId: shopId,
+          Token: token,
+        },
+      })
+      .then((response) => {
+        console.log("API Response:", response.data);
+        if(tongTien > 1000000) setTienShip(0)
+        else setTienShip(response.data.data.total);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [idTP, idHuyen, idXa]);
   const options = valueTP.map(name => (
     <Option key={name} value={name}>
       {name}
