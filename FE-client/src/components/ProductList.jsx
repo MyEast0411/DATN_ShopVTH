@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllSanPhamChiTietByIdSanPham, getAllSanPham } from "../api/SanPham";
 
@@ -59,7 +59,7 @@ export default function ProductList() {
             onMouseLeave={handleMouseLeave}
           >
             <img
-            src={selectedImage==="" ? sanPham.defaultImg : selectedImage}
+              src={selectedImage === "" ? sanPham.defaultImg : selectedImage}
               alt="Ảnh sản phẩm"
               className="img-product"
             />
@@ -87,8 +87,7 @@ export default function ProductList() {
                 <h2 className="color-quantity">{`${hinhAnhs.length} Colors`}</h2>
               </>
             )}
-           <div className="price-product">VNĐ {sanPham?.maxPrice}</div>
-
+            <div className="price-product">VNĐ {sanPham?.maxPrice}</div>
           </Link>
         ))}
       </div>

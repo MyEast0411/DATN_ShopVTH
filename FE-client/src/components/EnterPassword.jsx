@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+/* eslint-disable react/no-unescaped-entities */
+// import React, { useState } from "react";
 import Logo from "../assets/logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./Component.css";
 
 export default function EnterPassword() {
@@ -31,10 +32,13 @@ export default function EnterPassword() {
               </a>
             </div>
             <div className="inputGroupCodeSignUp">
-              <input type="password" required autocomplete="off" />
-              <label for="Password">Password</label>
+              <input type="password" required autoComplete="off" />
+              <label htmlFor="Password">Password</label>
             </div>
-            <a href="#" className="forgot-password underline link-underline text-small">
+            <a
+              href="#"
+              className="forgot-password underline link-underline text-small"
+            >
               Forgot password?
             </a>
             <div className="flex justify-end">

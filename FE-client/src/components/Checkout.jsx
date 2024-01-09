@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../api/Location";
@@ -13,8 +12,12 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import IconGiaoHangNhanh from "../assets/iconGiaoHangNhanh.webp";
 import { getSanPhamChiTietByMaListSPCT } from "../api/SanPham";
 import Header from "../layout/Header";
+import { addToHoaDon } from "../api/HoaDon";
 
 export default function Checkout() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
   const [deliveryTime, setDeliveryTime] = useState(null);
@@ -341,6 +344,7 @@ export default function Checkout() {
       const email = e.target.elements.email.value;
       const hoTen = e.target.elements.hoTen.value;
       const soDienThoai = e.target.elements.soDienThoai.value;
+      console.log("soDienThoai:", typeof soDienThoai);
       const diaChi = e.target.elements.diaChi.value;
       const thanhPho =
         e.target.elements.city.options[e.target.elements.city.selectedIndex]
@@ -358,40 +362,35 @@ export default function Checkout() {
           ? "Chuyển khoản qua ngân hàng"
           : "Thanh toán khi nhận hàng";
 
-      const confirmSubmission = () => {
-        axios
-          .post(
-            "http://localhost:8080/hoa_don_chi_tiet/addHoaDonChiTietToHoaDon",
-            {
-              hoTen: hoTen,
-              sdt: soDienThoai,
-              diaChi: diaChi,
-              thanhPho: thanhPho,
-              huyen: quanHuyen,
-              xa: xaPhuong,
-              hinhThucThanhToan: phuongThucThanhToan,
-              gioHang: sanPhams,
-              tongTien: tongTien,
-              email: email,
-              thoiGianNhanHang: deliveryTime + "",
-              phiShip: Intl.NumberFormat().format(phiVanChuyen) + "",
-              total: Intl.NumberFormat().format(tongTien) + "",
-            }
-          )
-          .then((response) => {
-            console.log(response.data);
-            localStorage.clear();
-            openNotificationWithIcon("success", "Cảm ơn bạn đã mua hàng!");
-            setTimeout(() => {
-              navigate("/");
-            }, 2000);
-          })
-          .catch((error) => {
-            console.error(error);
-          })
-          .finally(() => {
-            setSpinning(false);
-          });
+      const cartNotLoginDTO = {
+        email,
+        hoTen,
+        soDienThoai,
+        diaChi,
+        thanhPho,
+        quanHuyen,
+        xaPhuong,
+        phuongThucThanhToan,
+        deliveryTime,
+        phiVanChuyen,
+        sanPhams,
+        tongTien,
+      };
+      const confirmSubmission = async () => {
+        try {
+          const result = await addToHoaDon(cartNotLoginDTO);
+          console.log("result:", result);
+          localStorage.clear();
+          setSpinning(true);
+          openNotificationWithIcon("success", "Hoàn tất thanh toán");
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        } catch (error) {
+          console.error("Error adding to HoaDon:", error);
+        } finally {
+          setSpinning(false);
+        }
       };
 
       confirmDialog({
@@ -515,7 +514,7 @@ export default function Checkout() {
                 </div>
               </div>
 
-              <h2 className="text-[16px]">Phương thức thanh toán</h2>
+              <h2 className="text-[16px] pb-2">Phương thức thanh toán</h2>
               <div className="main-choose-payment-method">
                 <Radio.Group onChange={onChange} value={value}>
                   <Space direction="vertical">
