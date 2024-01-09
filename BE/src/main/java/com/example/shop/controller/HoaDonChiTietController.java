@@ -197,18 +197,19 @@ public class HoaDonChiTietController {
 
     @PostMapping("/addHoaDonChiTietToHoaDon")
     public ResponseEntity addHoaDonChiTietToHoaDon(@RequestBody CartNotLoginDTO cartNotLoginDTO) {
-        System.out.println("getEmail: "+cartNotLoginDTO.getEmail());
-        System.out.println("getHoTen: "+cartNotLoginDTO.getHoTen());
-        System.out.println("getSdt: "+cartNotLoginDTO.getSoDienThoai());
-        System.out.println("getDiaChi: "+cartNotLoginDTO.getDiaChi());
-        System.out.println("getXaPhuong: "+cartNotLoginDTO.getXaPhuong());
-        System.out.println("getQuanHuyen: "+cartNotLoginDTO.getQuanHuyen());
-        System.out.println("getThanhPho: "+cartNotLoginDTO.getThanhPho());
-        System.out.println("getThoiGianNhanHang: "+cartNotLoginDTO.getDeliveryTime());
-        System.out.println("getPhuongThucThanhToan: "+cartNotLoginDTO.getPhuongThucThanhToan());
-        System.out.println("getTongTien: "+cartNotLoginDTO.getTongTien());
-        for(SanPhamChiTiet n : cartNotLoginDTO.getSanPhams()){
-            System.out.println("San pham: "+ n.getMa());
+        System.out.println("getEmail: " + cartNotLoginDTO.getEmail());
+        System.out.println("getHoTen: " + cartNotLoginDTO.getHoTen());
+        System.out.println("getSdt: " + cartNotLoginDTO.getSoDienThoai());
+        System.out.println("getDiaChi: " + cartNotLoginDTO.getDiaChi());
+        System.out.println("getXaPhuong: " + cartNotLoginDTO.getXaPhuong());
+        System.out.println("getQuanHuyen: " + cartNotLoginDTO.getQuanHuyen());
+        System.out.println("getThanhPho: " + cartNotLoginDTO.getThanhPho());
+        System.out.println("getThoiGianNhanHang: " + cartNotLoginDTO.getDeliveryTime());
+        System.out.println("getPhiVanChuyen: " + cartNotLoginDTO.getPhiVanChuyen());
+        System.out.println("getPhuongThucThanhToan: " + cartNotLoginDTO.getPhuongThucThanhToan());
+        System.out.println("getTongTien: " + cartNotLoginDTO.getTongTien());
+        for (SanPhamChiTiet n : cartNotLoginDTO.getSanPhams()) {
+            System.out.println("San pham: " + n.getMa());
         }
         List<HoaDonChiTiet> listHDCT = new ArrayList<>();
         try {
@@ -217,48 +218,48 @@ public class HoaDonChiTietController {
             if (maxMa == null) {
                 maxMa = 0;
             }
-                HoaDon hoaDon = HoaDon.builder()
-                        .ma("HD" + (maxMa + 1))
-                        .trangThai(0)
-                        .deleted(1)
-                        .loaiHd(0)
-                        .ngayTao(new Date())
-                        .diaChi(cartNotLoginDTO.getDiaChi() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
-                        .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
-                        .build();
-                HoaDon hd1 = ssHD.save(hoaDon);
+            HoaDon hoaDon = HoaDon.builder()
+                    .ma("HD" + (maxMa + 1))
+                    .trangThai(0)
+                    .deleted(1)
+                    .loaiHd(0)
+                    .ngayTao(new Date())
+                    .diaChi(cartNotLoginDTO.getDiaChi() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
+                    .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
+                    .build();
+            HoaDon hd1 = ssHD.save(hoaDon);
 
-                LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
-                        .id_hoa_don(hd1)
-                        .moTaHoaDon("Chờ xác nhận")
-                        .deleted(1)
-                        .nguoiTao("Đông")
-                        .ngayTao(new Date(System.currentTimeMillis()))
-                        .build();
-                ssLSHD.save(lichSuHoaDon);
-                for (Object gioHangItem : cartNotLoginDTO.getSanPhams()) {
-                    if (gioHangItem instanceof Map) {
-                        Map<?, ?> gioHangMap = (Map<?, ?>) gioHangItem;
+            LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                    .id_hoa_don(hd1)
+                    .moTaHoaDon("Chờ xác nhận")
+                    .deleted(1)
+                    .nguoiTao("Đông")
+                    .ngayTao(new Date(System.currentTimeMillis()))
+                    .build();
+            ssLSHD.save(lichSuHoaDon);
+            for (Object gioHangItem : cartNotLoginDTO.getSanPhams()) {
+                if (gioHangItem instanceof Map) {
+                    Map<?, ?> gioHangMap = (Map<?, ?>) gioHangItem;
 
-                        Object productObject = gioHangMap.get("product");
-                        if (productObject instanceof Map) {
-                            Map<?, ?> productMap = (Map<?, ?>) productObject;
+                    Object productObject = gioHangMap.get("product");
+                    if (productObject instanceof Map) {
+                        Map<?, ?> productMap = (Map<?, ?>) productObject;
 
-                            String id = (String) productMap.get("ma");
-                            Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
-                            Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
+                        String id = (String) productMap.get("ma");
+                        Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
+                        Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
 
-                            HoaDonChiTiet hdct = new HoaDonChiTiet();
-                            hdct.setId_hoa_don(hoaDon);
-                            hdct.setId_chi_tiet_san_pham(ssSP.findByMa(id));
-                            hdct.setSoLuong(soLuong);
-                            hdct.setGiaTien(BigDecimal.valueOf(giaBan));
-                            listHDCT.add(hdct);
-                            ssHDCT.save(hdct);
-                        }
+                        HoaDonChiTiet hdct = new HoaDonChiTiet();
+                        hdct.setId_hoa_don(hoaDon);
+                        hdct.setId_chi_tiet_san_pham(ssSP.findByMa(id));
+                        hdct.setSoLuong(soLuong);
+                        hdct.setGiaTien(BigDecimal.valueOf(giaBan));
+                        listHDCT.add(hdct);
+                        ssHDCT.save(hdct);
                     }
+                }
 
-                SendMail.SenMail(cartNotLoginDTO.getEmail(), cartNotLoginDTO.getDeliveryTime(),
+                SendMail.SenMail(cartNotLoginDTO.getEmail(), cartNotLoginDTO.getEmail(), cartNotLoginDTO.getDeliveryTime(),
                         cartNotLoginDTO.getPhiVanChuyen(), cartNotLoginDTO.getTongTien(), listHDCT);
                 return ResponseEntity.ok("HoaDonChiTiet has been saved successfully");
             }
