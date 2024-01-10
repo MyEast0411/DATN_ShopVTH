@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 //filter
 import FilterMa from "../../small-component/Filter/FilterMa";
 import FilterTrangThai from "../../small-component/Filter/FilterTrangThai";
-import Slider from "../../common/filter/sanPham/Slider";
 
 import { Button as ButtonAntd } from "antd";
 import { Link, useParams } from "react-router-dom";
@@ -26,6 +25,7 @@ import {
   Pagination,
   Image,
   Tooltip,
+  Slider
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -200,7 +200,51 @@ export default function ChiTietSanPham() {
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
   const { ma } = useParams();
+  const [sanPham, setSanPham] = useState({
+    id_mau_sac: "",
+    id_kich_co: "",
+    id_chat_lieu: "",
+    id_de_giay: "",
+    id_thuong_hieu: "",
+    id_nhan_hieu: "",
+    trangThai : ""
+  });
+  const onChange = (e) => {
+    const { name, value } = e.target;
+  
+    setSanPham((prevSanPham) => ({
+      ...prevSanPham,
+      [name]: value,
+    }));
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post("http://localhost:8080/filterSPCT",sanPham);
+        console.log(response.data);
+        const updatedRows = response.data.map((item, index) => ({
+          id: item.id,
+          stt: index + 1,
+          tenSanPham: item.ten,
+          hinhAnh: item.defaultImg,
+          mauSac: item.id_mau_sac.maMau,
+          kichThuoc: item.id_kich_co.ten,
+          soLuongTon: item.soLuongTon,
+          deGiay: item.id_de_giay.ten,
+          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
+          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+            ?.id_khuyen_mai.giaTriPhanTram,
+        }));
 
+        setSanPhams(updatedRows);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    fetchData();
+  }, [sanPham]);
   const url = `http://localhost:8080/findByMa/${ma}`;
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
@@ -323,8 +367,8 @@ export default function ChiTietSanPham() {
               }}
             >
               <Image
-                width={150}
-                height={100}
+                width={90}
+                height={70}
                 src={hinhAnhURL}
                 alt={sanPham.ten || "Ảnh sản phẩm"}
                 classNames="m-5 relative"
@@ -424,7 +468,10 @@ export default function ChiTietSanPham() {
     setFilterValue("");
     setPage(1);
   }, []);
-
+  const onRowSelection = (row) => {
+    // Trả về false để ngăn không cho người dùng chọn dòng
+    return false;
+  };
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
@@ -576,15 +623,278 @@ export default function ChiTietSanPham() {
         </div>
 
         <div
-          className=""
           style={{
-            fontSize: "8px",
             backgroundColor: "white",
-            padding: "20px 10px",
+            padding: "10px",
             borderRadius: "8px",
+            width: "100%",
+            height: "300px",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+            transition: "transform 0.2s",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          <div className="">
+          <div className="flex flex-col gap-4">
+
+            <div className="justify-between gap-3 items-end">
+              <Input
+                isClearable
+                className="w-72 sm:max-w-[30%]"
+                placeholder="Tìm kiếm bất kỳ..."
+                startContent={<SearchIcon />}
+                value={filterValue}
+                onClear={() => onClear()}
+                onValueChange={onSearchChange}
+              />
+              <div className="flex justify-center">
+                  <div className="flex items-center mt-10 mr-10">
+                    <label
+                      htmlFor="country"
+                      className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Chất liệu :
+                    </label>
+                    <div className="flex">
+                      <select
+                        id="chatLieu"
+                        name="id_chat_lieu"
+                        autoComplete="country-name"
+
+                        className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
+                      >
+                        <option selected>Tất cả</option>
+                        {chatLieu.map((x) => (
+                          <option
+                            key={x.id}
+                            value={x.id}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                          >
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-10 mr-10">
+                    <label
+                      htmlFor="country"
+                      className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Thương hiệu :
+                    </label>
+                    <div className="flex">
+                      <select
+                        id="thuongHieu"
+                        name="id_thuong_hieu"
+                        autoComplete="country-name"
+                        className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
+                      >
+                        <option selected>Tất cả</option>
+                        {thuongHieu.map((x) => (
+                          <option
+                            key={x.id}
+                            value={x.id}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                          >
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-10 mr-10">
+                    <label
+                      htmlFor="country"
+                      className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Đế giày :
+                    </label>
+                    <div className="flex">
+                      <select
+                        id="deGiay"
+                        name="id_de_giay"
+                        autoComplete="country-name"
+                        className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
+                      >
+                        <option selected>Tất cả</option>
+                        {deGiay.map((x) => (
+                          <option
+                            key={x.id}
+                            value={x.id}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                          >
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-10 mr-10">
+                    <label
+                      htmlFor="country"
+                      className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Kích cỡ :
+                    </label>
+                    <div className="flex">
+                      <select
+                        id="kichCo"
+                        name="id_kich_co"
+                        autoComplete="country-name"
+                        className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
+                      >
+                        <option selected>Tất cả</option>
+                        {kichCo.map((x) => (
+                          <option
+                            key={x.id}
+                            value={x.id}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                          >
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-10 mr-10">
+                    <label
+                      htmlFor="country"
+                      className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Màu sắc :
+                    </label>
+                    <div className="flex">
+                      <select
+                        id="mauSac"
+                        name="id_mau_sac"
+                        autoComplete="country-name"
+                        className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
+                      >
+                        <option selected>Tất cả</option>
+                        {mauSac.map((x) => (
+                          <option
+                            key={x.id}
+                            value={x.id}
+                            className="py-2 px-4 flex items-center justify-between"
+                          >
+                            <span
+                              className="inline-block w-3 h-3 rounded-full"
+                              style={{ backgroundColor: "red" }}
+                            />
+                            <span className="ml-3">{x.ten}</span>
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-center">
+                  <div className="flex items-center mt-10 mr-10">
+                    <label
+                      htmlFor="country"
+                      className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Nhãn hiệu :
+                    </label>
+                    <div className="flex">
+                      <select
+                        id="nhanHieu"
+                        name="id_nhan_hieu"
+                        autoComplete="country-name"
+                        className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
+                      >
+                        <option selected>Tất cả</option>
+                        {nhanHieu.map((x) => (
+                          <option
+                            key={x.id}
+                            value={x.id}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                          >
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-10 mr-10">
+                    <label
+                      htmlFor="country"
+                      className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Thể loại :
+                    </label>
+                    <div className="flex">
+                      <select
+                        id="theLoai"
+                        name="id_the_loai"
+                        autoComplete="country-name"
+                        className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
+                      >
+                        <option selected>Tất cả</option>
+                        {chatLieu.map((x) => (
+                          <option
+                            key={x.id}
+                            value={x.id}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                          >
+                            {x.ten}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-10 mr-10">
+                    <label
+                      htmlFor="country"
+                      className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Trạng thái :
+                    </label>
+                    <div className="flex">
+                      <select
+                        id="trangThai"
+                        name="trangThai"
+                        autoComplete="country-name"
+                        className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={(e) => onChange(e)}
+                      >
+                        <option >Đang bán</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center mt-10 mr-10">
+                    <label
+                      htmlFor="country"
+                      className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Khoảng giá :
+                    </label>
+                    <div className="flex p-5 w-[200px]">
+                    <Slider 
+                      label="Khoảng giá"
+                      size="sm"
+                      step={50} 
+                      minValue={0} 
+                      maxValue={2000}
+                      defaultValue={[0, 2000]} 
+                      className="max-w-md"
+                    />
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+          </div>
+          {/* <div className="">
             <div className="flex items-center">
               <Input
                 isClearable
@@ -789,7 +1099,7 @@ export default function ChiTietSanPham() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="mb-2 mt-10 justify-between border-b-[2px] font-normal border-gray-500 text-lg flex items-center">
           <div className="flex items-center">
@@ -829,13 +1139,13 @@ export default function ChiTietSanPham() {
           classNames={{
             wrapper: "max-h-[382px]",
           }}
-          selectedKeys={selectedKeys}
+          // selectedKeys={selectedKeys}
           selectionMode="multiple"
-          rowSelection={{
-            columnTitle: "Chọn",
-            fixed: false,
-            checkStrictly: true,
-          }}
+          // rowSelection={{
+          //   columnTitle: "Chọn",
+          //   fixed: false,
+          //   checkStrictly: true,
+          // }}
           sortDescriptor={sortDescriptor}
           topContent={topContent}
           topContentPlacement="outside"
@@ -852,6 +1162,9 @@ export default function ChiTietSanPham() {
               );
             }
             setSelectedCTSP(selectedCTSP);
+          }}
+          onRowAction={() => {
+            return;
           }}
         >
           <TableHeader columns={headerColumns}>

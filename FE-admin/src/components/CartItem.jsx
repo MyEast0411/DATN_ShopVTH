@@ -83,12 +83,18 @@ export default function CartItem({ users, columns, updateSoLuong }) {
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
     switch (columnKey) {
+      // case "key":
+      //   return (
+      //     <span style={{ color: "black", fontSize: 20 }}>
+      //       1
+      //     </span>
+      //   );
       case "thongtinsanpham":
         return (
           <div className="flex col-span-2 gap-4">
             <div className="w-40">
               <img src={user.id_chi_tiet_san_pham.defaultImg} 
-              alt="No-img" style={{ borderRadius: 10,width : "100%" }} />
+              alt="No-img" style={{ borderRadius: 10,width : "70%" }} />
             </div>
             <div className="col-span-1 text-base mt-2 mb-2">
               <p>

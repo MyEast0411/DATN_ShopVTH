@@ -1,15 +1,15 @@
 package com.example.shop.controller;
 
 import com.example.shop.dto.HoaDonCTTDTO;
+import com.example.shop.dto.HoaDonClientDTO;
 import com.example.shop.dto.ThanhToanHoaDonDTO;
-import com.example.shop.entity.HoaDon;
-import com.example.shop.entity.LichSuHoaDon;
-import com.example.shop.entity.Voucher;
-import com.example.shop.repositories.HoaDonRepository;
-import com.example.shop.repositories.KhachHangRepository;
-import com.example.shop.repositories.NhanVienRepository;
+import com.example.shop.entity.*;
+import com.example.shop.repositories.*;
+import com.example.shop.requests.HoaDonRequest;
+import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
+import com.example.shop.viewmodel.SanPhamVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +43,9 @@ public class HoaDonController {
     private HoaDonRepository hoaDonRepository;
 
     @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
+
+    @Autowired
     private KhachHangRepository ssKH;
 
     @Autowired
@@ -50,6 +53,8 @@ public class HoaDonController {
 
     @Autowired
     private LichSuHoaDonService lichSuHoaDonService;
+    @Autowired
+    private HoaDonChiTietService hoaDonChiTietService;
 
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
@@ -113,7 +118,11 @@ public class HoaDonController {
 
     @PostMapping("taoHoaDon")
     public ResponseEntity<HoaDon> taoHoaDon() {
-        Integer maxMa = Integer.parseInt(hoaDonRepository.getMaxMa());
+        String maxMaString = hoaDonRepository.getMaxMa();
+        Integer maxMa = (maxMaString != null) ? Integer.parseInt(maxMaString) : null;
+        if (maxMa == null) {
+            maxMa = 1;
+        }
         HoaDon hoaDon = HoaDon.builder()
                 .ma("HD" + (maxMa + 1))
                 .trangThai(7)
@@ -150,6 +159,18 @@ public class HoaDonController {
             @PathVariable("id") String id,
             @RequestBody ThanhToanHoaDonDTO hoaDon
     ) {
+        List<HoaDonChiTiet> hoaDonChiTietList = new ArrayList<>();
+        System.out.println(hoaDonRepository.getHDCTByMaHD(hoaDonRepository.getHoaDonByMa(id).getId()));
+        for (Object[] row : hoaDonRepository.getHDCTByMaHD(hoaDonRepository.getHoaDonByMa(id).getId())) {
+            System.out.println((String) row[0]);
+            System.out.println(Integer.parseInt(row[1].toString()));
+            HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
+                    .id_chi_tiet_san_pham(chiTietSanPhamRepository.findById((String) row[0]).get())
+                    .soLuong(Integer.parseInt(row[1].toString()))
+                    .build();
+            hoaDonChiTietList.add(hoaDonChiTiet);
+        }
+
         try {
             HoaDon hoaDon1 = hoaDonRepository.getHoaDonByMa(id);
             System.out.println(hoaDon.toString());
@@ -170,11 +191,9 @@ public class HoaDonController {
                         .build();
                 lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
                 lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon2);
-                System.out.println("true");
             }
 
             if (hoaDon1 != null) {
-                hoaDon1.setTrangThai(4);
                 hoaDon1.setLoaiHd(Integer.parseInt(hoaDon.getLoaiHd()));
                 hoaDon1.setTrangThai(Integer.parseInt(hoaDon.getTrangThai()));
                 hoaDon1.setDiaChi(hoaDon.getDiaChi());
@@ -183,6 +202,14 @@ public class HoaDonController {
                 hoaDon1.setNgayTao(new Date());
                 hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
+                for (HoaDonChiTiet hdct : hoaDonChiTietList) {
+                    SanPhamChiTiet sanPhamChiTiet = chiTietSanPhamRepository.findById(hdct.getId_chi_tiet_san_pham().getId()).get();
+                    if(sanPhamChiTiet.getSoLuongTon() <=0 ) {
+                        return ResponseEntity.badRequest().body("Sản phẩm không đủ số lượng tồn !!!");
+                    }
+                    sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() - hdct.getSoLuong());
+                    chiTietSanPhamRepository.save(sanPhamChiTiet);
+                }
                 HoaDon updateHoaDon = hoaDonRepository.save(hoaDon1);
                 return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
             } else {
@@ -218,6 +245,27 @@ public class HoaDonController {
         System.out.println(don);
 //        System.out.println(mess);
         return new ResponseEntity(don , HttpStatus.OK);
+    }
+
+
+    @PostMapping("findHoaDons")
+    public ResponseEntity<List<HoaDonClientDTO>> findHD(@RequestBody HoaDonRequest hoaDonRequest){
+        List<String> requestData =  hoaDonRequest.getData();
+        List<HoaDonClientDTO> list =  new ArrayList<>();
+        for (String maHD : requestData) {
+            HoaDon hoaDon = hoaDonRepository.getHoaDonByMa(maHD);
+            if (hoaDon != null){
+                List<LichSuHoaDon> lichSuHoaDons = lichSuHoaDonService.getLichSuHoaDons(hoaDon.getId());
+                List<HoaDonChiTiet> hoaDonChiTiets = hoaDonChiTietService.getHDCT(hoaDon.getId());
+                HoaDonClientDTO dto = new HoaDonClientDTO();
+                dto.setLichSuHoaDons(lichSuHoaDons);
+                dto.setHoaDon(hoaDon);
+                dto.setHoaDonChiTiets(hoaDonChiTiets);
+                list.add(dto);
+            }
+        }
+
+        return ResponseEntity.ok(list);
     }
 
 

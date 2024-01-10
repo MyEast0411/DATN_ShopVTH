@@ -144,6 +144,10 @@ export default function Voucher() {
       res.data.join();
       res.data.sort((a, b) => a?.giaTriMax - b?.giaTriMax);
 
+      // console.log(
+      //   res.data[0]?.giaTriMax,
+      //   res.data[res.data.length - 1]?.giaTriMax
+      // );
       setPriceOptions(
         res.data[0]?.giaTriMax,
         res.data[res.data.length - 1]?.giaTriMax
@@ -616,7 +620,7 @@ export default function Voucher() {
                     step={1000}
                     minValue={0}
                     maxValue={20000}
-                    defaultValue={priceOptions}
+                    defaultValue={priceOptions / 10}
                     formatOptions={{ style: "currency", currency: "VND" }}
                     className="max-w-md"
                   />

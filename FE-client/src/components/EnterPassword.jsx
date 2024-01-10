@@ -1,6 +1,9 @@
+/* eslint-disable react/no-unescaped-entities */
 import React, { useState } from "react";
 import Logo from "../assets/logo.png";
+
 import { Link, useNavigate, useParams } from "react-router-dom";
+
 import "./Component.css";
 import axios from "axios";
 import { Button } from "antd";
@@ -10,17 +13,26 @@ export default function EnterPassword() {
   const navigate = useNavigate();
 
   const [pass, setPass] = useState("");
+  const [error, setError] = useState("");
   console.log(email);
   const handleLogin = async () => {
+    if (pass.trim() == "" || pass == null) {
+      setError("Bạn chưa nhập mật khẩu");
+      return;
+    }
     await axios
       .post("http://localhost:8080/user/login", {
         email: email,
         pass: pass,
       })
       .then((response) => {
-        console.log(response.data);
-        localStorage.setItem("user", response.data.ten);
-        navigate("/");
+        if (response.data === "FAILED") {
+          setError("Mật khẩu không chính xác");
+        } else {
+          console.log(response.data);
+          localStorage.setItem("user", response.data.ten);
+          navigate("/");
+        }
       });
   };
   return (
@@ -41,8 +53,18 @@ export default function EnterPassword() {
               </a>
             </div>
             <div className="inputGroupCodeSignUp">
-              <input type="password" required autocomplete="off" value={pass} onChange={(e) => setPass(e.target.value)} />
+              <input
+                type="password"
+                required
+                autocomplete="off"
+                value={pass}
+                onChange={(e) => {
+                  setPass(e.target.value);
+                  setError("");
+                }}
+              />
               <label for="Password">Password</label>
+              <p className="text-red-400">{error}</p>
             </div>
             <a href="#" className="forgot-password underline link-underline text-small">
               Forgot password?

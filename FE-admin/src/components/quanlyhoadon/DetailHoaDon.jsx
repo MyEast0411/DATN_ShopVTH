@@ -138,6 +138,10 @@ export default function DetailHoaDon() {
         okType: "danger",
         onOk: () => {
           addLichSuHoaDon();
+          getDataLichSuThanhToan();
+          getInfoHD();
+          getDataChiTietSanPham();
+          getDataLichSu();
         },
       });
     }

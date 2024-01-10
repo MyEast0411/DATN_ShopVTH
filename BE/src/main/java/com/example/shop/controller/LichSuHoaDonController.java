@@ -87,11 +87,6 @@ public class LichSuHoaDonController {
         }
         hoaDonService.updateHoaDon(hoaDon);
 
-
-        //gửi Mail
-        // get mail khachHang
-        // get hoa đơn
-        // html
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
         String contentBody = "<html>" +
                 "<body>" +
@@ -101,9 +96,9 @@ public class LichSuHoaDonController {
                  "</body>" +
                 "</html>" ;
         KhachHang khachHang = hoaDon.getId_khach_hang();
-        if (khachHang == null)
-       SendMail.SendMailOptions("camhoang1811@gmail.com" , contentBody);
-        else
+//        if (khachHang == null)
+//       SendMail.SendMailOptions("camhoang1811@gmail.com" , contentBody);
+//        else
             SendMail.SendMailOptions(khachHang.getEmail() , contentBody);
 
         return ResponseEntity.ok(lichSuHoaDon);

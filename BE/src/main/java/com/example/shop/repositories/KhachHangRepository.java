@@ -20,8 +20,8 @@ public interface KhachHangRepository extends JpaRepository<KhachHang,String> {
 
     @Query(value = "select * from khach_hang where email= :email ",nativeQuery = true)
     List<KhachHang> findEmail(@Param("email")String email);
-    @Query(value = "select * from khach_hang where email= :email && so_dien_thoai= :so_dien_thoai",nativeQuery = true)
-    KhachHang login(@Param("email")String email, @Param("so_dien_thoai")String SDT);
+    @Query(value = "select * from khach_hang where email= :email && mat_khau= :matKhau",nativeQuery = true)
+    KhachHang login(@Param("email")String email, @Param("matKhau")String matKhau);
 
 
 }

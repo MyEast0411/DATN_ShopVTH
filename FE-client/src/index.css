@@ -147,6 +147,7 @@ input[type="number"] {
 
 .link-underline {
   color: #7a7979;
+  text-decoration-color: #7a7979 !important;
 }
 
 /* position ant notification */

@@ -49,9 +49,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #fff;
   padding-top: 1px;
   cursor: pointer;
+  border: transparent;
 }
 /* search */
 .container-input {

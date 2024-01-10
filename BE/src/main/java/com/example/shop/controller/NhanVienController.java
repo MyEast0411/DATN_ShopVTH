@@ -1,7 +1,8 @@
 package com.example.shop.controller;
 
 import com.example.shop.entity.ChucVu;
-
+import com.example.shop.entity.DiaChi;
+import com.example.shop.entity.KhachHang;
 import com.example.shop.entity.NhanVien;
 import com.example.shop.repositories.ChucVuRepository;
 import com.example.shop.repositories.NhanVienRepository;
@@ -54,7 +55,7 @@ public class NhanVienController {
         }
     }
     @PostMapping("add")
-    public ResponseEntity add(@RequestBody NhanVienVM nhanVien) {
+    public ResponseEntity add(@RequestBody NhanVienVM khachHang) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder(6);
         Random random = new Random();
@@ -69,37 +70,24 @@ public class NhanVienController {
         //
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
         Integer maxMa = Integer.parseInt(nhanVienRepository.findMaxMa());
-
+        System.out.println(khachHang);
         try {
-            NhanVien nv = new NhanVien();
-            String urlImg = UploadAnh.upload(nhanVien.getAnhNguoiDung());
-            nv.setAnh(urlImg);
-            nv.setMa("NV"+(maxMa + 1));
-            nv.setTen(nhanVien.getTen());
-            nv.setEmail(nhanVien.getEmail());
-            nv.setGioiTinh(nhanVien.getGioi_tinh());
-            nv.setNgaySinh(dateFormat.parse(nhanVien.getNgay_sinh()));
-            nv.setSdt(nhanVien.getSdt());
-            nv.setDiaChi(nhanVien.getSoNha() + "," + nhanVien.getXa() + "," + nhanVien.getHuyen());
-            nv.setTrang_thai("1");
-            nv.setDeleted(1);
-            nv.setId_chuc_vu(chucVuRepository.findById(nhanVien.getChucVu()).get());
-            nv.setMatKhau(randomString);
-            System.out.println(nv);
-
-            nhanVienRepository.save(nv);
-            //gui mail
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
-            String contentBody = "<html>" +
-                    "<body>" +
-                    "<p>\n" +
-                    "  Mật khẩu của bạn là:\n " + nv.getMatKhau()+
-                    "</p>" +
-                    "</body>" +
-                    "</html>" ;
-
-
-            SendMail.SendMailOptions(nv.getEmail() , contentBody);
+            NhanVien kh = new NhanVien();
+            String urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
+            kh.setAnh(urlImg);
+            kh.setMa("NV"+(maxMa + 1));
+            kh.setTen(khachHang.getTen());
+            kh.setEmail(khachHang.getEmail());
+            kh.setGioiTinh(khachHang.getGioi_tinh());
+            kh.setNgaySinh(dateFormat.parse(khachHang.getNgay_sinh()));
+            kh.setSdt(khachHang.getSdt());
+            kh.setDiaChi(khachHang.getSoNha() + "," + khachHang.getXa() + "," + khachHang.getHuyen());
+            kh.setTrang_thai("1");
+            kh.setDeleted(1);
+            kh.setId_chuc_vu(chucVuRepository.findById(khachHang.getChucVu()).get());
+            kh.setMatKhau(randomString);
+            SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
+            nhanVienRepository.save(kh);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
