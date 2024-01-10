@@ -111,26 +111,26 @@ public class SendMail {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress("uandcshop111@gmail.com"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toMail));
-            message.setSubject("Cảm ơn bạn đã mua hàng ủng hộ chúng tôi !!!");
+            message.setSubject("THÔNG TIN CỦA BẠN LÀ !!!");
 
             String htmlBody = contentBody;
             MimeBodyPart htmlBodyPart = new MimeBodyPart();
             htmlBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
 
-            MimeBodyPart imageBodyPart = new MimeBodyPart();
+//            MimeBodyPart imageBodyPart = new MimeBodyPart();
 //            DataSource source = new FileDataSource("C:\\Users\\Admin\\Pictures\\Saved Pictures\\logo.png");
             //Hoi
             //DataSource source = new FileDataSource("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\logo.png");
-            DataSource source = new FileDataSource("C:\\Users\\Admin\\Desktop\\chup-anh-dep-bang-dien-thoai-25.jpg");
+//            DataSource source = new FileDataSource("C:\\Users\\Admin\\Desktop\\chup-anh-dep-bang-dien-thoai-25.jpg");
 
-            imageBodyPart.setDataHandler(new DataHandler(source));
-            imageBodyPart.setFileName("Hóa đơn của bạn");
-            imageBodyPart.setHeader("Content-ID", "<image_cid>");
+//            imageBodyPart.setDataHandler(new DataHandler(source));
+//            imageBodyPart.setFileName("Hóa đơn của bạn");
+//            imageBodyPart.setHeader("Content-ID", "<image_cid>");
 
 
             MimeMultipart multipart = new MimeMultipart();
             multipart.addBodyPart(htmlBodyPart);
-            multipart.addBodyPart(imageBodyPart);
+//            multipart.addBodyPart(imageBodyPart);
 
             message.setContent(multipart);
             Transport.send(message);
@@ -141,4 +141,8 @@ public class SendMail {
             throw new RuntimeException(e);
         }
     }
+
+
+
+
 }

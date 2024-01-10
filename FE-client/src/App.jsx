@@ -12,7 +12,7 @@ import BackToTopButton from "./other/BackToTopButton";
 import "primeicons/primeicons.css";
 import "primereact/resources/primereact.css";
 import "primereact/resources/themes/saga-blue/theme.css";
-import '@coreui/coreui/dist/css/coreui.min.css'
+import "@coreui/coreui/dist/css/coreui.min.css";
 
 function App() {
   return (
@@ -22,8 +22,8 @@ function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/enter-password" element={<EnterPassword />} />
+        <Route path="/register/:email" element={<Register />} />
+        <Route path="/enter-password/:email" element={<EnterPassword />} />
         <Route path="/detail-product/:idSP" element={<DetailProduct />} />
         <Route path="/size-guide" element={<SizeGuide />} />
         <Route path="/checkout" element={<Checkout />} />

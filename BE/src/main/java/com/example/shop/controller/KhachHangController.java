@@ -4,6 +4,7 @@ import com.example.shop.entity.DiaChi;
 import com.example.shop.entity.KhachHang;
 import com.example.shop.repositories.DiaChiRepository;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.util.SendMail;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.KhachHangVM;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -103,6 +105,20 @@ public class KhachHangController {
             diaChiRepository.save(diaChi);
 
             //gui mail
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+            String contentBody = "<html>" +
+                    "<body>" +
+                   "<p>\n" +
+                    "  Mật khẩu của bạn là:\n " + khNew.getTen() + System.currentTimeMillis()+
+                    "</p>" +
+                    "</body>" +
+                    "</html>" ;
+
+
+                SendMail.SendMailOptions(khNew.getEmail() , contentBody);
+
+
+
 
 
             return ResponseEntity.ok("Thành công");
