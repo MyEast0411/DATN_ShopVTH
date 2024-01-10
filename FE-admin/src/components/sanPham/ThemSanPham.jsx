@@ -1011,6 +1011,33 @@ export default function ThemSanPham() {
                           </option>
                         ))}
                       </select>
+                      <Modal
+                        title="Thêm nhãn hiệu"
+                        open={isModalOpenDG}
+                        onOk={handleOkDG}
+                        onCancel={handleCancelDG}
+                        cancelText="Hủy"
+                        okText="Thêm"
+                        style={{ position: "relative" }}
+                      >
+                        <div>
+                          <label
+                            htmlFor="country"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                          >
+                            Tên nhãn hiệu
+                          </label>
+                          <input
+                            type="text"
+                            name="tenNhanHieu"
+                            value={tenDeGiay}
+                            className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                            placeholder="Nhập tên nhãn hiệu"
+                            onChange={(e) => onChangeDG(e)}
+                            style={{ borderRadius: "5px" }}
+                          />
+                        </div>
+                      </Modal>
                       <div
                         className="p-2"
                         style={{

@@ -456,7 +456,6 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
     const tongTien = dataArray.reduce((tong, item) => {
       const giaTien = Number(item.giaTien) || 0;
       const soLuong = Number(item.soLuong) || 0;
-  
       return tong + giaTien;
     }, 0);
   
@@ -474,31 +473,28 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
       .then((response) => {
-        // console.log(response.data);
         setList(response.data);
           
-        // Gọi hàm tính tổng tiền với mảng data
         const tongTien = tinhTongTien(response.data);
         const vc = response.data[0]?.id_hoa_don.id_voucher?.giaTriMax || 0;
         const codeVoucher = response.data[0]?.id_hoa_don.id_voucher?.code == undefined ? "" : response.data[0]?.id_hoa_don.id_voucher?.code;
         listVoucher.sort((b, a) => b.giaTriMin - a.giaTriMin);
+        console.log(listVoucher);
+        if(codeVoucher == "") {
+          setMuaThem(listVoucher[0]?.giaTriMin - tienHang == Number(NaN) ? "" : listVoucher[0]?.giaTriMin - tienHang);
+          setDuocGiam(listVoucher[0]?.giaTriMax == undefined ? "" : listVoucher[0]?.giaTriMax);
+        }
         listVoucher.map((x,index) => {
-          // console.log(x.giaTriMax);
           if(x.giaTriMax == voucher) {
             setMuaThem(listVoucher[index + 1]?.giaTriMin - tienHang == Number(NaN) ? "" : listVoucher[index + 1]?.giaTriMin - tienHang);
             setDuocGiam(listVoucher[index + 1]?.giaTriMax == undefined ? "" : listVoucher[index + 1]?.giaTriMax);
-            // console.log(duocGiam);
           }
         })
-        if(codeVoucher == "") {
-          setDuocGiam("");
-        }
+        
         setCodeVC(codeVoucher);
         setVoucher(vc);
         setTienHang(tongTien);
-        //if((tongTien - voucher) > 1000) setTienShip(0)
         setTongTien(tongTien - voucher + tienShip);
-        // setKhachCanTra(tongTien);
       });
   };
   const getKhachHang = async () => {

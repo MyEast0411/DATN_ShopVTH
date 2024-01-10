@@ -250,7 +250,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tongTien, 
         },
       })
       .then((response) => {
-        console.log("API Response:", response.data);
+        console.log("tien ship : ", response.data);
         if(tongTien > 1000000) setTienShip(0)
         else setTienShip(response.data.data.total);
       })
