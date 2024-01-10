@@ -49,6 +49,4 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , S
 
 
 
-
-
 }

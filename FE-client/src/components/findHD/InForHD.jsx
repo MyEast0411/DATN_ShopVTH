@@ -1,4 +1,3 @@
-import { BellFilled } from "@ant-design/icons";
 import {
   Timeline,
   TimelineItem,

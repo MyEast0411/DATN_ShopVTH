@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import Logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
 import { Checkbox } from "@nextui-org/react";
@@ -36,26 +36,26 @@ export default function Register() {
           </div>
           <form>
             <div className="inputGroupCodeSignUp">
-              <input type="text" required autocomplete="off" />
-              <label for="Code">Mã</label>
+              <input type="text" required autoComplete="off" />
+              <label htmlFor="Code">Mã</label>
             </div>
             <div className="flex name-user justify-between">
               <div className="inputGroupCodeSignUp">
-                <input type="text" required autocomplete="off" />
-                <label for="First name">Tên</label>
+                <input type="text" required autoComplete="off" />
+                <label htmlFor="First name">Tên</label>
               </div>
               <div className="inputGroupCodeSignUp">
-                <input type="text" required autocomplete="off" />
-                <label for="Last name">Họ, đệm</label>
+                <input type="text" required autoComplete="off" />
+                <label htmlFor="Last name">Họ, đệm</label>
               </div>
             </div>
             <div className="inputGroupCodeSignUp">
-              <input type="password" required autocomplete="off" />
-              <label for="Password">Mật khẩu</label>
+              <input type="password" required autoComplete="off" />
+              <label htmlFor="Password">Mật khẩu</label>
             </div>
             <div className="inputGroupNoMove mt-8">
-              <input type="date" required autocomplete="off" />
-              <label for="Ngày sinh">Ngày sinh</label>
+              <input type="date" required autoComplete="off" />
+              <label htmlFor="Ngày sinh">Ngày sinh</label>
             </div>
 
             <div className="agree-sign-up">
