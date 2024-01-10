@@ -222,7 +222,6 @@ public class HoaDonChiTietController {
                         Map<?, ?> productMap = (Map<?, ?>) productObject;
 
                         String id = (String) productMap.get("ma");
-//                        Integer kichCo = Integer.parseInt(productMap.get("kichCo").toString());
                         Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
                         Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
 
