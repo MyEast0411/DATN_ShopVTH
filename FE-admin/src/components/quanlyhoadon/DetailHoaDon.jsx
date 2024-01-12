@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import axios from "axios";
@@ -14,6 +16,7 @@ import {
   exportComponentAsPDF,
   exportComponentAsPNG,
 } from "react-component-export-image";
+import { useReactToPrint } from "react-to-print";
 import ComponentToPrint from "./InHoaDon";
 import { toast } from "react-toastify";
 import { FiLoader } from "react-icons/fi";
@@ -46,18 +49,44 @@ export default function DetailHoaDon() {
   const [openTimeLine, setOpenTimeLine] = useState(false);
 
   //  modal xuất hóa đơn
-  const componentRef = useRef();
+  // const componentRef = useRef();
 
   const [isModalOpenHD, setIsModalOpenHD] = useState(false);
   const showModalHD = () => {
     setIsModalOpenHD(true);
   };
-  const handleOkHD = () => {
-    exportComponentAsPNG(componentRef, {
-      fileName: `billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`,
+
+  // const pdfRef = useRef();
+  const downloadPDF = () => {
+    const input = componentRef.current;
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4", true);
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 20;
+      pdf.addImage(
+        imgData,
+        "PNG",
+        imgX,
+        imgY,
+        imgWidth * ratio,
+        imgHeight * ratio
+      );
+      pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
     });
     setIsModalOpenHD(false);
   };
+  // const handleOkHD = () => {
+  //   exportComponentAsPDF(componentRef, {
+  //     fileName: ,
+  //   });
+
+  // };
   const handleCancelHD = () => {
     setIsModalOpenHD(false);
   };
@@ -86,6 +115,15 @@ export default function DetailHoaDon() {
   //     content: "Xóa Thất Bại",
   //   });
   // };
+
+  const componentRef = useRef();
+
+  // const handlePrint = useReactToPrint({
+  //   content: () => componentRef.current,
+  //   documentTitle: `billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`,
+  //   imageOptions: { allowTaint: true, width: "100%", height: "100%" },
+  //   onAfterPrint: (e) => console.log(e),
+  // });
 
   const cancelHD = () => {
     Modal.confirm({
@@ -378,7 +416,7 @@ export default function DetailHoaDon() {
               <Modal
                 title="Xuất Hóa Đơn"
                 open={isModalOpenHD}
-                onOk={handleOkHD}
+                // onOk={handleOkHD}
                 onCancel={handleCancelHD}
                 width={700}
                 style={{ top: 10 }}
@@ -394,7 +432,7 @@ export default function DetailHoaDon() {
                   <Button
                     key="submit"
                     type="primary"
-                    onClick={handleOkHD}
+                    onClick={downloadPDF}
                     style={{ backgroundColor: "red" }}
                   >
                     In Hóa Đơn
@@ -403,8 +441,9 @@ export default function DetailHoaDon() {
               >
                 <ComponentToPrint
                   ref={componentRef}
-                  data={dataSource}
+                  data={rowsSPCT}
                   columns={columns}
+                  inforKH={info}
                 />
               </Modal>
               <Button className="me-4" color="green" onClick={showModalHD}>
@@ -789,15 +828,29 @@ const columns = [
     title: "Name",
     dataIndex: "name",
     key: "name",
+    render: (_, record) => (
+      <span>
+        {record.name}
+        {" ( "}
+        {record.mausac}
+        {" , "}
+        {record.kichco}
+        {" ) "}
+      </span>
+    ),
   },
   {
-    title: "Age",
-    dataIndex: "age",
-    key: "age",
+    title: "Số lượng",
+    dataIndex: "quantity",
+    key: "quantity",
+    render: (text) => <span>{text} sản phẩm</span>,
   },
   {
-    title: "Address",
-    dataIndex: "address",
-    key: "address",
+    title: "Đơn Giá",
+    dataIndex: "price",
+    key: "price",
+    render: (text) => (
+      <span className="text-red-300">{Intl.NumberFormat().format(text)} ₫</span>
+    ),
   },
 ];
