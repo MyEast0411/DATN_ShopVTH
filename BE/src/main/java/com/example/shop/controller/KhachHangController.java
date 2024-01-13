@@ -1,9 +1,15 @@
 package com.example.shop.controller;
 
 import com.example.shop.entity.DiaChi;
+import com.example.shop.entity.HoaDon;
+import com.example.shop.entity.HoaDonChiTiet;
 import com.example.shop.entity.KhachHang;
+import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.DiaChiRepository;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.response.LichSuMuaHangResponse;
+import com.example.shop.service.HoaDonChiTietService;
+import com.example.shop.service.HoaDonService;
 import com.example.shop.util.SendMail;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.KhachHangVM;
@@ -14,8 +20,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Controller
@@ -28,6 +37,12 @@ public class KhachHangController {
 
     @Autowired
     DiaChiRepository diaChiRepository;
+
+    @Autowired
+    private HoaDonService hoaDonService;
+    @Autowired
+    private HoaDonChiTietService hoaDonChiTietService;
+
 
     @GetMapping("/khach-hang/getAll")
     List<KhachHang> getAll(){
@@ -177,5 +192,23 @@ public class KhachHangController {
     public KhachHang deleteSoft(@PathVariable("id") KhachHang khachHang) {
         khachHang.setDeleted(0);
         return khachHangRepository.save(khachHang);
+    }
+
+    @GetMapping("/khach-hang/hoa-don/{idKH}")
+    public ResponseEntity getHDByKH(@PathVariable("idKH") String idKH){
+        List<HoaDon> listHD = hoaDonService.getHDByKH(idKH);
+        List<LichSuMuaHangResponse> lichSuMuaHangResponses = new ArrayList<>();
+        for (HoaDon hd: listHD) {
+//            Map<Integer , SanPhamChiTiet> sanPhamChiTiets = new HashMap<>();
+
+            List<HoaDonChiTiet> list = hoaDonChiTietService.getHDCT(hd.getId());
+//            list.stream().forEach(i -> sanPhamChiTiets.put(i.getSoLuong() , i.getId_chi_tiet_san_pham()));
+            LichSuMuaHangResponse lichSuMuaHangResponse = new LichSuMuaHangResponse();
+            lichSuMuaHangResponse.setHoaDon(hd);
+            lichSuMuaHangResponse.setHoaDonChiTiets(list);
+            lichSuMuaHangResponses.add(lichSuMuaHangResponse);
+        }
+        lichSuMuaHangResponses.forEach( i -> System.out.println(i));
+        return ResponseEntity.ok(lichSuMuaHangResponses);
     }
 }

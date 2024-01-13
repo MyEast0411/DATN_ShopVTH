@@ -15,6 +15,7 @@ import "primereact/resources/themes/saga-blue/theme.css";
 import "@coreui/coreui/dist/css/coreui.min.css";
 
 import FindHD from "./components/findHD/FindHD";
+import PurchaseHistory from "./components/PurchaseHistory";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/size-guide" element={<SizeGuide />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/tracuu" element={<FindHD />} />
+        <Route path="/lich-su-mua-hang/:idkh" element={<PurchaseHistory />} />
       </Routes>
       <BackToTopButton />
     </>

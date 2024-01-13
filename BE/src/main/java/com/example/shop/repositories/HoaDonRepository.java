@@ -60,6 +60,10 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             "WHERE ngay_tao  like :ngayTao",nativeQuery = true)
     Double  getDayInWeek(@Param("ngayTao")String ngayTao );
 
+    @Query(value = "select * from hoa_don\n" +
+            "where id_khach_hang = :idKH",nativeQuery = true)
+    List<HoaDon>  getHDByKH(@Param("idKH")String idKH );
+
 
 
 

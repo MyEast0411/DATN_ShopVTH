@@ -181,6 +181,10 @@ public class HoaDonServiceImpl implements HoaDonService {
         return hoaDonRepository.countHD();
     }
 
+    @Override
+    public List<HoaDon> getHDByKH(String idKH) {
+        return hoaDonRepository.getHDByKH(idKH);
+    }
 
 
 }

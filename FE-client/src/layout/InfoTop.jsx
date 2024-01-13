@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
@@ -6,8 +6,15 @@ import { useEffect, useState } from "react";
 
 export default function InfoTop() {
   const [user, setUser] = useState("");
+  const navigate = useNavigate();
   useEffect(() => {
-    setUser(localStorage.getItem("user"));
+    setUser(
+      localStorage.getItem("user") == null ||
+        localStorage.getItem("user") == undefined ||
+        localStorage.getItem("user") == ""
+        ? ""
+        : JSON.parse(localStorage.getItem("user"))
+    );
   }, [user]);
 
   const items = [
@@ -16,12 +23,25 @@ export default function InfoTop() {
       label: (
         <p
           onClick={() => {
-            console.log("hi");
             localStorage.setItem("user", "");
             setUser("");
+            navigate("/");
           }}
         >
           Logout
+        </p>
+      ),
+    },
+
+    {
+      key: "2",
+      label: (
+        <p
+          onClick={() => {
+            navigate(`/lich-su-mua-hang/${user.id}`);
+          }}
+        >
+          Lịch sử hóa đơn
         </p>
       ),
     },
@@ -72,7 +92,7 @@ export default function InfoTop() {
               >
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
-                    Hi , {localStorage.getItem("user")}
+                    Hi , {user.ten}
                     <DownOutlined />
                   </Space>
                 </a>
