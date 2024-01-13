@@ -16,7 +16,7 @@ import {
   exportComponentAsPDF,
   exportComponentAsPNG,
 } from "react-component-export-image";
-import { useReactToPrint } from "react-to-print";
+// import { useReactToPrint } from "react-to-print";
 import ComponentToPrint from "./InHoaDon";
 import { toast } from "react-toastify";
 import { FiLoader } from "react-icons/fi";
