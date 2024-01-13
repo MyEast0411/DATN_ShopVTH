@@ -12,6 +12,8 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class UploadAnh {
 
@@ -51,7 +53,18 @@ public class UploadAnh {
 //    }
     public static String upload(String urlImg) {
 //        urlImg = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
-        File imageFile = new File("C:\\Users\\nguye\\Pictures\\Saved Pictures\\"+urlImg);
+
+        String userHome = System.getProperty("user.home");
+
+        // Kết hợp với đường dẫn "Pictures/Saved Pictures"
+        String fullPath = userHome + "\\Pictures\\Saved Pictures\\";
+
+        // Tạo đối tượng Path từ đường dẫn
+        Path path = Paths.get(fullPath);
+        File imageFile = new File(path+"\\"+urlImg);
+        System.out.println(imageFile);
+
+
 
 //        File imageFile = new File("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\"+urlImg);
 
