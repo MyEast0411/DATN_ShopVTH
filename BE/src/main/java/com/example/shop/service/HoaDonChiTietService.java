@@ -13,4 +13,8 @@ public interface HoaDonChiTietService {
     List<SanPhamChiTietDTO> getTop3();
      Integer totalSPSaled();
     List<SanPhamChiTietDTO> getTop5Year();
+
+    Integer getSLSP(String idHD);
+
+
 }

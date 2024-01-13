@@ -1,3 +1,5 @@
+package com.example.shop.util;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -30,13 +32,19 @@ public class Main {
                 new Test("Test D", LocalDate.of(2022, 4, 30))
         );
 
-        LocalDate searchDate = LocalDate.of(2022, 3, 1);
+        LocalDate searchDate1 = LocalDate.of(2022, 3, 1);
+
+
+
+
+        LocalDate searchDate2 = null; // Ngày truyền vào có thể trống
 
         List<Test> filteredTests = Tests.stream()
-                .filter(Test -> Test.date.isAfter(searchDate) || Test.date.isEqual(searchDate))
+                .filter(Test -> searchDate2 == null || Test.date.isAfter(searchDate2) || Test.date.isEqual(searchDate2))
+                .filter(event ->  searchDate1 == null || event.date.isBefore(searchDate1) || event.date.isEqual(searchDate1))
                 .collect(Collectors.toList());
 
-        System.out.println("Danh sách sự kiện sau ngày " + searchDate + ": " + filteredTests);
+        System.out.println("Danh sách sự kiện sau ngày " +  ": " + filteredTests);
     }
 }
 
