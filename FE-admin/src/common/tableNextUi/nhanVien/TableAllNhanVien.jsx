@@ -419,7 +419,7 @@ export default function App() {
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{
-          wrapper: "max-h-[382px]",
+          wrapper: "max-h-[382px] p-0",
         }}
         selectedKeys={selectedKeys}
         sortDescriptor={sortDescriptor}

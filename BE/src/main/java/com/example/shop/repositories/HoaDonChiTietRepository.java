@@ -14,6 +14,7 @@ import java.util.List;
 public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , String> {
     @Query(value = "select * from hoa_don_chi_tiet u where u.id_hoa_don = ?1" , nativeQuery = true)
     List<HoaDonChiTiet> getHDCT(String idHD);
+
     @Modifying
     @Transactional
     @Query(value = "delete from hoa_don_chi_tiet u where u.id_hoa_don = :idHD and u.id_chi_tiet_san_pham = :idSPCT", nativeQuery = true)
@@ -45,6 +46,19 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , S
             "order by total_quantity desc \n" +
             " limit 5 " , nativeQuery = true)
     List<Object[]> top5SPYear();
+
+
+    @Query(value = "select sum(so_luong) from hoa_don_chi_tiet where id_hoa_don = :idHD" , nativeQuery = true)
+    Integer getSLSPByHD(@Param("idHD") String id);
+
+//    @Query("select u from HoaDonChiTiet u where u.id_hoa_don.id = :idHD" )
+//    List<HoaDonChiTiet> getHDCTByHD(@Param("idHD") String id);
+
+
+
+
+
+
 
 
 

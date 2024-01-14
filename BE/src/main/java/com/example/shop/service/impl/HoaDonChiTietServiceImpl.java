@@ -66,6 +66,11 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
         return list;
     }
 
+    @Override
+    public Integer getSLSP(String idHD) {
+        return repository.getSLSPByHD(idHD);
+    }
+
 
     @Override
     public Integer totalSPSaled() {

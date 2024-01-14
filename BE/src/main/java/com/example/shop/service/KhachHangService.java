@@ -1,5 +1,6 @@
 package com.example.shop.service;
 
+import com.example.shop.dto.UserDTO;
 import com.example.shop.entity.KhachHang;
 import org.springframework.stereotype.Service;
 
@@ -13,5 +14,7 @@ public interface KhachHangService {
     KhachHang addKhachHang(KhachHang khachHang);
     KhachHang updateKhachHang(KhachHang khachHang);
     Boolean deleteKhachHang(KhachHang khachHang);
+    KhachHang login(UserDTO dto);
+    KhachHang findEmail(UserDTO dto);
 
 }

@@ -1,6 +1,7 @@
 package com.example.shop.service.impl;
 
 
+import com.example.shop.dto.UserDTO;
 import com.example.shop.entity.KhachHang;
 import com.example.shop.repositories.KhachHangRepository;
 import com.example.shop.service.KhachHangService;
@@ -53,5 +54,16 @@ public class KhachHangServiceImpl implements KhachHangService {
             exception.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public KhachHang login(UserDTO dto) {
+        return khachHangRepository.login(dto.getEmail() , dto.getPass());
+    }
+
+    @Override
+    public KhachHang findEmail(UserDTO dto) {
+        List<KhachHang> list = khachHangRepository.findEmail(dto.getEmail());
+        return list.size() == 0?null : list.get(0);
     }
 }

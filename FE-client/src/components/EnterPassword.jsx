@@ -1,10 +1,40 @@
 /* eslint-disable react/no-unescaped-entities */
-// import React, { useState } from "react";
+import React, { useState } from "react";
 import Logo from "../assets/logo.png";
-import { Link } from "react-router-dom";
+
+import { Link, useNavigate, useParams } from "react-router-dom";
+
 import "./Component.css";
+import axios from "axios";
+import { Button } from "antd";
 
 export default function EnterPassword() {
+  const { email } = useParams();
+  const navigate = useNavigate();
+
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState("");
+  console.log(email);
+  const handleLogin = async () => {
+    if (pass.trim() == "" || pass == null) {
+      setError("Bạn chưa nhập mật khẩu");
+      return;
+    }
+    await axios
+      .post("http://localhost:8080/user/login", {
+        email: email,
+        pass: pass,
+      })
+      .then((response) => {
+        if (response.data === "FAILED") {
+          setError("Mật khẩu không chính xác");
+        } else {
+          // console.log(response.data);
+          localStorage.setItem("user", JSON.stringify(response.data));
+          navigate("/");
+        }
+      });
+  };
   return (
     <>
       <div className="main-sign-in main-enter-password flex justify-center">
@@ -20,10 +50,7 @@ export default function EnterPassword() {
           <form>
             <div className="sign-in-title mb-10">What's your password?</div>
             <div className="send-code">
-              <span className="email-sended-code">
-                {" "}
-                nguyenvanhoi2k3@gmail.com
-              </span>
+              <span className="email-sended-code"> {email}</span>
               <a
                 href="#"
                 className="underline ml-2 inline-block font-normal sign-up-edit link-underline"
@@ -32,8 +59,18 @@ export default function EnterPassword() {
               </a>
             </div>
             <div className="inputGroupCodeSignUp">
-              <input type="password" required autoComplete="off" />
-              <label htmlFor="Password">Password</label>
+              <input
+                type="password"
+                required
+                autocomplete="off"
+                value={pass}
+                onChange={(e) => {
+                  setPass(e.target.value);
+                  setError("");
+                }}
+              />
+              <label for="Password">Password</label>
+              <p className="text-red-400">{error}</p>
             </div>
             <a
               href="#"
@@ -42,12 +79,12 @@ export default function EnterPassword() {
               Forgot password?
             </a>
             <div className="flex justify-end">
-              <button
-                type="submit"
+              <Button
+                onClick={() => handleLogin()}
                 className="inline-block enter-password-signIn-button main-sign-in-button"
               >
-                Sign In
-              </button>
+                Login
+              </Button>
             </div>
           </form>
         </div>
