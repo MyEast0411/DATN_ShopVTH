@@ -23,5 +23,6 @@ public class CartNotLoginDTO {
     private String deliveryTime;
     private String phiVanChuyen;
     private List<SanPhamChiTiet> sanPhams;
+    private Integer soLuong;
     private String tongTien;
 }

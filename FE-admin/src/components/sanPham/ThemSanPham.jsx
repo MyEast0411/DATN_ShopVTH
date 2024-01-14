@@ -108,17 +108,13 @@ export default function ThemSanPham() {
     const file = event.target.files[0];
     if (file) {
       const fileName = file.name;
-      setHinhAnhModal({
-        imgUrl: fileName,
-        mauSac: selectMau,
-      });
+
       await axios
         .post("http://localhost:8080/addHinhAnh", {
-          imgUrl: fileName,
-          mauSac: selectMau,
+          imgUrl : fileName,
+          mauSac : selectMau
         })
         .then((response) => {
-          console.log(response.data);
           if (response.data != null) {
             // <Section>
             //   <Article key={"spin"}>
@@ -127,14 +123,11 @@ export default function ThemSanPham() {
             // </Section>
           }
           toast.success(`Thêm thành công`);
+          getAllHA();
         })
         .catch((error) => {
           toast.error(`Thêm thất bại`);
         });
-
-      // await axios.get(`http://localhost:8080/getHinhAnhByMau/${selectMau}`).then((response) => {
-      //   setImg(response.data);
-      // });
     }
   };
 
@@ -142,7 +135,6 @@ export default function ThemSanPham() {
     const imageInput = document.getElementById("imageInput");
     if (imageInput) {
       imageInput.click();
-      console.log("ok");
     }
   };
 
@@ -248,8 +240,6 @@ export default function ThemSanPham() {
             <MdDeleteOutline
               className="cursor-pointer text-xl delete-hover relative"
               onClick={() => {
-                console.log(record.id);
-                console.log(tables[record.id_mau_sac]);
                 const updatedProducts = tables[record.id_mau_sac].filter(product => product.id !== record.id);
                 setTables((prevTables) => ({
                   ...prevTables,
@@ -286,7 +276,6 @@ export default function ThemSanPham() {
                   await axios
                     .get(`http://localhost:8080/getHinhAnhByMau/${tenSP}`)
                     .then((response) => {
-                      console.log(response.data);
                       setImg(response.data);
                     });
                   showModalHA();
@@ -327,12 +316,11 @@ export default function ThemSanPham() {
                               style={{ objectFit: "contain" }}
                               className="w-full h-full object-cover"
                               onClick={() => {
-                                console.log(selectedImages);
                                 if (
                                   selectedImages.length >= 3 &&
                                   !selectedImages.includes(x.id)
                                 ) {
-                                  // Nếu đã chọn nhiều hơn 3 và không phải checkbox đã chọn, hiển thị thông báo lỗi
+                                  
                                   toast.error("😢 Chỉ được chọn 3 ảnh !");
                                 } else {
                                   const checkbox = document.getElementById(
@@ -411,23 +399,16 @@ export default function ThemSanPham() {
 
   const handleSoLuongChange = (key, value) => {
     let index = key - 1;
-    // console.log(key + "  " + value);
-    // tables[mauSac][index].soLuongTon = value;
-    // console.log(tables[mauSac][index]);
     const updatedTableData = [...tableData];
     updatedTableData[index].soLuongTon = value;
     setTableData(updatedTableData);
-    console.log(tableData);
   };
 
   const handleGiaBanChange = (key, value) => {
     let index = key - 1;
-    console.log(key + "  " + value);
     const updatedTableData = [...tableData];
-    console.log(updatedTableData);
     updatedTableData[index].giaBan = value;
     setTableData(updatedTableData);
-    console.log(tableData);
   };
 
   // -------------------------end table data-------------------------
@@ -466,7 +447,6 @@ export default function ThemSanPham() {
     setCheckboxStates(updatedStates);
     const imageUrl = e.target.nextElementSibling.src;
     const checkedCount = updatedStates.filter((state) => state).length;
-    console.log(tableImg[selectMau]);
     if (e.target.checked) {
       if (checkedCount <= maxSelectedImages) {
         updatedStates[id] = true;
@@ -534,7 +514,6 @@ export default function ThemSanPham() {
     setIsModalOpenSP(false);
   };
   const onChangeSP = (e) => {
-    console.log(e.target.value);
     setSanPhamModal({ [e.target.name]: e.target.value });
   };
   // ------------------------modal mau sac-------------------------
@@ -640,10 +619,10 @@ export default function ThemSanPham() {
       for (const kichCo of selectedKichCo) {
         const sanPhamItem = {
           ten: sanPham.ten,
-          tenSanPham: `${sanPham.ten} [ ${kichCo} - ${
+          tenSanPham: `${listSanPham.find((item) => item.id == id_san_pham)?.ten}` + `${sanPham.ten} [ ${kichCo} - ${
             mauSac.find((item) => item.maMau === mau)?.ten || ""
           } ]`,
-          // soLuongTon: sanPham.soLuongTon,
+          // soLuongTon: sanPham.soLuongTon, // soLuongTon va` giaBan do nguoi dung nhap vao`
           khoiLuong: 1,
           moTa: sanPham.moTa,
           giaNhap: "100,000",
@@ -657,7 +636,6 @@ export default function ThemSanPham() {
           id_san_pham : sanPham.id_san_pham
         };
         tableDataa.push(sanPhamItem);
-        // mauTableData[mau].push(sanPhamItem);
       }
       if (selectMau == mauSac.find((item) => item.maMau === mau)?.ten || "") {
         mauTableData[mau].push(tableImg);
@@ -669,14 +647,12 @@ export default function ThemSanPham() {
       const spByColor = selectedKichCo.map((kichCo) => ({
         id: (index += 1),
         ten: sanPham.ten,
-        tenSanPham: `${sanPham.ten} [ ${kichCo} - ${
+        tenSanPham: `${listSanPham.find((item) => item.id == id_san_pham)?.ten}` + ` ${sanPham.ten} [ ${kichCo} - ${
           mauSac.find((item) => item.maMau === mau)?.ten || ""
         } ]`,
-        // soLuongTon: sanPham.soLuongTon,
         khoiLuong: 1,
         moTa: sanPham.moTa,
         giaNhap: "100,000",
-        // giaBan: "200,000",
         id_mau_sac: mau,
         id_kich_co: kichCo,
         id_thuong_hieu: sanPham.id_thuong_hieu,
@@ -757,7 +733,6 @@ export default function ThemSanPham() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    console.log(tableData);
     const data = tableData.map((sp) => [
       sp.id,
       sp.id_san_pham,
@@ -775,7 +750,6 @@ export default function ThemSanPham() {
       sp.id_de_giay,
       tableImg,
     ]);
-    console.log(data);
     if (isConfirmed) {
       await axios
         .post("http://localhost:8080/san-pham/add", data)
@@ -856,7 +830,6 @@ export default function ThemSanPham() {
                           value={id_san_pham}
                           name="id_san_pham"
                           onChange={(e) => {
-                            console.log(e);
                             setSanPham({ ...sanPham, "id_san_pham": e});
                           }}
                           style={{width : "400px"}}
@@ -1443,8 +1416,8 @@ export default function ThemSanPham() {
           {selectedColors.map((mau) => (
             <div key={mau}>
               <h2>
-                Sản phẩm theo :{" "}
-                {mauSac.find((item) => item.maMau === mau)?.ten || ""}{" "}
+                Sản phẩm theo :
+                {" " + mauSac.find((item) => item.maMau === mau)?.ten || ""}{" "}
               </h2>
               <Table
                 columns={columns}

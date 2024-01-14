@@ -12,7 +12,7 @@ export default function ProductList() {
   const fetchSanPham = async () => {
     try {
       const data = await getAllSanPham();
-      // console.log("San Pham Data:", data);
+      console.log(data);
       setSanPhams(data);
     } catch (error) {
       console.error("Error fetchSanPham():", error);

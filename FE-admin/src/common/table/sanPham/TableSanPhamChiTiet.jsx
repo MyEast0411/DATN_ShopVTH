@@ -856,13 +856,13 @@ export default function App({ gioHang }) {
   return (
     <>
       <Table
-        style={{ height: "382px" }}
+        style={{ height: "352px" }}
         aria-label="Example table with custom cells, pagination and sorting"
         // isHeaderSticky
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{
-          wrapper: "max-h-[382px]",
+          wrapper: "max-h-[332px]",
         }}
         selectedKeys={selectedKeys}
         sortDescriptor={sortDescriptor}

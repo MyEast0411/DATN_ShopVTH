@@ -212,8 +212,8 @@ const TabBanHang = () => {
         </Tabs>
       ) : (
         <div style={{ textAlign: 'center', height: '70vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'  }}>
-          <img src="https://static-00.iconduck.com/assets.00/bill-cross-icon-1858x2048-q9ulyg0j.png" alt="Empty State" style={{ maxWidth: '200px', maxHeight: '300px' }} />
-          <p>Không có hóa đơn nào</p>
+          <img src="https://cdn-icons-png.flaticon.com/512/4897/4897753.png" alt="Empty State" style={{ maxWidth: '200px', maxHeight: '300px' }} />
+          <p style={{fontSize : "30px"}}>Không có hóa đơn nào</p>
         </div>
       )}
       </div>

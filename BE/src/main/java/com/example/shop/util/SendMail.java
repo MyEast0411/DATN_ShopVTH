@@ -61,26 +61,14 @@ public class SendMail {
                         "</tr>";
                 index++;
             }
-
             htmlBody += "</table></body></html>";
-
 
             htmlBody += "</table>";
             MimeBodyPart htmlBodyPart = new MimeBodyPart();
             htmlBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
 
-            MimeBodyPart imageBodyPart = new MimeBodyPart();
-//            DataSource source = new FileDataSource("C:\\Users\\Admin\\Pictures\\Saved Pictures\\logo.png");
-            //Hoi
-//            DataSource source = new FileDataSource("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\logo.png");
-//            imageBodyPart.setDataHandler(new DataHandler(source));
-            imageBodyPart.setFileName("Hóa đơn của bạn");
-            imageBodyPart.setHeader("Content-ID", "<image_cid>");
-
-
             MimeMultipart multipart = new MimeMultipart();
             multipart.addBodyPart(htmlBodyPart);
-            multipart.addBodyPart(imageBodyPart);
 
             message.setContent(multipart);
             Transport.send(message);

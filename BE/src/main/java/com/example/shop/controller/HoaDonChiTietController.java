@@ -2,10 +2,7 @@
 package com.example.shop.controller;
 
 import com.example.shop.dto.*;
-import com.example.shop.entity.HoaDon;
-import com.example.shop.entity.HoaDonChiTiet;
-import com.example.shop.entity.LichSuHoaDon;
-import com.example.shop.entity.SanPhamChiTiet;
+import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.util.SendMail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -64,6 +58,28 @@ public class HoaDonChiTietController {
     @GetMapping("/getHDCTByMa/{maHD}")
     public ResponseEntity getHDCTByMa(@PathVariable String maHD) {
         try {
+            HoaDon hoaDon = ssHD.getHoaDonByMa(maHD);
+            Double tongTien = ssHD.getTongTien(maHD) == null ? null : ssHD.getTongTien(maHD);
+            List<Voucher> voucherList = ssVC.getVoucherByGiaTriMin(ssHD.getTongTien(maHD));
+            Optional<Double> maxGiaTri = voucherList.stream()
+                    .map(Voucher::getGiaTriMax)
+                    .max(Comparator.naturalOrder());
+            voucherList.sort(Comparator.comparingDouble(Voucher::getGiaTriMax));
+
+            if(voucherList.isEmpty()) {
+                hoaDon.setId_voucher(null);
+                ssHD.save(hoaDon);
+                return ResponseEntity.ok(ssHDCT.getHDCTByMA(maHD));
+            }
+            for (Voucher x:
+                    voucherList) {
+                if(tongTien >= x.getGiaTriMin() && x.getGiaTriMax() >= maxGiaTri.get()) {
+                    hoaDon.setId_voucher(x);
+                    ssHD.save(hoaDon);
+                }else {
+                    hoaDon.setId_voucher(null);
+                }
+            }
             return ResponseEntity.ok(ssHDCT.getHDCTByMA(maHD));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("ERROR");
@@ -208,9 +224,7 @@ public class HoaDonChiTietController {
         System.out.println("getPhiVanChuyen: " + cartNotLoginDTO.getPhiVanChuyen());
         System.out.println("getPhuongThucThanhToan: " + cartNotLoginDTO.getPhuongThucThanhToan());
         System.out.println("getTongTien: " + cartNotLoginDTO.getTongTien());
-        for (SanPhamChiTiet n : cartNotLoginDTO.getSanPhams()) {
-            System.out.println("San pham: " + n.getMa());
-        }
+
         List<HoaDonChiTiet> listHDCT = new ArrayList<>();
         try {
             String maxMaString = ssHD.getMaxMa();
@@ -237,37 +251,23 @@ public class HoaDonChiTietController {
                     .ngayTao(new Date(System.currentTimeMillis()))
                     .build();
             ssLSHD.save(lichSuHoaDon);
-            for (Object gioHangItem : cartNotLoginDTO.getSanPhams()) {
-                if (gioHangItem instanceof Map) {
-                    Map<?, ?> gioHangMap = (Map<?, ?>) gioHangItem;
-
-                    Object productObject = gioHangMap.get("product");
-                    if (productObject instanceof Map) {
-                        Map<?, ?> productMap = (Map<?, ?>) productObject;
-
-                        String id = (String) productMap.get("ma");
-                        Double giaBan = Double.valueOf(productMap.get("giaBan").toString());
-                        Integer soLuong = Integer.parseInt(productMap.get("soLuong").toString());
-
-                        HoaDonChiTiet hdct = new HoaDonChiTiet();
-                        hdct.setId_hoa_don(hoaDon);
-                        hdct.setId_chi_tiet_san_pham(ssSP.findByMa(id));
-                        hdct.setSoLuong(soLuong);
-                        hdct.setGiaTien(BigDecimal.valueOf(giaBan));
-                        listHDCT.add(hdct);
-                        ssHDCT.save(hdct);
-                    }
-                }
-
-                SendMail.SenMail(cartNotLoginDTO.getEmail(), cartNotLoginDTO.getEmail(), cartNotLoginDTO.getDeliveryTime(),
-                        cartNotLoginDTO.getPhiVanChuyen(), cartNotLoginDTO.getTongTien(), listHDCT);
-                return ResponseEntity.ok("HoaDonChiTiet has been saved successfully");
+            for (SanPhamChiTiet sanPhamChiTiet : cartNotLoginDTO.getSanPhams()) {
+                HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
+                        .id_hoa_don(hd1)
+                        .id_chi_tiet_san_pham(sanPhamChiTiet)
+                        .soLuong(cartNotLoginDTO.getSoLuong())
+                        .build();
+                listHDCT.add(hoaDonChiTiet);
+                ssHDCT.save(hoaDonChiTiet);
             }
+            SendMail.SenMail(cartNotLoginDTO.getEmail(), cartNotLoginDTO.getEmail(), cartNotLoginDTO.getDeliveryTime(),
+                    cartNotLoginDTO.getPhiVanChuyen(), cartNotLoginDTO.getTongTien(), listHDCT);
+            return ResponseEntity.ok("Thanh toán thành công");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body(e);
+            return ResponseEntity.badRequest().body("err");
+//            return ResponseEntity.badRequest().body(e);
         }
-        return ResponseEntity.badRequest().body("Failed to save HoaDonChiTiet");
     }
 
     //----------------------Hội--------------------------//

@@ -272,7 +272,7 @@ export default function ChiTietSanPham() {
       }
     }
     fetchChiTietSanPham();
-  }, [sanPhams]);
+  }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 

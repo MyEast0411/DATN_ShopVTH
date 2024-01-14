@@ -3,7 +3,7 @@ import { getProvinces, getDistricts, getWards } from "../api/Location";
 import axios from "axios";
 import { Select } from "antd";
 const { Option } = Select;
-export default function Delivery({ activeKey, khachHang,setKhachHang, tongTien, setTienShip }) {
+export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, setTienShip }) {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -251,13 +251,14 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tongTien, 
       })
       .then((response) => {
         console.log("tien ship : ", response.data);
-        if(tongTien > 1000000) setTienShip(0)
+        console.log("tien hang : ",tienHang);
+        if(tienHang > 1000) setTienShip(0)
         else setTienShip(response.data.data.total);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [idTP, idHuyen, idXa]);
+  }, [idTP, idHuyen, idXa,tienHang]);
   const options = valueTP.map(name => (
     <Option key={name} value={name}>
       {name}

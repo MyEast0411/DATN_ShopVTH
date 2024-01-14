@@ -474,12 +474,11 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
       .then((response) => {
         setList(response.data);
-          
+        
         const tongTien = tinhTongTien(response.data);
         const vc = response.data[0]?.id_hoa_don.id_voucher?.giaTriMax || 0;
         const codeVoucher = response.data[0]?.id_hoa_don.id_voucher?.code == undefined ? "" : response.data[0]?.id_hoa_don.id_voucher?.code;
         listVoucher.sort((b, a) => b.giaTriMin - a.giaTriMin);
-        console.log(listVoucher);
         if(codeVoucher == "") {
           setMuaThem(listVoucher[0]?.giaTriMin - tienHang == Number(NaN) ? "" : listVoucher[0]?.giaTriMin - tienHang);
           setDuocGiam(listVoucher[0]?.giaTriMax == undefined ? "" : listVoucher[0]?.giaTriMax);
@@ -490,7 +489,11 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
             setDuocGiam(listVoucher[index + 1]?.giaTriMax == undefined ? "" : listVoucher[index + 1]?.giaTriMax);
           }
         })
-        
+        if(tienHang == 0) {
+          setMuaThem("");
+          setDuocGiam("");
+          setTienShip("");
+        }
         setCodeVC(codeVoucher);
         setVoucher(vc);
         setTienHang(tongTien);
@@ -619,11 +622,8 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
             variant="gradient"
             className="poppins-font text-sm font-medium tracking-wide"
             onClick={() => {
-              if(activeKey == "💖💖") {
-                toast(`Không được dùng hóa đơn này`);
-                return;
-              }
-              showModalThem()}}
+              showModalThem()}
+            }
           >
             Thêm sản phẩm
           </MaterialButton>
@@ -760,7 +760,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         <div class="flex justify-between mt-7">
           <div className={`relative ${!isBlur ? "h-0 overflow-hidden" : ""}`}>
           <div className="delivery-content">
-            <Delivery activeKey={activeKey} khachHang={khachHang} setKhachHang={setKhachHang} tongTien={tongTien} setTienShip={setTienShip}/>
+            <Delivery activeKey={activeKey} khachHang={khachHang} setKhachHang={setKhachHang} tienHang={tienHang} setTienShip={setTienShip}/>
           </div>
           </div>
           <div className="w-6/12 space-y-8 block">
@@ -788,7 +788,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
 
             <div class="flex gap-6">
               <div class="w-4/6 ">
-                <Input label="Mời nhập mã" value={codeVC}/>
+                <Input label="Mã phiếu giảm giá" value={codeVC}/>
                 
               </div>
               <Modal

@@ -135,8 +135,8 @@ export default function Checkout() {
   useEffect(() => {
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime";
-    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48"; // Thay YOUR_TOKEN bằng token của bạn
-    const shopId = "190374 - 0964457125"; // Thay YOUR_SHOP_ID bằng ID cửa hàng của bạn
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48"; 
+    const shopId = "190374 - 0964457125"; 
     const requestData = {
       from_district_id: 1804,
       from_ward_code: "1B2211",
@@ -340,11 +340,9 @@ export default function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     showLoader(() => {
-      // ...
       const email = e.target.elements.email.value;
       const hoTen = e.target.elements.hoTen.value;
       const soDienThoai = e.target.elements.soDienThoai.value;
-      console.log("soDienThoai:", typeof soDienThoai);
       const diaChi = e.target.elements.diaChi.value;
       const thanhPho =
         e.target.elements.city.options[e.target.elements.city.selectedIndex]
@@ -361,7 +359,14 @@ export default function Checkout() {
         shippingCost === "Miễn phí"
           ? "Chuyển khoản qua ngân hàng"
           : "Thanh toán khi nhận hàng";
-
+      var soLuong = 0;
+      dataLocal.map((item) => {
+        let index = 0;
+        if (item.ma == sanPhams[index].ma) {
+          soLuong = item.quantity;
+        }
+        index++;
+      }) 
       const cartNotLoginDTO = {
         email,
         hoTen,
@@ -375,7 +380,9 @@ export default function Checkout() {
         phiVanChuyen,
         sanPhams,
         tongTien,
+        soLuong
       };
+      console.log(cartNotLoginDTO);
       const confirmSubmission = async () => {
         try {
           const result = await addToHoaDon(cartNotLoginDTO);

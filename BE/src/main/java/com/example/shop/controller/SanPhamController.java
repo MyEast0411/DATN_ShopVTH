@@ -131,7 +131,6 @@ public class SanPhamController {
             List<SanPhamChiTiet> list = repo.filterSPCT(x.getId_chat_lieu().equals("Tất cả") ? "" : x.getId_chat_lieu(),x.getId_thuong_hieu().equals("Tất cả") ? "" : x.getId_thuong_hieu(),x.getId_de_giay().equals("Tất cả") ? "" : x.getId_de_giay(),
                     x.getId_kich_co().equals("Tất cả") ? "" : x.getId_kich_co(),x.getId_mau_sac().equals("Tất cả") ? "" : x.getId_mau_sac(),x.getId_nhan_hieu().equals("Tất cả") ? "" : x.getId_nhan_hieu(),
                     1);
-            System.out.println(list.size());
             return ResponseEntity.ok(list);
         }catch (Exception e) {
             return ResponseEntity.badRequest().body("ERROR");
@@ -140,13 +139,13 @@ public class SanPhamController {
 
     @PostMapping("/addHinhAnh")
     public ResponseEntity addHinhAnh(@RequestBody HinhAnhVM hinhAnhVM) {
-        System.out.println(hinhAnhVM);
+        System.out.println(hinhAnhVM.toString());
         try {
             HinhAnh hinhAnh = new HinhAnh();
             Integer maxMa = Integer.parseInt(hinhAnhRepository.getMaxMa());
             String anh = UploadAnh.upload(hinhAnhVM.getImgUrl());
             hinhAnh.setMa("HA" + (maxMa + 1));
-            hinhAnh.setMauSac(hinhAnhVM.getMauSac());
+            hinhAnh.setMauSac(hinhAnhVM.getMauSac().trim());
             hinhAnh.setTen(anh);
             hinhAnh.setNguoiTao("Đông");
             hinhAnhRepository.save(hinhAnh);

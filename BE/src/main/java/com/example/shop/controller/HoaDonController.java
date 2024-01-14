@@ -160,10 +160,7 @@ public class HoaDonController {
             @RequestBody ThanhToanHoaDonDTO hoaDon
     ) {
         List<HoaDonChiTiet> hoaDonChiTietList = new ArrayList<>();
-        System.out.println(hoaDonRepository.getHDCTByMaHD(hoaDonRepository.getHoaDonByMa(id).getId()));
         for (Object[] row : hoaDonRepository.getHDCTByMaHD(hoaDonRepository.getHoaDonByMa(id).getId())) {
-            System.out.println((String) row[0]);
-            System.out.println(Integer.parseInt(row[1].toString()));
             HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
                     .id_chi_tiet_san_pham(chiTietSanPhamRepository.findById((String) row[0]).get())
                     .soLuong(Integer.parseInt(row[1].toString()))
@@ -204,7 +201,7 @@ public class HoaDonController {
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
                 for (HoaDonChiTiet hdct : hoaDonChiTietList) {
                     SanPhamChiTiet sanPhamChiTiet = chiTietSanPhamRepository.findById(hdct.getId_chi_tiet_san_pham().getId()).get();
-                    if(sanPhamChiTiet.getSoLuongTon() <=0 ) {
+                    if(sanPhamChiTiet.getSoLuongTon() <= 0 || sanPhamChiTiet.getSoLuongTon() - hdct.getSoLuong() < 0) {
                         return ResponseEntity.badRequest().body("Sản phẩm không đủ số lượng tồn !!!");
                     }
                     sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() - hdct.getSoLuong());

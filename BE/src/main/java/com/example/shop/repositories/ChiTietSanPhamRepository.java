@@ -42,7 +42,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             "  AND (id_kich_co = :id_kich_co OR :id_kich_co IS NULL OR :id_kich_co = '')\n" +
             "  AND (id_mau_sac = :id_mau_sac OR :id_mau_sac IS NULL OR :id_mau_sac = '')\n" +
             "  AND (id_nhan_hieu = :id_nhan_hieu OR :id_nhan_hieu IS NULL OR :id_nhan_hieu = '')\n" +
-            ")", nativeQuery = true)
+        ")", nativeQuery = true)
     List<SanPhamChiTiet> filterSPCT(
             @Param("id_chat_lieu") String id_chat_lieu,
             @Param("id_thuong_hieu") String id_thuong_hieu,
@@ -55,11 +55,11 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
 
 
     //---------------Hội----------------//
-    @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList")
+    @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList and c.deleted = 1")
     List<SanPhamChiTiet> getSanPhamChiTietByMaList(@Param("maList") List<String> maList);
-    @Query(value = "select c from SanPhamChiTiet c where c.ma in :maList")
+    @Query(value = "select c from SanPhamChiTiet c where c.ma in :maList and c.deleted = 1")
     List<SanPhamChiTiet> getSanPhamChiTietByMaListSPCT(@Param("maList") List<String> maList);
-    @Query(value = "SELECT * FROM san_pham_chi_tiet  WHERE ma IN :maList ", nativeQuery = true)
+    @Query(value = "SELECT * FROM san_pham_chi_tiet  WHERE ma IN :maList and deleted = 1", nativeQuery = true)
     List<SanPhamChiTiet> getSPCTByMaSPCT(@Param("maList") List<String> maList);
 
     @Query(value = "select * from san_pham_chi_tiet where san_pham_chi_tiet.id_san_pham = :idSP and deleted = 1", nativeQuery = true)
@@ -68,11 +68,11 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
     @Query(value = "SELECT x FROM SanPhamChiTiet x where x.id_san_pham.id = :id")
     List<SanPhamChiTiet> getSanPhamChiTietByIdSanPham(@Param("id") String id);
 
-    @Query(value = "SELECT s FROM SanPhamChiTiet s WHERE s.id IN :idList")
+    @Query(value = "SELECT s FROM SanPhamChiTiet s WHERE s.id IN :idList and s.deleted = 1")
     List<SanPhamChiTiet> getAllSanPhamChiTietByIdList(@Param("idList") List<String> idList);
 
 
-    @Query(value = "select * from san_pham_chi_tiet where default_img = :urlImg",nativeQuery = true)
+    @Query(value = "select * from san_pham_chi_tiet where default_img = :urlImg and deleted = 1",nativeQuery = true)
     List<SanPhamChiTiet> getSanPhamChiTietByDefaultImg(@Param("urlImg") String urlImg);
     //---------------Hội----------------//
 

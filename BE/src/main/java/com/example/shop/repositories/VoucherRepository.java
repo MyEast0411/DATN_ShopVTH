@@ -15,7 +15,7 @@ import java.util.List;
 public interface VoucherRepository extends JpaRepository<Voucher , String> {
 
     List<Voucher> getVoucherByDeleted(int deleted);
-    @Query(value = " select * from voucher where :giaTriMin >= gia_tri_min",nativeQuery = true)
+    @Query(value = " select * from voucher where :giaTriMin >= gia_tri_min and deleted = 0",nativeQuery = true)
     List<Voucher> getVoucherByGiaTriMin(@Param("giaTriMin")Double giaTriMin);
 //    @Query(value = "select a.*\n" +
 //            "FROM san_pham_chi_tiet a\n" +
