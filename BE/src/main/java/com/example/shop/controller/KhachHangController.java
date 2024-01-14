@@ -197,18 +197,18 @@ public class KhachHangController {
     @GetMapping("/khach-hang/hoa-don/{idKH}")
     public ResponseEntity getHDByKH(@PathVariable("idKH") String idKH){
         List<HoaDon> listHD = hoaDonService.getHDByKH(idKH);
-        List<LichSuMuaHangResponse> lichSuMuaHangResponses = new ArrayList<>();
-        for (HoaDon hd: listHD) {
-//            Map<Integer , SanPhamChiTiet> sanPhamChiTiets = new HashMap<>();
-
-            List<HoaDonChiTiet> list = hoaDonChiTietService.getHDCT(hd.getId());
-//            list.stream().forEach(i -> sanPhamChiTiets.put(i.getSoLuong() , i.getId_chi_tiet_san_pham()));
-            LichSuMuaHangResponse lichSuMuaHangResponse = new LichSuMuaHangResponse();
-            lichSuMuaHangResponse.setHoaDon(hd);
-            lichSuMuaHangResponse.setHoaDonChiTiets(list);
-            lichSuMuaHangResponses.add(lichSuMuaHangResponse);
-        }
-        lichSuMuaHangResponses.forEach( i -> System.out.println(i));
-        return ResponseEntity.ok(lichSuMuaHangResponses);
+//        List<LichSuMuaHangResponse> lichSuMuaHangResponses = new ArrayList<>();
+//        for (HoaDon hd: listHD) {
+////            Map<Integer , SanPhamChiTiet> sanPhamChiTiets = new HashMap<>();
+//
+//            List<HoaDonChiTiet> list = hoaDonChiTietService.getHDCT(hd.getId());
+////            list.stream().forEach(i -> sanPhamChiTiets.put(i.getSoLuong() , i.getId_chi_tiet_san_pham()));
+//            LichSuMuaHangResponse lichSuMuaHangResponse = new LichSuMuaHangResponse();
+//            lichSuMuaHangResponse.setHoaDon(hd);
+//            lichSuMuaHangResponse.setHoaDonChiTiets(list);
+//            lichSuMuaHangResponses.add(lichSuMuaHangResponse);
+//        }
+//        lichSuMuaHangResponses.forEach( i -> System.out.println(i));
+        return ResponseEntity.ok(listHD);
     }
 }
