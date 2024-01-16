@@ -4,7 +4,7 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { BsBagDash } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
-export default function Header() {
+export default function Header({ isSticky }) {
   const [badge, setBadge] = useState(0);
   useEffect(() => {
     const updateCartBadge = () => {

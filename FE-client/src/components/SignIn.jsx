@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import "./Component.css";
@@ -29,16 +29,27 @@ export default function SignIn() {
     <>
       <div className="main-sign-in flex justify-center">
         <div>
-          <Link to="/" className="flex justify-center align-center container-logo ctnlogo-signUp">
+          <Link
+            to="/"
+            className="flex justify-center align-center container-logo ctnlogo-signUp"
+          >
             <img className="logo cursor-pointer" src={Logo} alt="" />
             <div className="flex justify-center">Jordan VTH</div>
           </Link>
 
           <form onSubmit={handleFormSubmit}>
-            <div className="sign-in-title mb-10">Nhập email của bạn để đăng nhập.</div>
+            <div className="sign-in-title mb-10">
+              Nhập email của bạn để đăng nhập.
+            </div>
             <div className="inputGroupEmail">
-              <input type="email" required autocomplete="off" value={email} onChange={(e) => setEmail(e.target.value)} />
-              <label for="email">Email</label>
+              <input
+                type="email"
+                required
+                autoComplete="off"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <label htmlFor="email">Email</label>
             </div>
             <p className="policy">
               Bằng cách tiếp tục, tôi đồng ý với{" "}
@@ -53,7 +64,10 @@ export default function SignIn() {
               của Jordan VTH.
             </p>
             <div className="flex justify-end">
-              <button type="submit" className="inline-block main-sign-in-button">
+              <button
+                type="submit"
+                className="inline-block main-sign-in-button"
+              >
                 Tiếp tục
               </button>
             </div>
