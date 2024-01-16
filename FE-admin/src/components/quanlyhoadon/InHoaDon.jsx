@@ -55,9 +55,9 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
         </div>
         <div class="flex ... gap-10 " style={{ fontSize: 12 }}>
           <div class="w-2/3 ...">
-            <p>Khách Hàng : {props.inforKH.id_khach_hang.ten}</p>
-            <p>Số Điện thoại : {props.inforKH.id_khach_hang.sdt}</p>
-            <p>Địa chỉ khách hàng : {props.inforKH.diaChi}</p>
+            <p>Khách Hàng : {props.inforKH.id_khach_hang?.ten}</p>
+            <p>Số Điện thoại : {props.inforKH.id_khach_hang?.sdt}</p>
+            <p>Địa chỉ khách hàng : {props.inforKH?.diaChi}</p>
           </div>
           <div class="w-1/3 ...">
             <p>Hóa đơn : {props.inforKH.ma}</p>

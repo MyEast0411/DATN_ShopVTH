@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-//filter
-import FilterMa from "../../small-component/Filter/FilterMa";
-import FilterTrangThai from "../../small-component/Filter/FilterTrangThai";
-
 import { Button as ButtonAntd } from "antd";
 import { Link, useParams } from "react-router-dom";
-import { InputNumber } from "antd";
+import { InputNumber, Modal } from "antd";
 //table
 import {
   Table,
@@ -50,6 +46,7 @@ import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { getAllKMSPCT } from "../../api/khuyenMai/KhuyenMaiApi";
 import numeral from "numeral";
+import ModalChiTietSanPham from "./ModalChiTietSanPham";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -341,22 +338,18 @@ export default function ChiTietSanPham() {
         selectedCTSP.some((selectedItem) => selectedItem.id === sanPham.id);
       switch (columnKey) {
         case "soLuongTon":
-          return isSanPhamSelected ? (
+          return (
             <InputNumber
               value={sanPham.soLuongTon}
               // onChange={handleInputChange}
             />
-          ) : (
-            sanPham.soLuongTon
           );
         case "donGia":
-          return isSanPhamSelected ? (
+          return (
             <InputNumber
               value={sanPham.donGia}
               // onChange={handleInputChange}
             />
-          ) : (
-            sanPham.donGia
           );
         case "hinhAnh":
           const hinhAnhURL = sanPham.hinhAnh;
@@ -409,15 +402,9 @@ export default function ChiTietSanPham() {
           return (
             <div className="relative flex items-center gap-4">
               <Tooltip content="Chi tiết" showArrow={true}>
-                <Link
-                  to={`/edit-san-pham/${sanPham.ma}`}
-                  style={{ display: "block" }}
-                  className="button-link group relative"
-                >
-                  <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                    <EyeIcon />
-                  </span>
-                </Link>
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon onClick={showModalSP} />
+                </span>
               </Tooltip>
 
               <div className="group relative" style={{ position: "relative" }}>
@@ -437,6 +424,17 @@ export default function ChiTietSanPham() {
     [selectedCTSP]
   );
 
+  const [isModalOpenSP, setIsModalOpenSP] = useState(false);
+
+  const showModalSP = () => {
+    setIsModalOpenSP(true);
+  };
+  const handleOkSP = async () => {
+    setIsModalOpenSP(false);
+  };
+  const handleCancelSP = () => {
+    setIsModalOpenSP(false);
+  };
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
@@ -1140,7 +1138,7 @@ export default function ChiTietSanPham() {
             wrapper: "max-h-[382px]",
           }}
           // selectedKeys={selectedKeys}
-          selectionMode="multiple"
+          // selectionMode="multiple"
           // rowSelection={{
           //   columnTitle: "Chọn",
           //   fixed: false,
@@ -1225,6 +1223,17 @@ export default function ChiTietSanPham() {
             </Button>
           </DialogActions>
         </Dialog>
+        <Modal
+          title="Cập nhật chi tiết sản phẩm"
+          open={isModalOpenSP}
+          onOk={handleOkSP}
+          onCancel={handleCancelSP}
+          cancelText="Hủy"
+          okText="Hoàn tất"
+          style={{ position: "relative"}}
+        >
+          <ModalChiTietSanPham/>
+        </Modal>
       </div>
     </>
   );

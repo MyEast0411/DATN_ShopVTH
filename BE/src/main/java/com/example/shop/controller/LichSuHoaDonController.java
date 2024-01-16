@@ -96,9 +96,9 @@ public class LichSuHoaDonController {
                  "</body>" +
                 "</html>" ;
         KhachHang khachHang = hoaDon.getId_khach_hang();
-//        if (khachHang == null)
-//       SendMail.SendMailOptions("camhoang1811@gmail.com" , contentBody);
-//        else
+        if (khachHang == null)
+       SendMail.SendMailOptions("donglun0411@gmail.com" , contentBody);
+        else
             SendMail.SendMailOptions(khachHang.getEmail() , contentBody);
 
         return ResponseEntity.ok(lichSuHoaDon);
