@@ -12,6 +12,7 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import IconGiaoHangNhanh from "../assets/iconGiaoHangNhanh.webp";
 import { getSanPhamChiTietByMaListSPCT } from "../api/SanPham";
 import Header from "../layout/Header";
+import InfoTop from "../layout/InfoTop";
 import { addToHoaDon } from "../api/HoaDon";
 
 export default function Checkout() {
@@ -131,12 +132,13 @@ export default function Checkout() {
         console.error(error);
       });
   }, [diaChi, idHuyen]);
+
   // Tính thời gian dự kiến
   useEffect(() => {
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime";
-    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48"; 
-    const shopId = "190374 - 0964457125"; 
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+    const shopId = "190374 - 0964457125";
     const requestData = {
       from_district_id: 1804,
       from_ward_code: "1B2211",
@@ -171,6 +173,7 @@ export default function Checkout() {
         console.error(error);
       });
   }, [idTP, idHuyen, idXa]);
+
   // Tính phí vận chuyển
   useEffect(() => {
     const apiUrl =
@@ -366,7 +369,7 @@ export default function Checkout() {
           soLuong = item.quantity;
         }
         index++;
-      }) 
+      });
       const cartNotLoginDTO = {
         email,
         hoTen,
@@ -380,7 +383,7 @@ export default function Checkout() {
         phiVanChuyen,
         sanPhams,
         tongTien,
-        soLuong
+        soLuong,
       };
       console.log(cartNotLoginDTO);
       const confirmSubmission = async () => {
@@ -415,6 +418,7 @@ export default function Checkout() {
       <Spin spinning={spinning} fullscreen />
       {contextHolder}
       <ConfirmDialog />
+      <InfoTop />
       <Header />
       <div className="main-checkout mt-1 w-[80%] mx-auto">
         <div className="breadcrumbs-cart pb-4 text-[15px]">

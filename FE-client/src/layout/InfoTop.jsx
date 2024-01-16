@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-
-import { DownOutlined } from "@ant-design/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { Dropdown, Space } from "antd";
 import { useEffect, useState } from "react";
 
@@ -8,13 +8,14 @@ export default function InfoTop() {
   const [user, setUser] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
-    setUser(
-      localStorage.getItem("user") == null ||
-        localStorage.getItem("user") == undefined ||
-        localStorage.getItem("user") == ""
-        ? ""
-        : JSON.parse(localStorage.getItem("user"))
-    );
+    // setUser(
+    //   localStorage.getItem("user") == null ||
+    //     localStorage.getItem("user") == undefined ||
+    //     localStorage.getItem("user") == ""
+    //     ? ""
+    //     : JSON.parse(localStorage.getItem("user"))
+    // );
+    setUser("Hoi");
   }, [user]);
 
   const items = [
@@ -23,18 +24,39 @@ export default function InfoTop() {
       label: (
         <p
           onClick={() => {
-            localStorage.setItem("user", "");
-            setUser("");
-            navigate("/");
+            navigate(`/profile/`);
           }}
         >
-          Logout
+          Tài khoản
         </p>
       ),
     },
-
     {
       key: "2",
+      label: (
+        <p
+          onClick={() => {
+            navigate(`/wishlist/`);
+          }}
+        >
+          Yêu thích
+        </p>
+      ),
+    },
+    {
+      key: "3",
+      label: (
+        <p
+          onClick={() => {
+            navigate(`/donHang/`); //nếu có
+          }}
+        >
+          Đơn đặt hàng
+        </p>
+      ),
+    },
+    {
+      key: "5",
       label: (
         <p
           onClick={() => {
@@ -42,6 +64,20 @@ export default function InfoTop() {
           }}
         >
           Lịch sử hóa đơn
+        </p>
+      ),
+    },
+    {
+      key: "6",
+      label: (
+        <p
+          onClick={() => {
+            localStorage.setItem("user", "");
+            setUser("");
+            navigate("/");
+          }}
+        >
+          Đăng xuất
         </p>
       ),
     },
@@ -79,9 +115,9 @@ export default function InfoTop() {
             <div className="cursor-pointer">Cộng tác</div>
             <span>|</span>
           </div>
-          <div className="flex">
+          <div className="flex login-wrapper">
             {user === "" ? (
-              <Link to="/sign-in" className="cursor-pointer">
+              <Link to="/sign-in" className="login cursor-pointer">
                 Đăng nhập
               </Link>
             ) : (
@@ -93,7 +129,7 @@ export default function InfoTop() {
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
                     Hi , {user.ten}
-                    <DownOutlined />
+                    <FontAwesomeIcon icon={faUser} />
                   </Space>
                 </a>
               </Dropdown>
