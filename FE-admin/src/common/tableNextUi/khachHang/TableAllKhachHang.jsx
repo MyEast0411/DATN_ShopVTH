@@ -18,7 +18,14 @@ import {
   Image,
   Tooltip,
 } from "@nextui-org/react";
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TableCell as TableCellMui } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TableCell as TableCellMui,
+} from "@mui/material";
 import { format } from "date-fns";
 // import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
 // import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
@@ -31,6 +38,7 @@ import { EyeIcon } from "../../otherComponents/EyeIcon";
 // import { MdDeleteOutline } from "react-icons/md";
 import { TbInfoTriangle } from "react-icons/tb";
 // import { LiaEyeSolid } from "react-icons/lia";
+import { FaHistory } from "react-icons/fa";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
@@ -56,7 +64,16 @@ const statusColorMap = {
 statusColorMap["Kích hoạt"] = "success";
 statusColorMap["Chưa kích hoạt"] = "danger";
 
-const INITIAL_VISIBLE_COLUMNS = ["stt", "hinhAnh", "hoTen", "cccd", "sdt", "ngaySinh", "trangThai", "hanhDong"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "stt",
+  "hinhAnh",
+  "hoTen",
+  "cccd",
+  "sdt",
+  "ngaySinh",
+  "trangThai",
+  "hanhDong",
+];
 
 export default function App() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
@@ -92,7 +109,9 @@ export default function App() {
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [visibleColumns, setVisibleColumns] = React.useState(
+    new Set(INITIAL_VISIBLE_COLUMNS)
+  );
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
@@ -105,7 +124,9 @@ export default function App() {
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
-        const response = await axios.get("http://localhost:8080/khach-hang/getAll");
+        const response = await axios.get(
+          "http://localhost:8080/khach-hang/getAll"
+        );
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
@@ -130,19 +151,30 @@ export default function App() {
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
 
-    return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
+    return columns.filter((column) =>
+      Array.from(visibleColumns).includes(column.uid)
+    );
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
     const filterText = filterValue.toLowerCase();
     let filteredSanPhams = [...sanPhams];
 
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-      filteredSanPhams = filteredSanPhams.filter((sanPham) => Array.from(statusFilter).includes(sanPham.trangThai));
+    if (
+      statusFilter !== "all" &&
+      Array.from(statusFilter).length !== statusOptions.length
+    ) {
+      filteredSanPhams = filteredSanPhams.filter((sanPham) =>
+        Array.from(statusFilter).includes(sanPham.trangThai)
+      );
       return filteredSanPhams;
     }
 
-    return sanPhams.filter((sanPham) => Object.values(sanPham).some((value) => String(value).toLowerCase().includes(filterText)));
+    return sanPhams.filter((sanPham) =>
+      Object.values(sanPham).some((value) =>
+        String(value).toLowerCase().includes(filterText)
+      )
+    );
   }, [sanPhams, filterValue, statusFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
@@ -170,7 +202,14 @@ export default function App() {
     switch (columnKey) {
       case "hinhAnh":
         const hinhAnhURL = sanPham.anh;
-        return <Image style={{ height: "120px", width: "150px" }} src={hinhAnhURL} alt={sanPham.ten || "Ảnh sản phẩm"} classNames="m-5" />;
+        return (
+          <Image
+            style={{ height: "120px", width: "150px" }}
+            src={hinhAnhURL}
+            alt={sanPham.ten || "Ảnh sản phẩm"}
+            classNames="m-5"
+          />
+        );
       case "trangThai":
         return (
           <Chip
@@ -185,6 +224,17 @@ export default function App() {
       case "hanhDong":
         return (
           <div className="relative flex items-center gap-4">
+            <Tooltip content="Lịch sử hóa đơn" showArrow={true}>
+              <Link
+                to={`/lich-su-mua-hang/${sanPham.id}`}
+                // style={{ display: "block" }}
+                className="button-link group relative"
+              >
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <FaHistory />
+                </span>
+              </Link>
+            </Tooltip>
             <Tooltip content="Xem" showArrow={true}>
               <Link
                 to={`/quan-ly-tai-khoan/khach-hang/edit-khach-hang/${sanPham.maKH}`}
@@ -256,7 +306,10 @@ export default function App() {
           <div className="flex gap-3 items-end">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  variant="flat"
+                >
                   Trạng thái
                 </Button>
               </DropdownTrigger>
@@ -277,7 +330,10 @@ export default function App() {
             </Dropdown>
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  variant="flat"
+                >
                   Các cột
                 </Button>
               </DropdownTrigger>
@@ -299,10 +355,15 @@ export default function App() {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Tổng {sanPhams.length} khách hàng</span>
+          <span className="text-default-400 text-small">
+            Tổng {sanPhams.length} khách hàng
+          </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
-            <select className="bg-transparent outline-none text-default-400 text-small" onChange={onRowsPerPageChange}>
+            <select
+              className="bg-transparent outline-none text-default-400 text-small"
+              onChange={onRowsPerPageChange}
+            >
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="15">15</option>
@@ -311,7 +372,15 @@ export default function App() {
         </div>
       </div>
     );
-  }, [filterValue, statusFilter, visibleColumns, onRowsPerPageChange, sanPhams.length, onSearchChange, hasSearchFilter]);
+  }, [
+    filterValue,
+    statusFilter,
+    visibleColumns,
+    onRowsPerPageChange,
+    sanPhams.length,
+    onSearchChange,
+    hasSearchFilter,
+  ]);
 
   const bottomContent = React.useMemo(() => {
     return (
@@ -321,12 +390,31 @@ export default function App() {
             ? "Đã chọn tất cả"
             : `${selectedKeys.size} khyến mại đã được chọn`}
         </span> */}
-        <Pagination isCompact showControls showShadow color="primary" page={page} total={totalPages} onChange={setPage} style={{ paddingLeft: "730px" }} />
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          total={totalPages}
+          onChange={setPage}
+          style={{ paddingLeft: "730px" }}
+        />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onPreviousPage}>
+          <Button
+            isDisabled={pages === 1}
+            size="sm"
+            variant="flat"
+            onPress={onPreviousPage}
+          >
             Trước
           </Button>
-          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onNextPage}>
+          <Button
+            isDisabled={pages === 1}
+            size="sm"
+            variant="flat"
+            onPress={onNextPage}
+          >
             Tiếp
           </Button>
         </div>
@@ -354,13 +442,26 @@ export default function App() {
       >
         <TableHeader columns={headerColumns}>
           {(column) => (
-            <TableColumn key={column.uid} align={column.uid === "hanhDong" ? "center" : "start"} allowsSorting={column.sortable}>
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "hanhDong" ? "center" : "start"}
+              allowsSorting={column.sortable}
+            >
               {column.name}
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"Không tìm thấy khách hàng nào!"} items={sortedItems}>
-          {(item) => <TableRow key={item.id}>{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}</TableRow>}
+        <TableBody
+          emptyContent={"Không tìm thấy khách hàng nào!"}
+          items={sortedItems}
+        >
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
         </TableBody>
       </Table>
       <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
@@ -383,7 +484,9 @@ export default function App() {
           </div>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>Bạn có chắc muốn xóa khách hàng này?</DialogContentText>
+          <DialogContentText>
+            Bạn có chắc muốn xóa khách hàng này?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelDelete} color="warning">

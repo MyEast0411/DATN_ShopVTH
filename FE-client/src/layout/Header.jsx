@@ -4,8 +4,7 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { BsBagDash } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
-export default function Header(maList) {
-  // console.log("maList:", maList);
+export default function Header() {
   const [badge, setBadge] = useState(0);
   useEffect(() => {
     const updateCartBadge = () => {
@@ -45,7 +44,7 @@ export default function Header(maList) {
               <a href="#">Trẻ em</a>
             </li>
             <li>
-              <Link to="/tracuu">Tra cứu hóa đơn</Link>
+              <a href="#">Tra cứu hóa đơn</a>
             </li>
           </ul>
         </div>

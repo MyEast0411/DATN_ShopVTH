@@ -13,6 +13,7 @@ import "primeicons/primeicons.css";
 import "primereact/resources/primereact.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "@coreui/coreui/dist/css/coreui.min.css";
+import Profile from "./components/Profile";
 
 import FindHD from "./components/findHD/FindHD";
 import PurchaseHistory from "./components/PurchaseHistory";
@@ -30,6 +31,7 @@ function App() {
         <Route path="/detail-product/:idSP" element={<DetailProduct />} />
         <Route path="/size-guide" element={<SizeGuide />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/tracuu" element={<FindHD />} />
         <Route path="/lich-su-mua-hang/:idkh" element={<PurchaseHistory />} />
       </Routes>

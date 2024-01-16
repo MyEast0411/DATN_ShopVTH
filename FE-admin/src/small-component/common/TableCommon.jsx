@@ -181,7 +181,7 @@ export default function TableCommon({ data }) {
               page={page}
               total={pages}
               onChange={(newPage) => setPage(newPage)}
-              />
+            />
           </div>
         ) : null
       }
