@@ -242,12 +242,20 @@ export default function ThemSanPham() {
       dataIndex: "hanhDong",
       title: "Hành động",
       width: 200,
-      render: (params) => (
+      render: (index, record) => (
         <div className="flex items-center">
           <div className="group relative">
             <MdDeleteOutline
               className="cursor-pointer text-xl delete-hover relative"
-              onClick={() => {console.log(params)}}
+              onClick={() => {
+                console.log(record.id);
+                console.log(tables[record.id_mau_sac]);
+                const updatedProducts = tables[record.id_mau_sac].filter(product => product.id !== record.id);
+                setTables((prevTables) => ({
+                  ...prevTables,
+                  [record.id_mau_sac]: updatedProducts,
+                }));
+              }}
             />
             <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">
               Xóa
@@ -263,7 +271,7 @@ export default function ThemSanPham() {
       render: (text, record, index) => {
         return {
           children: (
-            <Tooltip title="Click để thêm ảnh sản phẩm">
+            <>
               <PlusIcon
                 style={{
                   cursor: "pointer",
@@ -278,7 +286,7 @@ export default function ThemSanPham() {
                   await axios
                     .get(`http://localhost:8080/getHinhAnhByMau/${tenSP}`)
                     .then((response) => {
-                      console.log(tenSP);
+                      console.log(response.data);
                       setImg(response.data);
                     });
                   showModalHA();
@@ -302,9 +310,7 @@ export default function ThemSanPham() {
                     Tất cả hình ảnh theo : {selectMau}
                   </label>
                   <div className="flex flex-wrap">
-                    {loading ? (
-                      <ReactLoading type={"spin"} color="#fff" />
-                    ) : (
+                    {
                       img.map((x, index) => (
                         <div key={index} className="w-1/3 p-2 cursor-pointer">
                           <div className="relative w-60 h-56 bg-gray-300 mt-10">
@@ -353,7 +359,7 @@ export default function ThemSanPham() {
                           </div>
                         </div>
                       ))
-                    )}
+                    }
 
                     <Button
                       className="flex drop-shadow-lg"
@@ -384,7 +390,7 @@ export default function ThemSanPham() {
                   </div>
                 </div>
               </Modal>
-            </Tooltip>
+            </>
           ),
           props: {
             rowSpan: index,
@@ -508,7 +514,7 @@ export default function ThemSanPham() {
   };
   const handleOkSP = async () => {
     await axios
-      .post("http://localhost:8080/addSanPham", kichCoModal)
+      .post("http://localhost:8080/addSanPham", sanPhamModal)
       .then((response) => {
         toast.success(`Thêm thành công`, {
           position: "top-right",
@@ -648,6 +654,7 @@ export default function ThemSanPham() {
           id_nhan_hieu: sanPham.id_nhan_hieu,
           id_chat_lieu: sanPham.id_chat_lieu,
           id_de_giay: sanPham.id_de_giay,
+          id_san_pham : sanPham.id_san_pham
         };
         tableDataa.push(sanPhamItem);
         // mauTableData[mau].push(sanPhamItem);
@@ -676,6 +683,7 @@ export default function ThemSanPham() {
         id_nhan_hieu: sanPham.id_nhan_hieu,
         id_chat_lieu: sanPham.id_chat_lieu,
         id_de_giay: sanPham.id_de_giay,
+        id_san_pham : sanPham.id_san_pham,
         hinhAnh: mauTableData[mau],
       }));
       setTables((prevTables) => ({
@@ -749,6 +757,7 @@ export default function ThemSanPham() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    console.log(tableData);
     const data = tableData.map((sp) => [
       sp.id,
       sp.id_san_pham,
@@ -767,23 +776,23 @@ export default function ThemSanPham() {
       tableImg,
     ]);
     console.log(data);
-    // if (isConfirmed) {
-    //   await axios
-    //     .post("http://localhost:8080/san-pham/add", data)
-    //     .then((response) => {
-    //       toast.success(`Thêm thành công`, {
-    //         position: "top-right",
-    //         autoClose: 2000,
-    //       });
-    //       navigate("/quan-ly-san-pham/san-pham");
-    //     })
-    //     .catch((error) => {
-    //       toast.error(`Thêm thất bại`, {
-    //         position: "top-right",
-    //         autoClose: 2000,
-    //       });
-    //     });
-    // }
+    if (isConfirmed) {
+      await axios
+        .post("http://localhost:8080/san-pham/add", data)
+        .then((response) => {
+          toast.success(`Thêm thành công`, {
+            position: "top-right",
+            autoClose: 2000,
+          });
+          navigate("/quan-ly-san-pham/san-pham");
+        })
+        .catch((error) => {
+          toast.error(`Thêm thất bại`, {
+            position: "top-right",
+            autoClose: 2000,
+          });
+        });
+    }
   };
 
   const handleRemoveColor = (maMau) => {
@@ -1002,6 +1011,33 @@ export default function ThemSanPham() {
                           </option>
                         ))}
                       </select>
+                      <Modal
+                        title="Thêm nhãn hiệu"
+                        open={isModalOpenDG}
+                        onOk={handleOkDG}
+                        onCancel={handleCancelDG}
+                        cancelText="Hủy"
+                        okText="Thêm"
+                        style={{ position: "relative" }}
+                      >
+                        <div>
+                          <label
+                            htmlFor="country"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                          >
+                            Tên nhãn hiệu
+                          </label>
+                          <input
+                            type="text"
+                            name="tenNhanHieu"
+                            value={tenDeGiay}
+                            className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                            placeholder="Nhập tên nhãn hiệu"
+                            onChange={(e) => onChangeDG(e)}
+                            style={{ borderRadius: "5px" }}
+                          />
+                        </div>
+                      </Modal>
                       <div
                         className="p-2"
                         style={{
@@ -1180,13 +1216,15 @@ export default function ThemSanPham() {
                               key={item.id}
                               className={`flex justify-center text-white cursor-pointer ${
                                 selectedColors.includes(item.maMau)
-                                  ? "border-2"
+                                  ? "border-2 border-yellow-500"
                                   : "border-none"
                               }`}
                               style={{
                                 width: "20%",
                                 height: "25px",
                                 backgroundColor: item.maMau,
+                                // color : item.maMau,
+                                // border : "1px solid #CCC",
                                 borderRadius: "5px",
                                 alignItems: "center",
                                 marginTop: "35px",
@@ -1358,7 +1396,7 @@ export default function ThemSanPham() {
                         </div>
                       </Modal>
                       <Modal
-                        title="Thêm đế giày"
+                        title="Thêm kích cỡ"
                         open={isModalOpenKC}
                         onOk={handleOkKC}
                         onCancel={handleCancelKC}
@@ -1371,14 +1409,14 @@ export default function ThemSanPham() {
                             htmlFor="country"
                             className="block text-sm font-medium leading-6 text-gray-900"
                           >
-                            Tên đế giày
+                            Tên kích cỡ
                           </label>
                           <input
                             type="text"
                             name="tenKichCo"
                             value={tenKichCo}
                             className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                            placeholder="Nhập tên đế giày"
+                            placeholder="Nhập tên kích cỡ"
                             onChange={(e) => onChangeKC(e)}
                             style={{ borderRadius: "5px" }}
                           />

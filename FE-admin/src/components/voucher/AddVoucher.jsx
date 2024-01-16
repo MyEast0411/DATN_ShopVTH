@@ -70,7 +70,7 @@ export default function AddVoucher() {
     soLuong: "",
     ngayBatDau: "",
     ngayKetThuc: "",
-    hinhAnhVoucher: "",
+    hinhAnh: "",
     deleted: 0,
     trangThai: 0,
   });
@@ -94,6 +94,7 @@ export default function AddVoucher() {
 
   const onFinish = (values) => {
     console.log(values);
+    console.log(voucherNew);
   };
 
   const onRangeChange = (dates, dateStrings) => {
@@ -123,13 +124,14 @@ export default function AddVoucher() {
   const imgDivRef = useRef(null);
   const imgLink = "https://i.ibb.co/TKQqYvT/";
   const handleImageUpload = (e) => {
+    console.log(e);
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        console.log(file.name);
+        console.log(file);
         const imageUrl = e.target.result;
-        setVoucherNew({ ...voucherNew, hinhAnhVoucher: file.name });
+        setVoucherNew({ ...voucherNew, hinhAnh: file.name });
         console.log(voucherNew);
         imgDivRef.current.style.backgroundImage = `url(${imageUrl})`;
         imgDivRef.current.style.backgroundSize = "cover";
@@ -147,11 +149,10 @@ export default function AddVoucher() {
       !voucherNew.giaTriMin ||
       !voucherNew.soLuong ||
       !voucherNew.ngayBatDau ||
-      !voucherNew.ngayKetThuc ||
-      voucherNew.giaTriMin > voucherNew.giaTriMax
-      // !voucherNew.hinhAnhVoucher //Không cần nhất thiết phải thêm ảnh
+      !voucherNew.ngayKetThuc
+      // !voucherNew.hinhAnh //Không cần nhất thiết phải thêm ảnh
     ) {
-      toast.error(`Giá trị tối thiểu đang lớn hơn giá trị tối đa!`, {
+      toast.error(`ERROR`, {
         position: "top-right",
         autoClose: 2000,
       });
@@ -333,6 +334,7 @@ export default function AddVoucher() {
                     />
                   </div>
                 </div>
+                {/* <input type="file" hidden="true" value={} /> */}
                 <div class="w-2/6 ">
                   <div>
                     <p className="pb-2">Tên phiếu giảm giá</p>

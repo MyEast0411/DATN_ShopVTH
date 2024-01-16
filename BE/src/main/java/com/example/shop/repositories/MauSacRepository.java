@@ -15,9 +15,10 @@ public interface MauSacRepository extends JpaRepository<MauSac, String> {
 
     @Query(value = "SELECT ms FROM MauSac ms WHERE ms.deleted = 1")
     List<MauSac> getAll();
+
     MauSac findByMaMau(String maMau);
 
-    @Query(value = "SELECT id FROM shopvth.mau_sac\n" +
+    @Query(value = "SELECT id FROM mau_sac\n" +
             "WHERE ten = :tenMau",nativeQuery = true)
     String findIdByMauSac(@Param("tenMau")String tenMau);
 }

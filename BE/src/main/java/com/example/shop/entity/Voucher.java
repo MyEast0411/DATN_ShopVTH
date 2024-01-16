@@ -62,6 +62,9 @@ public class Voucher {
     @Column(name = "trang_thai")
     private Integer trangThai;
 
+    @Column(name = "anh_voucher")
+    private String hinhAnh;
+
     @ManyToOne
     @JoinColumn(name = "id_hoa_don")
     private HoaDon id_hoa_don;

@@ -339,7 +339,7 @@ export default function App({ activeKey, setVoucher, tongTien, setTongTien }) {
           <span className="text-default-400 text-small">
             {/* Tổng {khuyenMais.length} khuyến mại */}
           </span>
-          <label className="flex items-center text-default-400 text-small">
+          {/* <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
             <select
               className="bg-transparent outline-none text-default-400 text-small"
@@ -349,7 +349,7 @@ export default function App({ activeKey, setVoucher, tongTien, setTongTien }) {
               <option value="10">10</option>
               <option value="15">15</option>
             </select>
-          </label>
+          </label> */}
         </div>
       </div>
     );
@@ -392,7 +392,7 @@ export default function App({ activeKey, setVoucher, tongTien, setTongTien }) {
               showControls
               key={size}
               // style={{ paddingLeft: "710px" }}
-              total={totalPages + 1}
+              total={pages}
               initialPage={1}
               size={size}
               page={page}
@@ -525,7 +525,7 @@ export default function App({ activeKey, setVoucher, tongTien, setTongTien }) {
           >
             <div>
               <Table
-                style={{ height: "382px" }}
+                style={{ height: "200px" }}
                 aria-label="Example table with custom cells, pagination and sorting"
                 isHeaderSticky
                 bottomContent={bottomContent}

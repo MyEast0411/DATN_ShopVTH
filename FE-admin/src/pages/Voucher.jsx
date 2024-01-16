@@ -26,6 +26,7 @@ import {
   Spinner,
   user,
   Slider,
+  Image,
 } from "@nextui-org/react";
 import {
   Dialog,
@@ -75,6 +76,7 @@ const statusColorMap = {
 
 const INITIAL_VISIBLE_COLUMNS = [
   "id",
+  "hinhAnh",
   "ma",
   "ten",
   "code",
@@ -138,12 +140,17 @@ export default function Voucher() {
             ngayTao: item.ngayTao,
             giaTriMax: item.giaTriMax,
             trangThai: item.trangThai,
+            hinhAnh: item.hinhAnh,
           };
         })
       );
       res.data.join();
       res.data.sort((a, b) => a?.giaTriMax - b?.giaTriMax);
 
+      // console.log(
+      //   res.data[0]?.giaTriMax,
+      //   res.data[res.data.length - 1]?.giaTriMax
+      // );
       setPriceOptions(
         res.data[0]?.giaTriMax,
         res.data[res.data.length - 1]?.giaTriMax
@@ -270,10 +277,51 @@ export default function Voucher() {
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
+  // const getWidthHeight = (source) => {
+  //   // Tạo một đối tượng hình ảnh
+  //   var img = new Image();
+
+  //   // Đặt đường dẫn của hình ảnh
+  //   img.src = source;
+
+  //   // Sự kiện được kích hoạt khi hình ảnh đã được tải lên
+  //   img.onload = function () {
+  //     // Lấy chiều rộng và chiều cao của hình ảnh
+  //     var width = img.width;
+  //     var height = img.height;
+
+  //     console.log("Chiều rộng: " + width + " pixels");
+  //     console.log("Chiều cao: " + height + " pixels");
+  //     return {
+  //       width: width,
+  //       height: height,
+  //     };
+  //   };
+
+  //   // Xử lý trường hợp hình ảnh không thể tải lên
+  //   img.onerror = function () {
+  //     console.error("Không thể tải hình ảnh từ URL.");
+  //   };
+  // };
 
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
     switch (columnKey) {
+      case "hinhAnh":
+        var hinhAnhURL = user.hinhAnh;
+
+        return (
+          <Image
+            style={{
+              height: "100px",
+              width: "150px",
+            }}
+            src={hinhAnhURL}
+            alt={user?.hinhAnh || "Ảnh sản phẩm"}
+            classNames="m-5"
+          />
+        );
+
       case "ngayBatDau":
         return (
           <p>
@@ -616,7 +664,7 @@ export default function Voucher() {
                     step={1000}
                     minValue={0}
                     maxValue={20000}
-                    defaultValue={priceOptions}
+                    defaultValue={priceOptions / 10}
                     formatOptions={{ style: "currency", currency: "VND" }}
                     className="max-w-md"
                   />
@@ -761,6 +809,7 @@ export default function Voucher() {
 
 const columns = [
   { uid: "id", name: "Stt", sortable: true },
+  { uid: "hinhAnh", name: "Hình Ảnh" },
   { uid: "ma", name: "Mã", sortable: true },
   { uid: "ten", name: "Tên", sortable: true },
   { uid: "code", name: "Code" },

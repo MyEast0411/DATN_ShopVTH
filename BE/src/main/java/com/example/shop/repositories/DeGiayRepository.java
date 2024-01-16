@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DeGiayRepository extends JpaRepository<DeGiay, String> {
-    @Query(value = "SELECT * FROM shopvth.de_giay\n" +
+    @Query(value = "SELECT * FROM de_giay\n" +
             "order by ngay_tao desc",nativeQuery = true)
     List<DeGiay> getListDeGiay();
 }

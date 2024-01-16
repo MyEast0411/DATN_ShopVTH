@@ -33,6 +33,9 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody UserDTO dto){
         KhachHang khachHang = khachHangService.login(dto);
+        if (khachHang == null){
+            return  ResponseEntity.ok("FAILED");
+        }
         return ResponseEntity.ok(khachHang);
     }
 
@@ -60,6 +63,7 @@ public class LoginController {
           kh.setNgaySinh(dateFormat.parse(dateFormat.format(dto.getNgaySinh())));
           kh.setSdt(dto.getSdt());
           kh.setTrangThai(1);
+          kh.setMatKhau(dto.getPass());
           KhachHang khNew = khachHangRepository.save(kh);
           return ResponseEntity.ok(khNew);
       }else {

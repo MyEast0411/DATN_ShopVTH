@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { data } from "browserslist";
 
 const columns = [
-  { name: "STT", uid: "key" },
+  // { name: "STT", uid: "key" },
   { name: "THÔNG TIN SẢN PHẨM", uid: "thongtinsanpham" },
   { name: "SỐ LƯỢNG", uid: "soLuong" },
   { name: "TỔNG TIỀN", uid: "tongTien" },
@@ -50,20 +50,20 @@ const TabBanHang = () => {
   };
 
   const [items, setItems] = useState([
-    {
-      label: `Hóa đơn 1`,
-      soLuong : `0`,
-      children: (
-        <Children
-          columns={columns}
-          users={[]}
-          activeKey={`💖💖`}
-          onDataSelect={handleDataSelect}
-          setSoLuongSP={setSoLuongSP}
-        />
-      ),
-      key: `💖💖`,
-    },
+    // {
+    //   label: `Hóa đơn 1`,
+    //   soLuong : `0`,
+    //   children: (
+    //     <Children
+    //       columns={columns}
+    //       users={[]}
+    //       activeKey={`💖💖`}
+    //       onDataSelect={handleDataSelect}
+    //       setSoLuongSP={setSoLuongSP}
+    //     />
+    //   ),
+    //   key: `💖💖`,
+    // },
   ]);
 
   const getData = async () => {
@@ -82,7 +82,7 @@ const TabBanHang = () => {
                 users={res.data[0]?.list}
                 activeKey={res.data[0].id}
                 updateSoLuong={updateSoLuong}
-                // onDataSelected={handleDataSelected}
+                onDataSelect={handleDataSelect}
               />
             ),
             key: res.data[0].id,
@@ -117,7 +117,7 @@ const TabBanHang = () => {
                 activeKey={res.data.ma}
                 updateSoLuong={updateSoLuong}
                 setSoLuongSP={setSoLuongSP}
-                // onDataSelected={handleDataSelected}
+                onDataSelect={handleDataSelect}
               />
             ),
             key: res.data.ma,
@@ -164,17 +164,19 @@ const TabBanHang = () => {
   return (
     <>
       <div className="overflow-auto w-full bg-white p-3">
-        <div
-          className="flex justify-end ..."
-          style={{
-            marginBottom: 16,
-            zIndex: 1,
-          }}
-        >
-          <Button color="blue" style={{ width: 300 }} onClick={add}>
-            Tạo hóa đơn
-          </Button>
-        </div>
+      <div
+        className="flex justify-end ..."
+        style={{
+          marginBottom: 16,
+          zIndex: 1,
+        }}
+      >
+        <Button color="blue" style={{ width: 300 }} onClick={add}>
+          + Tạo hóa đơn
+        </Button>
+      </div>
+
+      {items.length > 0 ? (
         <Tabs
           hideAdd
           onChange={onChange}
@@ -208,6 +210,12 @@ const TabBanHang = () => {
             </Tabs.TabPane>
           ))}
         </Tabs>
+      ) : (
+        <div style={{ textAlign: 'center', height: '70vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'  }}>
+          <img src="https://static-00.iconduck.com/assets.00/bill-cross-icon-1858x2048-q9ulyg0j.png" alt="Empty State" style={{ maxWidth: '200px', maxHeight: '300px' }} />
+          <p>Không có hóa đơn nào</p>
+        </div>
+      )}
       </div>
     </>
   );

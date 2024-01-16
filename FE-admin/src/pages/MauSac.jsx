@@ -121,7 +121,8 @@ export default function MauSac() {
     column: "giaTriPhanTram",
     direction: "ascending",
   });
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = React.useState("1");
+
   const [sanPhams, setSanPhams] = React.useState([]);
 
   React.useEffect(() => {
@@ -275,7 +276,7 @@ export default function MauSac() {
   const onRowsPerPageChange = React.useCallback((e) => {
     setRowsPerPage(Number(e.target.value));
     setTotalPages(Math.ceil(filteredItems.length / Number(e.target.value)));
-    setPage(1);
+    // setPage(1);
   }, []);
 
   const onSearchChange = React.useCallback((value) => {
@@ -417,7 +418,7 @@ export default function MauSac() {
               initialPage={1}
               size={size}
               page={page}
-              onChange={setPage}
+              onChange={(page) => setPage(page)}
             />
           ))}
         </div>

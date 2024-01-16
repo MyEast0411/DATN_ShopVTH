@@ -202,7 +202,7 @@ export default function ThemKhachHang() {
   useEffect(() => {
     getKhachHang();
     getDiaChi();
-  }, []);
+  }, [diaChi]);
 
   const onChange = (e) => {
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
@@ -713,7 +713,7 @@ export default function ThemKhachHang() {
             </AccordionItem> */}
           </Accordion>
           <div className="">
-            <Button
+            {/* <Button
               className="mt-5"
               style={{
                 backgroundColor: "#1976d2",
@@ -723,7 +723,7 @@ export default function ThemKhachHang() {
               onClick={showModal}
             >
               + Thêm địa chỉ
-            </Button>
+            </Button> */}
             {/* <Modal
               title="Thêm địa chỉ"
               open={isModalOpen}

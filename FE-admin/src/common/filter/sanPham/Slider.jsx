@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
-const Slider = ({searchValue, maxValue}) => {
+const Slider = ({searchValue, maxValue, setSanPhams}) => {
   const [value, setValue] = useState(0);
 
   const handleChange = (event) => {
+    
     setValue(event.target.value);
   };
-  useEffect(() => {
+  useEffect(() => { 
+    console.log(searchValue);
     setValue(searchValue)
   },[searchValue]);
   return (

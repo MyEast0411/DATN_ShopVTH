@@ -6,6 +6,7 @@ import com.example.shop.entity.Voucher;
 import com.example.shop.service.KhachHangService;
 import com.example.shop.service.KhachHangVoucherService;
 import com.example.shop.service.VoucherService;
+import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.DataReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -69,7 +70,15 @@ public class VoucherController {
         List<KhachHang> listKhachHangData = object.getListKhachHang();
         List<KhachHangVoucher>   listVCKHReturn = new ArrayList<>();
         Voucher voucherData = object.getVoucher();
+        String urlImg ="";
+        if(voucherData.getHinhAnh() == null || voucherData.getHinhAnh().equals("")) {
+            urlImg= "https://i.ibb.co/Zfpv5xv/z4990910514033-c5e7b06a688bc0bd64e7d55442f212a6.jpg";
+        }else {
+            urlImg = UploadAnh.upload(voucherData.getHinhAnh());
+        }
+
         voucherData.setMa("VC"+new Date().getTime());
+        voucherData.setHinhAnh(urlImg);
         voucherData.setNguoiTao("ADMIN");
         if (listKhachHangData.size() == 0){
           Voucher voucherSaved =  voucherService.addVoucher(voucherData);
@@ -170,17 +179,21 @@ public class VoucherController {
     }
 
 
-//    @Scheduled(fixedRate  = 1000)
-//    public void scheduleFixedDelayTask() {
-//        SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-//        List<Voucher> vouchers = voucherService.voucherByNgayKT();
-//        for (Voucher voucher: voucherService.getVouchers()
-//        ) {
-//            if (sdf3.format(timestamp).equals(sdf3.format(voucher.getNgayKetThuc()))){
-//               voucher.setTrangThai(0);
-//                voucherService.updateVoucher(voucher);
-//            }
-//        }
-//    }
+    @Scheduled(fixedRate  = 1000)
+    public void scheduleFixedDelayTask() {
+        try {
+            SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            List<Voucher> vouchers = voucherService.voucherByNgayKT();
+            for (Voucher voucher : voucherService.getVouchers()
+            ) {
+                if (sdf3.format(timestamp).equals(sdf3.format(voucher.getNgayKetThuc()))) {
+                    voucher.setTrangThai(0);
+                    voucherService.updateVoucher(voucher);
+                }
+            }
+        }catch (Exception e){
+            return;
+        }
+    }
 }

@@ -13,7 +13,7 @@ public interface KichCoRepository extends JpaRepository<KichCo, String> {
             "FROM kich_co",nativeQuery = true)
     String getMaxMa();
 
-    @Query(value = "SELECT kc FROM KichCo kc WHERE kc.deleted = 1")
+    @Query(value = "SELECT kc FROM KichCo kc WHERE kc.deleted = 1 ORDER BY kc.ten ASC")
     List<KichCo> getAll();
 
     KichCo findByTen(String ten);

@@ -54,11 +54,15 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
   const [tienKhachDua, setTienKhachDua] = useState("");
   const [tongTien, setTongTien] = useState("");
   const [tienHang, setTienHang] = useState("");
+  const [tienShip, setTienShip] = useState("");
   const [tienThua, setTienThua] = useState("");
   const [khachCanTra, setKhachCanTra] = useState("");
   const [maGiaoDich, setMaGiaoDich] = useState("");
   const [voucher, setVoucher] = useState(0);
   const [codeVC, setCodeVC] = useState("");
+  const [muaThem, setMuaThem] = useState("");
+  const [duocGiam, setDuocGiam] = useState("");
+
   const [SLSP, setSLSP] = useState("");
 
   const [tienMatConfirmationOpen, setTienMatConfirmationOpen] = React.useState(false);
@@ -192,8 +196,19 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         }
       });
   };
+  const [listVoucher, setListVoucher] = useState([]);
+
+  const getListVoucher = async () => {
+    console.log(activeKey);
+    await axios
+      .get(`http://localhost:8080/voucher/getVouchers`)
+      .then((response) => {
+        setListVoucher(response.data);
+      })
+  };
   useEffect(() => {
     getThanhToan();
+    getListVoucher();
   },[])
   const [thanhToanConfirmationOpen, setThanhToanConfirmationOpen] = useState(false);
   const handleThanhToan = () => {
@@ -239,7 +254,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         soTien : inputValue,
         maKH : khachHang.maKH,
         tongTien : tongTien,
-        trangThai : 5,
+        trangThai : 4,
         loaiHd : 1, //1 - tại quầy 0 - online
         });
         toast("🎉 Thanh toán thành công");
@@ -247,7 +262,8 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         navigate('/quan-ly-hoa-don');
       }
     }catch(error) {
-      toast.error("😢 404 Request");
+      toast.error(error.response.data);
+      cancelThanhToan();
     };
   };
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
@@ -440,7 +456,6 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
     const tongTien = dataArray.reduce((tong, item) => {
       const giaTien = Number(item.giaTien) || 0;
       const soLuong = Number(item.soLuong) || 0;
-  
       return tong + giaTien;
     }, 0);
   
@@ -458,18 +473,28 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
       .then((response) => {
-        // console.log(response.data);
         setList(response.data);
           
-        // Gọi hàm tính tổng tiền với mảng data
         const tongTien = tinhTongTien(response.data);
         const vc = response.data[0]?.id_hoa_don.id_voucher?.giaTriMax || 0;
-        const codeVoucher = response.data[0]?.id_hoa_don.id_voucher?.code;
+        const codeVoucher = response.data[0]?.id_hoa_don.id_voucher?.code == undefined ? "" : response.data[0]?.id_hoa_don.id_voucher?.code;
+        listVoucher.sort((b, a) => b.giaTriMin - a.giaTriMin);
+        console.log(listVoucher);
+        if(codeVoucher == "") {
+          setMuaThem(listVoucher[0]?.giaTriMin - tienHang == Number(NaN) ? "" : listVoucher[0]?.giaTriMin - tienHang);
+          setDuocGiam(listVoucher[0]?.giaTriMax == undefined ? "" : listVoucher[0]?.giaTriMax);
+        }
+        listVoucher.map((x,index) => {
+          if(x.giaTriMax == voucher) {
+            setMuaThem(listVoucher[index + 1]?.giaTriMin - tienHang == Number(NaN) ? "" : listVoucher[index + 1]?.giaTriMin - tienHang);
+            setDuocGiam(listVoucher[index + 1]?.giaTriMax == undefined ? "" : listVoucher[index + 1]?.giaTriMax);
+          }
+        })
+        
         setCodeVC(codeVoucher);
         setVoucher(vc);
         setTienHang(tongTien);
-        setTongTien(tongTien - voucher);
-        // setKhachCanTra(tongTien);
+        setTongTien(tongTien - voucher + tienShip);
       });
   };
   const getKhachHang = async () => {
@@ -495,7 +520,7 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
   }, []);
   useEffect(() => {
     getData();
-  }, [list]);
+  }, [list,activeKey]);
   return (
     <>
       <div className="p-5"> 
@@ -735,12 +760,12 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
         <div class="flex justify-between mt-7">
           <div className={`relative ${!isBlur ? "h-0 overflow-hidden" : ""}`}>
           <div className="delivery-content">
-            <Delivery activeKey={activeKey} khachHang={khachHang} setKhachHang={setKhachHang}/>
+            <Delivery activeKey={activeKey} khachHang={khachHang} setKhachHang={setKhachHang} tongTien={tongTien} setTienShip={setTienShip}/>
           </div>
           </div>
           <div className="w-6/12 space-y-8 block">
             <p className="font-bold text-lg">
-              <span>💝 Thông tin thanh toán</span>{" "}
+              <span>Thông tin thanh toán</span>{" "}
             </p>
 
             <div class="flex gap-20">
@@ -764,13 +789,14 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
             <div class="flex gap-6">
               <div class="w-4/6 ">
                 <Input label="Mời nhập mã" value={codeVC}/>
+                
               </div>
               <Modal
                 onOk={handleOkVoucher}
                 onCancel={handleCancelVoucher}
                 open={isModalOpenVoucher}
-                width={1300}
-                height={100}
+                width={800}
+                height={50}
                 footer={[]}
               >
                 <TableVoucher activeKey={activeKey} setVoucher={setVoucher} tongTien={tongTien} setTongTien={setTongTien}/>
@@ -805,6 +831,10 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
                 </Button>
               </div>
             </div>
+
+            <span style={{ color: "red", fontSize : "16px"  }}>
+                {duocGiam == "" ? "" : "Mua thêm "+ muaThem +" ₫ để được giảm "+ duocGiam +" ₫"}
+                </span>
             <div class="flex ...">
               <Switch
                 id="custom-switch-component"
@@ -833,6 +863,15 @@ const GioHang = ({ columns, users, activeKey, changeData, updateSoLuong, onDataS
                 <span style={{ color: "red", fontWeight: "bold", fontSize : "20px"  }}>
                   {" "}
                   {Intl.NumberFormat().format(tienHang)}&nbsp;₫
+                </span>
+              </div>
+            </div>
+            <div class="flex ... gap-20">
+              <div class="w-4/6 ... font-medium text-s">Tiền ship</div>
+              <div class="w-2/6 ...">
+                <span style={{ color: "red", fontWeight: "bold", fontSize : "20px"  }}>
+                  {" "}
+                  {Intl.NumberFormat().format(tienShip)}&nbsp;₫
                 </span>
               </div>
             </div>

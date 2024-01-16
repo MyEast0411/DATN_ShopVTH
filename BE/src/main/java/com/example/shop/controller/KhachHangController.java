@@ -1,9 +1,15 @@
 package com.example.shop.controller;
 
 import com.example.shop.entity.DiaChi;
+import com.example.shop.entity.HoaDon;
+import com.example.shop.entity.HoaDonChiTiet;
 import com.example.shop.entity.KhachHang;
+import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.DiaChiRepository;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.response.LichSuMuaHangResponse;
+import com.example.shop.service.HoaDonChiTietService;
+import com.example.shop.service.HoaDonService;
 import com.example.shop.util.SendMail;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.KhachHangVM;
@@ -14,8 +20,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Controller
@@ -28,6 +37,12 @@ public class KhachHangController {
 
     @Autowired
     DiaChiRepository diaChiRepository;
+
+    @Autowired
+    private HoaDonService hoaDonService;
+    @Autowired
+    private HoaDonChiTietService hoaDonChiTietService;
+
 
     @GetMapping("/khach-hang/getAll")
     List<KhachHang> getAll(){
@@ -75,12 +90,27 @@ public class KhachHangController {
     @PostMapping("/khach-hang/add")
     public ResponseEntity add(@RequestBody KhachHangVM khachHang) {
         System.out.println(khachHang);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Integer maxMa = Integer.parseInt(khachHangRepository.findMaxMa());
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder(6);
+        Random random = new Random();
 
+        for (int i = 0; i < 6; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
+
+        String randomString = sb.toString();
+        String urlImg = "";
         try {
             KhachHang kh = new KhachHang();
-            String urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
+            if(khachHang.getAnhNguoiDung() == null || khachHang.getAnhNguoiDung().equals("")) {
+                urlImg= "https://i.ibb.co/Zfpv5xv/z4990910514033-c5e7b06a688bc0bd64e7d55442f212a6.jpg";
+            }else {
+                urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
+            }
+
             kh.setAnhNguoiDung(urlImg);
             kh.setMa("KH"+(maxMa + 1));
             kh.setCccd(khachHang.getCccd());
@@ -89,9 +119,11 @@ public class KhachHangController {
             kh.setGioiTinh(khachHang.getGioi_tinh());
             kh.setNgaySinh(dateFormat.parse(khachHang.getNgay_sinh()));
             kh.setSdt(khachHang.getSdt());
+            kh.setDeleted(1);
             kh.setTrangThai(1);
-
+            kh.setMatKhau(randomString);
             System.out.println(kh);
+
             KhachHang khNew = khachHangRepository.save(kh);
 
             DiaChi diaChi = new DiaChi();
@@ -105,17 +137,18 @@ public class KhachHangController {
             diaChiRepository.save(diaChi);
 
             //gui mail
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
-            String contentBody = "<html>" +
-                    "<body>" +
-                   "<p>\n" +
-                    "  Mật khẩu của bạn là:\n " + khNew.getTen() + System.currentTimeMillis()+
-                    "</p>" +
-                    "</body>" +
-                    "</html>" ;
-
-
-                SendMail.SendMailOptions(khNew.getEmail() , contentBody);
+            SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
+//            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+//            String contentBody = "<html>" +
+//                    "<body>" +
+//                   "<p>\n" +
+//                    "  Mật khẩu của bạn là:\n " + khNew.getTen() + System.currentTimeMillis()+
+//                    "</p>" +
+//                    "</body>" +
+//                    "</html>" ;
+//
+//
+//                SendMail.SendMailOptions(khNew.getEmail() , contentBody);
 
 
 
@@ -159,5 +192,23 @@ public class KhachHangController {
     public KhachHang deleteSoft(@PathVariable("id") KhachHang khachHang) {
         khachHang.setDeleted(0);
         return khachHangRepository.save(khachHang);
+    }
+
+    @GetMapping("/khach-hang/hoa-don/{idKH}")
+    public ResponseEntity getHDByKH(@PathVariable("idKH") String idKH){
+        List<HoaDon> listHD = hoaDonService.getHDByKH(idKH);
+//        List<LichSuMuaHangResponse> lichSuMuaHangResponses = new ArrayList<>();
+//        for (HoaDon hd: listHD) {
+////            Map<Integer , SanPhamChiTiet> sanPhamChiTiets = new HashMap<>();
+//
+//            List<HoaDonChiTiet> list = hoaDonChiTietService.getHDCT(hd.getId());
+////            list.stream().forEach(i -> sanPhamChiTiets.put(i.getSoLuong() , i.getId_chi_tiet_san_pham()));
+//            LichSuMuaHangResponse lichSuMuaHangResponse = new LichSuMuaHangResponse();
+//            lichSuMuaHangResponse.setHoaDon(hd);
+//            lichSuMuaHangResponse.setHoaDonChiTiets(list);
+//            lichSuMuaHangResponses.add(lichSuMuaHangResponse);
+//        }
+//        lichSuMuaHangResponses.forEach( i -> System.out.println(i));
+        return ResponseEntity.ok(listHD);
     }
 }

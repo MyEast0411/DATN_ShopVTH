@@ -10,7 +10,6 @@ import { FaStarHalfAlt } from "react-icons/fa";
 import {
   getAllSanPhamChiTietByIdSanPham,
   getHinhAnhByIdSPCT,
-  // getSPCTbyId,
   getSPCTByIdSP,
   getSanPhamChiTietByDefaultImg,
 } from "../api/SanPham";
@@ -21,6 +20,9 @@ import successIcon from "../assets/successIcon.png";
 import errorIcon from "../assets/errorIcon.png";
 
 export default function DetailProduct() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const { idSP } = useParams();
   const [sanPhamChiTiets, setSanPhamChiTiets] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
@@ -35,6 +37,7 @@ export default function DetailProduct() {
   const [api, contextHolder] = notification.useNotification();
   const [sizeBorder, setSizeBorder] = useState("");
   const [ma, setMa] = useState("");
+  const [maList, setMaList] = useState([]);
 
   useEffect(() => {
     const fetchSPCTByIdSP = async () => {
@@ -68,7 +71,7 @@ export default function DetailProduct() {
     const fetchSPCTbyUrlImg = async () => {
       try {
         const data = await getSanPhamChiTietByDefaultImg(selectedImage);
-        console.log("data:", data);
+        // console.log("data:", data);
         setCartItem(data);
 
         setSelectedGiaBan(data[0].giaBan);
@@ -83,40 +86,32 @@ export default function DetailProduct() {
   }, [selectedImage]);
 
   const addToCart = () => {
-    console.log(sizeBorder);
+    // console.log(sizeBorder);
     if (!sizeBorder) {
       openNotificationWithIcon("error", "Vui lòng chọn kích cỡ!", errorIcon);
       return;
     }
 
-    // Lấy dữ liệu từ localStorage (nếu có)
     let maList = localStorage.getItem("maList");
 
-    // Kiểm tra xem đã có dữ liệu trong localStorage chưa
     if (maList) {
-      // Chuyển dữ liệu từ chuỗi JSON thành mảng JavaScript
       maList = JSON.parse(maList);
 
-      // Tìm xem sản phẩm đã có trong giỏ hàng chưa
       const existingItem = maList.find(
         (item) => item.ma === ma && item.size === sizeBorder
       );
 
       if (existingItem) {
-        // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng lên 1
         existingItem.quantity += 1;
       } else {
-        // Nếu sản phẩm chưa có trong giỏ hàng, thêm vào mảng mới
         maList.push({ ma, size: sizeBorder, quantity: 1 });
       }
     } else {
-      // Nếu chưa có dữ liệu, tạo một mảng mới
       maList = [{ ma, size: sizeBorder, quantity: 1 }];
     }
-
-    // Lưu lại mảng đã cập nhật vào localStorage
     localStorage.setItem("maList", JSON.stringify(maList));
-
+    setMaList(maList);
+    console.log("maList:", maList);
     if (typeof window.cartUpdatedCallback === "function") {
       window.cartUpdatedCallback();
     }
@@ -216,7 +211,7 @@ export default function DetailProduct() {
       {contextHolder}
 
       <InfoTop />
-      <Header />
+      <Header maList={maList} />
 
       <div className="main-detail-product">
         <Breadcrumbs size="lg" className="my-3">
@@ -319,7 +314,7 @@ export default function DetailProduct() {
               className="flex flex-col detail-pro-group-btn"
               onClick={addToCart}
             >
-              <div className="checkout-button mb-5 flex justify-center">
+              <div className="checkout-button mb-3 flex justify-center">
                 <button>Thêm vào giỏ hàng</button>
               </div>
               <div className="paypal-button flex justify-center align-center">
