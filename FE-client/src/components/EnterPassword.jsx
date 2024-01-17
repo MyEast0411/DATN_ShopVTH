@@ -30,7 +30,7 @@ export default function EnterPassword() {
         } else {
           // console.log(response.data);
           localStorage.setItem("user", JSON.stringify(response.data));
-          navigate("/");
+          navigate("http://localhost:5173/");
         }
       });
   };
@@ -82,7 +82,7 @@ export default function EnterPassword() {
                 onClick={() => handleLogin()}
                 className="inline-block enter-password-signIn-button main-sign-in-button"
               >
-                Login
+                Đăng nhập
               </button>
             </div>
           </form>

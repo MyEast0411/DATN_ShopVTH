@@ -6,7 +6,6 @@ import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Accordion, AccordionItem, Avatar, Button } from "@nextui-org/react";
-
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";

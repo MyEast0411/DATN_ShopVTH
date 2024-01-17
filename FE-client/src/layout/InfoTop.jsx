@@ -8,15 +8,15 @@ export default function InfoTop() {
   const [user, setUser] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
-    // setUser(
-    //   localStorage.getItem("user") == null ||
-    //     localStorage.getItem("user") == undefined ||
-    //     localStorage.getItem("user") == ""
-    //     ? ""
-    //     : JSON.parse(localStorage.getItem("user"))
-    // );
-    setUser("Hoi");
-  }, [user]);
+    setUser(
+      localStorage.getItem("user") == null ||
+        localStorage.getItem("user") == undefined ||
+        localStorage.getItem("user") == ""
+        ? ""
+        : JSON.parse(localStorage.getItem("user"))
+    );
+    // setUser("Hoi");
+  }, []);
 
   const items = [
     {

@@ -61,6 +61,7 @@ public class KhachHangController {
 
     @GetMapping("/dia-chi/findByMa/{ma}")
     public List<DiaChi> findDiaChiByMa(@PathVariable String ma) {
+        System.out.println(ma);
         return diaChiRepository.findDiaChiByMa(ma);
     }
 
