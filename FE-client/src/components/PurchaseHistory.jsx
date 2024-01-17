@@ -13,12 +13,10 @@ export default function PurchaseHistory() {
   const { idkh } = useParams();
   const [list, setList] = useState([]);
   const getDataById = async () => {
-    await axios
-      .get(`http://localhost:8080/khach-hang/hoa-don/${idkh}`)
-      .then((response) => {
-        console.log(response.data);
-        setList(response.data);
-      });
+    await axios.get(`http://localhost:8080/khach-hang/hoa-don/${idkh}`).then((response) => {
+      console.log(response.data);
+      setList(response.data);
+    });
   };
   useEffect(() => {
     getDataById();
@@ -85,16 +83,13 @@ export default function PurchaseHistory() {
               >
                 <div className="flex flex-row">
                   <div>
-                    <img
-                      src="/src/assets/logo.png"
-                      style={{ borderRadius: "50%", width: "50", height: 50 }}
-                    />
+                    <img src="/src/assets/logo.png" style={{ borderRadius: "50%", width: "50", height: 50 }} />
                   </div>
                   <div className="mt-3">
                     <span>VTH jordon</span>
                   </div>
                   <div className="mt-3 ms-5">
-                    <span>Mã đơn hàng : {ls.hoaDon.ma}</span>
+                    <span>Mã đơn hàng : {ls.hoaDon?.ma}</span>
                   </div>
                 </div>
                 <hr
@@ -146,31 +141,21 @@ export default function PurchaseHistory() {
                         </div>
 
                         <div className="w-7/12">
-                          <p>
-                            {`[${sp.id_chi_tiet_san_pham.ma}] ${sp.id_chi_tiet_san_pham.ten}`}
-                          </p>
+                          <p>{`[${sp.id_chi_tiet_san_pham.ma}] ${sp.id_chi_tiet_san_pham.ten}`}</p>
                           <p>
                             {`${sp.id_chi_tiet_san_pham.id_chat_lieu.ten}-${sp.id_chi_tiet_san_pham.id_kich_co.ten}-${sp.id_chi_tiet_san_pham.id_mau_sac.ten}`}
                           </p>
                           <p>x {sp.soLuong}</p>
                         </div>
                         <div className="w-3/12">
-                          <span>
-                            {" "}
-                            {Intl.NumberFormat().format(
-                              sp.soLuong * sp.giaTien
-                            )}
-                          </span>
+                          <span> {Intl.NumberFormat().format(sp.soLuong * sp.giaTien)}</span>
                         </div>
                       </div>
                     </>
                   ))}
                 </div>
                 <div className="footer  flex  flex-row-reverse">
-                  <span>
-                    Tổng số tiền :{" "}
-                    {Intl.NumberFormat().format(ls.hoaDon.tongTien)}
-                  </span>
+                  <span>Tổng số tiền : {Intl.NumberFormat().format(ls.hoaDon.tongTien)}</span>
                 </div>
               </div>
             </>

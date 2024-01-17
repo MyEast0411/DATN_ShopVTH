@@ -30,7 +30,7 @@ export default function EnterPassword() {
         } else {
           // console.log(response.data);
           localStorage.setItem("user", JSON.stringify(response.data));
-          navigate("http://localhost:5173/");
+          navigate("/");
         }
       });
   };
@@ -38,54 +38,40 @@ export default function EnterPassword() {
     <>
       <div className="main-sign-in main-enter-password flex justify-center">
         <div className="main-enter-password">
-          <Link
-            to="/"
-            className="flex justify-center align-center container-logo ctnlogo-signUp"
-          >
+          <Link to="/" className="flex justify-center align-center container-logo ctnlogo-signUp">
             <img className="logo cursor-pointer" src={Logo} alt="" />
             <div className="flex justify-center">Jordan VTH</div>
           </Link>
 
-          <form>
-            <div className="sign-in-title mb-10">What's your password?</div>
-            <div className="send-code">
-              <span className="email-sended-code"> {email}</span>
-              <a
-                href="#"
-                className="underline ml-2 inline-block font-normal sign-up-edit link-underline"
-              >
-                Edit
-              </a>
-            </div>
-            <div className="inputGroupCodeSignUp">
-              <input
-                type="password"
-                required
-                autoComplete="off"
-                value={pass}
-                onChange={(e) => {
-                  setPass(e.target.value);
-                  setError("");
-                }}
-              />
-              <label htmlFor="Password">Password</label>
-              <p className="text-red-400">{error}</p>
-            </div>
-            <a
-              href="#"
-              className="forgot-password underline link-underline text-small"
-            >
-              Forgot password?
+          <div className="sign-in-title mb-10">What's your password?</div>
+          <div className="send-code">
+            <span className="email-sended-code"> {email}</span>
+            <a href="#" className="underline ml-2 inline-block font-normal sign-up-edit link-underline">
+              Edit
             </a>
-            <div className="flex justify-end">
-              <button
-                onClick={() => handleLogin()}
-                className="inline-block enter-password-signIn-button main-sign-in-button"
-              >
-                Đăng nhập
-              </button>
-            </div>
-          </form>
+          </div>
+          <div className="inputGroupCodeSignUp">
+            <input
+              type="password"
+              required
+              autoComplete="off"
+              value={pass}
+              onChange={(e) => {
+                setPass(e.target.value);
+                setError("");
+              }}
+            />
+            <label htmlFor="Password">Password</label>
+            <p className="text-red-400">{error}</p>
+          </div>
+          <a href="#" className="forgot-password underline link-underline text-small">
+            Forgot password?
+          </a>
+          <div className="flex justify-end">
+            <button onClick={() => handleLogin()} className="inline-block enter-password-signIn-button main-sign-in-button">
+              Đăng nhập
+            </button>
+          </div>
         </div>
       </div>
     </>
