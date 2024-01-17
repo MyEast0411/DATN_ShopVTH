@@ -1111,7 +1111,7 @@ export default function ChiTietSanPham() {
                 backgroundColor: "#1976d2",
                 marginBottom: "2px",
                 color: "#fff",
-                marginRight: "8px", // Adjust the margin as needed
+                marginRight: "8px", 
               }}
             >
               Làm mới

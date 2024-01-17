@@ -15,7 +15,7 @@ export default function InfoTop() {
         ? ""
         : JSON.parse(localStorage.getItem("user"))
     );
-  }, [user]);
+  }, []);
 
   const items = [
     {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "antd";
 import Header from "../layout/Header";
 import InfoTop from "../layout/InfoTop";
@@ -12,7 +12,19 @@ export default function Profile() {
   const [phoneModalOpen, setPhoneModalOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
-
+  const [ngaySinh, setNgaySinh] = useState("2023-12-31T17:00:00.000+00:00");
+  const [user,setUser] = useState({});
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")));
+  },[]);
+  console.log(user);
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+  console.log(formatDate(new Date(ngaySinh)));
   const showPasswordModal = () => {
     setPasswordModalOpen(true);
   };
@@ -52,13 +64,13 @@ export default function Profile() {
         <div className="flex flex-col gap-3">
           <div className="inputGroupEmail">
             <input type="email" required autoComplete="off" />
-            <label htmlFor="email">Email*</label>
+            <label htmlFor="email">{user.email}</label>
           </div>
 
           <div>
             <div className="font-medium">Password</div>
             <div className="flex justify-between items-center">
-              <span className="pt-2">••••••••••••••••</span>
+              <span className="pt-2">{user.matKhau}</span>
               <button className="underline" onClick={showPasswordModal}>
                 Sửa
               </button>
@@ -115,12 +127,10 @@ export default function Profile() {
             <div className="font-medium py-2">Số điện thoại</div>
             <div className="flex justify-between items-center">
               <div>
-                --------------
-                {/* load phone number here */}
-                {/* 0379209871 */}
+                {user.sdt}
               </div>
               <button className="underline" onClick={showPhoneModal}>
-                Thêm
+                Sửa
               </button>
               <Modal
                 title="Thêm số điện thoại"
@@ -155,15 +165,15 @@ export default function Profile() {
             <div className="font-medium py-2">Ngày sinh</div>
             <DatePicker
               className="w-1/2"
-              defaultValue={dayjs("01/01/2015", dateFormatList[0])}
+              defaultValue={dayjs("15-01-2003", dateFormatList[0])}
               format={dateFormatList}
             />
           </div>
 
           <div className="flex justify-between items-center">
-            <div className="font-medium py-2">Xóa tài khoản</div>
+            <div className="font-medium py-2"></div>
             <button className="main-sign-in-button px-7 py-1 bg-black text-white rounded-[20px]">
-              Xóa
+              Hoàn tất
             </button>
           </div>
         </div>
