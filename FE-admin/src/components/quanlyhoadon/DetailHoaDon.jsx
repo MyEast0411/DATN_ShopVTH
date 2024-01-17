@@ -613,46 +613,43 @@ export default function DetailHoaDon() {
                     <img
                       src={item.imageUrl}
                       alt="product-image"
-                      className="w-full rounded-lg sm:w-40 me-10"
+                      className="w-full rounded-lg sm:w-40 me-10 object-contain"
                     />
 
-                    <div
-                      className="flex cols-3 gap-4"
-                      style={{ marginRight: 200 }}
-                    >
-                      <div className=" sm:mt-0" style={{ marginRight: 300 }}>
-                        <h2 className="text-lg font-medium text-gray-900 mb-3">
-                          {item.name}
-                          {item.mausac.substring(3)}
-                        </h2>
-                        <p className="mb-3  font-medium text-gray-900">
-                          Size: {item.kichco}
-                        </p>
-                        <p className="font-medium text-gray-900 mb-3">
-                          Số lượng :{" "}
-                          <span className="font-medium text-red-500 mb-3">
-                            {item.quantity}
-                          </span>{" "}
-                          sản phẩm
-                        </p>
-                        <p className="font-medium text-gray-900 mb-3">
-                          Đơn giá :{" "}
-                          <span className="font-medium text-red-500 mb-3">
-                            {Intl.NumberFormat().format(item.price)} &nbsp;₫
-                          </span>
-                        </p>
-                      </div>
+                    <div className="flex justify-between w-full">
+                      <div>
+                        <div className=" sm:mt-0">
+                          <h2 className="text-lg font-medium text-gray-900 mb-3">
+                            {item.name}
+                            {item.mausac.substring(3)}
+                          </h2>
+                          <p className="mb-3  font-medium text-gray-900">
+                            Size: {item.kichco}
+                          </p>
+                          <p className="font-medium text-gray-900 mb-3">
+                            Số lượng :{" "}
+                            <span className="font-medium text-red-500 mb-3">
+                              {item.quantity}
+                            </span>{" "}
+                            sản phẩm
+                          </p>
+                          <p className="font-medium text-gray-900 mb-3">
+                            Đơn giá :{" "}
+                            <span className="font-medium text-red-500 mb-3">
+                              {Intl.NumberFormat().format(item.price)} &nbsp;₫
+                            </span>
+                          </p>
+                        </div>
 
-                      <div className=" space-x-4 mt-4 me-4">
+                        <div className=" space-x-4 mt-4 me-4"></div>
+                      </div>
+                      <div className="inline-flex items-center gap-10">
                         <p className="font-medium text-red-500">
                           {Intl.NumberFormat().format(
                             item.price * item.quantity
                           )}
                           &nbsp;₫
                         </p>
-                      </div>
-
-                      <div className="row">
                         <Button
                           color="red"
                           onClick={() => onHandleDelete(item.id)}

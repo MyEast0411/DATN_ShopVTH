@@ -5,12 +5,15 @@ import { format } from "date-fns";
 import { Tag, Table, Space, Modal, Input } from "antd";
 import { Button } from "@material-tailwind/react";
 import moment from "moment/moment";
+import { Link } from "react-router-dom";
 
 export default function DetailVoucher() {
   const { id } = useParams();
   const [voucherDetail, setVoucherDetail] = useState({});
   const [modalHD, setModalHD] = useState(false);
   const [trangThai, setTrangThai] = useState(false);
+  const [data, setData] = useState([]);
+
   useEffect(() => {
     const getData = async () => {
       const res = await axios
@@ -42,6 +45,26 @@ export default function DetailVoucher() {
     getData();
   }, []);
 
+  useEffect(() => {
+    const fetchHoaDonByIdVoucher = async () => {
+      const res = await axios.get(
+        `http://localhost:8080/hoa_don/getHoaDonByIdVoucher/${id}`
+      );
+      console.log("res:", res.data);
+      const updateRows = res.data.map((item, index) => ({
+        key: index,
+        id: item.id,
+        maHd: item.ma,
+        giaTriMax: Intl.NumberFormat().format(item.id_voucher.giaTriMax),
+        ngaySuDung: item.id_voucher?.ngaySuDung || "null",
+        khachHang: item?.id_khach_hang?.ten || "Khách lẻ",
+      }));
+      console.log("updateRows:", updateRows);
+      setData(updateRows);
+    };
+    fetchHoaDonByIdVoucher();
+  }, []);
+
   function convertTinhTrang(ngayBatDau, ngayKetThuc) {
     const timeBD = new Date(ngayBatDau).getTime();
     const timeKT = new Date(ngayKetThuc).getTime();
@@ -61,29 +84,24 @@ export default function DetailVoucher() {
   const columns = [
     {
       title: "Mã hóa đơn",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "maHd",
+      key: "maHd",
     },
     {
-      title: "Thoi gian áp dụng",
-      dataIndex: "age",
-      key: "age",
+      title: "Mệnh giá voucher",
+      dataIndex: "giaTriMax",
+      key: "giaTriMax",
     },
     {
-      title: "Nhân viên xác nhận",
-      dataIndex: "address",
-      key: "address",
+      title: "Ngày sử dụng",
+      dataIndex: "ngaySuDung",
+      key: "ngaySuDung",
     },
 
     {
       title: "Người sử dụng",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Mệnh giá voucher",
-      dataIndex: "address",
-      key: "address",
+      dataIndex: "khachHang",
+      key: "khachHang",
     },
 
     {
@@ -91,12 +109,13 @@ export default function DetailVoucher() {
       key: "chucNang",
       render: (_, record) => (
         <Space size="middle">
-          <Button
-            style={{ backgroundColor: "red" }}
+          <Link
+            className="underline"
+            to={`/detail-hoa-don/${record.id}`}
             onClick={() => setModalHD(true)}
           >
             Hiển thị hóa đơn
-          </Button>
+          </Link>
         </Space>
       ),
     },
@@ -107,22 +126,22 @@ export default function DetailVoucher() {
       <div className="conatiner mx-auto space-y-5">
         <div className="row thong-tin-hoa-don bg-white space-y-5 ">
           <div className="row mb-10">
-            <p className="font-bold p-4 text-2xl"> Thông tin voucher</p>
+            <p className="font-medium p-4 text-2xl"> Thông tin voucher</p>
             <hr style={{ backgroundColor: "black", height: 2, padding: 1 }} />
           </div>
           <div className="row divide-y-8 divide-slate-400/25 ">
             <div className="row mb-10 space-y-8" style={{ padding: "0 60px" }}>
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div className="grid grid-cols-2 gap-1  ">
-                  <p className="font-bold text-lg">Mã voucher : </p>
-                  <p className="italic text-sm font-bold ">
+                  <p className="font-medium text-lg">Mã voucher : </p>
+                  <p className="italic text-sm font-medium ">
                     {" "}
                     {voucherDetail.ma}
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-bold text-lg"> Tên voucher : </p>
-                  <p className="italic text-sm font-bold">
+                  <p className="font-medium text-lg"> Tên voucher : </p>
+                  <p className="italic text-sm font-medium">
                     {" "}
                     {voucherDetail.ten}
                   </p>
@@ -131,7 +150,7 @@ export default function DetailVoucher() {
 
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-bold text-lg">Tình Trạng : </p>
+                  <p className="font-medium text-lg">Tình Trạng : </p>
                   <div>
                     {trangThai === 1 ? (
                       <Tag color="black">Đã hết hạn</Tag>
@@ -143,7 +162,7 @@ export default function DetailVoucher() {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-bold text-lg">Trạng Thái : </p>
+                  <p className="font-medium text-lg">Trạng Thái : </p>
                   <p>
                     {" "}
                     {voucherDetail.trangThai == 1 ? (
@@ -157,18 +176,18 @@ export default function DetailVoucher() {
 
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-bold text-lg">Code : </p>
+                  <p className="font-medium text-lg">Code : </p>
                   <div>
-                    <p className="italic text-sm font-bold">
+                    <p className="italic text-sm font-medium">
                       {" "}
                       {voucherDetail.code}
                     </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-bold text-lg">Mệnh Giá : </p>
+                  <p className="font-medium text-lg">Mệnh Giá : </p>
                   <p
-                    className="italic text-sm font-bold"
+                    className="italic text-sm font-medium"
                     style={{ color: "red" }}
                   >
                     {Intl.NumberFormat().format(voucherDetail.giaTriMax)}&nbsp;₫
@@ -178,8 +197,8 @@ export default function DetailVoucher() {
 
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-bold text-lg"> Ngày Bắt Đầu </p>
-                  <p className="italic text-sm font-bold">
+                  <p className="font-medium text-lg"> Ngày Bắt Đầu </p>
+                  <p className="italic text-sm font-medium">
                     {/* {format(
                       new Date(voucherDetail.ngayBatDau),
                       "yyyy-MM-dd hh:mm:ss"
@@ -190,8 +209,8 @@ export default function DetailVoucher() {
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-bold text-lg"> Ngày Kêt Thúc </p>
-                  <p className="italic text-sm font-bold">
+                  <p className="font-medium text-lg"> Ngày Kết Thúc </p>
+                  <p className="italic text-sm font-medium">
                     {voucherDetail.ngayKetThuc}
                     {/* {format(
                       new Date(voucherDetail.ngayKetThuc),
@@ -209,7 +228,7 @@ export default function DetailVoucher() {
         </div>
         <div className="row thong-tin-hoa-don bg-white space-y-5 ">
           <div className="row mb-10">
-            <p className="font-bold p-4 text-2xl"> Lịch sử áp dụng</p>
+            <p className="font-medium p-4 text-2xl"> Lịch sử áp dụng</p>
             <hr style={{ backgroundColor: "black", height: 2, padding: 1 }} />
           </div>
           <div className="row divide-y-8 divide-slate-400/25 ">
@@ -234,19 +253,19 @@ export default function DetailVoucher() {
               <div class="grid grid-cols-3 gap-4 divide-x divide-black pb-3">
                 <div class="grid grid-cols-2 gap-4 p-4">
                   <div>
-                    <p class="text-black font-bold text-sm">Mã hóa đơn : </p>
+                    <p class="text-black font-medium text-sm">Mã hóa đơn : </p>
                   </div>
                   <div>
                     <p>HD112</p>
                   </div>
                   <div>
-                    <p class="text-black font-bold text-sm">Thời gian : </p>
+                    <p class="text-black font-medium text-sm">Thời gian : </p>
                   </div>
                   <div>
                     <p>20-11-2000</p>
                   </div>
                   <div>
-                    <p class="text-black font-bold text-sm">Khách Hàng : </p>
+                    <p class="text-black font-medium text-sm">Khách Hàng : </p>
                   </div>
                   <div>
                     <p>Admin</p>
@@ -254,19 +273,21 @@ export default function DetailVoucher() {
                 </div>
                 <div class="grid grid-cols-2 gap-4 p-4">
                   <div>
-                    <p class="text-black font-bold text-sm">Trạng thái : </p>
+                    <p class="text-black font-medium text-sm">Trạng thái : </p>
                   </div>
                   <div>
                     <p>HD112</p>
                   </div>
                   <div>
-                    <p class="text-black font-bold text-sm">Nhân viên bán : </p>
+                    <p class="text-black font-medium text-sm">
+                      Nhân viên bán :{" "}
+                    </p>
                   </div>
                   <div>
                     <p>20-11-2000</p>
                   </div>
                   <div>
-                    <p class="text-black font-bold text-sm">Người tạo : </p>
+                    <p class="text-black font-medium text-sm">Người tạo : </p>
                   </div>
                   <div>
                     <p>Admin</p>
@@ -282,7 +303,9 @@ export default function DetailVoucher() {
               <div class="grid  grid-cols-3 gap-4 " style={{ height: "150px" }}>
                 <div class="grid grid-cols-2 gap-2 p-2">
                   <div>
-                    <p class="text-black font-bold text-sm">Tổng số lượng : </p>
+                    <p class="text-black font-medium text-sm">
+                      Tổng số lượng :{" "}
+                    </p>
                   </div>
                   <div>
                     <p>
@@ -295,7 +318,7 @@ export default function DetailVoucher() {
                     </p>
                   </div>
                   <div>
-                    <p class="text-black font-bold text-sm">
+                    <p class="text-black font-medium text-sm">
                       Tổng tiền hàng :{" "}
                     </p>
                   </div>
@@ -307,7 +330,7 @@ export default function DetailVoucher() {
                     </p>
                   </div>
                   <div>
-                    <p class="text-black font-bold text-sm">
+                    <p class="text-black font-medium text-sm">
                       Giảm giá hóa đơn :{" "}
                     </p>
                   </div>
@@ -321,7 +344,9 @@ export default function DetailVoucher() {
                 </div>
                 <div class="grid grid-cols-2 gap-2 p-2">
                   <div>
-                    <p class="text-black font-bold text-sm">Khách cần trả : </p>
+                    <p class="text-black font-medium text-sm">
+                      Khách cần trả :{" "}
+                    </p>
                   </div>
                   <div>
                     <p style={{ color: "red", fontWeight: "bold" }}>
@@ -332,7 +357,7 @@ export default function DetailVoucher() {
                   </div>
 
                   <div>
-                    <p class="text-black font-bold text-sm">Khách đưa : </p>
+                    <p class="text-black font-medium text-sm">Khách đưa : </p>
                   </div>
                   <div>
                     <p style={{ color: "red", fontWeight: "bold" }}>
@@ -343,7 +368,7 @@ export default function DetailVoucher() {
                   </div>
 
                   <div>
-                    <p class="text-black font-bold text-sm">Tổng tiền : </p>
+                    <p class="text-black font-medium text-sm">Tổng tiền : </p>
                   </div>
                   <div>
                     <p style={{ color: "red", fontWeight: "bold" }}>

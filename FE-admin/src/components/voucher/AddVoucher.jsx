@@ -213,7 +213,7 @@ export default function AddVoucher() {
 
   return (
     <>
-      <div className="w-full">
+      <div className="w-full h-screen">
         <h2 class="mb-5 font-bold text-2xl">Tạo phiếu giảm giá</h2>
 
         <div
