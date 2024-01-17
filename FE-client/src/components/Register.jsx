@@ -2,7 +2,6 @@ import { useState } from "react";
 import Logo from "../assets/logo.png";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Checkbox } from "@nextui-org/react";
-import { Button } from "antd";
 import axios from "axios";
 
 export default function Register() {
@@ -163,12 +162,12 @@ export default function Register() {
               </Checkbox>
             </div>
             <div className="flex justify-end">
-              <Button
+              <button
                 onClick={() => handleRegister()}
                 className="inline-block main-sign-up-button"
               >
                 Tạo tài khoản
-              </Button>
+              </button>
             </div>
           </form>
         </div>

@@ -158,3 +158,14 @@ input[type="number"] {
   top: 40px;
   right: 20px;
 }
+
+/* checkbox antd */
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: black;
+  border-color: black;
+}
+
+.ant-checkbox-checked:hover .ant-checkbox-inner {
+  background-color: black !important;
+  border-color: black;
+}

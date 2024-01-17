@@ -106,6 +106,14 @@
   transition: 0.2s;
 }
 
+.login-wrapper {
+  cursor: pointer;
+}
+
+.login {
+  opacity: 0.9;
+}
+
 .menu-under li {
   margin-right: 20px;
   font-weight: 500;

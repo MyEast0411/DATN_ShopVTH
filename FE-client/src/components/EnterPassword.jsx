@@ -1,12 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, { useState } from "react";
+import { useState } from "react";
 import Logo from "../assets/logo.png";
 
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import "./Component.css";
 import axios from "axios";
-import { Button } from "antd";
 
 export default function EnterPassword() {
   const { email } = useParams();
@@ -62,14 +61,14 @@ export default function EnterPassword() {
               <input
                 type="password"
                 required
-                autocomplete="off"
+                autoComplete="off"
                 value={pass}
                 onChange={(e) => {
                   setPass(e.target.value);
                   setError("");
                 }}
               />
-              <label for="Password">Password</label>
+              <label htmlFor="Password">Password</label>
               <p className="text-red-400">{error}</p>
             </div>
             <a
@@ -79,12 +78,12 @@ export default function EnterPassword() {
               Forgot password?
             </a>
             <div className="flex justify-end">
-              <Button
+              <button
                 onClick={() => handleLogin()}
                 className="inline-block enter-password-signIn-button main-sign-in-button"
               >
                 Login
-              </Button>
+              </button>
             </div>
           </form>
         </div>

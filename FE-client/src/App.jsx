@@ -17,6 +17,7 @@ import Profile from "./components/Profile";
 
 import FindHD from "./components/findHD/FindHD";
 import PurchaseHistory from "./components/PurchaseHistory";
+import Wishlist from "./components/Wishlist";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/size-guide" element={<SizeGuide />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/tracuu" element={<FindHD />} />
         <Route path="/lich-su-mua-hang/:idkh" element={<PurchaseHistory />} />
       </Routes>
