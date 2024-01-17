@@ -1,12 +1,13 @@
 package com.example.shop.components;
 
+
 import com.example.shop.entity.KhuyenMai;
 import com.example.shop.entity.KhuyenMaiSanPhamChiTiet;
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.ChiTietSanPhamRepository;
 import com.example.shop.repositories.KhuyenMaiSanPhamChiTietRepository;
 import com.example.shop.services.KhuyenMaiService;
-import com.example.shop.viewmodel.SanPhamVM;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
