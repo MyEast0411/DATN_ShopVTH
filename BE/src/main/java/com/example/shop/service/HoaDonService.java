@@ -26,5 +26,5 @@ public interface HoaDonService  {
     Integer countHD();
     List<HoaDon>  getHDByKH(String idKH );
 
-
+    List<HoaDon> getHDbyVoucher(String id);
 }

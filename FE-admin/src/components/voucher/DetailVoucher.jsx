@@ -13,6 +13,8 @@ export default function DetailVoucher() {
   const [modalHD, setModalHD] = useState(false);
   const [trangThai, setTrangThai] = useState(false);
   const [data, setData] = useState([]);
+  const [dataKhachHang, setDataKhachHang] = useState([]);
+  const [dataHoaDon, setDataHoaDon] = useState([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -43,6 +45,38 @@ export default function DetailVoucher() {
         .catch((error) => console.log(error));
     };
     getData();
+  }, []);
+
+  useEffect(() => {
+    const getKhachHang = async () => {
+      const res = await axios
+        .get(`http://localhost:8080/voucher/getKhachHang/${id}`)
+        .then((response) => {
+          setDataKhachHang(response.data.map((data, i) =>({...data,stt:++i})))
+
+        })
+        .catch((error) => console.log(error));
+    };
+    getKhachHang();
+  }, []);
+
+  useEffect(() => {
+    const getHoaDon = async () => {
+      const res = await axios
+        .get(`http://localhost:8080/hoa_don/getHoaDonbyVoucher/${id}`)
+        .then((response) => {
+          setDataHoaDon(response.data.map((data) =>({
+            id: data.id,
+            ma: data.ma, 
+            giaTriMax: data.id_voucher.giaTriMax, 
+            ngaySuDung: data.ngayTao,
+            khachHang: data.id_khach_hang==null?"Trang":data.id_khach_hang.ten,
+          })))
+          console.log(response.data)
+        })
+        .catch((error) => console.log(error));
+    };
+    getHoaDon();
   }, []);
 
   useEffect(() => {
@@ -81,11 +115,35 @@ export default function DetailVoucher() {
     return mess;
   }
 
+  const columns1 = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+    },
+    {
+      title: "Mã khách hàng",
+      dataIndex: "ma",
+      key: "ma",
+    },
+    {
+      title: "Tên khách hàng",
+      dataIndex: "ten",
+      key: "ten",
+    },
+
+    {
+      title: "Số điện thọai",
+      dataIndex: "sdt",
+      key: "sdt",
+    },
+  ];
+
   const columns = [
     {
       title: "Mã hóa đơn",
-      dataIndex: "maHd",
-      key: "maHd",
+      dataIndex: "ma",
+      key: "ma",
     },
     {
       title: "Mệnh giá voucher",
@@ -228,12 +286,22 @@ export default function DetailVoucher() {
         </div>
         <div className="row thong-tin-hoa-don bg-white space-y-5 ">
           <div className="row mb-10">
+            <p className="font-medium p-4 text-2xl"> Người sở hữu</p>
+            <hr style={{ backgroundColor: "black", height: 2, padding: 1 }} />
+          </div>
+          <div className="row divide-y-8 divide-slate-400/25 ">
+            <div className="row mb-10 space-y-8" style={{ padding: "0 60px" }}>
+              <Table columns={columns1} dataSource={dataKhachHang} />
+            </div>
+          </div>
+
+          <div className="row mb-10">
             <p className="font-medium p-4 text-2xl"> Lịch sử áp dụng</p>
             <hr style={{ backgroundColor: "black", height: 2, padding: 1 }} />
           </div>
           <div className="row divide-y-8 divide-slate-400/25 ">
             <div className="row mb-10 space-y-8" style={{ padding: "0 60px" }}>
-              <Table columns={columns} dataSource={data} />
+              <Table columns={columns} dataSource={dataHoaDon} />
             </div>
           </div>
 

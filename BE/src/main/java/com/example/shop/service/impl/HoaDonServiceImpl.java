@@ -2,16 +2,13 @@ package com.example.shop.service.impl;
 
 
 import com.example.shop.dto.BieuDoThongKe;
-import com.example.shop.dto.HoaDonDTO;
 import com.example.shop.dto.HoaDonThongKeDTO;
 import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.HoaDonChiTiet;
-import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.HoaDonChiTietRepository;
 import com.example.shop.repositories.HoaDonRepository;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.util.GetDateTiemThongKe;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -184,6 +181,13 @@ public class HoaDonServiceImpl implements HoaDonService {
     @Override
     public List<HoaDon> getHDByKH(String idKH) {
         return hoaDonRepository.getHDByKH(idKH);
+    }
+
+
+
+    @Override
+    public List<HoaDon> getHDbyVoucher(String id) {
+        return hoaDonRepository.getHoaDonByVoucher(id);
     }
 
 
