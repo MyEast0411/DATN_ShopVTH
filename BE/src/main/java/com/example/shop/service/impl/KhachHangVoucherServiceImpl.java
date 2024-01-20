@@ -1,5 +1,6 @@
 package com.example.shop.service.impl;
 
+import com.example.shop.entity.KhachHang;
 import com.example.shop.entity.KhachHangVoucher;
 import com.example.shop.repositories.KhachHangVoucherRepository;
 import com.example.shop.service.KhachHangVoucherService;
@@ -15,5 +16,10 @@ public class KhachHangVoucherServiceImpl implements KhachHangVoucherService {
     @Override
     public List<KhachHangVoucher>  saveAll(List<KhachHangVoucher> list) {
        return repository.saveAll(list);
+    }
+
+    @Override
+    public List<String> getKHbyVoucher(String id) {
+        return repository.getKhachHangByVoucher(id);
     }
 }

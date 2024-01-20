@@ -265,5 +265,13 @@ public class HoaDonController {
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("getHoaDonbyVoucher/{id}")
+    public ResponseEntity getHoaDonbyVoucher(@PathVariable("id")String id){
+        List<HoaDon> listhd = hoaDonService.getHDbyVoucher(id);
+
+        return ResponseEntity.ok(listhd);
+
+
+    }
 
 }

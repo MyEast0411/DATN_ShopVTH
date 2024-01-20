@@ -178,6 +178,21 @@ public class VoucherController {
 //        return new ResponseEntity(null , HttpStatus.OK);
     }
 
+    @GetMapping("getKhachHang/{id}")
+    public ResponseEntity getKhachHangbyVoucher(@PathVariable("id")String id){
+        List<String> listidKH = khachHangVoucherService.getKHbyVoucher(id);
+        List<KhachHang> listkh = new ArrayList<>();
+        for (String ids: listidKH) {
+            KhachHang khachHang = khachHangService.getKhachHang(ids);
+            listkh.add(khachHang);
+        }
+        return ResponseEntity.ok(listkh);
+
+
+    }
+
+
+
 
     @Scheduled(fixedRate  = 1000)
     public void scheduleFixedDelayTask() {
