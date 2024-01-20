@@ -9,8 +9,9 @@ import { format } from "date-fns";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
 import { GiConfirmed, GiReceiveMoney } from "react-icons/gi";
 import { LuPackageCheck } from "react-icons/lu";
-import { FaShippingFast, FaFileInvoice } from "react-icons/fa";
+import { FaShippingFast, FaFileInvoice, FaPen, FaCircle } from "react-icons/fa";
 import { TbPackages } from "react-icons/tb";
+import { MdAddCircle } from "react-icons/md";
 import {
   exportComponentAsJPEG,
   exportComponentAsPDF,
@@ -20,9 +21,10 @@ import {
 import ComponentToPrint from "./InHoaDon";
 import { toast } from "react-toastify";
 import { FiLoader } from "react-icons/fi";
-import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { FaMoneyBillTransfer, FaTrash } from "react-icons/fa6";
 import { MdCancel } from "react-icons/md";
 import { Spinner, Skeleton } from "@nextui-org/react";
+import TableSanPham from "./TableSanPham";
 
 export default function DetailHoaDon() {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,6 +57,8 @@ export default function DetailHoaDon() {
   const showModalHD = () => {
     setIsModalOpenHD(true);
   };
+  // updateSL
+  const [spct, setSPCT] = useState({});
 
   // const pdfRef = useRef();
   const downloadPDF = () => {
@@ -114,6 +118,45 @@ export default function DetailHoaDon() {
   //     type: "error",
   //     content: "Xóa Thất Bại",
   //   });
+  // };
+
+  // modal thêm sản phẩm
+  const [isModalOpenThem, setIsModalOpenThem] = useState(false);
+  const [soLuongSP, setSoLuongSP] = useState({});
+  const showModalThem = () => {
+    setIsModalOpenThem(true);
+  };
+  const handleOkThem = () => {
+    setIsModalOpenThem(false);
+  };
+  const handleCancelThem = () => {
+    setIsModalOpenThem(false);
+  };
+
+  // modal sl
+  const [isModalOpenThemSL, setIsModalOpenThemSL] = useState(false);
+  // const handleCancelThemSL = () => {
+  //   setIsModalOpenThemSL(false);
+  // };
+  // const showModalThemSL = () => {
+  //   setIsModalOpenThemSL(true);
+  // };
+
+  // const handleOkThemSL = async () => {
+  //   await axios
+  //     .post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
+  //       id_hoa_don: money.ma,
+  //       id_san_pham: soLuongSP.id,
+  //       so_luong: soLuongDat,
+  //     })
+  //     .then((response) => {
+  //       toast("🎉 Thêm thành công");
+  //     })
+  //     .catch((error) => {
+  //       toast(error.response.data);
+  //     });
+
+  //   setIsModalOpenThemSL(false);
   // };
 
   const componentRef = useRef();
@@ -199,17 +242,37 @@ export default function DetailHoaDon() {
     setOpen(false);
   };
 
+  const getSPCT = (id) => {
+    setSPCT((value) => (value = rowsSPCT.filter((sp) => sp.id == id)[0]));
+    // console.log(setSPCT(rowsSPCT.filter((sp) => sp.id == id)));
+    // rowsSPCT.filter((sp) => sp.id == id);
+  };
+
+  // modal upcdate sp
+  const [openSP, setOpenSP] = useState(false);
+
+  const showModalLichSuSP = () => {
+    setOpen(true);
+  };
+  const handleOkLichSuSP = () => {
+    setOpen(false);
+  };
+
+  const handleCancelLichSuSP = () => {
+    setOpen(false);
+  };
+
   useEffect(() => {
     getDataLichSuThanhToan();
     getInfoHD();
     getDataChiTietSanPham();
     getDataLichSu();
-  }, []);
+  }, [rowsSPCT, info, money]);
 
   const getDataLichSuThanhToan = async () => {
     const res = await axios.get(`http://localhost:8080/htth/getHTTT/${id}`);
     const data = await res.data;
-    console.log(data);
+
     if (data.length != 0) {
       const list = data.map((item, index) => {
         return {
@@ -233,7 +296,7 @@ export default function DetailHoaDon() {
       "http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id
     );
     const data = await res.data;
-    console.log("spct", res.data);
+
     setRowsSPCT(
       data.map((item, index) => {
         return {
@@ -269,6 +332,33 @@ export default function DetailHoaDon() {
           .catch((e) => error());
       },
     });
+  };
+
+  const onHandleUpdate = (idSPCT) => {
+    Modal.confirm({
+      title: `bạn có muốn xóa sản phẩm không ?`,
+      okText: "Yes",
+      okType: "danger",
+      onOk: async () => {
+        const res = await axios
+          .post(
+            `http://localhost:8080/hoa_don_chi_tiet/update/${id}/${idSPCT}`,
+            {
+              quantity: spct.quantity,
+            }
+          )
+          .then((response) => {
+            getDataLichSuThanhToan();
+            getInfoHD();
+            getDataChiTietSanPham();
+            getDataLichSu();
+            toast.success("Update thành công");
+          })
+          .catch((e) => error());
+      },
+    });
+    // alert(idSPCT);
+    console.log(spct);
   };
   const getDataLichSu = async () => {
     await axios
@@ -315,15 +405,16 @@ export default function DetailHoaDon() {
       "http://localhost:8080/hoa_don/getHoaDon/" + id
     );
     const data = await res.data;
-    console.log(data);
+
     setMoney({
       tienGiam: data.tienGiam,
       tienHang: data.tongTien + data.tienGiam,
       tienShip: data.tienShip,
       tongTien: data.tongTien + data.tienShip,
+      ma: data.ma,
     });
     setInfo(data);
-    console.log(data);
+    console.log(data.ma);
   };
 
   return (
@@ -605,6 +696,30 @@ export default function DetailHoaDon() {
                 </div>
               </div>
             </div>
+            <div className="flex justify-end">
+              {listTimeLineOnline.length < 4 && info.trangThai < 4 && (
+                <Button
+                  onClick={() => {
+                    showModalThem();
+                    // getSPCT(item.id);
+                  }}
+                >
+                  Thêm sản phẩm <MdAddCircle style={{ display: "inline" }} />
+                </Button>
+              )}
+
+              <Modal
+                onOk={handleOkThem}
+                onCancel={handleCancelThem}
+                open={isModalOpenThem}
+                width={1500}
+                footer={[]}
+              >
+                <div className="mt-5">
+                  <TableSanPham gioHang={info.ma} />
+                </div>
+              </Modal>
+            </div>
 
             <div className="row divide-y-4 divide-slate-400/25">
               <div className="row table-san-pham ">
@@ -627,10 +742,13 @@ export default function DetailHoaDon() {
                             Size: {item.kichco}
                           </p>
                           <p className="font-medium text-gray-900 mb-3">
-                            Số lượng :{" "}
+                            Số lượng : {/* {check ? ( */}
                             <span className="font-medium text-red-500 mb-3">
                               {item.quantity}
-                            </span>{" "}
+                            </span>
+                            {/* // ) : (
+                            //   <Input  value={valueSL} onChange={(e)=> setValueSL(e.target.value)} />
+                            // )}*/}{" "}
                             sản phẩm
                           </p>
                           <p className="font-medium text-gray-900 mb-3">
@@ -650,13 +768,28 @@ export default function DetailHoaDon() {
                           )}
                           &nbsp;₫
                         </p>
-                        <Button
-                          color="red"
-                          onClick={() => onHandleDelete(item.id)}
-                          disabled
-                        >
-                          Trả Hàng
-                        </Button>
+
+                        {listTimeLineOnline.length < 4 &&
+                          info.trangThai < 4 && (
+                            <Button
+                              color="red"
+                              onClick={() => onHandleDelete(item.id)}
+                            >
+                              <FaTrash />
+                            </Button>
+                          )}
+                        {listTimeLineOnline.length < 4 &&
+                          info.trangThai < 4 && (
+                            <Button
+                              color="yellow"
+                              onClick={() => {
+                                showModalLichSu();
+                                getSPCT(item.id);
+                              }}
+                            >
+                              <FaPen />
+                            </Button>
+                          )}
                       </div>
 
                       {/* <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6"></div> */}
@@ -664,6 +797,69 @@ export default function DetailHoaDon() {
                   </div>
                 ))}
               </div>
+              <Modal
+                open={open}
+                title="Cập Nhật Sản Phảm"
+                onOk={handleOkLichSuSP}
+                onCancel={handleCancelLichSuSP}
+                style={{ top: 20 }}
+                footer={() => (
+                  <>
+                    <Button
+                      color="yellow"
+                      onClick={() => {
+                        handleCancelLichSuSP();
+                        onHandleUpdate(spct.id);
+                      }}
+                    >
+                      <FaPen />
+                    </Button>
+                  </>
+                )}
+              >
+                <div className="divide-y divide-blue-200">
+                  <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
+                    <img
+                      src={spct.imageUrl}
+                      alt="product-image"
+                      className="w-full rounded-lg sm:w-40 me-10 object-contain"
+                    />
+
+                    <div className="flex justify-between w-full">
+                      <div>
+                        <div className=" sm:mt-0">
+                          <h2 className="text-lg font-medium text-gray-900 mb-3">
+                            {spct.name}
+                            {/* {spct.mausac.substring(3)} */}
+                          </h2>
+                          <p className="mb-3  font-medium text-gray-900">
+                            Size: {spct.kichco}
+                          </p>
+                          <p className="font-medium text-gray-900 mb-3">
+                            Số lượng : {/* {check ? ( */}
+                            <Input
+                              value={spct.quantity}
+                              onChange={(e) =>
+                                setSPCT({ ...spct, quantity: e.target.value })
+                              }
+                            />
+                            sản phẩm
+                          </p>
+                          <p className="font-medium text-gray-900 mb-3">
+                            Đơn giá :{" "}
+                            <span className="font-medium text-red-500 mb-3">
+                              {Intl.NumberFormat().format(spct.price)} &nbsp;₫
+                            </span>
+                          </p>
+                        </div>
+
+                        <div className=" space-x-4 mt-4 me-4"></div>
+                      </div>
+                      {/* <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6"></div> */}
+                    </div>
+                  </div>
+                </div>
+              </Modal>
 
               <div class="flex justify-end me-4">
                 <div>

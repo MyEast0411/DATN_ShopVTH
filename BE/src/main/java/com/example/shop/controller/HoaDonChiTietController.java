@@ -4,7 +4,9 @@ package com.example.shop.controller;
 import com.example.shop.dto.*;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
+import com.example.shop.requests.HoaDonChiTietUpdateRequest;
 import com.example.shop.util.SendMail;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -111,22 +113,59 @@ public class HoaDonChiTietController {
         }
     }
 
+    @PostMapping("/update/{id_hoa_don}/{id_san_pham}")
+    public ResponseEntity updateSPCT(@PathVariable String id_hoa_don, @PathVariable String id_san_pham,
+                                     @RequestBody HoaDonChiTietUpdateRequest request
+
+    ) {
+
+
+
+        try {
+            HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(id_hoa_don , id_san_pham);
+            hoaDonChiTiet.setSoLuong(request.getQuantity());
+            ssHDCT.save(hoaDonChiTiet);
+
+            Double gia = ssHDCT.getMoneyBYHD(id_hoa_don);
+            HoaDon hoaDon = ssHD.findById(id_hoa_don).get();
+            hoaDon.setTongTien(new BigDecimal("" + gia));
+            ssHD.save(hoaDon);
+            return ResponseEntity.ok("OK");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
+
     @PostMapping("/addHDCT")
     public ResponseEntity addHDCT(@RequestBody HoaDonChiTietDTO hoaDonChiTiet) {
         try {
-            System.out.println(hoaDonChiTiet.toString());
+            HoaDon hoaDon = ssHD.getHoaDonByMa(hoaDonChiTiet.getId_hoa_don());
+            HoaDonChiTiet hoaDonChiTietExist = ssHDCT.getHDCT(hoaDon.getId() , hoaDonChiTiet.getId_san_pham());
             SanPhamChiTiet sp = ssSP.findById(hoaDonChiTiet.getId_san_pham()).get();
             BigDecimal tongTien = sp.getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSo_luong()));
-            HoaDonChiTiet hdct = HoaDonChiTiet.
-                    builder()
-                    .id_hoa_don(ssHD.getHoaDonByMa(hoaDonChiTiet.getId_hoa_don()))
-                    .id_chi_tiet_san_pham(sp)
-                    .soLuong(hoaDonChiTiet.getSo_luong())
-                    .giaTien(tongTien)
-                    .deleted(1)
-                    .build();
-            System.out.println(hdct);
-            ssHDCT.save(hdct);
+           if (hoaDonChiTietExist == null){
+               HoaDonChiTiet hdct = HoaDonChiTiet.
+                       builder()
+                       .id_hoa_don(hoaDon)
+                       .id_chi_tiet_san_pham(sp)
+                       .soLuong(hoaDonChiTiet.getSo_luong())
+                       .giaTien(tongTien)
+                       .deleted(1)
+                       .build();
+               System.out.println(hdct);
+               ssHDCT.save(hdct);
+           }else{
+               hoaDonChiTietExist.setSoLuong(hoaDonChiTietExist.getSoLuong() + hoaDonChiTiet.getSo_luong());
+               ssHDCT.save(hoaDonChiTietExist);
+              
+           }
+
+
+            Double gia = ssHDCT.getMoneyBYHD(hoaDon.getId());
+            hoaDon.setTongTien(new BigDecimal("" + gia));
+            ssHD.save(hoaDon);
+
             return ResponseEntity.ok("Thành công");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("ERROR");

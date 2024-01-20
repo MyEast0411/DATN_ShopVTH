@@ -209,7 +209,27 @@ public class KhachHangController {
 //            lichSuMuaHangResponse.setHoaDonChiTiets(list);
 //            lichSuMuaHangResponses.add(lichSuMuaHangResponse);
 //        }
+      //  return ResponseEntity.ok(lichSuMuaHangResponses);
 //        lichSuMuaHangResponses.forEach( i -> System.out.println(i));
         return ResponseEntity.ok(listHD);
+    }
+
+    @GetMapping("/khach-hang/lich-su-mua-hang/{idKH}")
+    public ResponseEntity lichSuHD(@PathVariable("idKH") String idKH){
+        List<HoaDon> listHD = hoaDonService.getHDByKH(idKH);
+        List<LichSuMuaHangResponse> lichSuMuaHangResponses = new ArrayList<>();
+        for (HoaDon hd: listHD) {
+//            Map<Integer , SanPhamChiTiet> sanPhamChiTiets = new HashMap<>();
+
+            List<HoaDonChiTiet> list = hoaDonChiTietService.getHDCT(hd.getId());
+//            list.stream().forEach(i -> sanPhamChiTiets.put(i.getSoLuong() , i.getId_chi_tiet_san_pham()));
+            LichSuMuaHangResponse lichSuMuaHangResponse = new LichSuMuaHangResponse();
+            lichSuMuaHangResponse.setHoaDon(hd);
+            lichSuMuaHangResponse.setHoaDonChiTiets(list);
+            lichSuMuaHangResponses.add(lichSuMuaHangResponse);
+        }
+          return ResponseEntity.ok(lichSuMuaHangResponses);
+
+       // return ResponseEntity.ok(listHD);
     }
 }
