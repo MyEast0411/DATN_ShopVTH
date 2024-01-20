@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../api/Location";
-import { Radio, Space, Spin } from "antd";
+import { Button, Radio, Space, Spin } from "antd";
 import { IoIosArrowBack } from "react-icons/io";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
@@ -42,7 +42,11 @@ export default function Checkout() {
   const [dataLocal, setDataLocal] = useState([]);
 
   const [spinning, setSpinning] = React.useState(false);
-  // const [showNotification, setShowNotification] = useState(false);
+
+  const [user, setUser] = useState({});
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")));
+  }, []);
 
   const showLoader = (callback) => {
     setSpinning(true);
@@ -441,16 +445,23 @@ export default function Checkout() {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="checkout-left sticky-grid">
-            <div className="flex">
-              <span>Bạn đã có tài khoản?</span>
-              <Link
-                to="/sign-in"
-                className="link-underline ml-2 underline cursor-pointer"
-              >
-                {" "}
-                Đăng nhập
-              </Link>
-            </div>
+            {!user && (
+              <div className="flex">
+                <span>Bạn đã có tài khoản?</span>
+                <Link
+                  to="/sign-in"
+                  className="link-underline ml-2 underline cursor-pointer"
+                >
+                  {" "}
+                  Đăng nhập
+                </Link>
+              </div>
+            )}
+            {user && (
+              <div className="content-end">
+                <Button className="bg-black text-white float-right mb-2 h-12">Chọn địa chỉ</Button>
+              </div>
+            )}
             <form onSubmit={handleSubmit}>
               <div className="inputGroupCodeSignUp">
                 <input name="email" type="email" required autoComplete="off" />

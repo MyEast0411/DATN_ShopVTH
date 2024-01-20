@@ -9,7 +9,7 @@ export default function Header() {
   useEffect(() => {
     const updateCartBadge = () => {
       const cart = JSON.parse(localStorage.getItem("maList")) || [];
-      setBadge(cart.length);
+      setBadge(cart.length -1);
     };
 
     // Gọi hàm để cập nhật badge khi component được render
