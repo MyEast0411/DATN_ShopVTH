@@ -28,6 +28,7 @@ public interface VoucherRepository extends JpaRepository<Voucher , String> {
 //    )
 //    List<Voucher> voucherByNgayKT(@Param("date")Date date);
 
-
+    @Query(value = "select * from voucher where gia_tri_min > :price and deleted = 1", nativeQuery = true)
+    List<Voucher> getVoucherByPrice(@Param("price")Double price);
 
 }

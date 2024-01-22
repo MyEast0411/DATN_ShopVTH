@@ -9,7 +9,7 @@ export default function Header() {
   useEffect(() => {
     const updateCartBadge = () => {
       const cart = JSON.parse(localStorage.getItem("maList")) || [];
-      setBadge(cart.length -1);
+      setBadge(cart.length);
     };
 
     // Gọi hàm để cập nhật badge khi component được render
@@ -24,6 +24,7 @@ export default function Header() {
   }, []);
   return (
     <>
+
       <div className="flex justify-between main-ctn w-full sticky top-0">
         <Link to="/" className="flex container-logo">
           <img className="logo cursor-pointer" src={Logo} alt="" />
@@ -44,7 +45,7 @@ export default function Header() {
               <a href="#">Trẻ em</a>
             </li>
             <li>
-              <a href="#">Về chúng tôi</a>
+              <a href="/tracuu">Tra cứu hóa đơn</a>
             </li>
           </ul>
         </div>

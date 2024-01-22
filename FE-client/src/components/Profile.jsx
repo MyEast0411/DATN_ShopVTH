@@ -21,10 +21,6 @@ export default function Profile() {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  const [idTP, setIdTP] = useState("");
-  const [idHuyen, setIdHuyen] = useState("");
-  const [idXa, setIdXa] = useState("");
-  const [diaChiUser, setDiaChiUser] = useState("");
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [phoneModalOpen, setPhoneModalOpen] = useState(false);
   const [addressModalOpoen, setAddressModalOpoen] = useState(false);
@@ -451,25 +447,25 @@ export default function Profile() {
                     placeholder="Thành phố"
                     onChange={(selectedValue) => handleChangeTP(selectedValue, index)}
                     value={item.thanhPho}
-                    style={{ width: "20%", marginRight: "10px" }}
+                    style={{ width: "30%", marginRight: "10px" }}
                   >
                     {options}
                   </Select>
 
                   <Select
-                    placeholder="Thành phố"
+                    placeholder="Huyện"
                     onChange={(selectedValue) => handleChangeHuyen(selectedValue, index)}
                     value={item.huyen}
-                    style={{ width: "21%", marginRight: "15px" }}
+                    style={{ width: "30%", marginRight: "15px" }}
                   >
                     {optionHuyen}
                   </Select>
 
                   <Select
-                    placeholder="Thành phố"
+                    placeholder="Xã"
                     onChange={(selectedValue) => handleChangeXa(selectedValue, index)}
                     value={item.xa}
-                    style={{ width: "23%", marginRight: "10px" }}
+                    style={{ width: "30%", marginRight: "10px" }}
                   >
                     {optionXa}
                   </Select>

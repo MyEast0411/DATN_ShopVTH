@@ -38,7 +38,10 @@ export default function DetailProduct() {
   const [sizeBorder, setSizeBorder] = useState("");
   const [ma, setMa] = useState("");
   const [maList, setMaList] = useState([]);
-
+  const [user, setUser] = useState({});
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")));
+  }, []);
   useEffect(() => {
     const fetchSPCTByIdSP = async () => {
       try {
@@ -269,9 +272,8 @@ export default function DetailProduct() {
                   key={img}
                   src={img}
                   alt=""
-                  className={`choose-color-img-pro ${
-                    selectedImage === img ? "selected-border" : ""
-                  }`}
+                  className={`choose-color-img-pro ${selectedImage === img ? "selected-border" : ""
+                    }`}
                   onClick={() => handleImageClick(img)}
                 />
               ))}
@@ -288,13 +290,12 @@ export default function DetailProduct() {
                 <div
                   key={size}
                   id={size}
-                  className={`detail-pro-select-size-button text-center ${
-                    selectedSize.includes(size) && sizeBorder === size
+                  className={`detail-pro-select-size-button text-center ${selectedSize.includes(size) && sizeBorder === size
                       ? "selected-border"
                       : selectedSize.includes(size)
-                      ? "..."
-                      : "out-of-size cursor-not-allowed"
-                  }`}
+                        ? "..."
+                        : "out-of-size cursor-not-allowed"
+                    }`}
                   onClick={() => handleSizeClick(size)}
                 >
                   {size}
@@ -302,13 +303,15 @@ export default function DetailProduct() {
               ))}
             </div>
             <div className="interested flex justify-center text-center mt-10">
-              <div>
-                Đăng nhập để nhận nhiều ưu đãi {""}
-                <Link to="/sign-in" className="size-guide underline">
-                  {" "}
-                  Đăng nhập
-                </Link>
-              </div>
+              {!user && (
+                <div>
+                  Đăng nhập để nhận nhiều ưu đãi {""}
+                  <Link to="/sign-in" className="size-guide underline">
+                    {" "}
+                    Đăng nhập
+                  </Link>
+                </div>
+              )}
             </div>
             <div
               className="flex flex-col detail-pro-group-btn"

@@ -364,7 +364,7 @@ export default function Cart() {
             <div className="horizontal"></div>
             <div className="flex justify-between">
               <h2 className="subtotal-title">Tổng</h2>
-              <div className="price-subtotal">VNĐ {calculateTotal()}</div>
+              <div className="price-subtotal">VNĐ {Intl.NumberFormat().format(calculateTotal())}</div>
             </div>
             <div className="horizontal"></div>
             {calculateTotal() > 0 ? (

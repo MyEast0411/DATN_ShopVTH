@@ -17,4 +17,6 @@ public interface VoucherService {
 
     Boolean deleteVoucher(Voucher voucher);
     List<Voucher> voucherByNgayKT();
+
+    List<Voucher> getVoucherByPrice(Double price);
 }

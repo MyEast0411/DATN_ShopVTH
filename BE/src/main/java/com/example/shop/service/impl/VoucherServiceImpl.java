@@ -27,7 +27,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public List<Voucher> getVouchers(int deleted) {
-        return voucherRepository.getVoucherByDeleted(0);
+        return voucherRepository.getVoucherByDeleted(deleted);
     }
 
     @Override
@@ -64,5 +64,15 @@ public class VoucherServiceImpl implements VoucherService {
 //        String date = sdf3.format(timestamp);
 //        return voucherRepository.voucherByNgayKT(date);
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<Voucher> getVoucherByPrice(Double price) {
+        try {
+            return voucherRepository.getVoucherByPrice(price);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -296,7 +296,7 @@ public class SendMail {
             e.printStackTrace();
         }
     }
-    public static void SenMail(String toMail, String maHoaDon,String thoiGianNhanHang, String phiShip, String tongTien, List<HoaDonChiTiet> list) {
+    public static void SenMail(String toMail, String maHoaDon,String thoiGianNhanHang, String phiShip, String tongTien, String tenNguoiNhan) {
         final String username = "uandcshop111@gmail.com";
         final String password = "hdbepdrofxwmxyyg";
 
@@ -318,36 +318,255 @@ public class SendMail {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toMail));
             message.setSubject("Cảm ơn bạn đã mua hàng ủng hộ chúng tôi !!!");
 
-            String htmlBody = "<html><body>" +
-                    "<div style='position: absolute; top: 0; left: 0;'><img src='cid:image_cid' style='width: 200px; height: auto;'></div>" +
-                    "<p>Xin chào, Đây là đơn hàng bạn đã đặt </p>" +
-                    "<p>Thời gian dự kiến nhận hàng: " + thoiGianNhanHang + "</p>" +
-                    "<p>Đây là mã hóa đơn để bạn theo dõi đơn hàng : "+ maHoaDon +"</p>" +
-                    "<p>Phí ship: " + phiShip + " VND </p>" +
-                    "<p>Tổng tiền: " + tongTien + " VND </p></body></html>" +
-                    "<table style='border-collapse: collapse; width: 60%;'>" +
-                    "<tr style='border: 1px solid #000;text-align: center;'>" +
-                    "<th style='border: 1px solid #000;text-align: center;'>#</th>" +
-                    "<th style='border: 1px solid #000;text-align: center;'>Sản phẩm</th>" +
-                    "<th style='border: 1px solid #000;text-align: center;'>Kích cỡ</th>" +
-                    "<th style='border: 1px solid #000;text-align: center;'>Số lượng</th>" +
-                    "<th style='border: 1px solid #000;text-align: center;'>Giá tiền</th>" +
-                    "</tr>";
-
-            int index = 1;
-            for (HoaDonChiTiet x : list) {
-                htmlBody += "<tr style='border: 1px solid #000;'>" +
-                        "<td style='border: 1px solid #000;text-align: center;'>" + index + "</td>" +
-                        "<td style='border: 1px solid #000;text-align: center;'>" + x.getId_chi_tiet_san_pham().getTen() + "</td>" +
-                        "<td style='border: 1px solid #000;text-align: center;'>" + x.getId_chi_tiet_san_pham().getId_kich_co().getTen() + "</td>" +
-                        "<td style='border: 1px solid #000;text-align: center;'>" + x.getSoLuong() + "</td>" +
-                        "<td style='border: 1px solid #000;text-align: center;'>" + x.getId_chi_tiet_san_pham().getGiaBan() + "</td>" +
-                        "</tr>";
-                index++;
-            }
-            htmlBody += "</table></body></html>";
-
-            htmlBody += "</table>";
+            String htmlBody = "<html lang=\"en\">\n" +
+                    "\n" +
+                    "<head>\n" +
+                    "    <meta charset=\"UTF-8\">\n" +
+                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                    "    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css\">\n" +
+                    "    <title>SHOP JORDAN VTH</title>\n" +
+                    "    <style>\n" +
+                    "        @import url(\"https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap\");\n" +
+                    "\n" +
+                    "        /* Base Styles */\n" +
+                    "        html {\n" +
+                    "            font-family: \"Be Vietnam Pro\", sans-serif;\n" +
+                    "            color: #000;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        body {\n" +
+                    "            margin: 0;\n" +
+                    "            padding: 0;\n" +
+                    "            box-sizing: border-box;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        img {\n" +
+                    "            max-width: 100%;\n" +
+                    "            display: block;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        li {\n" +
+                    "            list-style: none;\n" +
+                    "            text-decoration: none;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        /* Utility Classes */\n" +
+                    "        .bg-blue {\n" +
+                    "            background-color: #00AEDF;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .w-600 {\n" +
+                    "            width: 600px;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .rounded {\n" +
+                    "            border-radius: 0.25rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .mx-auto {\n" +
+                    "            margin-left: auto;\n" +
+                    "            margin-right: auto;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .bg-white {\n" +
+                    "            background-color: #fff;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .container {\n" +
+                    "            padding-left: 1rem;\n" +
+                    "            padding-right: 1rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .flex {\n" +
+                    "            display: flex;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .items-center {\n" +
+                    "            align-items: center;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .justify-center {\n" +
+                    "            justify-content: center;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .font-bold {\n" +
+                    "            font-weight: 700;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .text-2xl {\n" +
+                    "            font-size: 1.5rem;\n" +
+                    "            line-height: 2rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .text-25px {\n" +
+                    "            font-size: 1.5625rem;\n" +
+                    "            line-height: 2rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .image {\n" +
+                    "            height: 100%;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .text-center {\n" +
+                    "            text-align: center;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .py-5 {\n" +
+                    "            padding-top: 1.25rem;\n" +
+                    "            padding-bottom: 1.25rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .p-5 {\n" +
+                    "            padding: 1.25rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .max-h-80 {\n" +
+                    "            max-height: 5rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .object-cover {\n" +
+                    "            object-fit: cover;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .px-10 {\n" +
+                    "            padding-left: 2.5rem;\n" +
+                    "            padding-right: 2.5rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .pb-5 {\n" +
+                    "            padding-bottom: 1.25rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .pb-10 {\n" +
+                    "            padding-bottom: 2.5rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .hover-bg-green:hover,\n" +
+                    "        .bg-green {\n" +
+                    "            background-color: #61BD4F;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .text-white {\n" +
+                    "            color: #fff;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .px-40 {\n" +
+                    "            padding-left: 2.5rem;\n" +
+                    "            padding-right: 2.5rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .py-5px {\n" +
+                    "            padding-top: 0.3125rem;\n" +
+                    "            padding-bottom: 0.3125rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .text-xl {\n" +
+                    "            font-size: 1.25rem;\n" +
+                    "            line-height: 1.75rem;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .inline-flex {\n" +
+                    "            display: inline-flex;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        /* Remaining Tailwind CSS Classes with Appropriate Names */\n" +
+                    "        .justify-center-items {\n" +
+                    "            justify-content: center;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .text-gray {\n" +
+                    "            color: #afb3be;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .phone-info {\n" +
+                    "            width: 350px;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .contact-info {\n" +
+                    "            color: #afb3be;\n" +
+                    "            padding-top: 2.5rem;\n" +
+                    "            display: flex;\n" +
+                    "            justify-content: space-between;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .footer-links {\n" +
+                    "            padding-top: 2.5rem;\n" +
+                    "            padding-bottom: 2.5rem;\n" +
+                    "            display: flex;\n" +
+                    "            justify-content: flex-start;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .footer-link {\n" +
+                    "            font-size: 0.875rem;\n" +
+                    "            line-height: 1.25rem;\n" +
+                    "            padding-left: 3.125rem;\n" +
+                    "            padding-right: 3.125rem;\n" +
+                    "            border-right-width: 2px;\n" +
+                    "            cursor: pointer;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .button:hover {\n" +
+                    "            background: #49a736;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        .container-img {\n" +
+                    "            height: 360px !important;\n" +
+                    "        }\n" +
+                    "    </style>\n" +
+                    "</head>\n" +
+                    "\n" +
+                    "<body class=\"bg-blue\">\n" +
+                    "    <div id=\"root\" class=\"w-600 rounded mx-auto bg-white m-5\">\n" +
+                    "        <div class=\"container\">\n" +
+                    "            <div class=\"flex items-center justify-center\">\n" +
+                    "                <img class=\"w-20\" src=\"https://i.ibb.co/y8KrZXX/logo.png\" alt=\"\">\n" +
+                    "                <div class=\"font-bold text-2xl\"></div>\n" +
+                    "            </div>\n" +
+                    "\n" +
+                    "            <div class=\"text-25px text-center font-bold py-5\">Cảm ơn bạn đã mua sắm tại Jordan VTH!</div>\n" +
+                    "            <div \n" +
+                    "                <img \n" +
+                    "                    src=\"\"\n" +
+                    "                    alt=\"\">\n" +
+                    "            </div>\n" +
+                    "            <div class=\"px-10\">\n" +
+                    "                <div class=\"py-5\">\n" +
+                    "                    Chào " + tenNguoiNhan + ",\n" +
+                    "                </div>\n" +
+                    "                <p class=\"pb-5\">\n" +
+                    "                    Chúng tôi xin gửi lời cảm ơn sâu sắc nhất từ Jordan VTH đến bạn vì đã chọn chúng tôi là địa điểm mua\n" +
+                    "                    sắm giày của bạn. Chúng tôi đánh giá cao sự ủng hộ của bạn và hy vọng rằng bạn sẽ thích những sản\n" +
+                    "                    phẩm mà bạn đã chọn.\n" +
+                    "                </p>\n" +
+                    "                <p class=\"pb-10\">\n" +
+                    "                    Đơn hàng của bạn đã được xác nhận và đang được xử lý. Dưới đây là một số thông tin chi tiết về đơn\n" +
+                    "                    hàng của bạn:\n" +
+                    "                </p>\n" +
+                    "                <div class=\"flex justify-center-items\">\n" +
+                    "                    <a href=\"http://localhost:5173/tracuu\"\n" +
+                    "                        class=\"hover-bg-green bg-green text-white px-40 py-5px text-xl inline-flex justify-center items-center rounded button\">\n" +
+                    "                        Kiểm tra : "+  maHoaDon +" \n" +
+                    "                    </a>\n" +
+                    "                </div>\n" +
+                    "            </div>\n" +
+                    "\n" +
+                    "            <div class=\"phone-info text-gray pt-10 mx-auto flex justify-between items-center\">\n" +
+                    "                <div>(+84) 379209871</div>\n" +
+                    "                <div>jordanvth@gmail.com</div>\n" +
+                    "            </div>\n" +
+                    "\n" +
+                    "            <div class=\"flex footer-links py-10\">\n" +
+                    "                <div class=\"flex justify-start\">\n" +
+                    "                    <div class=\"text-sm text-gray footer-link\">Visit us</div>\n" +
+                    "                    <div class=\"text-sm text-gray footer-link\">Privacy Policy</div>\n" +
+                    "                    <div class=\"text-sm text-gray footer-link\">Team of Use</div>\n" +
+                    "                </div>\n" +
+                    "            </div>\n" +
+                    "        </div>\n" +
+                    "    </div>\n" +
+                    "</body>\n" +
+                    "\n" +
+                    "</html>";
             MimeBodyPart htmlBodyPart = new MimeBodyPart();
             htmlBodyPart.setContent(htmlBody, "text/html; charset=UTF-8");
 

@@ -51,7 +51,7 @@ public class VoucherController {
     ){
 
 //        List<Voucher> page = voucherService.getVouchers();
-       List<Voucher> page = voucherService.getVouchers(0);
+       List<Voucher> page = voucherService.getVouchers(1);
         return ResponseEntity.ok(page);
     }
 
@@ -60,7 +60,16 @@ public class VoucherController {
         return ResponseEntity.ok(voucher);
     }
 
-
+    @GetMapping("/getVocherByPrice")
+    public ResponseEntity getVoucherByPrice(@RequestBody Integer price) {
+        try {
+            System.out.println(price);
+            return ResponseEntity.ok(voucherService.getVoucherByPrice(price.doubleValue()));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
     @PostMapping("add-voucher")
     public ResponseEntity<List<KhachHangVoucher>> addVoucher(
             @RequestBody DataReq object
@@ -68,7 +77,7 @@ public class VoucherController {
     ){
         List<KhachHangVoucher>   listVCKH = new ArrayList<>();
         List<KhachHang> listKhachHangData = object.getListKhachHang();
-        List<KhachHangVoucher>   listVCKHReturn = new ArrayList<>();
+        List<KhachHangVoucher> listVCKHReturn = new ArrayList<>();
         Voucher voucherData = object.getVoucher();
         String urlImg ="";
         if(voucherData.getHinhAnh() == null || voucherData.getHinhAnh().equals("")) {

@@ -255,7 +255,7 @@ public class HoaDonChiTietController {
         System.out.println("getEmail: " + cartNotLoginDTO.getEmail());
         System.out.println("getHoTen: " + cartNotLoginDTO.getHoTen());
         System.out.println("getSdt: " + cartNotLoginDTO.getSoDienThoai());
-        System.out.println("getDiaChi: " + cartNotLoginDTO.getDiaChi());
+        System.out.println("getDiaChi: " + cartNotLoginDTO.getDuong());
         System.out.println("getXaPhuong: " + cartNotLoginDTO.getXaPhuong());
         System.out.println("getQuanHuyen: " + cartNotLoginDTO.getQuanHuyen());
         System.out.println("getThanhPho: " + cartNotLoginDTO.getThanhPho());
@@ -277,7 +277,7 @@ public class HoaDonChiTietController {
                     .deleted(1)
                     .loaiHd(0)
                     .ngayTao(new Date())
-                    .diaChi(cartNotLoginDTO.getDiaChi() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
+                    .diaChi(cartNotLoginDTO.getDuong() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
                     .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
                     .build();
             HoaDon hd1 = ssHD.save(hoaDon);
@@ -299,13 +299,13 @@ public class HoaDonChiTietController {
                 listHDCT.add(hoaDonChiTiet);
                 ssHDCT.save(hoaDonChiTiet);
             }
-            SendMail.SenMail(cartNotLoginDTO.getEmail(), cartNotLoginDTO.getEmail(), cartNotLoginDTO.getDeliveryTime(),
-                    cartNotLoginDTO.getPhiVanChuyen(), cartNotLoginDTO.getTongTien(), listHDCT);
+            SendMail.SenMail(cartNotLoginDTO.getEmail(), hd1.getMa(), cartNotLoginDTO.getDeliveryTime(),
+                    cartNotLoginDTO.getPhiVanChuyen(), cartNotLoginDTO.getTongTien(), cartNotLoginDTO.getHoTen());
             return ResponseEntity.ok("Thanh toán thành công");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("err");
-//            return ResponseEntity.badRequest().body(e);
+//            return ResponseEntity.badRequest().body("err");
         }
     }
 

@@ -15,7 +15,7 @@ public class CartNotLoginDTO {
     private String email;
     private String hoTen;
     private String soDienThoai;
-    private String diaChi;
+    private String duong;
     private String thanhPho;
     private String quanHuyen;
     private String xaPhuong;
