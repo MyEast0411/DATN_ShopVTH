@@ -64,6 +64,10 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             "where id_khach_hang = :idKH",nativeQuery = true)
     List<HoaDon>  getHDByKH(@Param("idKH")String idKH );
 
+    @Query(value = "SELECT hoa_don.* FROM hoa_don JOIN voucher ON hoa_don.id_voucher = voucher.id WHERE voucher.id = :id",nativeQuery = true)
+    List<HoaDon>  getHdByIdVoucher(@Param("id")String id );
+
+
 
 
     @Query(value = " select * from hoa_don where id_voucher = :id_voucher ",nativeQuery = true)
