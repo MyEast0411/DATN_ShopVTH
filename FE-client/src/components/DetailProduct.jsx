@@ -12,7 +12,7 @@ import {
   getHinhAnhByIdSPCT,
   getSPCTByIdSP,
   getSanPhamChiTietByDefaultImg,
-} from "../api/SanPham";
+} from "../apis/SanPham";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import AlsoLike from "./AlsoLike";
 import { notification } from "antd";
@@ -40,7 +40,7 @@ export default function DetailProduct() {
   const [maList, setMaList] = useState([]);
   const [user, setUser] = useState({});
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user")));
+    setUser(JSON.parse(localStorage?.getItem("user")));
   }, []);
   useEffect(() => {
     const fetchSPCTByIdSP = async () => {

@@ -5,8 +5,11 @@ import com.example.shop.dto.BieuDoThongKe;
 import com.example.shop.dto.HoaDonThongKeDTO;
 import com.example.shop.entity.HoaDon;
 
+import com.example.shop.requests.CreatePayMentVNPAYRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -27,4 +30,6 @@ public interface HoaDonService  {
     List<HoaDon>  getHDByKH(String idKH );
 
     List<HoaDon> getHDbyVoucher(String id);
+
+    String payWithVNPAYOnline(CreatePayMentVNPAYRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException;
 }
