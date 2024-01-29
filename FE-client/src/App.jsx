@@ -18,12 +18,15 @@ import Profile from "./components/Profile";
 import FindHD from "./components/findHD/FindHD";
 import PurchaseHistory from "./components/PurchaseHistory";
 import Wishlist from "./components/Wishlist";
+import EditHoaDon from "./components/findHD/EditHoaDon";
+import Test from "./test/Test";
 
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<Layout />} />
+        <Route path="/test" element={<Test />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/sign-in" element={<SignIn />} />
@@ -36,6 +39,7 @@ function App() {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/tracuu" element={<FindHD />} />
         <Route path="/lich-su-mua-hang/:idkh" element={<PurchaseHistory />} />
+        <Route path="/client/edit-hoa-don/:id" element={<EditHoaDon />} />
       </Routes>
       <BackToTopButton />
     </>

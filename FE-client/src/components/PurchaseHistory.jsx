@@ -3,16 +3,32 @@ import InfoTop from "../layout/InfoTop";
 import Header from "../layout/Header";
 
 import Footer from "../layout/Footer";
-import { Button } from "@nextui-org/react";
-import { Image, Input, Result, Select, Tag } from "antd";
+
+import { Image, Input, Modal, Result, Select, Tag } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Button } from "@nextui-org/react";
+
+import { notification } from "antd";
+
+// import {
+//   Modal,
+//   ModalContent,
+//   ModalHeader,
+//   ModalBody,
+//   ModalFooter,
+//   Button,
+//   useDisclosure,
+// } from "@nextui-org/react";
 
 export default function PurchaseHistory() {
   const { idkh } = useParams();
   const [list, setList] = useState([]);
   const [search, setSearch] = useState("");
   const [checkBox, setCheckBox] = useState(0);
+
+  // const [open, setOpen] = useState(false);
+  // const { isOpen, onOpen, onClose } = useDisclosure();
 
   // search
   const filterOptions = (data) => {
@@ -30,6 +46,33 @@ export default function PurchaseHistory() {
 
   const handleChange = (value) => {
     setCheckBox(value);
+  };
+
+  const [api, contextHolder] = notification.useNotification();
+  const handleCanceled = (idHD) => {
+    Modal.confirm({
+      title: `Bạn có muốn hủy hóa đơn này không ?`,
+      okText: "Yes",
+      okType: "danger",
+      onOk: async () => {
+        await axios
+          .post(`http://localhost:8080/lich_su_hoa_don/add/${idHD}`, {
+            moTaHoaDon: "Hủy Hóa Đơn",
+            deleted: 1,
+            nguoiTao: "Cam",
+            ghiChu: "Khách Hàng Đã Hủy",
+          })
+          .then((response) => {
+            if (response.status === 200) {
+              getDataById();
+              api["success"]({
+                message: "Thông báo",
+                description: "Hủy Thành Công",
+              });
+            }
+          });
+      },
+    });
   };
 
   const getDataById = async () => {
@@ -50,7 +93,7 @@ export default function PurchaseHistory() {
   };
   useEffect(() => {
     getDataById();
-  }, [search, checkBox]);
+  }, [search, checkBox, list]);
 
   return (
     <>
@@ -72,6 +115,7 @@ export default function PurchaseHistory() {
           height: 800,
         }}
       >
+        {contextHolder}
         <div
           className="mb-3 flex justify-between"
           style={{
@@ -222,7 +266,36 @@ export default function PurchaseHistory() {
                   </span>
                   <div>
                     <Button className="me-4">Mua lại</Button>
-                    <Button>Sửa Hóa Đơn</Button>
+                    {ls.hoaDon.trangThai == 0 && (
+                      <>
+                        <Link to={`/client/edit-hoa-don/${ls.hoaDon.id}`}>
+                          <Button className="me-4">Sửa hóa đơn</Button>
+                        </Link>
+                        <Button onPress={() => handleCanceled(ls.hoaDon.id)}>
+                          Hủy Hóa Đơn
+                        </Button>
+                      </>
+                    )}
+
+                    {/* <Modal
+                      title="Modal 1000px width"
+                      centered
+                      open={open}
+                      onOk={() => setOpen(false)}
+                      onCancel={() => setOpen(false)}
+                      footer={() => (
+                        <>
+                          <Button>
+                            <BsPen />
+                          </Button>
+                        </>
+                      )}
+                      width={1000}
+                    >
+                      <p>some contents...</p>
+                      <p>some contents...</p>
+                      <p>some contents...</p>
+                    </Modal> */}
                   </div>
                 </div>
               </div>
