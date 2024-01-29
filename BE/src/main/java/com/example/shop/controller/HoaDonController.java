@@ -163,16 +163,16 @@ public class HoaDonController {
     @PutMapping("update_client/{id}")
     public ResponseEntity<HoaDon> updateHoaDonClient(
             @PathVariable("id") String id,
-            @RequestBody HoaDonClientReq hoaDon
+            @RequestBody HoaDonClientReq hd
     ) {
 
-        System.out.println(hoaDon);
+        System.out.println(hd);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null) {
-               hoaDon1.setDiaChi(hoaDon.getDiaChi());
-               hoaDon1.setTienShip(hoaDon.getTienShip());
-               hoaDon1.setNgayNhan(new Date(hoaDon.getNgayNhan()));
+               hoaDon1.setDiaChi(hd.getDiaChi());
+               hoaDon1.setTienShip(hd.getTienShip());
+               hoaDon1.setNgayNhan(new Date(hd.getNgayNhan()));
                 HoaDon updateHoaDon = hoaDonService.updateHoaDon(hoaDon1);
                 return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
             } else {
