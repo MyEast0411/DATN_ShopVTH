@@ -55,19 +55,19 @@ function InForHD({ item }) {
           <p>
             Khách hàng :{" "}
             <span className="italic font-light">
-              &nbsp;&nbsp; {item.hoaDon?.id_khach_hang?.ten}
+              &nbsp;&nbsp; {item.hoaDon.tenKhachHang == null ? "Khách lẻ" : item.hoaDon.tenKhachHang}
             </span>
           </p>
           <p>
             Người Nhận :{" "}
             <span className="italic font-light">
-              &nbsp;&nbsp; {item.hoaDon.tenKhachHang}
+              &nbsp;&nbsp; {item.hoaDon.tenKhachHang == null ? "Khách lẻ" : item.hoaDon.tenKhachHang}
             </span>
           </p>
           <p>
             Số Điện Thoại :{" "}
             <span className="italic font-light">
-              &nbsp;&nbsp; {item.hoaDon.sdt}
+              &nbsp;&nbsp; {item.hoaDon.sdt == null ? "Khách lẻ" : item.hoaDon.sdt}
             </span>
           </p>
         </div>

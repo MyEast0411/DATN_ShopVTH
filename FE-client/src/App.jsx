@@ -18,8 +18,11 @@ import Profile from "./components/Profile";
 import FindHD from "./components/findHD/FindHD";
 import PurchaseHistory from "./components/PurchaseHistory";
 import Wishlist from "./components/Wishlist";
+
 import EditHoaDon from "./components/findHD/EditHoaDon";
 import Test from "./test/Test";
+
+import PayMentSuccess from "./components/PaymentSuccess";
 
 function App() {
   return (
@@ -39,7 +42,11 @@ function App() {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/tracuu" element={<FindHD />} />
         <Route path="/lich-su-mua-hang/:idkh" element={<PurchaseHistory />} />
+
         <Route path="/client/edit-hoa-don/:id" element={<EditHoaDon />} />
+
+        <Route path="/payment/payment-success" element={<PayMentSuccess />} />
+
       </Routes>
       <BackToTopButton />
     </>

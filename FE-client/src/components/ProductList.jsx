@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllSanPhamChiTietByIdSanPham, getAllSanPham } from "../api/SanPham";
+import { getAllSanPhamChiTietByIdSanPham, getAllSanPham } from "../apis/SanPham";
 
 export default function ProductList() {
   const [sanPhams, setSanPhams] = useState([]);

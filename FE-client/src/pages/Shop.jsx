@@ -14,7 +14,7 @@ import ProductList from "../components/ProductList";
 import { CiSliderHorizontal } from "react-icons/ci";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
-import { countAllSanPham } from "../api/SanPham";
+import { countAllSanPham } from "../apis/SanPham";
 
 export default function Shop() {
   useEffect(() => {

@@ -6,11 +6,13 @@ import com.example.shop.dto.ThanhToanHoaDonDTO;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.requests.HoaDonClientReq;
+import com.example.shop.requests.CreatePayMentVNPAYRequest;
 import com.example.shop.requests.HoaDonRequest;
 import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
 import com.example.shop.viewmodel.SanPhamVM;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -296,8 +299,17 @@ public class HoaDonController {
         List<HoaDon> listhd = hoaDonService.getHDbyVoucher(id);
 
         return ResponseEntity.ok(listhd);
+    }
 
-
+    //thanh toan voi vnpay
+    @PostMapping("thanhToanVoiVNPAY")
+    public ResponseEntity thanhToanVoiVNPAY(@RequestBody CreatePayMentVNPAYRequest payModel, HttpServletRequest request) {
+        System.out.println(request);
+        try {
+            return ResponseEntity.ok(hoaDonService.payWithVNPAYOnline(payModel, request)) ;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

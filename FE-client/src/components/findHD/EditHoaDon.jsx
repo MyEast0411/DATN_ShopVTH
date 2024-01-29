@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import InfoTop from "../../layout/InfoTop";
 import Header from "../../layout/Header";
 import Footer from "../../layout/Footer";
-import { getProvinces, getDistricts, getWards } from "../../api/Location_2";
+import { getProvinces, getDistricts, getWards } from "../../apis/Location_2";
 const { Option } = Select;
 import { Input, Modal, Select, Button, DatePicker } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
@@ -573,9 +573,9 @@ function EditHoaDon() {
         const leadtimeTimestamp = response.data.data.leadtime;
         const leadtimeDate = new Date(leadtimeTimestamp * 1000);
         // const inputDate = '2024-01-29T16:33:27';  // Thay thế bằng ngày bạn muốn định dạng
-        const currentDate = moment(leadtimeDate).format(
-          "ddd MMM DD HH:mm:ss z YYYY"
-        );
+        // const currentDate = moment(leadtimeDate).format(
+        //   "ddd MMM DD HH:mm:ss z YYYY"
+        // );
         setDeliveryTime(leadtimeTimestamp * 1000);
         // const day = leadtimeDate.getDate();
         // const month = leadtimeDate.getMonth() + 1;
