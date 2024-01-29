@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DatePicker } from "antd";
 import Footer from "../layout/Footer";
-import { getProvinces, getDistricts, getWards } from "../api/Location";
+import { getProvinces, getDistricts, getWards } from "../apis/Location";
 import { Checkbox, Select, Switch } from "antd";
 import { Accordion, AccordionItem, Avatar,Button } from "@nextui-org/react";
 

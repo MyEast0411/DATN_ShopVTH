@@ -73,20 +73,7 @@ export default function Checkout() {
   useEffect(() => {
     getVocherDuocDung();
     listVoucher.sort((b, a) => b.giaTriMin - a.giaTriMin);
-    // console.log(listVoucher);
-    // if (codeVC == undefined && calculateSubtotal() > 0 || codeVC == "" && calculateSubtotal() > 0) {
-    //   setCodeVC(listVoucher[0]?.code);
-    //   setMuaThem(
-    //     listVoucher[0]?.giaTriMin - calculateSubtotal() == Number(NaN)
-    //       ? ""
-    //       : listVoucher[0]?.giaTriMin - calculateSubtotal()
-    //   );
-    //   setDuocGiam(
-    //     listVoucher[0]?.giaTriMax == undefined
-    //       ? ""
-    //       : listVoucher[0]?.giaTriMax
-    //   );
-    // }
+
     listVoucher.map((x, index) => {
       if (codeVC == undefined && calculateSubtotal() > 0 || codeVC == "" && calculateSubtotal() > 0) {
         if (calculateSubtotal() >= x.giaTriMin) {
@@ -158,26 +145,104 @@ export default function Checkout() {
     getDiaChi();
     // getKhachHang();
   }, []);
+  // useEffect(() => {
+  //   getProvinces().then((data) => {
+  //     setProvinces(data);
+  //   });
+  // }, []);
+  // lay id tp
   useEffect(() => {
-    getProvinces().then((data) => {
-      setProvinces(data);
-    });
-  }, []);
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+
+    axios
+      .get(apiUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          Token: token,
+        },
+      })
+      .then((response) => {
+        setProvinces(response.data.data);
+        const id_tp = response.data.data.find((item) =>
+          diaChi.thanhPho.includes(item.ProvinceName)
+        )?.ProvinceID;
+        setIdTP(id_tp);
+      })
+      .catch((error) => {
+      });
+  }, [diaChi]);
+  // lay id huyen theo api theo id tp
   useEffect(() => {
-    const names = provinces.map((item) => item.name);
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+
+    const requestData = {
+      province_id: idTP,
+    };
+
+    axios
+      .get(apiUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          Token: token,
+        },
+        params: requestData,
+      })
+      .then((response) => {
+        const id_huyen = response.data.data.find(
+          (item) => item.DistrictName === diaChi.huyen
+        )?.DistrictID;
+
+        setDistrict(response.data.data);
+        setIdHuyen(id_huyen);
+      })
+      .catch((error) => {
+      });
+  }, [diaChi]);
+
+  // lay id xa theo api theo id huyen
+  useEffect(() => {
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+
+    const requestData = {
+      district_id: idHuyen,
+    };
+
+    axios
+      .post(apiUrl, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          // 'ShopId': shopId,
+          Token: token,
+        },
+      })
+      .then((response) => {
+        const id_xa = response.data.data.find(
+          (item) => item.WardName === diaChi.xa
+        )?.WardCode;
+        setIdXa(id_xa);
+        setWard(response.data.data);
+      })
+      .catch((error) => {
+      });
+  }, [diaChi, idHuyen]);
+
+  useEffect(() => {
+    const names = provinces.map((item) => item.ProvinceName);
     setValueTP(names);
-    const provinceCode = provinces.find((x) => x.name === khachHang.thanhPho)?.code || 1;
-    getDistricts(provinceCode).then((data) => {
-      setDistrict(data);
-    });
-    const valueH = district.map((item) => item.name);
+    const provinceCode = provinces.find((x) => x.ProvinceName === khachHang.thanhPho)?.code || 1;
+
+    const valueH = district.map((item) => item.DistrictName);
     setValueHuyen(valueH);
 
     const districtCode = district.find((x) => x.name === khachHang.huyen)?.code || 1;
-    getWards(districtCode).then((data) => {
-      setWard(data);
-    });
-    const valueXa = ward.map((item) => item.name);
+
+    const valueXa = ward.map((item) => item.WardName);
     setValueXa(valueXa);
   }, [provinces, district]);
 
@@ -210,86 +275,9 @@ export default function Checkout() {
       {name}
     </Option>
   ));
-  // lay id tp
-  useEffect(() => {
-    const apiUrl =
-      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
-    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+  
 
-    axios
-      .get(apiUrl, {
-        headers: {
-          "Content-Type": "application/json",
-          Token: token,
-        },
-      })
-      .then((response) => {
-        const id_tp = response.data.data.find((item) =>
-          diaChi.thanhPho.includes(item.ProvinceName)
-        )?.ProvinceID;
-        setIdTP(id_tp);
-      })
-      .catch((error) => {
-      });
-  }, [diaChi]);
-
-  // lay id huyen theo api theo id tp
-  useEffect(() => {
-    const apiUrl =
-      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
-    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
-
-    const requestData = {
-      province_id: idTP,
-    };
-
-    axios
-      .get(apiUrl, {
-        headers: {
-          "Content-Type": "application/json",
-          // 'ShopId': shopId,
-          Token: token,
-        },
-        params: requestData,
-      })
-      .then((response) => {
-        const id_huyen = response.data.data.find(
-          (item) => item.DistrictName === diaChi.huyen
-        )?.DistrictID;
-        setIdHuyen(id_huyen);
-      })
-      .catch((error) => {
-      });
-  }, [diaChi]);
-
-  // lay id xa theo api theo id huyen
-  useEffect(() => {
-    const apiUrl =
-      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
-    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
-
-    const requestData = {
-      district_id: idHuyen,
-    };
-
-    axios
-      .post(apiUrl, requestData, {
-        headers: {
-          "Content-Type": "application/json",
-          // 'ShopId': shopId,
-          Token: token,
-        },
-      })
-      .then((response) => {
-        const id_xa = response.data.data.find(
-          (item) => item.WardName === diaChi.xa
-        )?.WardCode;
-        setIdXa(id_xa);
-      })
-      .catch((error) => {
-      });
-  }, [diaChi, idHuyen]);
-
+  
   // Tính thời gian dự kiến
   useEffect(() => {
     const apiUrl =
@@ -382,7 +370,6 @@ export default function Checkout() {
         />
       ),
     });
-    // setShowNotification(true);
   };
   //modal chon dia chi 
   const [isModalChonDiaChi, setIsModalChonDiaChi] = useState(false);
@@ -445,9 +432,6 @@ export default function Checkout() {
           thanhPho: item.name,
         }));
       }
-    });
-    getDistricts(provinceCode).then((data) => {
-      setDistricts(data);
     });
   };
 

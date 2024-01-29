@@ -19,7 +19,7 @@ import {
 import { AiOutlineHeart } from "react-icons/ai"; //heart icon
 import { CgTrashEmpty } from "react-icons/cg"; //trash icon
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { getAllHA, getSanPhamChiTietByMaListSPCT } from "../api/SanPham";
+import { getAllHA, getSanPhamChiTietByMaListSPCT } from "../apis/SanPham";
 
 export default function Cart() {
   useEffect(() => {
