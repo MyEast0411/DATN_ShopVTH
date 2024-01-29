@@ -5,6 +5,7 @@ import com.example.shop.dto.HoaDonClientDTO;
 import com.example.shop.dto.ThanhToanHoaDonDTO;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
+import com.example.shop.requests.HoaDonClientReq;
 import com.example.shop.requests.HoaDonRequest;
 import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
@@ -140,11 +141,36 @@ public class HoaDonController {
             @PathVariable("id") String id,
             @RequestBody HoaDon hoaDon
     ) {
+
+        System.out.println(hoaDon);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null) {
                 hoaDon.setId(hoaDon.getId());
                 HoaDon updateHoaDon = hoaDonService.updateHoaDon(hoaDon);
+                return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
+            } else {
+                throw new Exception("khong co id" + id);
+            }
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    @PutMapping("update_client/{id}")
+    public ResponseEntity<HoaDon> updateHoaDonClient(
+            @PathVariable("id") String id,
+            @RequestBody HoaDonClientReq hoaDon
+    ) {
+
+        System.out.println(hoaDon);
+        try {
+            HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
+            if (hoaDon1 != null) {
+               hoaDon1.setDiaChi(hoaDon.getDiaChi());
+               hoaDon1.setTienShip(hoaDon.getTienShip());
+               hoaDon1.setNgayNhan(new Date(hoaDon.getNgayNhan()));
+                HoaDon updateHoaDon = hoaDonService.updateHoaDon(hoaDon1);
                 return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
             } else {
                 throw new Exception("khong co id" + id);

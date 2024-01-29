@@ -21,7 +21,7 @@ import {
 import ComponentToPrint from "./InHoaDon";
 import { toast } from "react-toastify";
 import { FiLoader } from "react-icons/fi";
-import { FaMoneyBillTransfer, FaTrash } from "react-icons/fa6";
+import { FaMoneyBillTransfer, FaPenClip, FaTrash } from "react-icons/fa6";
 import { MdCancel } from "react-icons/md";
 import { Spinner, Skeleton } from "@nextui-org/react";
 import TableSanPham from "./TableSanPham";
@@ -244,22 +244,20 @@ export default function DetailHoaDon() {
 
   const getSPCT = (id) => {
     setSPCT((value) => (value = rowsSPCT.filter((sp) => sp.id == id)[0]));
-    // console.log(setSPCT(rowsSPCT.filter((sp) => sp.id == id)));
-    // rowsSPCT.filter((sp) => sp.id == id);
   };
 
   // modal upcdate sp
   const [openSP, setOpenSP] = useState(false);
 
   const showModalLichSuSP = () => {
-    setOpen(true);
+    setOpenSP(true);
   };
   const handleOkLichSuSP = () => {
-    setOpen(false);
+    setOpenSP(false);
   };
 
   const handleCancelLichSuSP = () => {
-    setOpen(false);
+    setOpenSP(false);
   };
 
   useEffect(() => {
@@ -639,10 +637,18 @@ export default function DetailHoaDon() {
           </div>
         </div>
         <div className="row thong-tin-hoa-don bg-white space-y-5 ">
-          <div className="row mb-10">
-            <p className="font-bold p-4 text-2xl"> Thông tin hóa đơn</p>
+          <div className="row  ">
+            <div className="flex justify-between">
+              <div>
+                <p className="font-bold p-4 text-2xl"> Thông tin hóa đơn</p>
+              </div>
+              <div>
+                <Button>Sửa địa chỉ</Button>
+              </div>
+            </div>
             <hr style={{ backgroundColor: "black", height: 2, padding: 1 }} />
           </div>
+
           <div className="row divide-y-8 divide-slate-400/25 ">
             <div className="row mb-10 space-y-8" style={{ padding: "0 60px" }}>
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
@@ -798,7 +804,7 @@ export default function DetailHoaDon() {
                 ))}
               </div>
               <Modal
-                open={open}
+                open={openSP}
                 title="Cập Nhật Sản Phảm"
                 onOk={handleOkLichSuSP}
                 onCancel={handleCancelLichSuSP}

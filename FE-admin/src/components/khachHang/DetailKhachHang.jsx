@@ -1,12 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Modal, Select, Switch } from "antd";
 const { Option } = Select;
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import {
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Accordion, AccordionItem, Avatar, Button } from "@nextui-org/react";
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -65,14 +77,16 @@ export default function ThemKhachHang() {
   useEffect(() => {
     const names = provinces.map((item) => item.name);
     setValueTP(names);
-    const provinceCode = provinces.find((x) => x.name === khachHang.thanhPho)?.code || 1;
+    const provinceCode =
+      provinces.find((x) => x.name === khachHang.thanhPho)?.code || 1;
     getDistricts(provinceCode).then((data) => {
       setDistrict(data);
     });
     const valueH = district.map((item) => item.name);
     setValueHuyen(valueH);
 
-    const districtCode = district.find((x) => x.name === khachHang.huyen)?.code || 1;
+    const districtCode =
+      district.find((x) => x.name === khachHang.huyen)?.code || 1;
     getWards(districtCode).then((data) => {
       setWard(data);
     });
@@ -156,7 +170,8 @@ export default function ThemKhachHang() {
     thanhPho: "",
   });
   const { soNha, xa, huyen, thanhPho } = diaChi;
-  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, cccd } = khachHang;
+  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, cccd } =
+    khachHang;
 
   function formatDate(dateString) {
     if (dateString) {
@@ -171,7 +186,9 @@ export default function ThemKhachHang() {
 
   const { maKH } = useParams();
   const getKhachHang = async () => {
-    const result = await axios.get(`http://localhost:8080/khach-hang/findByMa/${maKH}`);
+    const result = await axios.get(
+      `http://localhost:8080/khach-hang/findByMa/${maKH}`
+    );
     const khachHangData = result.data;
 
     setBackgroundImage(khachHangData.anhNguoiDung);
@@ -192,7 +209,10 @@ export default function ThemKhachHang() {
     }));
   };
   const getDiaChi = async () => {
-    const result = await axios.get(`http://localhost:8080/dia-chi/findByMa/${maKH}`);
+    const result = await axios.get(
+      `http://localhost:8080/dia-chi/findByMa/${maKH}`
+    );
+    console.log(result);
     setListDiaChi(result.data);
   };
   const setBackgroundImage = (url) => {
@@ -358,12 +378,21 @@ export default function ThemKhachHang() {
               }}
               ref={imgDivRef}
             >
-              <div className="absolute blue-hover inline-block cursor-pointer hover:text-sky-700 text-center text-3xl" style={{ bottom: "-35px", left: "45%" }}>
+              <div
+                className="absolute blue-hover inline-block cursor-pointer hover:text-sky-700 text-center text-3xl"
+                style={{ bottom: "-35px", left: "45%" }}
+              >
                 <AiOutlineCamera onClick={() => fileInputRef.current.click()} />
               </div>
             </div>
           </div>
-          <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} ref={fileInputRef} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+            ref={fileInputRef}
+          />
           <div className="mb-1 p-5">
             <label htmlFor="phone" className="block  font-medium text-gray-900">
               Tên khách hàng
@@ -401,7 +430,10 @@ export default function ThemKhachHang() {
             />
           </div>
           <div className="p-5">
-            <label htmlFor="email" className="block pt-2  font-medium text-gray-900">
+            <label
+              htmlFor="email"
+              className="block pt-2  font-medium text-gray-900"
+            >
               Email
             </label>
             <input
@@ -482,8 +514,19 @@ export default function ThemKhachHang() {
                 onChange={handleChange}
               >
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <FormControlLabel value="Nam" control={<Radio />} label="Nam" checked={gioi_tinh === "Nam"} style={{ marginRight: "10px" }} />
-                  <FormControlLabel value="Nữ" checked={gioi_tinh === "Nữ"} control={<Radio />} label="Nữ" />
+                  <FormControlLabel
+                    value="Nam"
+                    control={<Radio />}
+                    label="Nam"
+                    checked={gioi_tinh === "Nam"}
+                    style={{ marginRight: "10px" }}
+                  />
+                  <FormControlLabel
+                    value="Nữ"
+                    checked={gioi_tinh === "Nữ"}
+                    control={<Radio />}
+                    label="Nữ"
+                  />
                 </div>
               </RadioGroup>
             </FormControl>
@@ -508,7 +551,10 @@ export default function ThemKhachHang() {
             >
               <div className="">
                 <div className="mb-8">
-                  <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="city"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Chọn thành phố
                   </label>
                   <select
@@ -527,7 +573,10 @@ export default function ThemKhachHang() {
                   </select>
                 </div>
                 <div className="mb-6">
-                  <label htmlFor="District" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="District"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Chọn huyện
                   </label>
                   <select
@@ -544,7 +593,10 @@ export default function ThemKhachHang() {
                   </select>
                 </div>
                 <div className="mb-6">
-                  <label htmlFor="wards" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="wards"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Chọn xã phường
                   </label>
                   <select
@@ -562,7 +614,10 @@ export default function ThemKhachHang() {
                 </div>
               </div>
               <div className="mb-8">
-                <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label
+                  htmlFor="phone"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   Số nhà/Ngõ/Đường
                 </label>
                 <input
@@ -617,7 +672,9 @@ export default function ThemKhachHang() {
                 <div>
                   <Select
                     placeholder="Thành phố"
-                    onChange={(selectedValue) => handleChangeTP(selectedValue, index)}
+                    onChange={(selectedValue) =>
+                      handleChangeTP(selectedValue, index)
+                    }
                     value={item.thanhPho}
                     style={{ width: "20%", marginRight: "10px" }}
                   >
@@ -626,7 +683,9 @@ export default function ThemKhachHang() {
 
                   <Select
                     placeholder="Thành phố"
-                    onChange={(selectedValue) => handleChangeHuyen(selectedValue, index)}
+                    onChange={(selectedValue) =>
+                      handleChangeHuyen(selectedValue, index)
+                    }
                     value={item.huyen}
                     style={{ width: "21%", marginRight: "15px" }}
                   >
@@ -635,7 +694,9 @@ export default function ThemKhachHang() {
 
                   <Select
                     placeholder="Thành phố"
-                    onChange={(selectedValue) => handleChangeXa(selectedValue, index)}
+                    onChange={(selectedValue) =>
+                      handleChangeXa(selectedValue, index)
+                    }
                     value={item.xa}
                     style={{ width: "23%", marginRight: "10px" }}
                   >
@@ -656,7 +717,11 @@ export default function ThemKhachHang() {
                   />
                   <div className="flex mt-10">
                     <p className="mr-5">Địa chỉ mặc định</p>
-                    <Switch checked={item.trangThai === 1} onChange={() => handleSwitchChange(index)} className={`${isOn ? "bg-gray-800" : "bg-gray-800"}`} />
+                    <Switch
+                      checked={item.trangThai === 1}
+                      onChange={() => handleSwitchChange(index)}
+                      className={`${isOn ? "bg-gray-800" : "bg-gray-800"}`}
+                    />
                     <div className="flex-grow" />
                     <Button
                       className="justify-end"
@@ -865,7 +930,9 @@ export default function ThemKhachHang() {
           </div>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>Bạn có chắc muốn sửa khách hàng này?</DialogContentText>
+          <DialogContentText>
+            Bạn có chắc muốn sửa khách hàng này?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelAdd} color="warning">
@@ -896,7 +963,9 @@ export default function ThemKhachHang() {
           </div>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>Bạn có chắc muốn xóa địa chỉ này?</DialogContentText>
+          <DialogContentText>
+            Bạn có chắc muốn xóa địa chỉ này?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelDelete} color="warning">

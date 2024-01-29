@@ -1,5 +1,6 @@
 package com.example.shop.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.UUID;
+
 
 @Data
 @AllArgsConstructor
@@ -46,6 +47,7 @@ public class HoaDon {
     private Date ngayShip;
 
     @Column(name = "ngay_nhan")
+
     private Date ngayNhan;
 
     @Column(name = "ngay_muon_nhan")

@@ -18,7 +18,7 @@ export default function TabTrangThai({
   useEffect(() => {
     console.log(key1);
     getData(key1);
-  }, [dataInput, dataSelect, ngayBatDau, ngayKetThuc, key1, list.length]);
+  }, [dataInput, dataSelect, ngayBatDau, ngayKetThuc, key1, list]);
 
   const filterOptions = (data) => {
     return data
