@@ -10,6 +10,4 @@ public abstract class VNPayConstant {
     public static String vnp_CurrCode = "VND";
     public static String vnp_Locale = "vn";
     public static String vnp_ReturnUrl = "http://localhost:5173/payment/payment-success";
-
-    public static String vnp_ReturnUrlBuyOnline = "http://localhost:5173/client/payment/payment-success";
 }

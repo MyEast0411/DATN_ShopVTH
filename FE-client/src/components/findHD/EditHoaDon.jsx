@@ -49,10 +49,7 @@ function EditHoaDon() {
         ? ""
         : JSON.parse(localStorage.getItem("user"))
     );
-    // setUser("Hoi");
   }, []);
-
-  //   const infor_user = localStorage.getItem("user");
 
   // địa chỉ
   const [provinces, setProvinces] = useState([]);
@@ -123,36 +120,22 @@ function EditHoaDon() {
     </Option>
   ));
 
-  //   const handleChangeTP = (selectedValue) => {
-
-  //     setAddress({ ...address, thanhPho: selectedValue });
-  //     handleProvinceChange(selectedValue);
-  //   };
-
-  //   const handleChangeHuyen = (selectedValue) => {
-
-  //     setAddress({ ...address, huyen: selectedValue });
-  //   };
-
-  //   const handleChangeXa = (selectedValue) => {
-
-  //     setAddress({ ...address, xa: selectedValue });
-  //   };
 
   const getInfoHD = async () => {
     const res = await axios.get(
       "http://localhost:8080/hoa_don/getHoaDon/" + id
     );
     const data = await res.data;
+    console.log(data);
     setMoney({
-      tienGiam: data.tienGiam,
+      tienGiam: data?.id_voucher?.giaTriMax,
       tienHang: data.tongTien,
-      tienShip: data.tienShip,
-      tongTien: data.tongTien + data.tienShip - data.tienGiam,
+      tienShip: data?.tienShip,
+      tongTien: data.tongTien,
       ma: data.ma,
     });
     getAddress(data.diaChi);
-    console.log(data);
+
     setHoadon(() => ({
       ...data,
       ngayTao: format(new Date(data.ngayTao), "yyyy-MM-dd HH:mm:ss"),
@@ -173,16 +156,14 @@ function EditHoaDon() {
   const getAddress = (address1) => {
     let address_list = address1.split(",");
     address.soNha = address_list[0];
-    address.xa = address_list[1];
+    address.xa = address_list[3];
     address.huyen = address_list[2];
-    address.thanhPho = address_list[3];
-
+    address.thanhPho = address_list[1];
     setAddress(address);
   };
 
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
-      // console.log(item.province_id);
       if (item.province_id == provinceCode) {
         setAddressEdit((prevaddress) => ({
           ...prevaddress,
@@ -192,7 +173,6 @@ function EditHoaDon() {
     });
 
     getDistricts(provinceCode).then((data) => {
-      //console.log(data);
       setDistricts(data.results);
     });
   };
@@ -207,7 +187,6 @@ function EditHoaDon() {
       }
     });
     getWards(districtCode).then((data) => {
-      //console.log(data);
       setWards(data.results);
     });
   };
@@ -230,7 +209,7 @@ function EditHoaDon() {
       "http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id
     );
     const data = await res.data;
-
+    console.log(data);
     setRowsSPCT(
       data.map((item) => {
         return {
@@ -240,12 +219,11 @@ function EditHoaDon() {
           kichco: item.id_chi_tiet_san_pham.id_kich_co.ten,
           mausac: item.id_chi_tiet_san_pham.id_mau_sac.ten,
           quantity: item.soLuong,
-          price: item.giaTien,
+          price: item.id_chi_tiet_san_pham.giaBan,
         };
       })
     );
   };
-  //
 
   const handleChangeAddress = (value) => {
     console.log(value);
@@ -329,11 +307,6 @@ function EditHoaDon() {
                   res.data.tongTien + res.data.tienShip - res.data.tienGiam,
                 ma: res.data.ma,
               });
-              // openNotificationWithIcon(
-              //   "success",
-
-              //   "Cập nhật thành công"
-              // );
               setCheckEdit(false);
               api["success"]({
                 message: "Thông báo",
@@ -341,7 +314,6 @@ function EditHoaDon() {
               });
             })
             .catch((error) => {
-              // alert(error);
               api["error"]({
                 message: "Thông báo",
                 description: "Cập nhật không thành công",
@@ -489,7 +461,7 @@ function EditHoaDon() {
         )?.ProvinceID;
         setIdTP(id_tp);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }, [addressEdit]);
 
   // lay id huyen theo api theo id tp
@@ -517,7 +489,7 @@ function EditHoaDon() {
         )?.DistrictID;
         setIdHuyen(id_huyen);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }, [addressEdit]);
 
   // lay id xa theo api theo id huyen
@@ -544,7 +516,7 @@ function EditHoaDon() {
         )?.WardCode;
         setIdXa(id_xa);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }, [addressEdit, idHuyen]);
 
   // Tính thời gian dự kiến
@@ -583,7 +555,7 @@ function EditHoaDon() {
 
         // const formattedLeadtime = `${year}/${month}/${day}`;
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }, [idTP, idHuyen, idXa]);
 
   // Tính phí vận chuyển
@@ -661,10 +633,8 @@ function EditHoaDon() {
               <Input
                 value={hoadon.sdt}
                 disabled
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-               rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                   w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                   dark:focus:ring-blue-500  dark:focus:border-blue-500"
+                className="bg-gray-50 border border-gray-300 text-black text-sm 
+                rounded-lg w-full p-2.5"
               />
             </div>
             <div>
@@ -674,10 +644,8 @@ function EditHoaDon() {
               <Input
                 value={hoadon.tenKhachHang}
                 disabled
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-               rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                   w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                   dark:focus:ring-blue-500  dark:focus:border-blue-500"
+                className="bg-gray-50 border border-gray-300 text-black text-sm 
+                rounded-lg w-full p-2.5"
               />
             </div>
             <div>
@@ -687,10 +655,8 @@ function EditHoaDon() {
               <Input
                 value={hoadon.ngayTao}
                 disabled
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-               rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                   w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                   dark:focus:ring-blue-500  dark:focus:border-blue-500"
+                className="bg-gray-50 border border-gray-300 text-black text-sm 
+                rounded-lg w-full p-2.5"
               />
             </div>
             <div>
@@ -700,10 +666,8 @@ function EditHoaDon() {
               <Input
                 value={hoadon.ngayNhan}
                 disabled
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-               rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                   w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                   dark:focus:ring-blue-500  dark:focus:border-blue-500"
+                className="bg-gray-50 border border-gray-300 text-black text-sm 
+                rounded-lg w-full p-2.5"
               />
             </div>
           </div>
@@ -843,20 +807,28 @@ function EditHoaDon() {
                 <div className="mb-6">
                   <label
                     htmlFor="city"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    className="block mb-2 text-sm font-medium text-black dark:text-white"
                   >
                     Thành phố
                   </label>
-                  <Select
+                  <Input
+                    type="text"
+                    size="large"
+                    className="text-black"
+                    value={address.thanhPho}
+                    placeholder="Thành phố"
+                    disabled
+                  />
+                  {/* <Select
                     placeholder="Thành phố"
                     // onChange={(selectedValue) => handleChangeTP(selectedValue)}
                     value={address.thanhPho}
                     size="large"
-                    style={{ width: "100%", marginRight: "10px" }}
+                    style={{ width: "100%", marginRight: "10px"}}
                     disabled
                   >
                     {options}
-                  </Select>
+                  </Select> */}
                 </div>
                 <div className="mb-6">
                   <label
@@ -865,7 +837,15 @@ function EditHoaDon() {
                   >
                     Quận huyện
                   </label>
-                  <Select
+                  <Input
+                    type="text"
+                    size="large"
+                    className="text-black"
+                    value={address.huyen}
+                    placeholder="Quận huyện"
+                    disabled
+                  />
+                  {/* <Select
                     placeholder="Quận Huyện"
                     // onChange={(selectedValue) =>
                     //   handleChangeHuyen(selectedValue)
@@ -876,7 +856,7 @@ function EditHoaDon() {
                     disabled
                   >
                     {optionHuyen}
-                  </Select>
+                  </Select> */}
                 </div>
                 <div className="mb-6">
                   <label
@@ -885,7 +865,15 @@ function EditHoaDon() {
                   >
                     Xã phường
                   </label>
-                  <Select
+                  <Input
+                    type="text"
+                    size="large"
+                    className="text-black"
+                    value={address.xa}
+                    placeholder="Xã phường"
+                    disabled
+                  />
+                  {/* <Select
                     placeholder="Xã Phường"
                     // onChange={(selectedValue) => handleChangeXa(selectedValue)}
                     value={address.xa}
@@ -894,7 +882,7 @@ function EditHoaDon() {
                     disabled
                   >
                     {optionXa}
-                  </Select>
+                  </Select> */}
                 </div>
                 <div className="mb-6">
                   <label
@@ -907,6 +895,7 @@ function EditHoaDon() {
                     type="text"
                     size="large"
                     name={`duong-${1}`}
+                    className="text-black"
                     value={address.soNha}
                     placeholder="Số nhà/Ngõ/Đường"
                     required
@@ -1104,7 +1093,7 @@ function EditHoaDon() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-1  ">
-                  <p className="font-normal text-lg"> Tien Giam : </p>
+                  <p className="font-normal text-lg"> Tiền giảm : </p>
                   <p
                     className="font-normal text-red-500"
                     style={{ fontSize: "16px" }}

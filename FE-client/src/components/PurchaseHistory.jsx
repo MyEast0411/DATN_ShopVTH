@@ -183,7 +183,7 @@ export default function PurchaseHistory() {
                     />
                   </div>
                   <div className="mt-3">
-                    <span>VTH jordon</span>
+                    <span>Jordan VTH</span>
                   </div>
                   <div className="mt-3 ms-5">
                     <span>Mã đơn hàng : {ls.hoaDon?.ma}</span>
@@ -251,7 +251,7 @@ export default function PurchaseHistory() {
                           <span>
                             {" "}
                             {Intl.NumberFormat().format(
-                              sp.soLuong * sp.giaTien
+                              ls.hoaDon?.tongTien
                             )}
                           </span>
                         </div>

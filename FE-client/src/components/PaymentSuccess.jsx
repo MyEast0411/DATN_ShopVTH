@@ -9,7 +9,6 @@ function PayMentSuccess() {
     const cartNotLoginDTO = JSON.parse(sessionStorage.getItem("formBill"))
     useEffect(() => {
         if (vnp_ResponseCode === '00') {
-            console.log(cartNotLoginDTO);
             onPayment(cartNotLoginDTO)
         }
     }, [])
@@ -35,7 +34,7 @@ function PayMentSuccess() {
                 <div className="content-payment-success">
                     <h1>Thanh toán thành công</h1>
                     <div style={{ marginTop: "5%" }}>Tổng thanh toán:  {formatMoney(vnp_Amount / 100)}</div>
-                    <Link to="/home">Tiếp tục mua</Link>
+                    <Link to="/">Tiếp tục mua</Link>
                 </div>
             ) : (
                 <div className="content-payment-success">

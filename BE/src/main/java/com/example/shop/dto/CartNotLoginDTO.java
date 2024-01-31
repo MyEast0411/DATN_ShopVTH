@@ -26,4 +26,5 @@ public class CartNotLoginDTO {
     private Integer soLuong;
     private String tongTien;
     private String maKH;
+    private String voucher;
 }

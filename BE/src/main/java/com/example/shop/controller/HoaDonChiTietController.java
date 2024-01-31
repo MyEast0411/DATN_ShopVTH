@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,11 +33,14 @@ public class HoaDonChiTietController {
     KhachHangRepository ssKH;
 
     @Autowired
+    NhanVienRepository ssNV;
+
+    @Autowired
     VoucherRepository ssVC;
 
     @Autowired
     LichSuHoaDonRepository ssLSHD;
-
+    private String idNhanVien = "8fc123b4-c457-4447-99d3-f39faaec2c5b";
     @GetMapping("/getHDCT/{maHD}")
     public ResponseEntity getHDCT(@PathVariable String maHD) {
         List<HoaDonChiTiet> list = ssHDCT.getHDCTByMA(maHD);
@@ -116,11 +120,7 @@ public class HoaDonChiTietController {
     @PostMapping("/update/{id_hoa_don}/{id_san_pham}")
     public ResponseEntity updateSPCT(@PathVariable String id_hoa_don, @PathVariable String id_san_pham,
                                      @RequestBody HoaDonChiTietUpdateRequest request
-
     ) {
-
-
-
         try {
             HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(id_hoa_don , id_san_pham);
             hoaDonChiTiet.setSoLuong(request.getQuantity());
@@ -153,15 +153,12 @@ public class HoaDonChiTietController {
                        .giaTien(tongTien)
                        .deleted(1)
                        .build();
-               System.out.println(hdct);
                ssHDCT.save(hdct);
            }else{
                hoaDonChiTietExist.setSoLuong(hoaDonChiTietExist.getSoLuong() + hoaDonChiTiet.getSo_luong());
                ssHDCT.save(hoaDonChiTietExist);
               
            }
-
-
             Double gia = ssHDCT.getMoneyBYHD(hoaDon.getId());
             hoaDon.setTongTien(new BigDecimal("" + gia));
             ssHD.save(hoaDon);
@@ -190,7 +187,6 @@ public class HoaDonChiTietController {
 
     @PutMapping("/addVC_HD")
     public ResponseEntity addVC_HD(@RequestBody HoaDonKhDTO x) {
-        System.out.println(x);
         try {
             HoaDon hd = ssHD.getHoaDonByMa(x.getMaHD());
             if (x.getId_khach_hang().equals("")) {
@@ -221,6 +217,7 @@ public class HoaDonChiTietController {
 
     @PostMapping("/addHoaDonChiTietToHoaDon")
     public ResponseEntity addHoaDonChiTietToHoaDon(@RequestBody CartNotLoginDTO cartNotLoginDTO) {
+        SimpleDateFormat format = new SimpleDateFormat();
         System.out.println("getEmail: " + cartNotLoginDTO.getEmail());
         System.out.println("getMa: " + cartNotLoginDTO.getMaKH());
         System.out.println("getHoTen: " + cartNotLoginDTO.getHoTen());
@@ -241,13 +238,24 @@ public class HoaDonChiTietController {
             if (maxMa == null) {
                 maxMa = 0;
             }
+            KhachHang khachHang = ssKH.findByMa(cartNotLoginDTO.getMaKH());
+            Voucher voucher = ssVC.getVoucherByCode(cartNotLoginDTO.getVoucher());
+            voucher.setSoLuong(voucher.getSoLuong() - 1);
+            ssVC.save(voucher);
             HoaDon hoaDon = HoaDon.builder()
                     .ma("HD" + (maxMa + 1))
                     .trangThai(0)
                     .deleted(1)
                     .loaiHd(0)
                     .ngayTao(new Date())
-                    .id_khach_hang(ssKH.findByMa(cartNotLoginDTO.getMaKH()))
+                    .id_khach_hang(khachHang)
+                    .sdt(khachHang.getSdt())
+                    .tenKhachHang(khachHang.getTen())
+                    .id_voucher(voucher)
+                    .id_nhan_vien(ssNV.findById(idNhanVien).get())
+                    .tienGiam(BigDecimal.valueOf(voucher.getGiaTriMax()))
+                    .tienShip(BigDecimal.valueOf(Double.valueOf(cartNotLoginDTO.getPhiVanChuyen())))
+                    .ngayNhan(new Date(cartNotLoginDTO.getDeliveryTime()))
                     .diaChi(cartNotLoginDTO.getDuong() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
                     .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
                     .build();

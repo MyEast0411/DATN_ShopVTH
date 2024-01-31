@@ -189,7 +189,6 @@ export default function Checkout() {
         const id_huyen = response.data.data.find(
           (item) => item.DistrictName === diaChi.huyen
         )?.DistrictID;
-
         setDistrict(response.data.data);
         setIdHuyen(id_huyen);
       })
@@ -235,7 +234,7 @@ export default function Checkout() {
 
     const valueX = ward.map((item) => item.WardName);
     setValueXa(valueX);
-  }, [provinces, district]);
+  }, [provinces, district, ward]);
 
   const [sanPhams, setSanPhams] = useState([]);
   const [dataLocal, setDataLocal] = useState([]);
@@ -483,6 +482,7 @@ export default function Checkout() {
       const quanHuyen = diaChi.huyen;
       const xaPhuong = diaChi.xa;
       const maKH = user?.ma;
+      const voucher = codeVC;
       const phuongThucThanhToan =
         shippingCost === "Miễn phí"
           ? "Chuyển khoản qua ngân hàng"
@@ -510,6 +510,7 @@ export default function Checkout() {
         tongTien,
         soLuong,
         maKH,
+        voucher,  
       };
       console.log(cartNotLoginDTO);
       if (value == 3) {
