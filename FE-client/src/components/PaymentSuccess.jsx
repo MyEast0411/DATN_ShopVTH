@@ -1,15 +1,16 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { addToHoaDon } from "../apis/HoaDon";
 function PayMentSuccess() {
 
     const urlObject = new URL(window.location.href);
     const vnp_ResponseCode = urlObject.searchParams.get("vnp_ResponseCode");
     const vnp_Amount = urlObject.searchParams.get("vnp_Amount");
-    const formBill = JSON.parse(sessionStorage.getItem("formBill"))
+    const cartNotLoginDTO = JSON.parse(sessionStorage.getItem("formBill"))
     useEffect(() => {
         if (vnp_ResponseCode === '00') {
-            console.log(formBill);
-            onPayment(formBill)
+            console.log(cartNotLoginDTO);
+            onPayment(cartNotLoginDTO)
         }
     }, [])
     const formatMoney = (price) => {
@@ -19,8 +20,14 @@ function PayMentSuccess() {
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
         );
     };
-    const onPayment = (formBill) => {
-        console.log("thanh cong");
+    const onPayment = async (cartNotLoginDTO) => {
+        try {
+            const result = await addToHoaDon(cartNotLoginDTO);
+            console.log("result:", result);
+            localStorage.removeItem("maList");
+        } catch (error) {
+            console.error("Error adding to HoaDon:", error);
+        }
     }
     return (<>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }} >

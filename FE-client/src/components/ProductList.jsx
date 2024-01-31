@@ -87,7 +87,7 @@ export default function ProductList() {
                 <h2 className="color-quantity">{`${hinhAnhs.length} Colors`}</h2>
               </>
             )}
-            <div className="price-product">VNĐ {sanPham?.maxPrice}</div>
+            <div className="price-product">VNĐ {Intl.NumberFormat().format(sanPham?.maxPrice)}</div>
           </Link>
         ))}
       </div>

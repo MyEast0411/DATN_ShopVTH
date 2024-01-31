@@ -45,7 +45,6 @@ public class LoginController {
     public ResponseEntity check(@RequestBody UserDTO dto){
         KhachHang khachHang = khachHangService.findEmail(dto);
         if (khachHang== null){
-            // gửi mail
             SendMail.SendMailOptions(dto.getEmail() , maConfirm);
             return ResponseEntity.ok(HttpStatus.NOT_FOUND);
         }else{
@@ -57,7 +56,6 @@ public class LoginController {
     public ResponseEntity register(@RequestBody UserDTO dto) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
       if (dto.getMa().equals(maConfirm)  ){
-          System.out.println(dto);
           KhachHang kh = new KhachHang();
           kh.setMa("KH"+ new Date().getTime());
           kh.setTen(dto.getTen());

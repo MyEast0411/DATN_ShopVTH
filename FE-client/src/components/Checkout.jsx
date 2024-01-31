@@ -143,14 +143,8 @@ export default function Checkout() {
   };
   useEffect(() => {
     getDiaChi();
-    // getKhachHang();
   }, []);
-  // useEffect(() => {
-  //   getProvinces().then((data) => {
-  //     setProvinces(data);
-  //   });
-  // }, []);
-  // lay id tp
+  // lay id thanh pho
   useEffect(() => {
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
@@ -235,15 +229,12 @@ export default function Checkout() {
   useEffect(() => {
     const names = provinces.map((item) => item.ProvinceName);
     setValueTP(names);
-    const provinceCode = provinces.find((x) => x.ProvinceName === khachHang.thanhPho)?.code || 1;
 
     const valueH = district.map((item) => item.DistrictName);
     setValueHuyen(valueH);
 
-    const districtCode = district.find((x) => x.name === khachHang.huyen)?.code || 1;
-
-    const valueXa = ward.map((item) => item.WardName);
-    setValueXa(valueXa);
+    const valueX = ward.map((item) => item.WardName);
+    setValueXa(valueX);
   }, [provinces, district]);
 
   const [sanPhams, setSanPhams] = useState([]);
@@ -275,9 +266,7 @@ export default function Checkout() {
       {name}
     </Option>
   ));
-  
 
-  
   // Tính thời gian dự kiến
   useEffect(() => {
     const apiUrl =
@@ -418,12 +407,6 @@ export default function Checkout() {
     setValue(e.target.value);
   };
 
-  useEffect(() => {
-    getProvinces().then((data) => {
-      setProvinces(data);
-    });
-  }, []);
-
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
       if (item.code == provinceCode) {
@@ -499,7 +482,7 @@ export default function Checkout() {
       const thanhPho = diaChi.thanhPho;
       const quanHuyen = diaChi.huyen;
       const xaPhuong = diaChi.xa;
-
+      const maKH = user?.ma;
       const phuongThucThanhToan =
         shippingCost === "Miễn phí"
           ? "Chuyển khoản qua ngân hàng"
@@ -526,6 +509,7 @@ export default function Checkout() {
         sanPhams,
         tongTien,
         soLuong,
+        maKH,
       };
       console.log(cartNotLoginDTO);
       if (value == 3) {
@@ -535,7 +519,7 @@ export default function Checkout() {
         PaymentVNPAYAPI.paymentVnpay(data).then(
           (res) => {
             window.location.replace(res.data);
-            sessionStorage.setItem("formBill", JSON.stringify(dataLocal));
+            sessionStorage.setItem("formBill", JSON.stringify(cartNotLoginDTO));
           },
           (err) => {
             console.log(err);
@@ -691,20 +675,6 @@ export default function Checkout() {
                   </Select>
                 </div>
                 <div className="mb-6">
-                  {/* <select
-                    name="xaPhuong"
-                    id="wards"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required
-                    onChange={(e) => handleWardsChange(e.target.value)}
-                  >
-                    <option value="">Chọn xã phường</option>
-                    {wards.map((ward) => (
-                      <option key={ward.code} value={ward.code}>
-                        {ward.name}
-                      </option>
-                    ))}
-                  </select> */}
                   <Select
                     placeholder="Xã"
                     // onChange={(selectedValue) => handleChangeXa(selectedValue, index)}

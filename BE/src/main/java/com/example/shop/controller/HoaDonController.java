@@ -145,7 +145,6 @@ public class HoaDonController {
             @RequestBody HoaDon hoaDon
     ) {
 
-        System.out.println(hoaDon);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null) {
@@ -166,7 +165,6 @@ public class HoaDonController {
             @RequestBody HoaDonClientReq hd
     ) {
 
-        System.out.println(hd);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null) {
@@ -199,7 +197,6 @@ public class HoaDonController {
 
         try {
             HoaDon hoaDon1 = hoaDonRepository.getHoaDonByMa(id);
-            System.out.println(hoaDon.toString());
             if (hoaDon.getTrangThai().equals("1") && hoaDon.getLoaiHd().equals("0")) {
                 LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
                         .id_hoa_don(hoaDon1)
@@ -258,18 +255,14 @@ public class HoaDonController {
            hoaDonService.updateHoaDon(hoaDon);
             mess = "delete success";
         }
-//        System.out.println(mess);
         return new ResponseEntity(mess, HttpStatus.OK);
     }
 
     @PostMapping("cancelHD/{id}")
     public ResponseEntity cancelHD(@PathVariable("id")String id , @RequestBody Object trangThai){
-        System.out.println(trangThai);
         HoaDon hoaDon = hoaDonService.getHoaDon(id);
         hoaDon.setTrangThai(5);
         HoaDon don = hoaDonService.updateHoaDon(hoaDon);
-        System.out.println(don);
-//        System.out.println(mess);
         return new ResponseEntity(don , HttpStatus.OK);
     }
 
@@ -297,14 +290,12 @@ public class HoaDonController {
     @GetMapping("getHoaDonbyVoucher/{id}")
     public ResponseEntity getHoaDonbyVoucher(@PathVariable("id")String id){
         List<HoaDon> listhd = hoaDonService.getHDbyVoucher(id);
-
         return ResponseEntity.ok(listhd);
     }
 
     //thanh toan voi vnpay
     @PostMapping("thanhToanVoiVNPAY")
     public ResponseEntity thanhToanVoiVNPAY(@RequestBody CreatePayMentVNPAYRequest payModel, HttpServletRequest request) {
-        System.out.println(request);
         try {
             return ResponseEntity.ok(hoaDonService.payWithVNPAYOnline(payModel, request)) ;
         } catch (UnsupportedEncodingException e) {

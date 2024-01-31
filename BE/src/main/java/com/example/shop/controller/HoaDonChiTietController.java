@@ -218,41 +218,11 @@ public class HoaDonChiTietController {
     }
 
     //----------------------Hội--------------------------//
-//    @PostMapping("/addHoaDonChiTietToHoaDon")
-//    public ResponseEntity addHoaDonChiTietToHoaDon(@RequestBody CartNotLoginDTO cartNotLoginDTO) {
-//        System.out.println(cartNotLoginDTO.getEmail());
-//        System.out.println(cartNotLoginDTO.getPhuongThucThanhToan());
-//        for (SanPhamChiTiet n : cartNotLoginDTO.getSanPhams()) {
-//            System.out.println("SanPhamChiTiet: " + n);
-//        }
-//
-//        String maxMaString = ssHD.getMaxMa();
-//        Integer maxMa = (maxMaString != null) ? Integer.parseInt(maxMaString) : null;
-//        if (maxMa == null) {
-//            maxMa = 0;
-//        }
-//
-//        HoaDon hoaDon = HoaDon.builder()
-//                .ma("HD" + (maxMa + 1))
-//                .trangThai(7)
-//                .deleted(1)
-//                .loaiHd(1)
-//                .nguoiTao("User")
-//                .ngayTao(new Date())
-//                .build();
-//        ssHD.save(hoaDon);
-//
-//        HoaDonChiTiet newHoaDonChiTiet = new HoaDonChiTiet();
-//        newHoaDonChiTiet.setId_hoa_don(hoaDon);
-//        newHoaDonChiTiet.setId_chi_tiet_san_pham(cartNotLoginDTO.getSanPhams());
-//        ssHDCT.save(newHoaDonChiTiet);
-//
-//        return ResponseEntity.ok(newHoaDonChiTiet);
-//    }
 
     @PostMapping("/addHoaDonChiTietToHoaDon")
     public ResponseEntity addHoaDonChiTietToHoaDon(@RequestBody CartNotLoginDTO cartNotLoginDTO) {
         System.out.println("getEmail: " + cartNotLoginDTO.getEmail());
+        System.out.println("getMa: " + cartNotLoginDTO.getMaKH());
         System.out.println("getHoTen: " + cartNotLoginDTO.getHoTen());
         System.out.println("getSdt: " + cartNotLoginDTO.getSoDienThoai());
         System.out.println("getDiaChi: " + cartNotLoginDTO.getDuong());
@@ -277,6 +247,7 @@ public class HoaDonChiTietController {
                     .deleted(1)
                     .loaiHd(0)
                     .ngayTao(new Date())
+                    .id_khach_hang(ssKH.findByMa(cartNotLoginDTO.getMaKH()))
                     .diaChi(cartNotLoginDTO.getDuong() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
                     .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
                     .build();
