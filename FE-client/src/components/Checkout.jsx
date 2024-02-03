@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { getProvinces, getDistricts, getWards } from "../apis/Location";
+import { getProvinces, getDistricts, getWards } from "../apis/Location_2";
 import { Button, Modal, Radio, Space, Spin, Select, Tooltip } from "antd";
 import { Row, Col } from 'antd';
 import { IoIosArrowBack } from "react-icons/io";
@@ -64,7 +64,12 @@ export default function Checkout() {
   const [muaThem, setMuaThem] = useState("");
   const [duocGiam, setDuocGiam] = useState("100");
   const [listVoucher, setListVoucher] = useState([]);
-
+  useEffect(() => {
+    if(localStorage?.getItem("user") != '')
+      setUser(JSON.parse(localStorage.getItem("user")));
+    else
+      setUser(null)
+  }, []);
   //get list voucher dang co'
   const getVocherDuocDung = async () => {
     const result = await axios.get("http://localhost:8080/voucher/getVouchers");
@@ -108,9 +113,9 @@ export default function Checkout() {
   }, [tongTien, listVoucher]);
 
 
-  //get thong tin khach hang 
+  // get thong tin khach hang
   const getKhachHang = async () => {
-    const result = await axios.get(`http://localhost:8080/khach-hang/findByMa/${JSON.parse(localStorage.getItem("user")).ma}`);
+    const result = await axios.get(`http://localhost:8080/khach-hang/findByMa/${user?.ma}`);
     const khachHangData = result.data;
 
     setKhachHang({
@@ -133,7 +138,7 @@ export default function Checkout() {
   const [listDiaChi, setListDiaChi] = useState([]);
 
   const getDiaChi = async () => {
-    const result = await axios.get(`http://localhost:8080/dia-chi/findByMa/${JSON.parse(localStorage.getItem("user")).ma}`);
+    const result = await axios.get(`http://localhost:8080/dia-chi/findByMa/${user?.ma}`);
     setListDiaChi(result.data);
     result.data.map((item) => {
       if (item.trangThai == 1) {
@@ -143,15 +148,10 @@ export default function Checkout() {
   };
   useEffect(() => {
     getDiaChi();
-    // getKhachHang();
   }, []);
-  // useEffect(() => {
-  //   getProvinces().then((data) => {
-  //     setProvinces(data);
-  //   });
-  // }, []);
-  // lay id tp
+  // lay id thanh pho
   useEffect(() => {
+    console.log(diaChi.thanhPho);
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
     const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -195,7 +195,6 @@ export default function Checkout() {
         const id_huyen = response.data.data.find(
           (item) => item.DistrictName === diaChi.huyen
         )?.DistrictID;
-
         setDistrict(response.data.data);
         setIdHuyen(id_huyen);
       })
@@ -235,16 +234,13 @@ export default function Checkout() {
   useEffect(() => {
     const names = provinces.map((item) => item.ProvinceName);
     setValueTP(names);
-    const provinceCode = provinces.find((x) => x.ProvinceName === khachHang.thanhPho)?.code || 1;
 
     const valueH = district.map((item) => item.DistrictName);
     setValueHuyen(valueH);
 
-    const districtCode = district.find((x) => x.name === khachHang.huyen)?.code || 1;
-
-    const valueXa = ward.map((item) => item.WardName);
-    setValueXa(valueXa);
-  }, [provinces, district]);
+    const valueX = ward.map((item) => item.WardName);
+    setValueXa(valueX);
+  }, [provinces, district, ward]);
 
   const [sanPhams, setSanPhams] = useState([]);
   const [dataLocal, setDataLocal] = useState([]);
@@ -257,6 +253,26 @@ export default function Checkout() {
   const showLoader = (callback) => {
     setSpinning(true);
     callback();
+  };
+  // khach hang thay doi dia chi
+  const handleChangeTP = (selectedValue) => {
+    setDiaChi({ ...diaChi, "thanhPho": selectedValue });
+  };
+
+  const handleChangeHuyen = (selectedValue) => {
+    setDiaChi({ ...diaChi, "huyen": selectedValue });
+
+  };
+
+  const handleChangeXa = (selectedValue) => {
+    setDiaChi({ ...diaChi, "xa": selectedValue });
+  };
+
+  const handleDuongChange = (e) => {
+    const { value } = e.target;
+    const updatedListDiaChi = [...listDiaChi];
+    updatedListDiaChi[index] = { ...updatedListDiaChi[index], duong: value };
+    setListDiaChi(updatedListDiaChi);
   };
   const options = valueTP.map((name) => (
     <Option key={name} value={name}>
@@ -275,9 +291,7 @@ export default function Checkout() {
       {name}
     </Option>
   ));
-  
 
-  
   // Tính thời gian dự kiến
   useEffect(() => {
     const apiUrl =
@@ -418,12 +432,6 @@ export default function Checkout() {
     setValue(e.target.value);
   };
 
-  useEffect(() => {
-    getProvinces().then((data) => {
-      setProvinces(data);
-    });
-  }, []);
-
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
       if (item.code == provinceCode) {
@@ -499,7 +507,8 @@ export default function Checkout() {
       const thanhPho = diaChi.thanhPho;
       const quanHuyen = diaChi.huyen;
       const xaPhuong = diaChi.xa;
-
+      const maKH = user?.ma;
+      const voucher = codeVC;
       const phuongThucThanhToan =
         shippingCost === "Miễn phí"
           ? "Chuyển khoản qua ngân hàng"
@@ -526,6 +535,8 @@ export default function Checkout() {
         sanPhams,
         tongTien,
         soLuong,
+        maKH,
+        voucher,  
       };
       console.log(cartNotLoginDTO);
       if (value == 3) {
@@ -535,7 +546,7 @@ export default function Checkout() {
         PaymentVNPAYAPI.paymentVnpay(data).then(
           (res) => {
             window.location.replace(res.data);
-            sessionStorage.setItem("formBill", JSON.stringify(dataLocal));
+            sessionStorage.setItem("formBill", JSON.stringify(cartNotLoginDTO));
           },
           (err) => {
             console.log(err);
@@ -632,58 +643,30 @@ export default function Checkout() {
                   type="number"
                   required
                   autoComplete="off"
-                  value={user.sdt}
+                  value={user?.sdt}
                 />
                 <label htmlFor="soDienThoai">Số điện thoại</label>
               </div>
               <div className="inputGroupCodeSignUp">
-                <input name="diaChi" type="text" required autoComplete="off" value={diaChi.duong} />
+                <input name="diaChi" type="text" required autoComplete="off" value={diaChi?.duong} />
                 <label htmlFor="diaChi">Địa chỉ</label>
               </div>
 
               <div className="flex gap-1 justify-between">
                 <div className="mb-6">
-                  {/* <select
-                    name="thanhPho"
-                    id="city"
-                    className="bg-gray-50 border border-gray-300 text-gray-900  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    onChange={(e) => handleProvinceChange(e.target.value)}
-                    required
-                  > */}
-                  {/* <option value="">Chọn thành phố</option> */}
                   <Select
                     placeholder="Thành phố"
-                    // onChange={(selectedValue) => handleChangeTP(selectedValue, index)}
+                    onChange={(selectedValue) => handleChangeTP(selectedValue)}
                     value={diaChi?.thanhPho}
                     style={{ marginRight: "10px", width: "240px", height: "44px" }}
                   >
                     {options}
                   </Select>
-                  {/* {provinces.map((province) => (
-                      <option key={province.code} value={province.code}>
-                        {province.name}
-                      </option>
-                    ))} */}
-                  {/* </select> */}
                 </div>
                 <div className="mb-6">
-                  {/* <select
-                    id="District"
-                    name="huyen"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    onChange={(e) => handleDistrictChange(e.target.value)}
-                    required
-                  >
-                    <option value="">Chọn huyện</option>
-                    {districts.map((district) => (
-                      <option key={district.code} value={district.code}>
-                        {district.name}
-                      </option>
-                    ))}
-                  </select> */}
                   <Select
                     placeholder="Huyện"
-                    // onChange={(selectedValue) => handleChangeHuyen(selectedValue, index)}
+                    onChange={(selectedValue) => handleChangeHuyen(selectedValue)}
                     value={diaChi?.huyen}
                     style={{ marginRight: "15px", width: "240px", height: "44px" }}
                   >
@@ -691,24 +674,10 @@ export default function Checkout() {
                   </Select>
                 </div>
                 <div className="mb-6">
-                  {/* <select
-                    name="xaPhuong"
-                    id="wards"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-56 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    required
-                    onChange={(e) => handleWardsChange(e.target.value)}
-                  >
-                    <option value="">Chọn xã phường</option>
-                    {wards.map((ward) => (
-                      <option key={ward.code} value={ward.code}>
-                        {ward.name}
-                      </option>
-                    ))}
-                  </select> */}
                   <Select
                     placeholder="Xã"
-                    // onChange={(selectedValue) => handleChangeXa(selectedValue, index)}
-                    value={diaChi.xa}
+                    onChange={(selectedValue) => handleChangeXa(selectedValue)}
+                    value={diaChi?.xa}
                     style={{ marginRight: "10px", width: "230px", height: "44px" }}
                   >
                     {optionXa}

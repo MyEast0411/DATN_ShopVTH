@@ -93,15 +93,21 @@ function InForHD({ item }) {
             </span>
           </p>
           <p>
-            Số Tiền :{" "}
+            Tiền hàng :{" "}
             <span className="italic  font-light">
-              &nbsp;&nbsp; {Intl.NumberFormat().format(item.hoaDon.tongTien)}₫
+              &nbsp;&nbsp; {Intl.NumberFormat().format(item.hoaDon.tongTien - item.hoaDon.tienShip)}₫
             </span>
           </p>
           <p>
-            Tiền Ship :
+            Tiền ship :
             <span className="italic  font-light">
               &nbsp;&nbsp; {Intl.NumberFormat().format(item.hoaDon.tienShip)}₫
+            </span>
+          </p>
+          <p>
+            Tổng tiền :{" "}
+            <span className="italic  font-light">
+              &nbsp;&nbsp; {Intl.NumberFormat().format(item.hoaDon.tongTien)}₫
             </span>
           </p>
         </div>

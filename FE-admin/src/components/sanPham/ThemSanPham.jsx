@@ -35,6 +35,7 @@ export default function ThemSanPham() {
   const [selectedKichCo, setSelectedKichCo] = useState([]);
   const [img, setImg] = useState([]);
   const [mauSac, setMauSac] = useState([]);
+  const [theLoai, setTheLoai] = useState([]);
   const [thuongHieu, setThuongHieu] = useState([]);
   const [chatLieu, setChatLieu] = useState([]);
   const [deGiay, setDeGiay] = useState([]);
@@ -62,7 +63,7 @@ export default function ThemSanPham() {
     id_chat_lieu: "",
     id_de_giay: "",
     id_thuong_hieu: "",
-    id_nhan_hieu: "",
+    id_the_loai: "",
   });
   const [deGiayModal, setDeGiayModal] = useState({
     tenDeGiay: "",
@@ -100,9 +101,19 @@ export default function ThemSanPham() {
     id_de_giay,
     id_kich_co,
     id_mau_sac,
-    id_nhan_hieu,
+    id_the_loai,
     hinhAnh,
   } = sanPham;
+  
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const onSelectChange = (newSelectedRowKeys) => {
+    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
 
   const handleImageChange = async (event) => {
     const file = event.target.files[0];
@@ -259,6 +270,7 @@ export default function ThemSanPham() {
       dataIndex: "hinhAnh",
       key: "hinhAnh",
       render: (text, record, index) => {
+        // console.log(tables[record.id_mau_sac].length);
         return {
           children: (
             <>
@@ -266,7 +278,7 @@ export default function ThemSanPham() {
                 style={{
                   cursor: "pointer",
                   marginLeft: "100px",
-                  marginTop: "-50px",
+                  // marginTop: "-50px",
                 }}
                 onClick={async () => {
                   let tenSP =
@@ -316,13 +328,13 @@ export default function ThemSanPham() {
                               style={{ objectFit: "contain" }}
                               className="w-full h-full object-cover"
                               onClick={() => {
-                                if (
-                                  selectedImages.length >= 3 &&
-                                  !selectedImages.includes(x.id)
-                                ) {
+                                // if (
+                                //   selectedImages.length >= 3 &&
+                                //   !selectedImages.includes(x.id)
+                                // ) {
                                   
-                                  toast.error("😢 Chỉ được chọn 3 ảnh !");
-                                } else {
+                                //   toast.error("😢 Chỉ được chọn 3 ảnh !");
+                                // } else {
                                   const checkbox = document.getElementById(
                                     x.id
                                   );
@@ -341,7 +353,7 @@ export default function ThemSanPham() {
                                     ]);
                                     // }
                                   }
-                                }
+                                // }
                               }}
                             />
                           </div>
@@ -381,13 +393,32 @@ export default function ThemSanPham() {
             </>
           ),
           props: {
-            rowSpan: index,
+            // rowSpan: record.rowSpan,
             style: {
               justifyContent: "center",
               alignItems: "center",
             },
           },
         };
+      },
+      onCell: (record, index) => {
+        if (index === 3) {
+          return {
+            rowSpan: 2,
+          };
+        }
+
+        if (index === 4) {
+          return {
+            rowSpan: 0,
+          };
+        }
+        if (index === 1) {
+          return {
+            colSpan: 0,
+          };
+        }
+        return {};
       },
       align: "center",
     },
@@ -630,7 +661,7 @@ export default function ThemSanPham() {
           id_mau_sac: mau,
           id_kich_co: kichCo,
           id_thuong_hieu: sanPham.id_thuong_hieu,
-          id_nhan_hieu: sanPham.id_nhan_hieu,
+          id_the_loai: sanPham.id_the_loai,
           id_chat_lieu: sanPham.id_chat_lieu,
           id_de_giay: sanPham.id_de_giay,
           id_san_pham : sanPham.id_san_pham
@@ -656,7 +687,7 @@ export default function ThemSanPham() {
         id_mau_sac: mau,
         id_kich_co: kichCo,
         id_thuong_hieu: sanPham.id_thuong_hieu,
-        id_nhan_hieu: sanPham.id_nhan_hieu,
+        id_id_the_loai: sanPham.id_id_the_loai,
         id_chat_lieu: sanPham.id_chat_lieu,
         id_de_giay: sanPham.id_de_giay,
         id_san_pham : sanPham.id_san_pham,
@@ -682,7 +713,7 @@ export default function ThemSanPham() {
   }, [kichCo]);
 
   useEffect(() => {
-    getAllNH();
+    getAllTL();
     getAllMS();
     getAllCL();
     getAllTH();
@@ -696,9 +727,9 @@ export default function ThemSanPham() {
         setImg(response.data);
       });
   };
-  const getAllNH = async () => {
-    await axios.get("http://localhost:8080/getAllNH").then((response) => {
-      setNhanHieu(response.data);
+  const getAllTL = async () => {
+    await axios.get("http://localhost:8080/getAllTL").then((response) => {
+      setTheLoai(response.data);
     });
   };
   const getAllMS = async () => {
@@ -745,11 +776,12 @@ export default function ThemSanPham() {
       sp.id_mau_sac,
       sp.id_kich_co,
       sp.id_thuong_hieu,
-      sp.id_nhan_hieu,
+      sp.id_the_loai,
       sp.id_chat_lieu,
       sp.id_de_giay,
       tableImg,
     ]);
+    console.log(data);
     if (isConfirmed) {
       await axios
         .post("http://localhost:8080/san-pham/add", data)
@@ -967,25 +999,25 @@ export default function ThemSanPham() {
                       htmlFor="country"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Nhãn hiệu
+                      Thể loại
                     </label>
                     <div className="mt-2 space-x-2 flex">
                       <select
                         id="nhanHieu"
-                        name="id_nhan_hieu"
+                        name="id_the_loai"
                         autoComplete="country-name"
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                         onChange={(e) => onChange(e)}
                       >
-                        <option selected>--Chọn Nhãn Hiệu--</option>
-                        {nhanHieu.map((x) => (
+                        <option selected>--Chọn Thể Loại--</option>
+                        {theLoai.map((x) => (
                           <option key={x.id} value={x.id}>
                             {x.ten}
                           </option>
                         ))}
                       </select>
                       <Modal
-                        title="Thêm nhãn hiệu"
+                        title="Thêm thể loại"
                         open={isModalOpenDG}
                         onOk={handleOkDG}
                         onCancel={handleCancelDG}
@@ -998,14 +1030,14 @@ export default function ThemSanPham() {
                             htmlFor="country"
                             className="block text-sm font-medium leading-6 text-gray-900"
                           >
-                            Tên nhãn hiệu
+                            Tên thể loại
                           </label>
                           <input
                             type="text"
-                            name="tenNhanHieu"
-                            value={tenDeGiay}
+                            name="tenTheLoai"
+                            // value={tenTheLoai}
                             className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                            placeholder="Nhập tên nhãn hiệu"
+                            placeholder="Nhập tên thể loại"
                             onChange={(e) => onChangeDG(e)}
                             style={{ borderRadius: "5px" }}
                           />
@@ -1420,6 +1452,7 @@ export default function ThemSanPham() {
                 {" " + mauSac.find((item) => item.maMau === mau)?.ten || ""}{" "}
               </h2>
               <Table
+                // rowSelection={rowSelection}
                 columns={columns}
                 dataSource={tables[mau] || []}
                 pagination={false}

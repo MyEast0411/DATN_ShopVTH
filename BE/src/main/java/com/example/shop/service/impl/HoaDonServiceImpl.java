@@ -196,12 +196,14 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Override
     public String payWithVNPAYOnline(CreatePayMentVNPAYRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException {
+        Random random = new Random();
+        int randomNumber = random.nextInt(90000) + 10000;
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
 
-        cld.add(Calendar.MINUTE,15);
+        cld.add(Calendar.MINUTE,5);
 
         String vnp_ExpireDate = formatter.format(cld.getTime());
 
@@ -209,7 +211,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         vnp_Params.put("vnp_Version", VNPayConstant.vnp_Version);
         vnp_Params.put("vnp_Command",VNPayConstant.vnp_Command);
         vnp_Params.put("vnp_TmnCode",VNPayConstant.vnp_TmnCode);
-        vnp_Params.put("vnp_Amount",String.valueOf(payModel.vnp_Ammount + "00"));
+        vnp_Params.put("vnp_Amount",payModel.vnp_Ammount + "00");
         vnp_Params.put("vnp_BankCode", VNPayConstant.vnp_BankCode);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
         vnp_Params.put("vnp_CurrCode",VNPayConstant.vnp_CurrCode);
@@ -218,7 +220,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         vnp_Params.put("vnp_OrderInfo",payModel.vnp_OrderInfo);
         vnp_Params.put("vnp_OrderType",payModel.vnp_OrderType);
         vnp_Params.put("vnp_ReturnUrl", VNPayConstant.vnp_ReturnUrl);
-        vnp_Params.put("vnp_TxnRef", String.valueOf(payModel.vnp_TxnRef));
+        vnp_Params.put("vnp_TxnRef", String.valueOf(randomNumber));//String.valueOf(payModel.vnp_TxnRef)); // so nay la ma cua bill nen random de khong trung nhau
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
         List fieldList = new ArrayList(vnp_Params.keySet());

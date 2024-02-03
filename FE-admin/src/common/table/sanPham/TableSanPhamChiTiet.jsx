@@ -20,11 +20,11 @@ import {
   Slider,
 } from "@nextui-org/react";
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
+  // // // Dialog,
+  // // // DialogActions,
+  // // // DialogContent,
+  // // // DialogContentText,
+  // // // DialogTitle,
   TableCell as TableCellMui,
 } from "@mui/material";
 // import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
@@ -143,9 +143,9 @@ export default function App({ gioHang }) {
   const handleOkThemSL = async () => {
     // localStorage.setItem("gioHang"+gioHang,soLuongSP.id)
     // localStorage.setItem("soLuongDat",soLuongDat)
-    console.log(gioHang);
-    console.log(soLuongSP.id);
-    console.log(soLuongDat);
+    // // // console.log(gioHang);
+    // // // console.log(soLuongSP.id);
+    // // // console.log(soLuongDat);
 
     await axios
       .post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
@@ -194,7 +194,7 @@ export default function App({ gioHang }) {
   const getAllHA = async () => {
     await axios.get("http://localhost:8080/getAllHinhAnh").then((response) => {
       setHinhAnh(response.data);
-      // console.log(response.data);
+      // // // // console.log(response.data);
     });
   };
   useEffect(() => {
@@ -453,7 +453,6 @@ export default function App({ gioHang }) {
     const fetchData = async () => {
       try {
         const response = await axios.post("http://localhost:8080/filterSPCT",sanPham);
-        console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
@@ -914,8 +913,8 @@ export default function App({ gioHang }) {
           />
         </div>
       </Modal>
-      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
-        <DialogTitle>
+      // // // <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
+        // // // <DialogTitle>
           <div
             style={{
               display: "flex",
@@ -932,21 +931,21 @@ export default function App({ gioHang }) {
             />
             <span>Xác nhận xóa</span>
           </div>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
+        // // // </DialogTitle>
+        // // // <DialogContent>
+          // // // <DialogContentText>
             Bạn có chắc muốn xóa Sản phẩm này?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
+          // // // </DialogContentText>
+        // // // </DialogContent>
+        // // // <DialogActions>
           <Button onClick={cancelDelete} color="warning">
             Hủy
           </Button>
           <Button color="primary" onClick={confirmDelete}>
             Vẫn xóa
           </Button>
-        </DialogActions>
-      </Dialog>
+        // // // </DialogActions>
+      // // // </Dialog>
     </>
   );
 }

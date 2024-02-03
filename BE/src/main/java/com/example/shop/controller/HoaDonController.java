@@ -59,14 +59,6 @@ public class HoaDonController {
     private LichSuHoaDonService lichSuHoaDonService;
     @Autowired
     private HoaDonChiTietService hoaDonChiTietService;
-   /* trạng thái hóa đơn
-    0 : chờ xác nhận
-    1 : xác nhận
-    2 : chờ giao hàng
-    3 : đnag vận chuyển // chỉ có hoàn ko sửa được
-    4 : đã giao hàng
-    5 : hoàn thành // chỉ hthanh khi khách đã đưa tiền
-     */
 
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
@@ -153,6 +145,7 @@ public class HoaDonController {
             @RequestBody HoaDon hoaDon
     ) {
 
+        System.out.println(hoaDon);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null) {
@@ -172,8 +165,7 @@ public class HoaDonController {
             @PathVariable("id") String id,
             @RequestBody HoaDonClientReq hd
     ) {
-        System.out.println(id);
-        System.out.println(hd);
+
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null) {
@@ -265,18 +257,14 @@ public class HoaDonController {
            hoaDonService.updateHoaDon(hoaDon);
             mess = "delete success";
         }
-//        System.out.println(mess);
         return new ResponseEntity(mess, HttpStatus.OK);
     }
 
     @PostMapping("cancelHD/{id}")
     public ResponseEntity cancelHD(@PathVariable("id")String id , @RequestBody Object trangThai){
-        System.out.println(trangThai);
         HoaDon hoaDon = hoaDonService.getHoaDon(id);
         hoaDon.setTrangThai(5);
         HoaDon don = hoaDonService.updateHoaDon(hoaDon);
-        System.out.println(don);
-//        System.out.println(mess);
         return new ResponseEntity(don , HttpStatus.OK);
     }
 
@@ -304,18 +292,27 @@ public class HoaDonController {
     @GetMapping("getHoaDonbyVoucher/{id}")
     public ResponseEntity getHoaDonbyVoucher(@PathVariable("id")String id){
         List<HoaDon> listhd = hoaDonService.getHDbyVoucher(id);
-
         return ResponseEntity.ok(listhd);
     }
 
     //thanh toan voi vnpay
     @PostMapping("thanhToanVoiVNPAY")
     public ResponseEntity thanhToanVoiVNPAY(@RequestBody CreatePayMentVNPAYRequest payModel, HttpServletRequest request) {
-        System.out.println(request);
         try {
             return ResponseEntity.ok(hoaDonService.payWithVNPAYOnline(payModel, request)) ;
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/getHoaDonByIdVoucher/{id}")
+    public ResponseEntity<List<HoaDon>> getHoaDonByIdVoucher(@PathVariable String id){
+        try{
+            List<HoaDon> list = hoaDonRepository.getHdByIdVoucher(id);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

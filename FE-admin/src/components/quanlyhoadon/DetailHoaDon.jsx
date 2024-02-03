@@ -304,7 +304,7 @@ export default function DetailHoaDon() {
           kichco: item.id_chi_tiet_san_pham.id_kich_co.ten,
           mausac: item.id_chi_tiet_san_pham.id_mau_sac.ten,
           quantity: item.soLuong,
-          price: item.giaTien,
+          price: item.id_chi_tiet_san_pham.giaBan,
         };
       })
     );
@@ -406,9 +406,15 @@ export default function DetailHoaDon() {
 
     setMoney({
       tienGiam: data.tienGiam,
+<<<<<<< HEAD
       tienHang: data.tongTien,
       tienShip: data.tienShip,
       tongTien: data.tongTien + data.tienShip - data.tienGiam,
+=======
+      tienHang: data.tongTien + data.tienGiam - data.tienShip,
+      tienShip: data.tienShip,
+      tongTien: data.tongTien,
+>>>>>>> fc1394aaba6b80d209503d8962ee0812e768ab20
       ma: data.ma,
     });
     setInfo(data);
@@ -751,9 +757,6 @@ export default function DetailHoaDon() {
                             <span className="font-medium text-red-500 mb-3">
                               {item.quantity}
                             </span>
-                            {/* // ) : (
-                            //   <Input  value={valueSL} onChange={(e)=> setValueSL(e.target.value)} />
-                            // )}*/}{" "}
                             sản phẩm
                           </p>
                           <p className="font-medium text-gray-900 mb-3">
@@ -889,7 +892,7 @@ export default function DetailHoaDon() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-1  ">
-                    <p className="font-normal text-lg"> Tien Giam : </p>
+                    <p className="font-normal text-lg"> Tiền giảm : </p>
                     <p
                       className="font-normal text-red-500"
                       style={{ fontSize: "16px" }}
