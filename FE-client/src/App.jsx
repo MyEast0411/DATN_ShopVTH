@@ -41,13 +41,9 @@ function App() {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/tracuu" element={<FindHD />} />
         <Route path="/lich-su-mua-hang/:idkh" element={<PurchaseHistory />} />
-
+        <Route path="/test" element={<Test />} />
         <Route path="/client/edit-hoa-don/:id" element={<EditHoaDon />} />
-
         <Route path="/payment/payment-success" element={<PayMentSuccess />} />
-
-
-
         <Route path="/test" element={<Test />} />
       </Routes>
       <BackToTopButton />
