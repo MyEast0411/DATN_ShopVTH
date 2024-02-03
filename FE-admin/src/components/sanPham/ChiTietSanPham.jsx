@@ -233,7 +233,7 @@ export default function ChiTietSanPham() {
           deGiay: item.id_de_giay.ten,
           donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
           trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+          giaGiam: kmspcts.find((x) => x.id_san_pham.id == item.id)
             ?.id_khuyen_mai.giaTriPhanTram,
         }));
 
