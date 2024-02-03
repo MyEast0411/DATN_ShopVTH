@@ -406,13 +406,12 @@ export default function DetailHoaDon() {
 
     setMoney({
       tienGiam: data.tienGiam,
-      tienHang: data.tongTien + data.tienGiam,
+      tienHang: data.tongTien,
       tienShip: data.tienShip,
-      tongTien: data.tongTien + data.tienShip,
+      tongTien: data.tongTien + data.tienShip - data.tienGiam,
       ma: data.ma,
     });
     setInfo(data);
-    console.log(data.ma);
   };
 
   return (
@@ -905,7 +904,8 @@ export default function DetailHoaDon() {
                       className="font-normal text-red-500"
                       style={{ fontSize: "16px" }}
                     >
-                      {Intl.NumberFormat().format(money.tongTien)}&nbsp;₫
+                      {Intl.NumberFormat().format(money.tongTien)}
+                      &nbsp;₫
                     </p>
                   </div>
                 </div>

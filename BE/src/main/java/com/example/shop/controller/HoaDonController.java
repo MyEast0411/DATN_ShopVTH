@@ -59,6 +59,14 @@ public class HoaDonController {
     private LichSuHoaDonService lichSuHoaDonService;
     @Autowired
     private HoaDonChiTietService hoaDonChiTietService;
+   /* trạng thái hóa đơn
+    0 : chờ xác nhận
+    1 : xác nhận
+    2 : chờ giao hàng
+    3 : đnag vận chuyển // chỉ có hoàn ko sửa được
+    4 : đã giao hàng
+    5 : hoàn thành // chỉ hthanh khi khách đã đưa tiền
+     */
 
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
@@ -145,7 +153,6 @@ public class HoaDonController {
             @RequestBody HoaDon hoaDon
     ) {
 
-        System.out.println(hoaDon);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null) {
@@ -165,7 +172,7 @@ public class HoaDonController {
             @PathVariable("id") String id,
             @RequestBody HoaDonClientReq hd
     ) {
-
+        System.out.println(id);
         System.out.println(hd);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
