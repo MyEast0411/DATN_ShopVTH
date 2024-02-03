@@ -303,4 +303,15 @@ public class HoaDonController {
         }
     }
 
+    @GetMapping("/getHoaDonByIdVoucher/{id}")
+    public ResponseEntity<List<HoaDon>> getHoaDonByIdVoucher(@PathVariable String id){
+        try{
+            List<HoaDon> list = hoaDonRepository.getHdByIdVoucher(id);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

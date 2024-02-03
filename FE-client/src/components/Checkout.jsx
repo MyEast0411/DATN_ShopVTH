@@ -67,7 +67,7 @@ export default function Checkout() {
   useEffect(() => {
     if(localStorage?.getItem("user") != '')
       setUser(JSON.parse(localStorage.getItem("user")));
-    else 
+    else
       setUser(null)
   }, []);
   //get list voucher dang co'
@@ -113,7 +113,7 @@ export default function Checkout() {
   }, [tongTien, listVoucher]);
 
 
-  // get thong tin khach hang 
+  // get thong tin khach hang
   const getKhachHang = async () => {
     const result = await axios.get(`http://localhost:8080/khach-hang/findByMa/${user?.ma}`);
     const khachHangData = result.data;
@@ -246,6 +246,9 @@ export default function Checkout() {
   const [dataLocal, setDataLocal] = useState([]);
   const [spinning, setSpinning] = React.useState(false);
   const [user, setUser] = useState({});
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")));
+  }, []);
 
   const showLoader = (callback) => {
     setSpinning(true);
@@ -627,7 +630,7 @@ export default function Checkout() {
             )}
             <form onSubmit={handleSubmit}>
               <div className="inputGroupCodeSignUp">
-                <input name="email" type="email" value={user?.email} required autoComplete="off" />
+                <input name="email" type="email" value={user.email} required autoComplete="off" />
                 <label htmlFor="email">Email</label>
               </div>
               <div className="inputGroupCodeSignUp">

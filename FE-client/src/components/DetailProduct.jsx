@@ -18,6 +18,7 @@ import AlsoLike from "./AlsoLike";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
 import errorIcon from "../assets/errorIcon.png";
+import { getAllKMSPCT } from "../apis/KhuyenMai";
 
 export default function DetailProduct() {
   useEffect(() => {
@@ -31,7 +32,6 @@ export default function DetailProduct() {
   const [selectedSize, setSelectedSize] = useState([]);
   const [selectedIdSPCT, setSelectedIdSPCT] = useState("");
   const [runFirstTime, setRunFirstTime] = useState(false);
-  const [selectedGiaBan, setSelectedGiaBan] = useState(0);
   const [selectedTheLoai, setSelectedTheLoai] = useState("");
   const [cartItem, setCartItem] = useState([]);
   const [api, contextHolder] = notification.useNotification();
@@ -39,6 +39,18 @@ export default function DetailProduct() {
   const [ma, setMa] = useState("");
   const [maList, setMaList] = useState([]);
   const [user, setUser] = useState({});
+  const [selectedGiaBan, setSelectedGiaBan] = useState(0);
+  const [kmspcts, setKmspcts] = useState([]);
+
+  const fetchKMSPCT = async () => {
+    const data = await getAllKMSPCT();
+    console.log("kmspct:", data);
+    setKmspcts(data);
+  };
+  useEffect(() => {
+    fetchKMSPCT();
+  }, [kmspcts]);
+
   useEffect(() => {
     setUser(JSON.parse(localStorage?.getItem("user")));
   }, []);
@@ -146,6 +158,16 @@ export default function DetailProduct() {
     };
     filterIdSP();
   }, [cartItem, sizeBorder]);
+
+  const DiscountTag = ({ discount }) => {
+    if (discount === undefined) {
+      return null;
+    }
+
+    return (
+      <div className="discount-tag-detail-product">{`${discount}% OFF`}</div>
+    );
+  };
 
   useEffect(() => {
     const fetchSanPhamById = async () => {
@@ -268,14 +290,24 @@ export default function DetailProduct() {
             </div>
             <div className="choose-color-product flex flex-wrap">
               {uniqueArrayImg.map((img) => (
-                <img
-                  key={img}
-                  src={img}
-                  alt=""
-                  className={`choose-color-img-pro ${selectedImage === img ? "selected-border" : ""
+                <div className="relative mr-3" key={img}>
+                  <img
+                    key={img}
+                    src={img}
+                    alt=""
+                    className={`img-detail-product choose-color-img-pro ${
+                      selectedImage === img ? "selected-border" : ""
                     }`}
-                  onClick={() => handleImageClick(img)}
-                />
+                    onClick={() => handleImageClick(img)}
+                  />
+                  <DiscountTag
+                    discount={
+                      kmspcts.find(
+                        (x) => x.id_chi_tiet_san_pham.defaultImg == img
+                      )?.id_khuyen_mai.giaTriPhanTram
+                    }
+                  />
+                </div>
               ))}
             </div>
             <div className="detail-pro-select-size-title flex justify-between mt-10">
@@ -290,12 +322,13 @@ export default function DetailProduct() {
                 <div
                   key={size}
                   id={size}
-                  className={`detail-pro-select-size-button text-center ${selectedSize.includes(size) && sizeBorder === size
+                  className={`detail-pro-select-size-button text-center ${
+                    selectedSize.includes(size) && sizeBorder === size
                       ? "selected-border"
                       : selectedSize.includes(size)
-                        ? "..."
-                        : "out-of-size cursor-not-allowed"
-                    }`}
+                      ? "..."
+                      : "out-of-size cursor-not-allowed"
+                  }`}
                   onClick={() => handleSizeClick(size)}
                 >
                   {size}

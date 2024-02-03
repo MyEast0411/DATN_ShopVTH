@@ -75,7 +75,7 @@ public class VoucherController {
             @RequestBody DataReq object
 
     ){
-        List<KhachHangVoucher>   listVCKH = new ArrayList<>();
+        List<KhachHangVoucher>   listVCKH = new ArrayList<>();   
         List<KhachHang> listKhachHangData = object.getListKhachHang();
         List<KhachHangVoucher> listVCKHReturn = new ArrayList<>();
         Voucher voucherData = object.getVoucher();
