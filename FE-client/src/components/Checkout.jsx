@@ -109,7 +109,7 @@ export default function Checkout() {
 
 
   //get thong tin khach hang 
-  const getKhachHang = async () => {
+  const getKhachHang = async () => {  
     const result = await axios.get(`http://localhost:8080/khach-hang/findByMa/${JSON.parse(localStorage.getItem("user")).ma}`);
     const khachHangData = result.data;
 

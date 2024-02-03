@@ -84,11 +84,14 @@ export default function InfoTop() {
   ];
   return (
     <>
-    <div style={{backgroundColor : "black"}}>
-      <marquee behavior="scroll" direction="left">
-      <span style={{color : "white", fontSize : '18px', padding : "1px"}}>Tưng bừng khai trương tất cả hóa đơn trên 1 triệu sẽ được miễn phí vận chuyển !!!</span>
-      </marquee>
-    </div>
+      <div className="bg-[#838383] h-[25px]">
+        <marquee direction="left">
+          <span className="text-white text-[12px]">
+            Tưng bừng khai trương tất cả hóa đơn trên 1 triệu sẽ được miễn phí
+            vận chuyển !!!
+          </span>
+        </marquee>
+      </div>
       {/* <marquee behavior="scroll" direction="left" >
         <span style={{color : "red", fontSize : '20px'}}>Tưng bừng khai trường tất cả hóa đơn trên 1 triệu sẽ được miễn phí vận chuyển !!!</span>
       </marquee> */}

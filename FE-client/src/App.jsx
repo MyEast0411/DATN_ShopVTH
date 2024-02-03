@@ -18,10 +18,9 @@ import Profile from "./components/Profile";
 import FindHD from "./components/findHD/FindHD";
 import PurchaseHistory from "./components/PurchaseHistory";
 import Wishlist from "./components/Wishlist";
-
-import EditHoaDon from "./components/findHD/EditHoaDon";
 import Test from "./test/Test";
 
+import EditHoaDon from "./components/findHD/EditHoaDon";
 import PayMentSuccess from "./components/PaymentSuccess";
 
 function App() {
@@ -47,6 +46,9 @@ function App() {
 
         <Route path="/payment/payment-success" element={<PayMentSuccess />} />
 
+
+
+        <Route path="/test" element={<Test />} />
       </Routes>
       <BackToTopButton />
     </>
