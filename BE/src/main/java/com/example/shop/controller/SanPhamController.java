@@ -49,27 +49,8 @@ public class SanPhamController {
     NhanHieuRepository nhanHieuRepository;
     @Autowired
     HinhAnhRepository hinhAnhRepository;
+    @Autowired
 
-    @GetMapping("/getAllSanPham")
-    List<SanPhamChiTiet> getAll() {
-//        System.out.println("Mau sac");
-        mauSacRepository.findAll().forEach(x -> System.out.println(x.getId()));
-//        System.out.println("san pham");
-//        sanPhamRepository.findAll().forEach(x-> System.out.println(x.getId()));
-//        System.out.println("kich co");
-        kichCoRepository.findAll().forEach(x -> System.out.println(x.getId()));
-//        System.out.println("chat lieu");
-        chatLieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
-//        System.out.println("the loai");
-//        theLoaiRepository.findAll().forEach(x-> System.out.println(x.getId()));
-//        System.out.println("de giay");
-        deGiayRepository.findAll().forEach(x -> System.out.println(x.getId()));
-//        System.out.println("thuong hieu");
-        thuongHieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
-//        System.out.println("nhan hieu");
-        nhanHieuRepository.findAll().forEach(x -> System.out.println(x.getId()));
-        return repo.findAll();
-    }
     @GetMapping("/getAllSP")
     List<SanPham> getAllSP() {
         return sanPhamRepository.getAll();
@@ -102,6 +83,11 @@ public class SanPhamController {
     @GetMapping("/getAllNH")
     List<NhanHieu> getAllNH() {
         return nhanHieuRepository.findAll();
+    }
+
+    @GetMapping("/getAllTL")
+    List<TheLoai> getAllTL() {
+        return theLoaiRepository.findAll();
     }
 
     @GetMapping("/getAllHA")
@@ -177,14 +163,6 @@ public class SanPhamController {
 
     @PostMapping("/san-pham/add")
     ResponseEntity add(@RequestBody List<Object[]> sanPham) {
-//        for (int i = 0; i < sanPham.size(); i++) {
-//            Object[] row = sanPham.get(i);
-//            System.out.println("Sản phẩm thứ " + (i ) + ":");
-//            for (int j = 0; j < row.length; j++) {
-//                System.out.println("  Thuộc tính thứ " + (j ) + ": " + row[j]);
-//            }
-//        }
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
 
         String hinhAnh = "";
         List<HinhAnh> listHinhAnh = new ArrayList<>();
@@ -204,7 +182,7 @@ public class SanPhamController {
             x.setId_mau_sac((String) row[8]);
             x.setId_kich_co((String) row[9]);
             x.setId_thuong_hieu((String) row[10]);
-            x.setId_nhan_hieu((String) row[11]);
+            x.setId_the_loai((String) row[11]);
             x.setId_chat_lieu((String) row[12]);
             x.setId_de_giay((String) row[13]);
             list.add(x);
@@ -225,7 +203,7 @@ public class SanPhamController {
             spct.setId_mau_sac(mauSacRepository.findByMaMau(x.getId_mau_sac()));
             spct.setId_de_giay(deGiayRepository.findById(x.getId_de_giay()).get());
             spct.setId_kich_co(kichCoRepository.findByTen(x.getId_kich_co()));
-            spct.setId_nhan_hieu(nhanHieuRepository.findById(x.getId_nhan_hieu()).get());
+            spct.setId_the_loai(theLoaiRepository.findById(x.getId_the_loai()).get());
             spct.setId_thuong_hieu(thuongHieuRepository.findById(x.getId_thuong_hieu()).get());
             spct.setId_chat_lieu(chatLieuRepository.findById(x.getId_chat_lieu()).get());
             spct.setMoTa(x.getMoTa());

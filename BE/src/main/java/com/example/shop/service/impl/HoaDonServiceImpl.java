@@ -196,6 +196,8 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Override
     public String payWithVNPAYOnline(CreatePayMentVNPAYRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException {
+        Random random = new Random();
+        int randomNumber = random.nextInt(90000) + 10000;
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -218,7 +220,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         vnp_Params.put("vnp_OrderInfo",payModel.vnp_OrderInfo);
         vnp_Params.put("vnp_OrderType",payModel.vnp_OrderType);
         vnp_Params.put("vnp_ReturnUrl", VNPayConstant.vnp_ReturnUrl);
-        vnp_Params.put("vnp_TxnRef", String.valueOf(23555));//String.valueOf(payModel.vnp_TxnRef));
+        vnp_Params.put("vnp_TxnRef", String.valueOf(randomNumber));//String.valueOf(payModel.vnp_TxnRef)); // so nay la ma cua bill nen random de khong trung nhau
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
         List fieldList = new ArrayList(vnp_Params.keySet());
