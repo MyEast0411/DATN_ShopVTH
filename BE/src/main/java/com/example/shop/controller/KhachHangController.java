@@ -7,6 +7,7 @@ import com.example.shop.entity.KhachHang;
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.DiaChiRepository;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.requests.SearchKhachHangRequest;
 import com.example.shop.response.LichSuMuaHangResponse;
 import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
@@ -139,26 +140,28 @@ public class KhachHangController {
 
             //gui mail
             SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
-//            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
-//            String contentBody = "<html>" +
-//                    "<body>" +
-//                   "<p>\n" +
-//                    "  Mật khẩu của bạn là:\n " + khNew.getTen() + System.currentTimeMillis()+
-//                    "</p>" +
-//                    "</body>" +
-//                    "</html>" ;
-//
-//
-//                SendMail.SendMailOptions(khNew.getEmail() , contentBody);
-
-
-
-
 
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
+        }
+    }
+    @PostMapping("/filterKhachHang")
+    public ResponseEntity filterKhachHang(@RequestBody SearchKhachHangRequest khachHang) {
+        try {
+            List<KhachHang> list = khachHangRepository.filter(khachHang.getSelectedStatus(),khachHang.getTextInput(),khachHang.getTextInput());
+            return ResponseEntity.ok(list);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
+        }
+    }
+    @GetMapping("/filterByTrangThai")
+    public ResponseEntity filter() {
+        try {
+            return ResponseEntity.ok(khachHangRepository.filterByTrangThai(1));
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
         }
     }
     @PostMapping("/dia-chi/add")
@@ -198,19 +201,6 @@ public class KhachHangController {
     @GetMapping("/khach-hang/hoa-don/{idKH}")
     public ResponseEntity getHDByKH(@PathVariable("idKH") String idKH){
         List<HoaDon> listHD = hoaDonService.getHDByKH(idKH);
-//        List<LichSuMuaHangResponse> lichSuMuaHangResponses = new ArrayList<>();
-//        for (HoaDon hd: listHD) {
-////            Map<Integer , SanPhamChiTiet> sanPhamChiTiets = new HashMap<>();
-//
-//            List<HoaDonChiTiet> list = hoaDonChiTietService.getHDCT(hd.getId());
-////            list.stream().forEach(i -> sanPhamChiTiets.put(i.getSoLuong() , i.getId_chi_tiet_san_pham()));
-//            LichSuMuaHangResponse lichSuMuaHangResponse = new LichSuMuaHangResponse();
-//            lichSuMuaHangResponse.setHoaDon(hd);
-//            lichSuMuaHangResponse.setHoaDonChiTiets(list);
-//            lichSuMuaHangResponses.add(lichSuMuaHangResponse);
-//        }
-      //  return ResponseEntity.ok(lichSuMuaHangResponses);
-//        lichSuMuaHangResponses.forEach( i -> System.out.println(i));
         return ResponseEntity.ok(listHD);
     }
 
@@ -219,17 +209,13 @@ public class KhachHangController {
         List<HoaDon> listHD = hoaDonService.getHDByKH(idKH);
         List<LichSuMuaHangResponse> lichSuMuaHangResponses = new ArrayList<>();
         for (HoaDon hd: listHD) {
-//            Map<Integer , SanPhamChiTiet> sanPhamChiTiets = new HashMap<>();
 
             List<HoaDonChiTiet> list = hoaDonChiTietService.getHDCT(hd.getId());
-//            list.stream().forEach(i -> sanPhamChiTiets.put(i.getSoLuong() , i.getId_chi_tiet_san_pham()));
             LichSuMuaHangResponse lichSuMuaHangResponse = new LichSuMuaHangResponse();
             lichSuMuaHangResponse.setHoaDon(hd);
             lichSuMuaHangResponse.setHoaDonChiTiets(list);
             lichSuMuaHangResponses.add(lichSuMuaHangResponse);
         }
           return ResponseEntity.ok(lichSuMuaHangResponses);
-
-       // return ResponseEntity.ok(listHD);
     }
 }

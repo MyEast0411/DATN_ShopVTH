@@ -27,17 +27,13 @@ import {
   TableCell as TableCellMui,
 } from "@mui/material";
 import { format } from "date-fns";
-// import { VerticalDotsIcon } from "../../tableNextUi/khuyenMai/VerticalDotsIcon";
-// import { SearchIcon } from "../../tableNextUi/khuyenMai/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { DeleteIcon } from "../../otherComponents/DeleteIcon";
 import { EyeIcon } from "../../otherComponents/EyeIcon";
-// import { MdDeleteOutline } from "react-icons/md";
 import { TbInfoTriangle } from "react-icons/tb";
-// import { LiaEyeSolid } from "react-icons/lia";
 import { FaHistory } from "react-icons/fa";
 
 const columns = [
@@ -75,7 +71,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App() {
+export default function App({ data,dataSearch }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -120,7 +116,6 @@ export default function App() {
   });
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
-
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
@@ -144,7 +139,11 @@ export default function App() {
       }
     }
     fetchChiTietSanPham();
-  }, [sanPhams]);
+  }, [data]);
+
+  useEffect(() => {
+    setFilterValue(dataSearch);
+  },[dataSearch]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -176,15 +175,13 @@ export default function App() {
       )
     );
   }, [sanPhams, filterValue, statusFilter]);
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-
+  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length /rowsPerPage : 1);
+  
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-
     return filteredItems.slice(start, end);
-  }, [page, filteredItems, rowsPerPage]);
+  }, [page, filteredItems]);
 
   const sortedItems = React.useMemo(() => {
     return [...items].sort((a, b) => {
@@ -198,7 +195,6 @@ export default function App() {
 
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
-    // console.log(sanPham);
     switch (columnKey) {
       case "hinhAnh":
         const hinhAnhURL = sanPham.anh;
@@ -396,8 +392,8 @@ export default function App() {
           showShadow
           color="primary"
           page={page}
-          total={totalPages}
-          onChange={setPage}
+          total={pages}
+          onChange={(page) => setPage(page)}
           style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">

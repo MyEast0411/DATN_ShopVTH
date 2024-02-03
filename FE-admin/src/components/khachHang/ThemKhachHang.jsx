@@ -40,11 +40,13 @@ export default function ThemKhachHang() {
   const cancelAdd = () => {
     setDeleteConfirmationOpen(false);
   };
+
   useEffect(() => {
     getProvinces().then((data) => {
-      setProvinces(data);
+      setProvinces(data.results);
     });
   }, []);
+
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
       if (item.code == provinceCode) {
@@ -55,7 +57,7 @@ export default function ThemKhachHang() {
       }
     });
     getDistricts(provinceCode).then((data) => {
-      setDistricts(data);
+      setDistricts(data.results);
     });
   };
 
@@ -69,7 +71,7 @@ export default function ThemKhachHang() {
       }
     });
     getWards(districtCode).then((data) => {
-      setWards(data);
+      setWards(data.results);
     });
   };
 
@@ -207,54 +209,6 @@ export default function ThemKhachHang() {
     var month = currentDate.getMonth() + 1; // Lưu ý: Tháng trong JavaScript bắt đầu từ 0
     var year = currentDate.getFullYear();
     var check = true;
-
-    // console.log(dateObject);
-    // console.log(khachHang.ngay_sinh);
-    // if (currentDate < dateObject) {
-    //   setErrNgaySinh("*Ngày sinh không được lớn hơn ngày hiện tại!");
-    //   check = false;
-    // } else {
-    //   setErrNgaySinh("");
-    // }
-    // // ten
-
-    // if (khachHang.ten == "") {
-    //   setErrTen("* Không được để trống tên");
-    //   check = false;
-    // } else {
-    //   setErrTen("");
-    // }
-    // // so nha
-    // var check = true;
-    // if (khachHang.soNha == "") {
-    //   // setErrSoNha("* Không được để trống số nhà/ngõ/đường");
-    //   check = false;
-    // } else {
-    //   setErrSoNha("");
-    // }
-    // // email
-    // if (khachHang.email == "") {
-    //   setErrEmail("* Không được để trống email");
-    //   check = false;
-    // } else {
-    //   if (validateEmail(khachHang.email)) {
-    //     setErrEmail("");
-    //   } else {
-    //     setErrEmail("* Email không hợp lệ");
-    //     check = false;
-    //   }
-    // }
-    // // sdt
-    // if (khachHang.sdt == "") {
-    //   setErrSDT("* Không được để trống số điện thoại");
-    //   check = false;
-    // } else {
-    //   if (validatePhoneNumber(khachHang.sdt)) {
-    //     setErrSDT("");
-    //   } else {
-    //     check = false;
-    //   }
-    // }
     if (check) {
       await axios
         .post("http://localhost:8080/khach-hang/add", khachHang)
@@ -340,9 +294,9 @@ export default function ThemKhachHang() {
                         message: "Họ khách hàng không được để trống!",
                       },
                       {
-                        pattern: /^[^\d]*$/,
+                        pattern: /^[^\d\s]+$/,
                         message:
-                          "Họ khách hàng không hợp lệ! Không được nhập số.",
+                          "Họ khách hàng không hợp lệ!",
                       },
                     ]}
                   >
@@ -396,8 +350,7 @@ export default function ThemKhachHang() {
                         message: "Email khách hàng đang để trống!",
                       },
                       {
-                        pattern:
-                          /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                        pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                         message: "Email khách hàng không hợp lệ!",
                       },
                     ]}
@@ -427,8 +380,8 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn thành phố</option>
                     {provinces.map((province) => (
-                      <option key={province.code} value={province.code}>
-                        {province.name}
+                      <option key={province.province_id} value={province.province_id}>
+                        {province.province_name}
                       </option>
                     ))}
                   </select>
@@ -447,8 +400,8 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn xã phường</option>
                     {wards.map((ward) => (
-                      <option key={ward.code} value={ward.code}>
-                        {ward.name}
+                      <option key={ward.ward_id} value={ward.ward_id}>
+                        {ward.ward_name}
                       </option>
                     ))}
                   </select>
@@ -513,7 +466,6 @@ export default function ThemKhachHang() {
                         onResult={(data) => {
                           if (data != undefined) {
                             handleOk();
-                            console.log(data.text);
                             function splitString(inputString) {
                               const values = inputString.split("|");
                               return values;
@@ -584,10 +536,10 @@ export default function ThemKhachHang() {
                         message: "Số điện thoại đang trống!",
                       },
                       {
-                        pattern: /^[^\D]*$/,
+                        pattern: /^0[0-9]{9}$/,
                         message:
-                          "Số điện thoại không hợp lệ! Không được nhập chữ.",
-                      },
+                          "Sai định dạng số điện thoại!",
+                      }
                     ]}
                   >
                     <Input
@@ -616,8 +568,8 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn huyện</option>
                     {districts.map((district) => (
-                      <option key={district.code} value={district.code}>
-                        {district.name}
+                      <option key={district.district_id} value={district.district_id}>
+                        {district.district_name}
                       </option>
                     ))}
                   </select>
@@ -625,10 +577,19 @@ export default function ThemKhachHang() {
                 <div className="mb-8">
                   <label
                     htmlFor="phone"
-                    className="block mb-2 text-xl font-medium text-gray-900"
+                    className="block text-xl font-medium text-gray-900"
                   >
                     Số nhà/Ngõ/Đường
                   </label>
+                  <Form.Item
+                    name="soNha"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Số nhà/Ngõ/Đường đang trống!",
+                      }
+                    ]}
+                  >
                   <input
                     type="text"
                     name="soNha"
@@ -636,12 +597,14 @@ export default function ThemKhachHang() {
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                 rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                    dark:focus:ring-blue-500 mb-20 mt-4 dark:focus:border-blue-500"
+                                    dark:focus:ring-blue-500 mt-4 dark:focus:border-blue-500"
                     placeholder="Số nhà/Ngõ/Đường"
                     onChange={(e) => {
                       onChange(e);
                     }}
                   />
+                  </Form.Item>
+                  
                   <p style={{ color: "red" }}>{errSoNha}</p>
                 </div>
                 <div className="mt-6 flex items-center justify-end gap-x-6">

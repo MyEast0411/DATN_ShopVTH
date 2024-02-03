@@ -176,7 +176,7 @@ export default function App() {
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
+  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length /rowsPerPage : 1);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -384,7 +384,7 @@ export default function App() {
           showShadow
           color="primary"
           page={page}
-          total={totalPages}
+          total={pages}
           onChange={setPage}
           style={{ paddingLeft: "730px" }}
         />
