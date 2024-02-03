@@ -163,12 +163,15 @@ function EditHoaDon() {
   };
 
   const handleProvinceChange = (provinceCode) => {
+    console.log("province_coe " + provinceCode);
     provinces.map((item) => {
       if (item.province_id == provinceCode) {
-        setAddressEdit((prevaddress) => ({
-          ...prevaddress,
-          thanhPho: item.province_name,
-        }));
+        // setAddressEdit((prevaddress) => ({
+        //   ...prevaddress,
+        //   thanhPho: item.province_name,
+        // }));
+        addressEdit.thanhPho = item.province_name;
+        setAddressEdit(addressEdit);
       }
     });
 
@@ -267,7 +270,7 @@ function EditHoaDon() {
       error.huyen == ""
     ) {
       // chuyển value thành chuỗi
-      const dataAddress = `${value.soNha},${value.xa},${value.huyen},${value.thanhPho}`;
+      const dataAddress = `${addressEdit.soNha},${addressEdit.xa},${addressEdit.huyen},${addressEdit.thanhPho}`;
       // tính tiền ship
       console.log(deliveryTime);
 
@@ -688,6 +691,7 @@ function EditHoaDon() {
                   <Button
                     onClick={() => {
                       // setAddress(addressEdit);
+                      console.log(addressEdit);
                       handleChangeAddress(addressEdit);
                     }}
                   >
@@ -713,7 +717,23 @@ function EditHoaDon() {
                     id="city"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
-                      handleProvinceChange(e.target.value);
+                      // handleProvinceChange(e.target.value);
+                      provinces.map((item) => {
+                        // console.log(item.province_id);
+                        if (item.province_id == e.target.value) {
+                          setAddressEdit((prevaddress) => ({
+                            ...prevaddress,
+                            thanhPho: item.province_name,
+                          }));
+                          // addressEdit.thanhPho = item.province_name;
+                          // setAddressEdit(addressEdit);
+                        }
+                      });
+
+                      getDistricts(e.target.value).then((data) => {
+                        //console.log(data);
+                        setDistricts(data.results);
+                      });
                       setError({ ...error, thanhPho: "" });
                     }}
                   >
@@ -740,7 +760,19 @@ function EditHoaDon() {
                     id="District"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => {
-                      handleDistrictChange(e.target.value);
+                      // handleDistrictChange(e.target.value);
+                      districts.map((item) => {
+                        if (item.district_id == e.target.value) {
+                          setAddressEdit((prevaddress) => ({
+                            ...prevaddress,
+                            huyen: item.district_name,
+                          }));
+                        }
+                      });
+                      getWards(e.target.value).then((data) => {
+                        //console.log(data);
+                        setWards(data.results);
+                      });
                       setError({ ...error, huyen: "" });
                     }}
                   >
@@ -765,7 +797,17 @@ function EditHoaDon() {
                   </label>
                   <select
                     id="wards"
-                    onChange={(e) => handleWardsChange(e.target.value)}
+                    onChange={(e) => {
+                      //  handleWardsChange(e.target.value)
+                      wards.map((item) => {
+                        if (item.ward_id == e.target.value) {
+                          setAddressEdit((prevaddress) => ({
+                            ...prevaddress,
+                            xa: item.ward_name,
+                          }));
+                        }
+                      });
+                    }}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   >
                     <option value="">Chọn xã phường</option>
@@ -796,7 +838,8 @@ function EditHoaDon() {
                     placeholder="Số nhà/Ngõ/Đường"
                     required
                     onChange={(e) => {
-                      onChange(e);
+                      // onChange(e);
+                      setAddressEdit({ ...addressEdit, soNha: e.target.value });
                     }}
                   />
                   <p className="text-red-300">{error.soNha}</p>

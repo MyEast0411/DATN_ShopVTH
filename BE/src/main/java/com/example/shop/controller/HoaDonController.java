@@ -145,6 +145,7 @@ public class HoaDonController {
             @RequestBody HoaDon hoaDon
     ) {
 
+        System.out.println(hoaDon);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null) {
@@ -197,6 +198,7 @@ public class HoaDonController {
 
         try {
             HoaDon hoaDon1 = hoaDonRepository.getHoaDonByMa(id);
+            System.out.println(hoaDon.toString());
             if (hoaDon.getTrangThai().equals("1") && hoaDon.getLoaiHd().equals("0")) {
                 LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
                         .id_hoa_don(hoaDon1)

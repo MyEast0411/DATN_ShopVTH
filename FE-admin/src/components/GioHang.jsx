@@ -185,9 +185,10 @@ const GioHang = ({
 
         setThanhToan(updatedRows);
         const totalSoTien = updatedRows.reduce(
-          (sum, row) => sum + parseFloat(row.soTien.replace(/,/g, "")),
+          (sum, row) => sum + parseFloat(row.soTien.replace(".", "")),
           0
         );
+
         console.log(totalSoTien);
         setKhachCanTra(totalSoTien);
         setTienKhachDua(totalSoTien);
