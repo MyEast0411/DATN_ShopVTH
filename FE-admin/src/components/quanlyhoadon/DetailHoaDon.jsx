@@ -12,7 +12,11 @@ import { LuPackageCheck } from "react-icons/lu";
 import { FaShippingFast, FaFileInvoice, FaPen, FaCircle } from "react-icons/fa";
 import { TbPackages } from "react-icons/tb";
 import { MdAddCircle } from "react-icons/md";
-import { exportComponentAsJPEG, exportComponentAsPDF, exportComponentAsPNG } from "react-component-export-image";
+import {
+  exportComponentAsJPEG,
+  exportComponentAsPDF,
+  exportComponentAsPNG,
+} from "react-component-export-image";
 // import { useReactToPrint } from "react-to-print";
 import ComponentToPrint from "./InHoaDon";
 import { toast } from "react-toastify";
@@ -69,7 +73,14 @@ export default function DetailHoaDon() {
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
       const imgX = (pdfWidth - imgWidth * ratio) / 2;
       const imgY = 20;
-      pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      pdf.addImage(
+        imgData,
+        "PNG",
+        imgX,
+        imgY,
+        imgWidth * ratio,
+        imgHeight * ratio
+      );
       pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
     });
     setIsModalOpenHD(false);
@@ -279,7 +290,9 @@ export default function DetailHoaDon() {
   };
 
   const getDataChiTietSanPham = async () => {
-    const res = await axios.get("http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id);
+    const res = await axios.get(
+      "http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id
+    );
     const data = await res.data;
 
     setRowsSPCT(
@@ -304,7 +317,9 @@ export default function DetailHoaDon() {
       okType: "danger",
       onOk: async () => {
         const res = await axios
-          .delete(`http://localhost:8080/hoa_don_chi_tiet/deleteHDCT/${id}/${idSPCT}`)
+          .delete(
+            `http://localhost:8080/hoa_don_chi_tiet/deleteHDCT/${id}/${idSPCT}`
+          )
           .then((response) => {
             getDataLichSuThanhToan();
             getInfoHD();
@@ -324,9 +339,12 @@ export default function DetailHoaDon() {
       okType: "danger",
       onOk: async () => {
         const res = await axios
-          .post(`http://localhost:8080/hoa_don_chi_tiet/update/${id}/${idSPCT}`, {
-            quantity: spct.quantity,
-          })
+          .post(
+            `http://localhost:8080/hoa_don_chi_tiet/update/${id}/${idSPCT}`,
+            {
+              quantity: spct.quantity,
+            }
+          )
           .then((response) => {
             getDataLichSuThanhToan();
             getInfoHD();
@@ -362,7 +380,10 @@ export default function DetailHoaDon() {
               ...item,
               subtitle: format(new Date(item.ngayTao), " hh:mm:ss ,dd-MM-yyyy"),
               description: item.moTaHoaDon,
-              icon: item.moTaHoaDon == "Hủy Hóa Đơn" ? MdCancel : listTitleTimline[index].icon,
+              icon:
+                item.moTaHoaDon == "Hủy Hóa Đơn"
+                  ? MdCancel
+                  : listTitleTimline[index].icon,
             };
           })
         );
@@ -378,20 +399,22 @@ export default function DetailHoaDon() {
   };
 
   const getInfoHD = async () => {
-    const res = await axios.get("http://localhost:8080/hoa_don/getHoaDon/" + id);
+    const res = await axios.get(
+      "http://localhost:8080/hoa_don/getHoaDon/" + id
+    );
     const data = await res.data;
 
     setMoney({
       tienGiam: data.tienGiam,
-
+<<<<<<< HEAD
       tienHang: data.tongTien,
       tienShip: data.tienShip,
       tongTien: data.tongTien + data.tienShip - data.tienGiam,
-
-      // tienHang: data.tongTien + data.tienGiam - data.tienShip,
-      // tienShip: data.tienShip,
-      // tongTien: data.tongTien,
-
+=======
+      tienHang: data.tongTien + data.tienGiam - data.tienShip,
+      tienShip: data.tienShip,
+      tongTien: data.tongTien,
+>>>>>>> fc1394aaba6b80d209503d8962ee0812e768ab20
       ma: data.ma,
     });
     setInfo(data);
@@ -421,7 +444,12 @@ export default function DetailHoaDon() {
             ) : (
               <Timeline minEvents={1} placeholder>
                 {listTimeLineOnline.map((item, i) => (
-                  <TimelineEvent color="#9c2919" icon={TbPackages} title="Thành công" subtitle={item.subtitle} />
+                  <TimelineEvent
+                    color="#9c2919"
+                    icon={TbPackages}
+                    title="Thành công"
+                    subtitle={item.subtitle}
+                  />
                 ))}
               </Timeline>
             )}
@@ -429,8 +457,16 @@ export default function DetailHoaDon() {
 
           <div className="row button-contact p-4 grid grid-cols-2">
             <div className="row ">
-              {currentTimeLine < 5 && info.loaiHd === 0 && info.trangThai != 5 ? (
-                <Button className="me-4" color="blue" type="primary" onClick={showModal} style={{ marginRight: 5 }}>
+              {currentTimeLine < 5 &&
+              info.loaiHd === 0 &&
+              info.trangThai != 5 ? (
+                <Button
+                  className="me-4"
+                  color="blue"
+                  type="primary"
+                  onClick={showModal}
+                  style={{ marginRight: 5 }}
+                >
                   {listTitleTimline[currentTimeLine].title}
                 </Button>
               ) : (
@@ -479,27 +515,47 @@ export default function DetailHoaDon() {
                 width={700}
                 style={{ top: 10 }}
                 footer={[
-                  <Button key="back" onClick={handleCancelHD} className="me-3 " style={{ backgroundColor: "blue" }}>
+                  <Button
+                    key="back"
+                    onClick={handleCancelHD}
+                    className="me-3 "
+                    style={{ backgroundColor: "blue" }}
+                  >
                     Cancel
                   </Button>,
-                  <Button key="submit" type="primary" onClick={downloadPDF} style={{ backgroundColor: "red" }}>
+                  <Button
+                    key="submit"
+                    type="primary"
+                    onClick={downloadPDF}
+                    style={{ backgroundColor: "red" }}
+                  >
                     In Hóa Đơn
                   </Button>,
                 ]}
               >
-                <ComponentToPrint ref={componentRef} data={rowsSPCT} columns={columns} inforKH={info} />
+                <ComponentToPrint
+                  ref={componentRef}
+                  data={rowsSPCT}
+                  columns={columns}
+                  inforKH={info}
+                />
               </Modal>
               <Button className="me-4" color="green" onClick={showModalHD}>
                 Xuất hoá đơn
               </Button>
-              {listTimeLineOnline.length < 4 && info.loaiHd == !1 && info.trangThai < 4 && (
-                <Button className="me-4" color="red" onClick={cancelHD}>
-                  Hủy Hóa Đơn
-                </Button>
-              )}
+              {listTimeLineOnline.length < 4 &&
+                info.loaiHd == !1 &&
+                info.trangThai < 4 && (
+                  <Button className="me-4" color="red" onClick={cancelHD}>
+                    Hủy Hóa Đơn
+                  </Button>
+                )}
             </div>
             <div className="row grid justify-items-end">
-              <Button className="me-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" onClick={showModalLichSu}>
+              <Button
+                className="me-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+                onClick={showModalLichSu}
+              >
                 Lịch Sử
               </Button>
 
@@ -544,12 +600,17 @@ export default function DetailHoaDon() {
                       <p>
                         <span className="font-bold">Thoi gian : </span>
                         &nbsp;&nbsp;
-                        {format(new Date(item.ngayTao), " hh:mm:ss ,   dd-MM-yyyy")}
+                        {format(
+                          new Date(item.ngayTao),
+                          " hh:mm:ss ,   dd-MM-yyyy"
+                        )}
                       </p>
                       <p>
                         <span className="font-bold">Nguoi xac nhan : </span>
                         &nbsp;&nbsp;
-                        {item.id_hoa_don.nguoiXacNhan == null ? "Admin" : item.id_hoa_don.nguoiXacNhan.ten}
+                        {item.id_hoa_don.nguoiXacNhan == null
+                          ? "Admin"
+                          : item.id_hoa_don.nguoiXacNhan.ten}
                       </p>
                     </div>
                   ))}
@@ -573,7 +634,11 @@ export default function DetailHoaDon() {
             columns={columnsThanhToan}
             rows={rowsLichSuThanhToan}
           /> */}
-            <Table columns={columnsThanhToan} dataSource={rowsLichSuThanhToan} pagination={false} />
+            <Table
+              columns={columnsThanhToan}
+              dataSource={rowsLichSuThanhToan}
+              pagination={false}
+            />
           </div>
         </div>
         <div className="row thong-tin-hoa-don bg-white space-y-5 ">
@@ -595,7 +660,10 @@ export default function DetailHoaDon() {
                 <div className="grid grid-cols-2 gap-1  ">
                   <p className="font-bold text-lg">Trạng Thái : </p>
                   <div>
-                    <Tag bordered={false} style={{ background: "purple", borderRadius: "10px" }}>
+                    <Tag
+                      bordered={false}
+                      style={{ background: "purple", borderRadius: "10px" }}
+                    >
                       <span className="uppercase text-white">Thành Công</span>
                     </Tag>
                   </div>
@@ -651,7 +719,13 @@ export default function DetailHoaDon() {
                 </Button>
               )}
 
-              <Modal onOk={handleOkThem} onCancel={handleCancelThem} open={isModalOpenThem} width={1500} footer={[]}>
+              <Modal
+                onOk={handleOkThem}
+                onCancel={handleCancelThem}
+                open={isModalOpenThem}
+                width={1500}
+                footer={[]}
+              >
                 <div className="mt-5">
                   <TableSanPham gioHang={info.ma} />
                 </div>
@@ -662,7 +736,11 @@ export default function DetailHoaDon() {
               <div className="row table-san-pham ">
                 {rowsSPCT.map((item) => (
                   <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
-                    <img src={item.imageUrl} alt="product-image" className="w-full rounded-lg sm:w-40 me-10 object-contain" />
+                    <img
+                      src={item.imageUrl}
+                      alt="product-image"
+                      className="w-full rounded-lg sm:w-40 me-10 object-contain"
+                    />
 
                     <div className="flex justify-between w-full">
                       <div>
@@ -671,14 +749,21 @@ export default function DetailHoaDon() {
                             {item.name}
                             {item.mausac.substring(3)}
                           </h2>
-                          <p className="mb-3  font-medium text-gray-900">Size: {item.kichco}</p>
+                          <p className="mb-3  font-medium text-gray-900">
+                            Size: {item.kichco}
+                          </p>
                           <p className="font-medium text-gray-900 mb-3">
                             Số lượng : {/* {check ? ( */}
-                            <span className="font-medium text-red-500 mb-3">{item.quantity}</span>
+                            <span className="font-medium text-red-500 mb-3">
+                              {item.quantity}
+                            </span>
                             sản phẩm
                           </p>
                           <p className="font-medium text-gray-900 mb-3">
-                            Đơn giá : <span className="font-medium text-red-500 mb-3">{Intl.NumberFormat().format(item.price)} &nbsp;₫</span>
+                            Đơn giá :{" "}
+                            <span className="font-medium text-red-500 mb-3">
+                              {Intl.NumberFormat().format(item.price)} &nbsp;₫
+                            </span>
                           </p>
                         </div>
 
@@ -686,26 +771,33 @@ export default function DetailHoaDon() {
                       </div>
                       <div className="inline-flex items-center gap-10">
                         <p className="font-medium text-red-500">
-                          {Intl.NumberFormat().format(item.price * item.quantity)}
+                          {Intl.NumberFormat().format(
+                            item.price * item.quantity
+                          )}
                           &nbsp;₫
                         </p>
 
-                        {listTimeLineOnline.length < 4 && info.trangThai < 4 && (
-                          <Button color="red" onClick={() => onHandleDelete(item.id)}>
-                            <FaTrash />
-                          </Button>
-                        )}
-                        {listTimeLineOnline.length < 4 && info.trangThai < 4 && (
-                          <Button
-                            color="yellow"
-                            onClick={() => {
-                              showModalLichSu();
-                              getSPCT(item.id);
-                            }}
-                          >
-                            <FaPen />
-                          </Button>
-                        )}
+                        {listTimeLineOnline.length < 4 &&
+                          info.trangThai < 4 && (
+                            <Button
+                              color="red"
+                              onClick={() => onHandleDelete(item.id)}
+                            >
+                              <FaTrash />
+                            </Button>
+                          )}
+                        {listTimeLineOnline.length < 4 &&
+                          info.trangThai < 4 && (
+                            <Button
+                              color="yellow"
+                              onClick={() => {
+                                showModalLichSu();
+                                getSPCT(item.id);
+                              }}
+                            >
+                              <FaPen />
+                            </Button>
+                          )}
                       </div>
 
                       {/* <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6"></div> */}
@@ -735,7 +827,11 @@ export default function DetailHoaDon() {
               >
                 <div className="divide-y divide-blue-200">
                   <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
-                    <img src={spct.imageUrl} alt="product-image" className="w-full rounded-lg sm:w-40 me-10 object-contain" />
+                    <img
+                      src={spct.imageUrl}
+                      alt="product-image"
+                      className="w-full rounded-lg sm:w-40 me-10 object-contain"
+                    />
 
                     <div className="flex justify-between w-full">
                       <div>
@@ -744,14 +840,24 @@ export default function DetailHoaDon() {
                             {spct.name}
                             {/* {spct.mausac.substring(3)} */}
                           </h2>
-                          <p className="mb-3  font-medium text-gray-900">Size: {spct.kichco}</p>
+                          <p className="mb-3  font-medium text-gray-900">
+                            Size: {spct.kichco}
+                          </p>
                           <p className="font-medium text-gray-900 mb-3">
                             Số lượng : {/* {check ? ( */}
-                            <Input value={spct.quantity} onChange={(e) => setSPCT({ ...spct, quantity: e.target.value })} />
+                            <Input
+                              value={spct.quantity}
+                              onChange={(e) =>
+                                setSPCT({ ...spct, quantity: e.target.value })
+                              }
+                            />
                             sản phẩm
                           </p>
                           <p className="font-medium text-gray-900 mb-3">
-                            Đơn giá : <span className="font-medium text-red-500 mb-3">{Intl.NumberFormat().format(spct.price)} &nbsp;₫</span>
+                            Đơn giá :{" "}
+                            <span className="font-medium text-red-500 mb-3">
+                              {Intl.NumberFormat().format(spct.price)} &nbsp;₫
+                            </span>
                           </p>
                         </div>
 
@@ -767,28 +873,40 @@ export default function DetailHoaDon() {
                 <div>
                   <div className="grid grid-cols-2 gap-1  pt-3">
                     <p className="font-normal text-lg">Tiền Hàng : </p>
-                    <p className="font-normal text-red-500" style={{ fontSize: "16px" }}>
+                    <p
+                      className="font-normal text-red-500"
+                      style={{ fontSize: "16px" }}
+                    >
                       {Intl.NumberFormat().format(money.tienHang)}&nbsp;₫
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-1  ">
                     <p className="font-normal text-lg"> Phí Vận Chuyển : </p>
-                    <p className="font-normal text-red-500" style={{ fontSize: "16px" }}>
+                    <p
+                      className="font-normal text-red-500"
+                      style={{ fontSize: "16px" }}
+                    >
                       {Intl.NumberFormat().format(money.tienShip)}&nbsp;₫
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-1  ">
                     <p className="font-normal text-lg"> Tiền giảm : </p>
-                    <p className="font-normal text-red-500" style={{ fontSize: "16px" }}>
+                    <p
+                      className="font-normal text-red-500"
+                      style={{ fontSize: "16px" }}
+                    >
                       {Intl.NumberFormat().format(money.tienGiam)}&nbsp;₫
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-1  pe-3  ">
                     <p className="font-normal text-lg"> Tổng Tiền : </p>
-                    <p className="font-normal text-red-500" style={{ fontSize: "16px" }}>
+                    <p
+                      className="font-normal text-red-500"
+                      style={{ fontSize: "16px" }}
+                    >
                       {Intl.NumberFormat().format(money.tongTien)}
                       &nbsp;₫
                     </p>
@@ -850,7 +968,11 @@ const columnsThanhToan = [
     title: "Số Tiền",
     width: 150,
     dataIndex: "soTien",
-    render: (text) => <span className="text-red-600">{Intl.NumberFormat().format(text)} &nbsp;₫</span>,
+    render: (text) => (
+      <span className="text-red-600">
+        {Intl.NumberFormat().format(text)} &nbsp;₫
+      </span>
+    ),
   },
   { key: "trangThai", title: "Trạng Thái", width: 110, dataIndex: "trangThai" },
   {
@@ -929,6 +1051,8 @@ const columns = [
     title: "Đơn Giá",
     dataIndex: "price",
     key: "price",
-    render: (text) => <span className="text-red-300">{Intl.NumberFormat().format(text)} ₫</span>,
+    render: (text) => (
+      <span className="text-red-300">{Intl.NumberFormat().format(text)} ₫</span>
+    ),
   },
 ];

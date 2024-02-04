@@ -178,7 +178,7 @@ export default function SanPham() {
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
+  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -379,7 +379,7 @@ export default function SanPham() {
               showControls
               key={size}
               // style={{ paddingLeft: "710px" }}
-              total={totalPages}
+              total={pages}
               initialPage={1}
               size={size}
               page={page}

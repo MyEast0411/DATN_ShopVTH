@@ -117,6 +117,7 @@ export default function App({ data,dataSearch }) {
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
   React.useEffect(() => {
+    console.log(data);
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(
@@ -138,7 +139,23 @@ export default function App({ data,dataSearch }) {
         console.error("Lỗi khi gọi API: ", error);
       }
     }
-    fetchChiTietSanPham();
+    if(data.length == 0) {
+      fetchChiTietSanPham();
+    }else {
+      const updatedRows = data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        maKH: item.ma,
+        anh: item.anhNguoiDung,
+        hoTen: item.ten,
+        cccd: item.email,
+        sdt: item.sdt,
+        ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
+        trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
+      }));
+      setSanPhams(updatedRows);
+    }
+    
   }, [data]);
 
   useEffect(() => {

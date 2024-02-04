@@ -45,6 +45,7 @@ function App() {
         <Route path="/client/edit-hoa-don/:id" element={<EditHoaDon />} />
 
         <Route path="/payment/payment-success" element={<PayMentSuccess />} />
+        <Route path="/test" element={<Test />} />
       </Routes>
       <BackToTopButton />
     </>

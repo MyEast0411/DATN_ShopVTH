@@ -14,7 +14,7 @@ const Profile = () => {
                   <div className="relative ">
                     <img
                       alt="..."
-                      src="https://cdn.tgdd.vn/2021/11/campaign/cach-choi-raiden-genshin-impact-thong-tin-guide-skill-moi-thumb-640x360.jpg"
+                      src="https://i.imgur.com/SCctiNJ.jpg"
                       className="rounded-full mt-5 -mb-20"
                       width={150}
                     />
@@ -29,9 +29,9 @@ const Profile = () => {
 
               <div className="text-center mt-10">
                 <h3 className="text-xl font-semibold leading-normal text-blueGray-700 mb-2">
-                  Dong Lun`
+                  Vương Thúy Hiền
                 </h3>
-                <p className="text-sm mb-2">donglun0411@gmail.com</p>
+                <p className="text-sm mb-2">...</p>
                 <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
                   Hà Nội, Việt Nam
                 </div>

@@ -184,9 +184,6 @@ export default function ThemKhachHang() {
       reader.readAsDataURL(file);
     }
   };
-  const [errTen, setErrTen] = useState("");
-  const [errSdt, setErrSDT] = useState("");
-  const [errEmail, setErrEmail] = useState("");
   const [errSoNha, setErrSoNha] = useState("");
   const [errNgaySinh, setErrNgaySinh] = useState("");
   // sdt
