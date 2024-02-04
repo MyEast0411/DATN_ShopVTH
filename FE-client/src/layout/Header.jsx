@@ -24,7 +24,6 @@ export default function Header() {
   }, []);
   return (
     <>
-
       <div className="flex justify-between main-ctn w-full sticky top-0">
         <Link to="/" className="flex container-logo">
           <img className="logo cursor-pointer" src={Logo} alt="" />
@@ -33,16 +32,16 @@ export default function Header() {
         <div className="menu">
           <ul className="flex gap-10">
             <li>
-              <a href="#">Mới & Nổi bật</a>
+              <a href="/">Mới & Nổi bật</a>
             </li>
             <li>
-              <a href="#">Đàn ông</a>
+              <a href="/">Sản phẩm</a>
             </li>
             <li>
-              <a href="#">Phụ nữ</a>
+              <a href="/">Đàn ông</a>
             </li>
             <li>
-              <a href="#">Trẻ em</a>
+              <a href="/">Phụ nữ</a>
             </li>
             <li>
               <a href="/tracuu">Tra cứu hóa đơn</a>
@@ -72,7 +71,9 @@ export default function Header() {
             </svg>
           </div>
 
-          <AiOutlineHeart className="heart" />
+          <Link to={"/wishlist"}>
+            <AiOutlineHeart className="heart" />
+          </Link>
           <div className="icon-container">
             <Link to="/cart" className="relative">
               <BsBagDash className="bag" />

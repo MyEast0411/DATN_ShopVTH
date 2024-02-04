@@ -18,7 +18,7 @@ import Profile from "./components/Profile";
 import FindHD from "./components/findHD/FindHD";
 import PurchaseHistory from "./components/PurchaseHistory";
 import Wishlist from "./components/Wishlist";
-import Test from "./test/Test";
+import SuccessOrder from "./components/SuccessOrder";
 
 import EditHoaDon from "./components/findHD/EditHoaDon";
 import PayMentSuccess from "./components/PaymentSuccess";
@@ -28,7 +28,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Layout />} />
-        <Route path="/test" element={<Test />} />
+        <Route path="/success-order" element={<SuccessOrder />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/sign-in" element={<SignIn />} />
