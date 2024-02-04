@@ -169,13 +169,13 @@ const Sidebar = () => {
               {/* image profile */}
               <img
                 className="rounded-full"
-                src="https://cdn.tgdd.vn/2021/11/campaign/cach-choi-raiden-genshin-impact-thong-tin-guide-skill-moi-thumb-640x360.jpg"
+                src="https://i.imgur.com/SCctiNJ.jpg"
                 alt="avatar"
                 width={40}
               />
               <div className="flex justify-start flex-col items-start">
                 <p className="w-40 leading-7 cursor-pointer text-s text-sm truncate text-gray-600">
-                  Dong Lun`
+                  Vương Thúy Hiền
                 </p>
               </div>
             </NavLink>
