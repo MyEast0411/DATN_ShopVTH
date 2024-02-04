@@ -405,21 +405,13 @@ export default function DetailHoaDon() {
     const data = await res.data;
 
     setMoney({
-      tienGiam: data.tienGiam,
-<<<<<<< HEAD
-      tienHang: data.tongTien,
-      tienShip: data.tienShip,
-      tongTien: data.tongTien + data.tienShip - data.tienGiam,
-=======
       tienHang: data.tongTien + data.tienGiam - data.tienShip,
       tienShip: data.tienShip,
       tongTien: data.tongTien,
->>>>>>> fc1394aaba6b80d209503d8962ee0812e768ab20
       ma: data.ma,
     });
     setInfo(data);
   };
-
   return (
     <>
       {contextHolder}

@@ -29,26 +29,13 @@ export default function KhachHang() {
     }
   }, []);
   const handleChange = async (selectedValue) => {
-    if (search == '') {
-      const result = await axios.get(`http://localhost:8080/filterByTrangThai`);
-      setData(result);
-    } else {
-      const result = await axios.post(`http://localhost:8080/filterKhachHang`, {
-        selectedStatus: selectedValue,
-        textInput: search
-      })
-    }
+    const result = await axios.post(`http://localhost:8080/filterKhachHang`, {
+      selectedStatus: selectedValue,
+      textInput: search
+    })
+    setData(result.data);
   };
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (search == '') {
-        const result = await axios.get(`http://localhost:8080/filterByTrangThai`);
-        setData(result);
-      }
-    };
-    loadData();
-  },[])
   return (
     <>
       <div>
@@ -93,12 +80,13 @@ export default function KhachHang() {
               <div className="flex items-center">
                 <span className="pr-2">Trạng thái:</span>
                 <Select
-                  defaultValue={1}
+                  defaultValue={-1}
                   className="w-48"
                   // style={{ width: "100%" }}
                   onChange={handleChange}
                   // allowClear
                   options={[
+                    { value: -1, label: " Tất cả" },
                     { value: 1, label: " Kích hoạt" },
                     { value: 0, label: " Chưa kích hoạt" },
                   ]}

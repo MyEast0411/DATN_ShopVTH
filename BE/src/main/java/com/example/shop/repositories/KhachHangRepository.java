@@ -23,8 +23,11 @@ public interface KhachHangRepository extends JpaRepository<KhachHang,String> {
     @Query(value = "select * from khach_hang where email= :email && mat_khau= :matKhau",nativeQuery = true)
     KhachHang login(@Param("email")String email, @Param("matKhau")String matKhau);
 
-    @Query(value = "select * from khach_hang where trang_thai = :trang_thai AND (khach_hang.ten like %:ten% OR khach_hang.ten = '')" +
-            " AND (khach_hang.email like %:email% OR khach_hang.email = '')", nativeQuery = true)
+    @Query(value = "SELECT *\n" +
+            "            \tFROM khach_hang\n" +
+            "            \tWHERE trang_thai = :trang_thai\n" +
+            "            \tOR ten like \"%:ten%\" AND ten = ''\n" +
+            "                OR email like \"%:email%\" AND email = ''", nativeQuery = true)
     List<KhachHang> filter(@Param("trang_thai") Integer trang_thai, @Param("ten") String ten, @Param("email") String email);
 
     @Query(value = "select * from khach_hang where trang_thai = :trang_thai", nativeQuery = true)

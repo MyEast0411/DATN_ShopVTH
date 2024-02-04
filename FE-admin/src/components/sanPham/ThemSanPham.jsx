@@ -104,16 +104,7 @@ export default function ThemSanPham() {
     id_the_loai,
     hinhAnh,
   } = sanPham;
-  
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const onSelectChange = (newSelectedRowKeys) => {
-    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
+
 
   const handleImageChange = async (event) => {
     const file = event.target.files[0];
@@ -122,8 +113,8 @@ export default function ThemSanPham() {
 
       await axios
         .post("http://localhost:8080/addHinhAnh", {
-          imgUrl : fileName,
-          mauSac : selectMau
+          imgUrl: fileName,
+          mauSac: selectMau
         })
         .then((response) => {
           if (response.data != null) {
@@ -154,6 +145,7 @@ export default function ThemSanPham() {
     setFilteredInfo(filters);
     setSortedInfo(sorter);
   };
+
 
   const columnImg = [
     {
@@ -217,12 +209,11 @@ export default function ThemSanPham() {
       sortOrder:
         sortedInfo.columnKey === "soLuongTon" ? sortedInfo.order : null,
       ellipsis: true,
-      render: (text, record) => (
+      render: (text, record, index) => (
         <InputNumber
+          min={1}
           value={record.soLuongTon}
-          onChange={(value) =>
-            handleSoLuongChange(record.id, value, record.id_mau_sac)
-          }
+          onChange={(value) => handleSoLuongChange(record.id, value, record.id_mau_sac)}
         />
       ),
     },
@@ -236,7 +227,7 @@ export default function ThemSanPham() {
         <InputNumber
           value={record.giaBan}
           onChange={(value) =>
-            handleGiaBanChange(record.id, value, record.giaBan)
+            handleGiaBanChange(record.id, value, record.id_mau_sac)
           }
         />
       ),
@@ -332,27 +323,27 @@ export default function ThemSanPham() {
                                 //   selectedImages.length >= 3 &&
                                 //   !selectedImages.includes(x.id)
                                 // ) {
-                                  
+
                                 //   toast.error("😢 Chỉ được chọn 3 ảnh !");
                                 // } else {
-                                  const checkbox = document.getElementById(
-                                    x.id
+                                const checkbox = document.getElementById(
+                                  x.id
+                                );
+                                if (checkbox) {
+                                  checkbox.click();
+                                }
+                                if (selectedImages.includes(x.id)) {
+                                  setSelectedImages(
+                                    selectedImages.filter((id) => id != x.id)
                                   );
-                                  if (checkbox) {
-                                    checkbox.click();
-                                  }
-                                  if (selectedImages.includes(x.id)) {
-                                    setSelectedImages(
-                                      selectedImages.filter((id) => id != x.id)
-                                    );
-                                  } else {
-                                    // if (selectedImages.length < 3) {
-                                    setSelectedImages([
-                                      ...selectedImages,
-                                      x.id,
-                                    ]);
-                                    // }
-                                  }
+                                } else {
+                                  // if (selectedImages.length < 3) {
+                                  setSelectedImages([
+                                    ...selectedImages,
+                                    x.id,
+                                  ]);
+                                  // }
+                                }
                                 // }
                               }}
                             />
@@ -424,22 +415,64 @@ export default function ThemSanPham() {
     },
   ];
 
-  const paginationOptions = {
-    defaultPageSize: 5,
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRowSoLuong, setSelectedRowSoLuong] = useState({});
+
+  const onSelectChange = (newSelectedRowKeys, selectedRows) => {
+    console.log("newSelectedRowKeys : ", newSelectedRowKeys);
+    console.log("selectedRows : ", selectedRows);
+    setSelectedRowKeys(newSelectedRowKeys);
+    setSelectedRows(selectedRows);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
   };
 
-  const handleSoLuongChange = (key, value) => {
+  const handleSoLuongChange = (key, value, mau) => {
     let index = key - 1;
     const updatedTableData = [...tableData];
-    updatedTableData[index].soLuongTon = value;
-    setTableData(updatedTableData);
+
+    selectedRowKeys.map((key) => {
+      updatedTableData[key - 1].soLuongTon = value;
+      console.log(updatedTableData[key - 1]);
+      setTableData(updatedTableData);
+    });
+
+    const updatedTables = { ...tables };
+    for (const color in updatedTables) {
+      updatedTables[color] = updatedTables[color].map((item) => {
+        if (selectedRowKeys.includes(item.id) && item.id_mau_sac === mau) {
+          
+          return { ...item, soLuongTon: value };
+        }
+        return item;
+      });
+    }
+    setTables(updatedTables);
+    // setTableData(updatedTableData);
   };
 
-  const handleGiaBanChange = (key, value) => {
+  const handleGiaBanChange = (key, value, mau) => {
     let index = key - 1;
     const updatedTableData = [...tableData];
-    updatedTableData[index].giaBan = value;
-    setTableData(updatedTableData);
+
+    selectedRowKeys.map((key) => {
+      updatedTableData[key - 1].giaBan = value;
+      setTableData(updatedTableData);
+    });
+
+    const updatedTables = { ...tables };
+    for (const color in updatedTables) {
+      updatedTables[color] = updatedTables[color].map((item) => {
+        if (selectedRowKeys.includes(item.id) && item.id_mau_sac === mau) {
+          return { ...item, giaBan: value };
+        }
+        return item;
+      });
+    }
+    setTables(updatedTables);
   };
 
   // -------------------------end table data-------------------------
@@ -649,22 +682,22 @@ export default function ThemSanPham() {
       mauTableData[mau] = [];
       for (const kichCo of selectedKichCo) {
         const sanPhamItem = {
+          // id: index,
           ten: sanPham.ten,
-          tenSanPham: `${listSanPham.find((item) => item.id == id_san_pham)?.ten}` + `${sanPham.ten} [ ${kichCo} - ${
-            mauSac.find((item) => item.maMau === mau)?.ten || ""
-          } ]`,
-          // soLuongTon: sanPham.soLuongTon, // soLuongTon va` giaBan do nguoi dung nhap vao`
+          tenSanPham: `${listSanPham.find((item) => item.id == id_san_pham)?.ten}` +
+            `${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ""} ]`,
+          //soLuongTon: sanPham.soLuongTon, // soLuongTon va` giaBan do nguoi dung nhap vao`
           khoiLuong: 1,
           moTa: sanPham.moTa,
           giaNhap: "100,000",
-          // giaBan: "200,000",
+          //giaBan: "",
           id_mau_sac: mau,
           id_kich_co: kichCo,
           id_thuong_hieu: sanPham.id_thuong_hieu,
           id_the_loai: sanPham.id_the_loai,
           id_chat_lieu: sanPham.id_chat_lieu,
           id_de_giay: sanPham.id_de_giay,
-          id_san_pham : sanPham.id_san_pham
+          id_san_pham: sanPham.id_san_pham
         };
         tableDataa.push(sanPhamItem);
       }
@@ -678,19 +711,19 @@ export default function ThemSanPham() {
       const spByColor = selectedKichCo.map((kichCo) => ({
         id: (index += 1),
         ten: sanPham.ten,
-        tenSanPham: `${listSanPham.find((item) => item.id == id_san_pham)?.ten}` + ` ${sanPham.ten} [ ${kichCo} - ${
-          mauSac.find((item) => item.maMau === mau)?.ten || ""
-        } ]`,
+        tenSanPham: `${listSanPham.find((item) => item.id == id_san_pham)?.ten}` + ` ${sanPham.ten} [ ${kichCo} - ${mauSac.find((item) => item.maMau === mau)?.ten || ""
+          } ]`,
         khoiLuong: 1,
         moTa: sanPham.moTa,
+        // soLuongTon: sanPham.soLuongTon,
         giaNhap: "100,000",
         id_mau_sac: mau,
         id_kich_co: kichCo,
         id_thuong_hieu: sanPham.id_thuong_hieu,
-        id_id_the_loai: sanPham.id_id_the_loai,
+        id_id_the_loai: sanPham.id_the_loai,
         id_chat_lieu: sanPham.id_chat_lieu,
         id_de_giay: sanPham.id_de_giay,
-        id_san_pham : sanPham.id_san_pham,
+        id_san_pham: sanPham.id_san_pham,
         hinhAnh: mauTableData[mau],
       }));
       setTables((prevTables) => ({
@@ -862,11 +895,11 @@ export default function ThemSanPham() {
                           value={id_san_pham}
                           name="id_san_pham"
                           onChange={(e) => {
-                            setSanPham({ ...sanPham, "id_san_pham": e});
+                            setSanPham({ ...sanPham, "id_san_pham": e });
                           }}
-                          style={{width : "400px"}}
-                          >
-                            {options}
+                          style={{ width: "400px" }}
+                        >
+                          {options}
                         </Select>
                         <Modal
                           title="Thêm sản phẩm"
@@ -897,18 +930,18 @@ export default function ThemSanPham() {
                         </Modal>
                       </div>
                       <div
-                          className="p-2"
-                          style={{
-                            backgroundColor: "#00C5CD",
-                            borderRadius: "5px",
-                            color: "white",
-                            cursor: "pointer",
-                            marginLeft: "10px",
-                          }}
-                          onClick={showModalSP}
-                        >
-                          <AiOutlinePlus/>
-                        </div>
+                        className="p-2"
+                        style={{
+                          backgroundColor: "#00C5CD",
+                          borderRadius: "5px",
+                          color: "white",
+                          cursor: "pointer",
+                          marginLeft: "10px",
+                        }}
+                        onClick={showModalSP}
+                      >
+                        <AiOutlinePlus />
+                      </div>
                     </div>
                   </div>
 
@@ -974,7 +1007,7 @@ export default function ThemSanPham() {
                           <option
                             key={x.id}
                             value={x.id}
-                            //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                           >
                             {x.ten}
                           </option>
@@ -1219,11 +1252,10 @@ export default function ThemSanPham() {
                           {mauSac.map((item) => (
                             <div
                               key={item.id}
-                              className={`flex justify-center text-white cursor-pointer ${
-                                selectedColors.includes(item.maMau)
-                                  ? "border-2 border-yellow-500"
-                                  : "border-none"
-                              }`}
+                              className={`flex justify-center text-white cursor-pointer ${selectedColors.includes(item.maMau)
+                                ? "border-2 border-yellow-500"
+                                : "border-none"
+                                }`}
                               style={{
                                 width: "20%",
                                 height: "25px",
@@ -1339,11 +1371,10 @@ export default function ThemSanPham() {
                           {kichCo.map((item) => (
                             <div
                               key={item.id}
-                              className={`flex justify-center text-white cursor-pointer ${
-                                selectedKichCo.includes(item.ten)
-                                  ? "selectedKichCo"
-                                  : "border-none"
-                              }`}
+                              className={`flex justify-center text-white cursor-pointer ${selectedKichCo.includes(item.ten)
+                                ? "selectedKichCo"
+                                : "border-none"
+                                }`}
                               style={{
                                 width: "70px",
                                 height: "35px",
@@ -1452,11 +1483,12 @@ export default function ThemSanPham() {
                 {" " + mauSac.find((item) => item.maMau === mau)?.ten || ""}{" "}
               </h2>
               <Table
-                // rowSelection={rowSelection}
+                rowSelection={rowSelection}
                 columns={columns}
                 dataSource={tables[mau] || []}
                 pagination={false}
                 scroll={{ y: 2000 }}
+                rowKey="id"
               />
               <TableImg
                 columns={columnImg}
