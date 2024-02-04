@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../apis/Location_2";
 import { Button, Modal, Radio, Space, Spin, Select, Tooltip } from "antd";
-import { Row, Col } from 'antd';
+import { Row, Col } from "antd";
 import { IoIosArrowBack } from "react-icons/io";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
@@ -65,22 +65,24 @@ export default function Checkout() {
   const [duocGiam, setDuocGiam] = useState("100");
   const [listVoucher, setListVoucher] = useState([]);
   useEffect(() => {
-    if(localStorage?.getItem("user") != '')
+    if (localStorage?.getItem("user") != "")
       setUser(JSON.parse(localStorage.getItem("user")));
-    else
-      setUser(null)
+    else setUser(null);
   }, []);
   //get list voucher dang co'
   const getVocherDuocDung = async () => {
     const result = await axios.get("http://localhost:8080/voucher/getVouchers");
     setListVoucher(result.data);
-  }
+  };
   useEffect(() => {
     getVocherDuocDung();
     listVoucher.sort((b, a) => b.giaTriMin - a.giaTriMin);
 
     listVoucher.map((x, index) => {
-      if (codeVC == undefined && calculateSubtotal() > 0 || codeVC == "" && calculateSubtotal() > 0) {
+      if (
+        (codeVC == undefined && calculateSubtotal() > 0) ||
+        (codeVC == "" && calculateSubtotal() > 0)
+      ) {
         if (calculateSubtotal() >= x.giaTriMin) {
           setCodeVC(listVoucher[index]?.code);
           setMuaThem(
@@ -95,10 +97,14 @@ export default function Checkout() {
           );
         }
       } else {
-        if (x.giaTriMax == listVoucher.filter((item) => item.code == codeVC)[0]?.giaTriMax) {
+        if (
+          x.giaTriMax ==
+          listVoucher.filter((item) => item.code == codeVC)[0]?.giaTriMax
+        ) {
           setCodeVC(x.code);
           setMuaThem(
-            listVoucher[index + 1]?.giaTriMin - calculateSubtotal() == Number(NaN)
+            listVoucher[index + 1]?.giaTriMin - calculateSubtotal() ==
+              Number(NaN)
               ? ""
               : listVoucher[index + 1]?.giaTriMin - calculateSubtotal()
           );
@@ -112,10 +118,11 @@ export default function Checkout() {
     });
   }, [tongTien, listVoucher]);
 
-
   // get thong tin khach hang
   const getKhachHang = async () => {
-    const result = await axios.get(`http://localhost:8080/khach-hang/findByMa/${user?.ma}`);
+    const result = await axios.get(
+      `http://localhost:8080/khach-hang/findByMa/${user?.ma}`
+    );
     const khachHangData = result.data;
 
     setKhachHang({
@@ -134,17 +141,19 @@ export default function Checkout() {
       id: khachHangData.id,
     }));
   };
-  // get dia chi khach hang 
+  // get dia chi khach hang
   const [listDiaChi, setListDiaChi] = useState([]);
 
   const getDiaChi = async () => {
-    const result = await axios.get(`http://localhost:8080/dia-chi/findByMa/${user?.ma}`);
+    const result = await axios.get(
+      `http://localhost:8080/dia-chi/findByMa/${user?.ma}`
+    );
     setListDiaChi(result.data);
     result.data.map((item) => {
       if (item.trangThai == 1) {
         setDiaChi(item);
       }
-    })
+    });
   };
   useEffect(() => {
     getDiaChi();
@@ -170,8 +179,7 @@ export default function Checkout() {
         )?.ProvinceID;
         setIdTP(id_tp);
       })
-      .catch((error) => {
-      });
+      .catch((error) => {});
   }, [diaChi]);
   // lay id huyen theo api theo id tp
   useEffect(() => {
@@ -198,8 +206,7 @@ export default function Checkout() {
         setDistrict(response.data.data);
         setIdHuyen(id_huyen);
       })
-      .catch((error) => {
-      });
+      .catch((error) => {});
   }, [diaChi]);
 
   // lay id xa theo api theo id huyen
@@ -227,8 +234,7 @@ export default function Checkout() {
         setIdXa(id_xa);
         setWard(response.data.data);
       })
-      .catch((error) => {
-      });
+      .catch((error) => {});
   }, [diaChi, idHuyen]);
 
   useEffect(() => {
@@ -256,16 +262,15 @@ export default function Checkout() {
   };
   // khach hang thay doi dia chi
   const handleChangeTP = (selectedValue) => {
-    setDiaChi({ ...diaChi, "thanhPho": selectedValue });
+    setDiaChi({ ...diaChi, thanhPho: selectedValue });
   };
 
   const handleChangeHuyen = (selectedValue) => {
-    setDiaChi({ ...diaChi, "huyen": selectedValue });
-
+    setDiaChi({ ...diaChi, huyen: selectedValue });
   };
 
   const handleChangeXa = (selectedValue) => {
-    setDiaChi({ ...diaChi, "xa": selectedValue });
+    setDiaChi({ ...diaChi, xa: selectedValue });
   };
 
   const handleDuongChange = (e) => {
@@ -328,8 +333,7 @@ export default function Checkout() {
         console.log(formattedLeadtime);
         setDeliveryTime(formattedLeadtime);
       })
-      .catch((error) => {
-      });
+      .catch((error) => {});
   }, [idTP, idHuyen, idXa]);
 
   // Tính phí vận chuyển
@@ -385,18 +389,18 @@ export default function Checkout() {
       ),
     });
   };
-  //modal chon dia chi 
+  //modal chon dia chi
   const [isModalChonDiaChi, setIsModalChonDiaChi] = useState(false);
 
   const showModalChonDiaChi = () => {
     setIsModalChonDiaChi(true);
-  }
+  };
   const okModalChonDiaChi = () => {
     setIsModalChonDiaChi(false);
-  }
+  };
   const cancelModalChonDiaChi = () => {
     setIsModalChonDiaChi(false);
-  }
+  };
   useEffect(() => {
     const fetchAllHinhAnh = async () => {
       try {
@@ -486,7 +490,10 @@ export default function Checkout() {
     } else {
       updatedShippingCost = localShippingCost;
     }
-    const total = parseFloat(subtotal) + localShippingCost - listVoucher.filter((item) => item.code == codeVC)[0]?.giaTriMax;
+    const total =
+      parseFloat(subtotal) +
+      localShippingCost -
+      listVoucher.filter((item) => item.code == codeVC)[0]?.giaTriMax;
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
@@ -536,7 +543,7 @@ export default function Checkout() {
         tongTien,
         soLuong,
         maKH,
-        voucher,  
+        voucher,
       };
       console.log(cartNotLoginDTO);
       if (value == 3) {
@@ -622,7 +629,10 @@ export default function Checkout() {
               </div>
             )}
             {user && (
-              <div className="content-end cursor-pointer" onClick={showModalChonDiaChi}>
+              <div
+                className="content-end cursor-pointer"
+                onClick={showModalChonDiaChi}
+              >
                 <Button className="bg-black text-white float-right mb-2 h-12 cursor-pointer">
                   Chọn địa chỉ
                 </Button>
@@ -630,11 +640,23 @@ export default function Checkout() {
             )}
             <form onSubmit={handleSubmit}>
               <div className="inputGroupCodeSignUp">
-                <input name="email" type="email" value={user.email} required autoComplete="off" />
+                <input
+                  name="email"
+                  type="email"
+                  value={user.email}
+                  required
+                  autoComplete="off"
+                />
                 <label htmlFor="email">Email</label>
               </div>
               <div className="inputGroupCodeSignUp">
-                <input name="hoTen" type="text" value={user?.ten} required autoComplete="off" />
+                <input
+                  name="hoTen"
+                  type="text"
+                  value={user?.ten}
+                  required
+                  autoComplete="off"
+                />
                 <label htmlFor="hoTen">Họ và tên</label>
               </div>
               <div className="inputGroupCodeSignUp">
@@ -648,41 +670,41 @@ export default function Checkout() {
                 <label htmlFor="soDienThoai">Số điện thoại</label>
               </div>
               <div className="inputGroupCodeSignUp">
-                <input name="diaChi" type="text" required autoComplete="off" value={diaChi?.duong} />
+                <input
+                  name="diaChi"
+                  type="text"
+                  required
+                  autoComplete="off"
+                  value={diaChi?.duong}
+                />
                 <label htmlFor="diaChi">Địa chỉ</label>
               </div>
 
-              <div className="flex gap-1 justify-between">
-                <div className="mb-6">
-                  <Select
-                    placeholder="Thành phố"
-                    onChange={(selectedValue) => handleChangeTP(selectedValue)}
-                    value={diaChi?.thanhPho}
-                    style={{ marginRight: "10px", width: "240px", height: "44px" }}
-                  >
-                    {options}
-                  </Select>
-                </div>
-                <div className="mb-6">
-                  <Select
-                    placeholder="Huyện"
-                    onChange={(selectedValue) => handleChangeHuyen(selectedValue)}
-                    value={diaChi?.huyen}
-                    style={{ marginRight: "15px", width: "240px", height: "44px" }}
-                  >
-                    {optionHuyen}
-                  </Select>
-                </div>
-                <div className="mb-6">
-                  <Select
-                    placeholder="Xã"
-                    onChange={(selectedValue) => handleChangeXa(selectedValue)}
-                    value={diaChi?.xa}
-                    style={{ marginRight: "10px", width: "230px", height: "44px" }}
-                  >
-                    {optionXa}
-                  </Select>
-                </div>
+              <div className="flex mb-5">
+                <Select
+                  placeholder="Thành phố"
+                  onChange={(selectedValue) => handleChangeTP(selectedValue)}
+                  value={diaChi?.thanhPho}
+                  style={{ marginRight: "10px", width: "100%", height: "44px" }}
+                >
+                  {options}
+                </Select>
+                <Select
+                  placeholder="Huyện"
+                  onChange={(selectedValue) => handleChangeHuyen(selectedValue)}
+                  value={diaChi?.huyen}
+                  style={{ marginRight: "15px", width: "100%", height: "44px" }}
+                >
+                  {optionHuyen}
+                </Select>
+                <Select
+                  placeholder="Xã"
+                  onChange={(selectedValue) => handleChangeXa(selectedValue)}
+                  value={diaChi?.xa}
+                  style={{ marginRight: "10px", width: "100%", height: "44px" }}
+                >
+                  {optionXa}
+                </Select>
               </div>
 
               <h2 className="text-[16px] pb-2">Phương thức thanh toán</h2>
@@ -731,7 +753,11 @@ export default function Checkout() {
                           alt=""
                           className="mr-3"
                         />
-                        <p>Thanh toán qua <span className="text-red-700">VN</span><span className="text-blue-700">PAY</span></p>
+                        <p>
+                          Thanh toán qua{" "}
+                          <span className="text-red-700">VN</span>
+                          <span className="text-blue-700">PAY</span>
+                        </p>
                       </div>
                     </Radio>
                   </Space>
@@ -807,10 +833,16 @@ export default function Checkout() {
               <Tooltip arrow={true} title={"Chọn phiếu giảm giá"}>
                 <button className="btn-apply-giamGia">🔖</button>
               </Tooltip>
-              <span style={{ color: "red", fontSize: "16px", display: "block" }}>
+              <span
+                style={{ color: "red", fontSize: "16px", display: "block" }}
+              >
                 {duocGiam == ""
                   ? ""
-                  : "Mua thêm " + Intl.NumberFormat().format(muaThem) + " ₫ để được giảm " + Intl.NumberFormat().format(duocGiam) + " ₫"}
+                  : "Mua thêm " +
+                    Intl.NumberFormat().format(muaThem) +
+                    " ₫ để được giảm " +
+                    Intl.NumberFormat().format(duocGiam) +
+                    " ₫"}
               </span>
               <div className="horizontal"></div>
               <div className="checkout-tinhTien">
@@ -820,7 +852,16 @@ export default function Checkout() {
                 </div>
                 <div className="flex justify-between">
                   <h3>Giảm giá</h3>
-                  <p>VNĐ {Intl.NumberFormat().format(listVoucher.filter((item) => item.code == codeVC)[0]?.giaTriMax == null ? 0 : listVoucher.filter((item) => item.code == codeVC)[0]?.giaTriMax)}</p>
+                  <p>
+                    VNĐ{" "}
+                    {Intl.NumberFormat().format(
+                      listVoucher.filter((item) => item.code == codeVC)[0]
+                        ?.giaTriMax == null
+                        ? 0
+                        : listVoucher.filter((item) => item.code == codeVC)[0]
+                            ?.giaTriMax
+                    )}
+                  </p>
                 </div>
                 <div className="flex justify-between">
                   <h3>Phí vận chuyển</h3>
@@ -857,28 +898,35 @@ export default function Checkout() {
               <Button>Thêm địa chỉ</Button>
             </div>
           </div>
-          {
-            listDiaChi.map((item, index) => (
-              <div className="w-full mb-10">
-                <div className="flex justify-between space-x-4">
-                  <div className="flex items-center">
-                    <input type="radio" name="checkBoxDiaChi" id="checkBoxDiaChi" checked />
-                  </div>
-                  <div className="w-1/2">
-                    <p className="mb-3">Địa chỉ {index + 1}</p>
-                    <p className="mb-3">{`${item.duong}, xã ${item.xa}, huyện ${item.huyen}, thành phố ${item.thanhPho}`}</p>
-                    {item.trangThai === 1 ? (
-                      <p className="w-1/4 p-1" style={{ border: "3px solid red", fontSize: "15px" }}>Mặc định</p>
-                    ) : null}
-                  </div>
-                  <div className="flex items-center">
-                    <Button>Đặt địa chỉ mặc định</Button>
-                  </div>
+          {listDiaChi.map((item, index) => (
+            <div className="w-full mb-10">
+              <div className="flex justify-between space-x-4">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    name="checkBoxDiaChi"
+                    id="checkBoxDiaChi"
+                    checked
+                  />
+                </div>
+                <div className="w-1/2">
+                  <p className="mb-3">Địa chỉ {index + 1}</p>
+                  <p className="mb-3">{`${item.duong}, xã ${item.xa}, huyện ${item.huyen}, thành phố ${item.thanhPho}`}</p>
+                  {item.trangThai === 1 ? (
+                    <p
+                      className="w-1/4 p-1"
+                      style={{ border: "3px solid red", fontSize: "15px" }}
+                    >
+                      Mặc định
+                    </p>
+                  ) : null}
+                </div>
+                <div className="flex items-center">
+                  <Button>Đặt địa chỉ mặc định</Button>
                 </div>
               </div>
-            ))
-          }
-
+            </div>
+          ))}
 
           {/* <div className="w-full">
             <div className="flex justify-between space-x-4">

@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
+import BannerVideo from "../assets/video-banner-jordanVTH.mp4";
 
 export default function SaleBar() {
   return (
     <>
       <div className="info-top w-full flex justify-center">
-        {/* <div>
+        <div>
           <div className="font-medium text-base">
             🎊 Truy cập sớm vào Black Friday: Giảm tới 60% đăng nhập và sử dụng
             mã
@@ -12,7 +13,7 @@ export default function SaleBar() {
           <div className="flex justify-center">
             TRUY CẬP để được giảm thêm 25% cho các kiểu đã chọn.
           </div>
-        </div> */}
+        </div>
       </div>
       <div className="flex flex-col main-menuUnder">
         <div className="flex justify-center p-5">
@@ -36,7 +37,7 @@ export default function SaleBar() {
           </svg>
         </div>
         <div className="menu-under flex justify-center">
-          <ul className="flex" >
+          <ul className="flex">
             <li>
               <a href="#">Bản mới phát hành</a>
             </li>
@@ -55,16 +56,14 @@ export default function SaleBar() {
             <li>
               <a href="#">Trẻ em</a>
             </li>
-            
           </ul>
         </div>
       </div>
       <div className="banner">
         <div className="image-banner">
-          <img
-            src="https://bizweb.dktcdn.net/100/413/756/collections/jordan-2.jpg?v=1617462460240"
-            alt=""
-          />
+          <video autoPlay loop muted playsInline>
+            <source src={BannerVideo} type="video/mp4" />
+          </video>
           <div className="title-banner m-10">
             <p className="flex justify-center">AIR JORDAN 1 HIGH OG</p>
             <p className="flex justify-center">&quot;ROYAL REIMAGINED&quot;</p>

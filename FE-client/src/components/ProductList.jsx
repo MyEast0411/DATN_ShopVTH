@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllSanPhamChiTietByIdSanPham, getAllSanPham } from "../apis/SanPham";
+import {
+  getAllSanPhamChiTietByIdSanPham,
+  getAllSanPham,
+} from "../apis/SanPham";
 
 export default function ProductList() {
   const [sanPhams, setSanPhams] = useState([]);
@@ -9,18 +12,36 @@ export default function ProductList() {
   const [selectedImage, setSelectedImage] = useState("");
   const [isMouseOver, setIsMouseOver] = useState(false);
 
-  const fetchSanPham = async () => {
-    try {
-      const data = await getAllSanPham();
-      console.log(data);
-      setSanPhams(data);
-    } catch (error) {
-      console.error("Error fetchSanPham():", error);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getAllSanPham();
+        // has been filter unique
+        setSanPhams(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchSanPhamById = async () => {
+      try {
+        const data = await getAllSanPhamChiTietByIdSanPham(idHover);
+        setHinhAnhs(data);
+      } catch (error) {
+        console.error("Error fetchSanPhamById:", error);
+      }
+    };
+
+    if (idHover) {
+      fetchSanPhamById();
     }
-  };
+  }, [idHover]);
 
   const handleIdHover = (idHover) => {
-    // console.log("id hover:", idHover);
     setIdHover(idHover);
     setIsMouseOver(true);
   };
@@ -28,24 +49,6 @@ export default function ProductList() {
   const handleMouseLeave = () => {
     setIsMouseOver(false);
   };
-
-  const fetchSanPhamById = async () => {
-    try {
-      const data = await getAllSanPhamChiTietByIdSanPham(idHover);
-      // console.log("fetchSanPhamById", data)
-      setHinhAnhs(data);
-    } catch (error) {
-      console.error("Error fetchSanPham():", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchSanPhamById();
-  }, [idHover]);
-
-  useEffect(() => {
-    fetchSanPham();
-  }, []);
 
   return (
     <>
@@ -74,7 +77,7 @@ export default function ProductList() {
                     onMouseOver={() => setSelectedImage(item.defaultImg)}
                   />
                 ))}
-                {hinhAnhs.length > 5 && (
+                {sanPham.colorCount > 5 && (
                   <span className="img-list-chiTietSanPham">
                     <span className="moreThan">+5</span>
                   </span>
@@ -84,10 +87,12 @@ export default function ProductList() {
               <>
                 <h2 className="name-product">{sanPham.ten}</h2>
                 <h2 className="gender">{sanPham.theLoai}</h2>
-                <h2 className="color-quantity">{`${hinhAnhs.length} Colors`}</h2>
+                <h2 className="color-quantity">{`${sanPham.colorCount} Colors`}</h2>
               </>
             )}
-            <div className="price-product">VNĐ {Intl.NumberFormat().format(sanPham?.maxPrice)}</div>
+            <div className="price-product">
+              VNĐ {Intl.NumberFormat().format(sanPham?.maxPrice)}
+            </div>
           </Link>
         ))}
       </div>

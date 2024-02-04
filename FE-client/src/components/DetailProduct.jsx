@@ -52,8 +52,18 @@ export default function DetailProduct() {
   }, [kmspcts]);
 
   useEffect(() => {
-    setUser(JSON.parse(localStorage?.getItem("user")));
+    const storedUser = localStorage?.getItem("user");
+  
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error parsing user data from localStorage:", error);
+      }
+    }
   }, []);
+
+  
   useEffect(() => {
     const fetchSPCTByIdSP = async () => {
       try {
