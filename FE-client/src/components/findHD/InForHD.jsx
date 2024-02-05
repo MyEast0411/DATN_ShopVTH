@@ -55,19 +55,26 @@ function InForHD({ item }) {
           <p>
             Khách hàng :{" "}
             <span className="italic font-light">
-              &nbsp;&nbsp; {item.hoaDon.tenKhachHang == null ? "Khách lẻ" : item.hoaDon.tenKhachHang}
+              &nbsp;&nbsp;{" "}
+              {item.hoaDon.tenKhachHang == null
+                ? "Khách lẻ"
+                : item.hoaDon.tenKhachHang}
             </span>
           </p>
           <p>
             Người Nhận :{" "}
             <span className="italic font-light">
-              &nbsp;&nbsp; {item.hoaDon.tenKhachHang == null ? "Khách lẻ" : item.hoaDon.tenKhachHang}
+              &nbsp;&nbsp;{" "}
+              {item.hoaDon.tenKhachHang == null
+                ? "Khách lẻ"
+                : item.hoaDon.tenKhachHang}
             </span>
           </p>
           <p>
             Số Điện Thoại :{" "}
             <span className="italic font-light">
-              &nbsp;&nbsp; {item.hoaDon.sdt == null ? "Khách lẻ" : item.hoaDon.sdt}
+              &nbsp;&nbsp;{" "}
+              {item.hoaDon.sdt == null ? "Khách lẻ" : item.hoaDon.sdt}
             </span>
           </p>
         </div>
@@ -95,7 +102,11 @@ function InForHD({ item }) {
           <p>
             Tiền hàng :{" "}
             <span className="italic  font-light">
-              &nbsp;&nbsp; {Intl.NumberFormat().format(item.hoaDon.tongTien - item.hoaDon.tienShip)}₫
+              &nbsp;&nbsp;{" "}
+              {Intl.NumberFormat().format(
+                item.hoaDon.tongTien - item.hoaDon.tienShip
+              )}
+              ₫
             </span>
           </p>
           <p>
@@ -171,7 +182,7 @@ function InForHD({ item }) {
             <ModalContent>
               {(onClose) => (
                 <>
-                  {!logined ? (
+                  {/* {!logined ? (
                     <>
                       <ModalHeader className="flex flex-col gap-1">
                         Log in
@@ -221,21 +232,21 @@ function InForHD({ item }) {
                         </Button>
                       </ModalFooter>
                     </>
-                  ) : (
-                    <>
-                      <ModalHeader className="flex flex-col gap-1">
-                        Hóa đơn chi tiết
-                      </ModalHeader>
-                      <ModalBody className="w-full">
-                        <TableHDCT listHDCT={item.hoaDonChiTiets} />
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button color="danger" variant="flat" onPress={onClose}>
-                          Close
-                        </Button>
-                      </ModalFooter>
-                    </>
-                  )}
+                  ) : ( */}
+                  <>
+                    <ModalHeader className="flex flex-col gap-1">
+                      Hóa đơn chi tiết
+                    </ModalHeader>
+                    <ModalBody className="w-full">
+                      <TableHDCT listHDCT={item.hoaDonChiTiets} />
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button color="danger" variant="flat" onPress={onClose}>
+                        Close
+                      </Button>
+                    </ModalFooter>
+                  </>
+                  {/* )} */}
                 </>
               )}
             </ModalContent>

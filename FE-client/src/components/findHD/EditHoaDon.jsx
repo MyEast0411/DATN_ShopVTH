@@ -120,7 +120,6 @@ function EditHoaDon() {
     </Option>
   ));
 
-
   const getInfoHD = async () => {
     const res = await axios.get(
       "http://localhost:8080/hoa_don/getHoaDon/" + id
@@ -154,11 +153,12 @@ function EditHoaDon() {
   }, [error.huyen, error.soNha, error.xa, error.thanhPho]);
 
   const getAddress = (address1) => {
+    console.log(address1);
     let address_list = address1.split(",");
     address.soNha = address_list[0];
-    address.xa = address_list[3];
+    address.xa = address_list[1];
     address.huyen = address_list[2];
-    address.thanhPho = address_list[1];
+    address.thanhPho = address_list[3];
     setAddress(address);
   };
 
@@ -464,7 +464,7 @@ function EditHoaDon() {
         )?.ProvinceID;
         setIdTP(id_tp);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   }, [addressEdit]);
 
   // lay id huyen theo api theo id tp
@@ -492,7 +492,7 @@ function EditHoaDon() {
         )?.DistrictID;
         setIdHuyen(id_huyen);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   }, [addressEdit]);
 
   // lay id xa theo api theo id huyen
@@ -519,7 +519,7 @@ function EditHoaDon() {
         )?.WardCode;
         setIdXa(id_xa);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   }, [addressEdit, idHuyen]);
 
   // Tính thời gian dự kiến
@@ -558,7 +558,7 @@ function EditHoaDon() {
 
         // const formattedLeadtime = `${year}/${month}/${day}`;
       })
-      .catch((error) => { });
+      .catch((error) => {});
   }, [idTP, idHuyen, idXa]);
 
   // Tính phí vận chuyển

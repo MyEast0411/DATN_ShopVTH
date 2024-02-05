@@ -22,6 +22,7 @@ import SuccessOrder from "./components/SuccessOrder";
 
 import EditHoaDon from "./components/findHD/EditHoaDon";
 import PayMentSuccess from "./components/PaymentSuccess";
+import Test from "./test/Test";
 
 function App() {
   return (
