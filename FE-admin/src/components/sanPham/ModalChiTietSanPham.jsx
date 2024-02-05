@@ -13,7 +13,7 @@ import {
 } from "antd";
 import axios from "axios";
 
-export default function ModalChiTietSanPham() {
+export default function ModalChiTietSanPham({ idDetailProduct }) {
     const [mauSac, setMauSac] = useState([]);
     const [thuongHieu, setThuongHieu] = useState([]);
     const [chatLieu, setChatLieu] = useState([]);
@@ -80,12 +80,54 @@ export default function ModalChiTietSanPham() {
         });
     };
     const [form] = Form.useForm();
+    const [initialValues, setInitialValues] = useState({
+        id: "",
+        description: "",
+        price: "",
+        quantity: "",
+        status: "",
+        id_de_giay: "",
+        productName: "",
+        id_chat_lieu: "",
+        id_mau_sac: "",
+        id_the_loai: "",
+        id_thuong_hieu: "",
+        QRCode: "",
+        id_kich_co: "",
+    });
+
+    const getDetailProductById = async () => {
+        console.log(idDetailProduct);
+        const result = await axios.get(`http://localhost:8080/detailSP/${idDetailProduct}`);
+        console.log(result.data);
+        setInitialValues({
+            id: result.data.id,
+            productName: result.data.ten,
+            description : result.data.moTa,
+            id_mau_sac : result.data.id_mau_sac.ten,
+            id_kich_co: result.data.id_kich_co.id,
+            id_thuong_hieu: result.data.id_thuong_hieu.id,
+            id_the_loai: result.data.id_the_loai.id,
+            id_chat_lieu: result.data.id_chat_lieu.id,
+            id_de_giay: result.data.id_de_giay.id,
+            quantity : result.data.soLuongTon,
+            price : result.data.giaBan
+        })
+    }
+    useEffect(() => {
+        if (idDetailProduct != null && idDetailProduct !== "") {
+            getDetailProductById();
+        }
+    }, [idDetailProduct])
+    useEffect(() => {
+        form.resetFields();
+    }, [initialValues]);
     return (
-        <div style={{width : "900px"}}>
-            <Form form={form} >
+        <div style={{ width: "700px" }}>
+            <Form form={form} initialValues={initialValues}>
                 <Form.Item
                     label="Tên sản phẩm"
-                    name="productId"
+                    name="productName"
                     style={{ fontWeight: "bold" }}
                     rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}
                 >
@@ -107,90 +149,67 @@ export default function ModalChiTietSanPham() {
                 <Row gutter={7} justify="space-around">
                     <Col span={8}>
                         <Form.Item
-                            label="Thương hiệu"
-                            name="brandId"
+                            label="Màu Sắc"
+                            name="id_mau_sac"
                             style={{ fontWeight: "bold" }}
-                            rules={[
-                                { required: true, message: "Vui lòng chọn thương hiệu" },
-                            ]}
+                            rules={[{ required: true, message: "Vui lòng chọn màu sắc" }]}
+                        >
+                            <Select placeholder="Chọn màu sắc" className="ml-7">
+                                {mauSac.map((color, index) => (
+                                    <Option key={index} value={color.ten}>
+                                        <div
+                                            style={{
+                                                backgroundColor: color.maMau,
+                                                width: "100%",
+                                                height: "100%",
+                                                borderRadius: "5px",
+                                                border : "1px solid #CCC"
+                                            }}
+                                        >{color.maMau}</div>
+                                        
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                    </Col>
+                    <Col span={5}></Col>
+                    <Col span={8}>
+                        <Form.Item
+                            label="Kích cỡ"
+                            name="id_kich_co"
+                            style={{ fontWeight: "bold" }}
+                            rules={[{ required: true, message: "Vui lòng chọn kích cỡ" }]}
+                        >
+                            <Select placeholder="Chọn kích cỡ">
+                                {kichCo.map((kichCo, index) => (
+                                    <Option key={index} value={kichCo.id}>
+                                        {kichCo.ten}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                    </Col>
+                    <Col span={2}></Col>
+                </Row>
+
+                <Row gutter={7} justify="space-around">
+                    <Col span={8}>
+                        <Form.Item
+                            label="Thương Hiệu"
+                            name="id_thuong_hieu"
+                            style={{ fontWeight: "bold", width: "256px" }}
+                            rules={[{ required: true, message: "Vui lòng chọn thương hiệu" }]}
                         >
                             <Select placeholder="Chọn thương hiệu">
-                                {thuongHieu.map((brand, index) => (
-                                    <Option key={index} value={brand.id}>
-                                        <span style={{ fontWeight: "bold" }}>{brand.ten}</span>
+                                {thuongHieu.map((item, index) => (
+                                    <Option key={index} value={item.id}>
+                                        {item.ten}
                                     </Option>
                                 ))}
                             </Select>
                         </Form.Item>
                     </Col>
-
-                    <Col span={8}>
-                        <Form.Item
-                            label="Trạng thái"
-                            name="status"
-                            style={{ fontWeight: "bold" }}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Vui lòng chọn trạng thái sản phẩm",
-                                },
-                            ]}
-                        >
-                            <Select>
-                                <Option value="1">
-                                    <span style={{ fontWeight: "bold" }}>Đang bán</span>
-                                </Option>
-                                <Option value="0">
-                                    <span style={{ fontWeight: "bold" }}>Ngừng bán</span>
-                                </Option>
-                            </Select>
-                        </Form.Item>
-                    </Col>
-
-                </Row>
-
-                <Row gutter={7} justify="space-around">
-                    <Col span={8}>
-                        <Form.Item
-                            label="Chất Liệu"
-                            name="id_chat_lieu"
-                            style={{ fontWeight: "bold" }}
-                            rules={[
-                                { required: true, message: "Vui lòng chọn chất liệu" },
-                            ]}
-                        >
-                            <Select placeholder="Chọn chất liệu">
-                                {chatLieu.map((material, index) => (
-                                    <Option key={index} value={material.id}>
-                                        <span style={{ fontWeight: "bold" }}>
-                                            {material.ten}
-                                        </span>
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                    </Col>
-
-                    <Col span={8}>
-                        <Form.Item
-                            label="Đế Giày"
-                            name="id_de_giay"
-                            style={{ fontWeight: "bold" }}
-                            rules={[{ required: true, message: "Vui lòng chọn đế giày" }]}
-                        >
-                            <Select placeholder="Chọn đế giày">
-                                {deGiay.map((sole, index) => (
-                                    <Option key={index} value={sole.id}>
-                                        <span style={{ fontWeight: "bold" }}>{sole.ten}</span>
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                    </Col>
-
-                </Row>
-
-                <Row gutter={7} justify="space-around">
+                    <Col span={5}></Col>
                     <Col span={8}>
                         <Form.Item
                             label="Thể loại"
@@ -199,65 +218,53 @@ export default function ModalChiTietSanPham() {
                             rules={[{ required: true, message: "Vui lòng chọn thể loại" }]}
                         >
                             <Select placeholder="Chọn thể loại">
-                                {theLoai.map((category, index) => (
-                                    <Option key={index} value={category.id}>
-                                        <span style={{ fontWeight: "bold" }}>
-                                            {category.ten}
-                                        </span>
+                                {theLoai.map((item, index) => (
+                                    <Option key={index} value={item.id}>
+                                        {item.ten}
                                     </Option>
                                 ))}
                             </Select>
                         </Form.Item>
                     </Col>
-
+                    <Col span={2}></Col>
                 </Row>
 
                 <Row gutter={7} justify="space-around">
                     <Col span={8}>
                         <Form.Item
-                            label="Màu Sắc"
-                            name="id_mau_sac"
+                            label="Chất liệu"
+                            name="id_chat_lieu"
                             style={{ fontWeight: "bold" }}
-                            rules={[{ required: true, message: "Vui lòng chọn màu sắc" }]}
+                            rules={[{ required: true, message: "Vui lòng chọn chất liệu" }]}
                         >
-                            <Select placeholder="Chọn màu sắc">
-                                {mauSac.map((color, index) => (
-                                    <Option key={index} value={color.id}>
-                                        <div
-                                            style={{
-                                                backgroundColor: color.maMau,
-                                                width: "100%",
-                                                height: "100%",
-                                                borderRadius: "5px",
-                                            }}
-                                        ></div>
+                            <Select placeholder="Chọn chất liệu" className="ml-7">
+                                {chatLieu.map((item, index) => (
+                                    <Option key={index} value={item.id}>
+                                        {item.ten}
                                     </Option>
                                 ))}
                             </Select>
                         </Form.Item>
                     </Col>
-
+                    <Col span={5}></Col>
                     <Col span={8}>
                         <Form.Item
-                            label="Kích Cỡ"
-                            name="sizeId"
+                            label="Đế giày"
+                            name="id_de_giay"
                             style={{ fontWeight: "bold" }}
-                            rules={[
-                                { required: true, message: "Vui lòng nhập kích cỡ sản phẩm" },
-                            ]}
+                            rules={[{ required: true, message: "Vui lòng chọn đế giày" }]}
                         >
-                            <Select placeholder="Chọn kích cỡ">
-                                {kichCo.map((size, index) => (
-                                    <Option key={index} value={size.id}>
-                                        <span style={{ fontWeight: "bold" }}>{size.ten}</span>
+                            <Select placeholder="Chọn đế giày">
+                                {deGiay.map((item, index) => (
+                                    <Option key={index} value={item.id}>
+                                        {item.ten}
                                     </Option>
                                 ))}
                             </Select>
                         </Form.Item>
                     </Col>
-
+                    <Col span={2}></Col>
                 </Row>
-
                 <Row gutter={7} justify="space-around">
                     <Col span={8}>
                         <Form.Item
@@ -274,6 +281,7 @@ export default function ModalChiTietSanPham() {
                             ]}
                         >
                             <InputNumber
+                                className="ml-7"
                                 style={{ fontWeight: "bold", width: "100%", height: "40px" }}
                                 placeholder="Nhập số lượng"
                             />

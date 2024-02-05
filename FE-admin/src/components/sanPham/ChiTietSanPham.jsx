@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Button as ButtonAntd } from "antd";
+import { Button as ButtonAntd, notification } from "antd";
 import { Link, useParams } from "react-router-dom";
 import { InputNumber, Modal } from "antd";
 //table
@@ -50,13 +50,13 @@ import ModalChiTietSanPham from "./ModalChiTietSanPham";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "Ảnh", uid: "hinhAnh", sortable: true },
+  { name: "Ảnh", uid: "hinhAnh", sortable: true, align: "center" },
   { name: "Tên sản phẩm", uid: "tenSanPham", sortable: true },
   { name: "Kích thước", uid: "kichThuoc", sortable: true },
   { name: "Màu sắc", uid: "mauSac", sortable: true },
   { name: "Đế giày", uid: "deGiay", sortable: true },
   { name: "Số lượng tồn", uid: "soLuongTon", sortable: true, align: "center" },
-  { name: "Đơn giá", uid: "donGia", sortable: true },
+  { name: "Đơn giá", uid: "giaBan", sortable: true },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Hành Động", uid: "hanhDong" },
 ];
@@ -82,7 +82,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "mauSac",
   "deGiay",
   "soLuongTon",
-  "donGia",
+  "giaBan",
   "trangThai",
   "hanhDong",
 ];
@@ -98,7 +98,7 @@ export default function ChiTietSanPham() {
   const [deGiay, setDeGiay] = useState([]);
   const [kichCo, setKichCo] = useState([]);
   const [nhanHieu, setNhanHieu] = useState([]);
-
+  const [idDetailProduct, setIdDetailProduct] = useState([]);
   useEffect(() => {
     getAllNH();
     getAllMS();
@@ -172,7 +172,7 @@ export default function ChiTietSanPham() {
   };
   useEffect(() => {
     getAllHA();
-  }, [hinhAnh]);
+  }, []);
 
   const [kmspcts, setKmspcts] = useState([]);
   const fetchKMSPCT = async () => {
@@ -181,7 +181,7 @@ export default function ChiTietSanPham() {
   };
   useEffect(() => {
     fetchKMSPCT();
-  }, [kmspcts]);
+  }, []);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -205,6 +205,7 @@ export default function ChiTietSanPham() {
     id_thuong_hieu: "",
     id_nhan_hieu: "",
     trangThai: "",
+    maSP: ma,
   });
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -214,45 +215,46 @@ export default function ChiTietSanPham() {
       [name]: value,
     }));
   };
+  //load table khi loc 
+  const fetchData = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/filterSPCT",
+        sanPham
+      );
+      const updatedRows = response.data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        tenSanPham: item.ten,
+        hinhAnh: item.defaultImg,
+        mauSac: item.id_mau_sac.maMau,
+        kichThuoc: item.id_kich_co.ten,
+        soLuongTon: item.soLuongTon,
+        deGiay: item.id_de_giay.ten,
+        giaBan: numeral(item.giaBan).format("0,0 VND"),
+        trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+        giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+          ?.id_khuyen_mai.giaTriPhanTram,
+      }));
+
+      setSanPhams(updatedRows);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:8080/filterSPCT",
-          sanPham
-        );
-        console.log(response.data);
-        const updatedRows = response.data.map((item, index) => ({
-          id: item.id,
-          stt: index + 1,
-          tenSanPham: item.ten,
-          hinhAnh: item.defaultImg,
-          mauSac: item.id_mau_sac.maMau,
-          kichThuoc: item.id_kich_co.ten,
-          soLuongTon: item.soLuongTon,
-          deGiay: item.id_de_giay.ten,
-          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
-          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x) => x.id_san_pham.id == item.id)
-            ?.id_khuyen_mai.giaTriPhanTram,
-        }));
-
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     fetchData();
   }, [sanPham]);
+
+  //load tale theo ma sp
   const url = `http://localhost:8080/findByMa/${ma}`;
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(url);
-        // console.log(response.data);
+        console.log(response.data);
         const updatedRows = response.data.map((item, index) => ({
-          id: index + 1,
+          id: item.id,
           stt: index + 1,
           hinhAnh: item.defaultImg,
           mauSac: item.id_mau_sac.maMau,
@@ -260,7 +262,7 @@ export default function ChiTietSanPham() {
           soLuongTon: item.soLuongTon,
           tenSanPham: item.ten,
           deGiay: item.id_de_giay.ten,
-          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
+          giaBan: numeral(item.giaBan).format("0,0 VND"),
           trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
           giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
             ?.id_khuyen_mai.giaTriPhanTram,
@@ -331,27 +333,67 @@ export default function ChiTietSanPham() {
 
     return <div className="discount-tag">{`${discount}% OFF`}</div>;
   };
+  const handleSoLuongChange = (sanPhamId, value) => {
+    setSanPhams((prevSanPhams) => {
+      return prevSanPhams.map((sp) => {
+        if (sp.id === sanPhamId) {
+          return { ...sp, soLuongTon: value };
+        }
+        return sp;
+      });
+    });
+  };
+
+  const handleGiaBanChange = (sanPhamId, value) => {
+    setSanPhams((prevSanPhams) => {
+      return prevSanPhams.map((sp) => {
+        if (sp.id === sanPhamId) {
+          return { ...sp, giaBan: value };
+        }
+        return sp;
+      });
+    });
+  };
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const showModalUpdate = () => {
+    setIsOpenModal(true);
+  };
+  const handleOkUpdate = async () => {
+    console.log(sanPhams);
+    await axios.put(`http://localhost:8080/updateSortSPCT`, sanPhams).then((response) => {
+      notification.success({
+        message: "Chỉnh sửa sản phẩm thành công",
+      });
+      fetchData();
+    }).catch((err) => {
+      console.log(err);
+    })
+    setIsOpenModal(false);
+  };
+  const handleCancelUpdate = () => {
+    setIsOpenModal(false);
+  };
 
   const renderCell = React.useCallback(
     (sanPham, columnKey) => {
       const cellValue = sanPham[columnKey];
       const giaGiam = sanPham.giaGiam;
-      const isSanPhamSelected =
-        selectedKeys === "all" ||
-        selectedCTSP.some((selectedItem) => selectedItem.id === sanPham.id);
+
       switch (columnKey) {
         case "soLuongTon":
           return (
             <InputNumber
+              min={1}
               value={sanPham.soLuongTon}
-              // onChange={handleInputChange}
+              onChange={(value) => handleSoLuongChange(sanPham.id, value)}
             />
           );
-        case "donGia":
+        case "giaBan":
           return (
             <InputNumber
-              value={sanPham.donGia}
-              // onChange={handleInputChange}
+              min={1}
+              value={numeral(sanPham.giaBan).format("0,0 VND")}
+              onChange={(value) => handleGiaBanChange(sanPham.id, value)}
             />
           );
         case "hinhAnh":
@@ -406,7 +448,11 @@ export default function ChiTietSanPham() {
             <div className="relative flex items-center gap-4">
               <Tooltip content="Chi tiết" showArrow={true}>
                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon onClick={showModalSP} />
+                  <EyeIcon onClick={() => {
+                    showModalSP();
+                    setIdDetailProduct(sanPham.id);
+                    console.log(sanPham.id);
+                  }} />
                 </span>
               </Tooltip>
 
@@ -424,7 +470,7 @@ export default function ChiTietSanPham() {
           return cellValue;
       }
     },
-    [selectedCTSP]
+    [selectedCTSP, sanPhams]
   );
 
   const [isModalOpenSP, setIsModalOpenSP] = useState(false);
@@ -549,6 +595,7 @@ export default function ChiTietSanPham() {
               backgroundColor: "#1976d2",
               marginBottom: "2px",
             }}
+            onClick={showModalUpdate}
           >
             📝 Cập nhật sản phẩm
           </ButtonAntd>
@@ -579,7 +626,7 @@ export default function ChiTietSanPham() {
           page={page}
           total={totalPages}
           onChange={setPage}
-          // style={{ paddingLeft: "730px" }}
+        // style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -668,7 +715,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -696,7 +743,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -724,7 +771,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -752,7 +799,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -814,7 +861,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -842,7 +889,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                          //style={{ backgroundColor: x.maMau, color: "white" }}
+                        //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -956,9 +1003,6 @@ export default function ChiTietSanPham() {
             }
             setSelectedCTSP(selectedCTSP);
           }}
-          onRowAction={() => {
-            return;
-          }}
         >
           <TableHeader columns={headerColumns}>
             {(column) => (
@@ -1019,15 +1063,27 @@ export default function ChiTietSanPham() {
           </DialogActions>
         </Dialog>
         <Modal
-          title="Cập nhật chi tiết sản phẩm"
+          title="Chi tiết sản phẩm"
           open={isModalOpenSP}
           onOk={handleOkSP}
           onCancel={handleCancelSP}
           cancelText="Hủy"
           okText="Hoàn tất"
-          style={{ position: "relative"}}
+          style={{ position: "relative" }}
+          width={800}
         >
-          <ModalChiTietSanPham />
+          <ModalChiTietSanPham idDetailProduct={idDetailProduct} />
+        </Modal>
+        <Modal
+          title="Xác nhận chỉnh sửa sản phẩm"
+          onOk={handleOkUpdate}
+          onCancel={handleCancelUpdate}
+          open={isOpenModal}
+          okText="Xác nhận"
+          cancelText="Hủy"
+          className="mt-64"
+          okButtonProps={{ style: { backgroundColor: 'green', color: 'white' } }}
+        >
         </Modal>
       </div>
     </>
