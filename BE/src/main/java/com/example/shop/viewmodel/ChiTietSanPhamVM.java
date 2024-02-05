@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class ChiTietSanPhamVM implements Serializable {
     private String id;
-    private String ma;
+    private String maSP;
     private String ten;
     private String tenSanPham;
     private Integer soLuongTon;
@@ -31,27 +31,4 @@ public class ChiTietSanPhamVM implements Serializable {
     private String id_thuong_hieu;
     private String id_nhan_hieu;
 
-    @Override
-    public String toString() {
-        return "ChiTietSanPhamVM{" +
-                "id='" + id + '\'' +
-                ", ma='" + ma + '\'' +
-                ", ten='" + ten + '\'' +
-                ", tenSanPham='" + tenSanPham + '\'' +
-                ", soLuongTon=" + soLuongTon +
-                ", khoiLuong=" + khoiLuong +
-                ", moTa='" + moTa + '\'' +
-                ", trangThai='" + trangThai + '\'' +
-                ", giaNhap=" + giaNhap +
-                ", giaBan=" + giaBan +
-                ", id_san_pham='" + id_san_pham + '\'' +
-                ", id_mau_sac='" + id_mau_sac + '\'' +
-                ", id_kich_co='" + id_kich_co + '\'' +
-                ", id_chat_lieu='" + id_chat_lieu + '\'' +
-                ", id_the_loai='" + id_the_loai + '\'' +
-                ", id_de_giay='" + id_de_giay + '\'' +
-                ", id_thuong_hieu='" + id_thuong_hieu + '\'' +
-                ", id_nhan_hieu='" + id_nhan_hieu + '\'' +
-                '}';
-    }
 }

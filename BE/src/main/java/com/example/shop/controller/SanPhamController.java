@@ -49,12 +49,14 @@ public class SanPhamController {
     NhanHieuRepository nhanHieuRepository;
     @Autowired
     HinhAnhRepository hinhAnhRepository;
+
     @Autowired
 
     @GetMapping("/getAllSP")
     List<SanPham> getAllSP() {
         return sanPhamRepository.getAll();
     }
+
     @GetMapping("/getAllMS")
     List<MauSac> getAllMS() {
         return mauSacRepository.findAll();
@@ -114,11 +116,11 @@ public class SanPhamController {
     public ResponseEntity filerSPCT(@RequestBody ChiTietSanPhamVM x) {
         System.out.println(x.toString());
         try {
-            List<SanPhamChiTiet> list = repo.filterSPCT(x.getId_chat_lieu().equals("Tất cả") ? "" : x.getId_chat_lieu(),x.getId_thuong_hieu().equals("Tất cả") ? "" : x.getId_thuong_hieu(),x.getId_de_giay().equals("Tất cả") ? "" : x.getId_de_giay(),
-                    x.getId_kich_co().equals("Tất cả") ? "" : x.getId_kich_co(),x.getId_mau_sac().equals("Tất cả") ? "" : x.getId_mau_sac(),x.getId_nhan_hieu().equals("Tất cả") ? "" : x.getId_nhan_hieu(),
-                    1);
+            List<SanPhamChiTiet> list = repo.filterSPCT(x.getId_chat_lieu().equals("Tất cả") ? "" : x.getId_chat_lieu(), x.getId_thuong_hieu().equals("Tất cả") ? "" : x.getId_thuong_hieu(), x.getId_de_giay().equals("Tất cả") ? "" : x.getId_de_giay(),
+                    x.getId_kich_co().equals("Tất cả") ? "" : x.getId_kich_co(), x.getId_mau_sac().equals("Tất cả") ? "" : x.getId_mau_sac(), x.getId_nhan_hieu().equals("Tất cả") ? "" : x.getId_nhan_hieu(),
+                    1, sanPhamRepository.findByMa(x.getMaSP()).getId());
             return ResponseEntity.ok(list);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
@@ -281,6 +283,26 @@ public class SanPhamController {
         }
     }
 
+    @PutMapping("updateSortSPCT")
+    ResponseEntity updateSortSPCT(@RequestBody List<SanPhamChiTiet> sanPham) {
+        System.out.println(sanPham);
+        try {
+            for (SanPhamChiTiet x : sanPham) {
+                for (SanPhamChiTiet spct : repo.findAll()) {
+                    if (spct.getId().equals(x.getId())) {
+                        spct.setSoLuongTon(x.getSoLuongTon());
+                        spct.setGiaBan(x.getGiaBan());
+                        repo.save(spct);
+                    }
+                }
+            }
+            return ResponseEntity.ok("Cập nhật thành công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cập nhật thất bại!");
+        }
+    }
+
     @DeleteMapping("/deleteSPCT/{ma}")
     ResponseEntity deleteSPCT(@PathVariable String ma) {
         try {
@@ -341,11 +363,11 @@ public class SanPhamController {
     //-------------Hội-----------------
     @GetMapping("/get-chiTietSP-by-ListMa/{maList}")
     public ResponseEntity<List<SanPhamChiTiet>> getByListMa(@PathVariable List<String> maList) {
-        try{
+        try {
             List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaList(maList);
             return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -353,11 +375,11 @@ public class SanPhamController {
 
     @GetMapping("/getSanPhamChiTietByMaListSPCT/{maList}")
     public ResponseEntity<List<SanPhamChiTiet>> getSanPhamChiTietByMaListSPCT(@PathVariable List<String> maList) {
-        try{
+        try {
             List<SanPhamChiTiet> detailedProducts = repo.getSanPhamChiTietByMaListSPCT(maList);
             return new ResponseEntity<>(detailedProducts, HttpStatus.OK);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -408,12 +430,12 @@ public class SanPhamController {
     }
 
     @GetMapping("/countAllSanPham")
-    public int countAllSanPham(){
+    public int countAllSanPham() {
         return sanPhamRepository.countAllSanPham();
     }
 
     @GetMapping("/getHinhAnhByIdSPCT/{id}")
-    public List<HinhAnh> getHinhAnhByIdSPCT(@PathVariable String id){
+    public List<HinhAnh> getHinhAnhByIdSPCT(@PathVariable String id) {
         return hinhAnhRepository.getHinhAnhBySanPhamChiTiet(id);
     }
 
@@ -440,12 +462,12 @@ public class SanPhamController {
 
     @PostMapping("/getSanPhamChiTietByDefaultImg")
     public ResponseEntity<List<SanPhamChiTiet>> getSanPhamChiTietByDefaultImg(@RequestBody Map<String, String> requestBody) {
-        try{
+        try {
             String urlImg = requestBody.get("urlImg");
 
             return ResponseEntity.ok(repo.getSanPhamChiTietByDefaultImg(urlImg));
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

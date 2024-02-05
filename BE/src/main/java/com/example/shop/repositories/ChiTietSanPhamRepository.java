@@ -35,7 +35,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query(value = "SELECT *\n" +
             "FROM san_pham_chi_tiet\n" +
-            "WHERE trang_thai = :trang_thai AND deleted = 1 AND (\n" +
+            "WHERE trang_thai = :trang_thai AND deleted = 1 AND id_san_pham = :id_san_pham AND (\n" +
             "  (id_chat_lieu = :id_chat_lieu OR :id_chat_lieu IS NULL OR :id_chat_lieu = '')\n" +
             "  AND (id_thuong_hieu = :id_thuong_hieu OR :id_thuong_hieu IS NULL OR :id_thuong_hieu = '')\n" +
             "  AND (id_de_giay = :id_de_giay OR :id_de_giay IS NULL OR :id_de_giay = '')\n" +
@@ -50,7 +50,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("id_kich_co") String id_kich_co,
             @Param("id_mau_sac") String id_mau_sac,
             @Param("id_nhan_hieu") String id_nhan_hieu,
-            @Param("trang_thai") Integer trangThai
+            @Param("trang_thai") Integer trangThai,
+            @Param("id_san_pham") String id_san_pham
     );
 
 
