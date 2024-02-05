@@ -20,6 +20,11 @@ import {
   Slider,
 } from "@nextui-org/react";
 import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   // // // Dialog,
   // // // DialogActions,
   // // // DialogContent,
@@ -439,11 +444,11 @@ export default function App({ gioHang }) {
     id_de_giay: "",
     id_thuong_hieu: "",
     id_nhan_hieu: "",
-    trangThai : ""
+    trangThai: "",
   });
   const onChange = (e) => {
     const { name, value } = e.target;
-  
+
     setSanPham((prevSanPham) => ({
       ...prevSanPham,
       [name]: value,
@@ -452,7 +457,10 @@ export default function App({ gioHang }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.post("http://localhost:8080/filterSPCT",sanPham);
+        const response = await axios.post(
+          "http://localhost:8080/filterSPCT",
+          sanPham
+        );
         const updatedRows = response.data.map((item, index) => ({
           id: item.id,
           stt: index + 1,
@@ -472,13 +480,12 @@ export default function App({ gioHang }) {
         console.error(error);
       }
     };
-  
+
     fetchData();
   }, [sanPham]);
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-
         <div className="justify-between gap-3 items-end">
           <Input
             isClearable
@@ -490,249 +497,248 @@ export default function App({ gioHang }) {
             onValueChange={onSearchChange}
           />
           <div className="flex justify-center">
-              <div className="flex items-center mt-10 mr-10">
-                <label
-                  htmlFor="country"
-                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+            <div className="flex items-center mt-10 mr-10">
+              <label
+                htmlFor="country"
+                className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Chất liệu :
+              </label>
+              <div className="flex">
+                <select
+                  id="chatLieu"
+                  name="id_chat_lieu"
+                  autoComplete="country-name"
+                  className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => onChange(e)}
                 >
-                  Chất liệu :
-                </label>
-                <div className="flex">
-                  <select
-                    id="chatLieu"
-                    name="id_chat_lieu"
-                    autoComplete="country-name"
-
-                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    onChange={(e) => onChange(e)}
-                  >
-                    <option selected>Tất cả</option>
-                    {chatLieu.map((x) => (
-                      <option
-                        key={x.id}
-                        value={x.id}
+                  <option selected>Tất cả</option>
+                  {chatLieu.map((x) => (
+                    <option
+                      key={x.id}
+                      value={x.id}
                       //style={{ backgroundColor: x.maMau, color: "white" }}
-                      >
-                        {x.ten}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex items-center mt-10 mr-10">
-                <label
-                  htmlFor="country"
-                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Thương hiệu :
-                </label>
-                <div className="flex">
-                  <select
-                    id="thuongHieu"
-                    name="id_thuong_hieu"
-                    autoComplete="country-name"
-                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    onChange={(e) => onChange(e)}
-                  >
-                    <option selected>Tất cả</option>
-                    {thuongHieu.map((x) => (
-                      <option
-                        key={x.id}
-                        value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
-                      >
-                        {x.ten}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex items-center mt-10 mr-10">
-                <label
-                  htmlFor="country"
-                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Đế giày :
-                </label>
-                <div className="flex">
-                  <select
-                    id="deGiay"
-                    name="id_de_giay"
-                    autoComplete="country-name"
-                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    onChange={(e) => onChange(e)}
-                  >
-                    <option selected>Tất cả</option>
-                    {deGiay.map((x) => (
-                      <option
-                        key={x.id}
-                        value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
-                      >
-                        {x.ten}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex items-center mt-10 mr-10">
-                <label
-                  htmlFor="country"
-                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Kích cỡ :
-                </label>
-                <div className="flex">
-                  <select
-                    id="kichCo"
-                    name="id_kich_co"
-                    autoComplete="country-name"
-                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    onChange={(e) => onChange(e)}
-                  >
-                    <option selected>Tất cả</option>
-                    {kichCo.map((x) => (
-                      <option
-                        key={x.id}
-                        value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
-                      >
-                        {x.ten}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex items-center mt-10 mr-10">
-                <label
-                  htmlFor="country"
-                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Màu sắc :
-                </label>
-                <div className="flex">
-                  <select
-                    id="mauSac"
-                    name="id_mau_sac"
-                    autoComplete="country-name"
-                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-xs sm:text-sm sm:leading-6"
-                    onChange={(e) => onChange(e)}
-                  >
-                    <option selected>Tất cả</option>
-                    {mauSac.map((x) => (
-                      <option
-                        key={x.id}
-                        value={x.id}
-                        className="py-2 px-4 flex items-center justify-between"
-                      >
-                        <span
-                          className="inline-block w-3 h-3 rounded-full"
-                          style={{ backgroundColor: "red" }}
-                        />
-                        <span className="ml-3">{x.ten}</span>
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                    >
+                      {x.ten}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-            <div className="flex justify-center">
-              <div className="flex items-center mt-10 mr-10">
-                <label
-                  htmlFor="country"
-                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+            <div className="flex items-center mt-10 mr-10">
+              <label
+                htmlFor="country"
+                className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Thương hiệu :
+              </label>
+              <div className="flex">
+                <select
+                  id="thuongHieu"
+                  name="id_thuong_hieu"
+                  autoComplete="country-name"
+                  className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => onChange(e)}
                 >
-                  Nhãn hiệu :
-                </label>
-                <div className="flex">
-                  <select
-                    id="nhanHieu"
-                    name="id_nhan_hieu"
-                    autoComplete="country-name"
-                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    onChange={(e) => onChange(e)}
-                  >
-                    <option selected>Tất cả</option>
-                    {nhanHieu.map((x) => (
-                      <option
-                        key={x.id}
-                        value={x.id}
+                  <option selected>Tất cả</option>
+                  {thuongHieu.map((x) => (
+                    <option
+                      key={x.id}
+                      value={x.id}
                       //style={{ backgroundColor: x.maMau, color: "white" }}
-                      >
-                        {x.ten}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                    >
+                      {x.ten}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="flex items-center mt-10 mr-10">
-                <label
-                  htmlFor="country"
-                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+            </div>
+            <div className="flex items-center mt-10 mr-10">
+              <label
+                htmlFor="country"
+                className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Đế giày :
+              </label>
+              <div className="flex">
+                <select
+                  id="deGiay"
+                  name="id_de_giay"
+                  autoComplete="country-name"
+                  className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => onChange(e)}
                 >
-                  Thể loại :
-                </label>
-                <div className="flex">
-                  <select
-                    id="theLoai"
-                    name="id_the_loai"
-                    autoComplete="country-name"
-                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    onChange={(e) => onChange(e)}
-                  >
-                    <option selected>Tất cả</option>
-                    {chatLieu.map((x) => (
-                      <option
-                        key={x.id}
-                        value={x.id}
+                  <option selected>Tất cả</option>
+                  {deGiay.map((x) => (
+                    <option
+                      key={x.id}
+                      value={x.id}
                       //style={{ backgroundColor: x.maMau, color: "white" }}
-                      >
-                        {x.ten}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                    >
+                      {x.ten}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="flex items-center mt-10 mr-10">
-                <label
-                  htmlFor="country"
-                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+            </div>
+            <div className="flex items-center mt-10 mr-10">
+              <label
+                htmlFor="country"
+                className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Kích cỡ :
+              </label>
+              <div className="flex">
+                <select
+                  id="kichCo"
+                  name="id_kich_co"
+                  autoComplete="country-name"
+                  className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => onChange(e)}
                 >
-                  Trạng thái :
-                </label>
-                <div className="flex">
-                  <select
-                    id="trangThai"
-                    name="trangThai"
-                    autoComplete="country-name"
-                    className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    onChange={(e) => onChange(e)}
-                  >
-                    <option >Đang bán</option>
-                  </select>
-                </div>
+                  <option selected>Tất cả</option>
+                  {kichCo.map((x) => (
+                    <option
+                      key={x.id}
+                      value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                    >
+                      {x.ten}
+                    </option>
+                  ))}
+                </select>
               </div>
-              
-              <div className="flex items-center mt-10 mr-10">
-                <label
-                  htmlFor="country"
-                  className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+            </div>
+            <div className="flex items-center mt-10 mr-10">
+              <label
+                htmlFor="country"
+                className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Màu sắc :
+              </label>
+              <div className="flex">
+                <select
+                  id="mauSac"
+                  name="id_mau_sac"
+                  autoComplete="country-name"
+                  className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => onChange(e)}
                 >
-                  Khoảng giá :
-                </label>
-                <div className="flex p-5 w-[200px]" >
-                <Slider 
+                  <option selected>Tất cả</option>
+                  {mauSac.map((x) => (
+                    <option
+                      key={x.id}
+                      value={x.id}
+                      className="py-2 px-4 flex items-center justify-between"
+                    >
+                      <span
+                        className="inline-block w-3 h-3 rounded-full"
+                        style={{ backgroundColor: "red" }}
+                      />
+                      <span className="ml-3">{x.ten}</span>
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-center">
+            <div className="flex items-center mt-10 mr-10">
+              <label
+                htmlFor="country"
+                className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Nhãn hiệu :
+              </label>
+              <div className="flex">
+                <select
+                  id="nhanHieu"
+                  name="id_nhan_hieu"
+                  autoComplete="country-name"
+                  className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => onChange(e)}
+                >
+                  <option selected>Tất cả</option>
+                  {nhanHieu.map((x) => (
+                    <option
+                      key={x.id}
+                      value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                    >
+                      {x.ten}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex items-center mt-10 mr-10">
+              <label
+                htmlFor="country"
+                className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Thể loại :
+              </label>
+              <div className="flex">
+                <select
+                  id="theLoai"
+                  name="id_the_loai"
+                  autoComplete="country-name"
+                  className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => onChange(e)}
+                >
+                  <option selected>Tất cả</option>
+                  {chatLieu.map((x) => (
+                    <option
+                      key={x.id}
+                      value={x.id}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                    >
+                      {x.ten}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex items-center mt-10 mr-10">
+              <label
+                htmlFor="country"
+                className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Trạng thái :
+              </label>
+              <div className="flex">
+                <select
+                  id="trangThai"
+                  name="trangThai"
+                  autoComplete="country-name"
+                  className="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  onChange={(e) => onChange(e)}
+                >
+                  <option>Đang bán</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center mt-10 mr-10">
+              <label
+                htmlFor="country"
+                className="pr-2 block text-sm font-medium leading-6 text-gray-900"
+              >
+                Khoảng giá :
+              </label>
+              <div className="flex p-5 w-[200px]">
+                <Slider
                   label="Khoảng giá"
                   size="sm"
-                  step={50} 
-                  minValue={0} 
-                  maxValue={2000} 
-                  defaultValue={[100, 500]} 
+                  step={50}
+                  minValue={0}
+                  maxValue={2000}
+                  defaultValue={[100, 500]}
                   className="max-w-md"
                 />
-                </div>
               </div>
             </div>
+          </div>
           <div className="flex gap-3 items-end">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -913,8 +919,9 @@ export default function App({ gioHang }) {
           />
         </div>
       </Modal>
-      // // // <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
-        // // // <DialogTitle>
+
+      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
+        <DialogTitle>
           <div
             style={{
               display: "flex",
@@ -931,21 +938,28 @@ export default function App({ gioHang }) {
             />
             <span>Xác nhận xóa</span>
           </div>
-        // // // </DialogTitle>
-        // // // <DialogContent>
-          // // // <DialogContentText>
-            Bạn có chắc muốn xóa Sản phẩm này?
-          // // // </DialogContentText>
-        // // // </DialogContent>
-        // // // <DialogActions>
+          // // //{" "}
+        </DialogTitle>
+        // // //{" "}
+        <DialogContent>
+          // // //{" "}
+          <DialogContentText>
+            Bạn có chắc muốn xóa Sản phẩm này? // // //{" "}
+          </DialogContentText>
+          // // //{" "}
+        </DialogContent>
+        // // //{" "}
+        <DialogActions>
           <Button onClick={cancelDelete} color="warning">
             Hủy
           </Button>
           <Button color="primary" onClick={confirmDelete}>
             Vẫn xóa
           </Button>
-        // // // </DialogActions>
-      // // // </Dialog>
+          // // //{" "}
+        </DialogActions>
+        // // //{" "}
+      </Dialog>
     </>
   );
 }
