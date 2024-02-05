@@ -51,7 +51,7 @@ public class VoucherController {
     ){
 
 //        List<Voucher> page = voucherService.getVouchers();
-       List<Voucher> page = voucherService.getVouchers(1);
+       List<Voucher> page = voucherService.getVouchers(0);
         return ResponseEntity.ok(page);
     }
 

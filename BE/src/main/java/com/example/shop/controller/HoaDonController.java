@@ -168,11 +168,21 @@ public class HoaDonController {
 
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
+            String diaChiHT = hoaDon1.getDiaChi();
             if (hoaDon1 != null) {
                hoaDon1.setDiaChi(hd.getDiaChi());
                hoaDon1.setTienShip(hd.getTienShip());
                hoaDon1.setNgayNhan(new Date(hd.getNgayNhan()));
                 HoaDon updateHoaDon = hoaDonService.updateHoaDon(hoaDon1);
+                LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                        .id_hoa_don(hoaDon1)
+                        .moTaHoaDon(String.format("Khách hàng đã sửa địa chỉ "))
+                        .deleted(1)
+                        .nguoiTao("Đông")
+                        .ngayTao(new Date(System.currentTimeMillis()))
+                        .build();
+                lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
+
                 return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
             } else {
                 throw new Exception("khong co id" + id);
@@ -216,9 +226,19 @@ public class HoaDonController {
                         .build();
                 lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
                 lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon2);
+            }else {
+                LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                        .id_hoa_don(hoaDon1)
+                        .moTaHoaDon("Đơn Hàng Thành Công")
+                        .deleted(1)
+                        .nguoiTao("Đông")
+                        .ngayTao(new Date(System.currentTimeMillis()))
+                        .build();
+                lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
             }
 
             if (hoaDon1 != null) {
+
                 hoaDon1.setLoaiHd(Integer.parseInt(hoaDon.getLoaiHd()));
                 hoaDon1.setTrangThai(Integer.parseInt(hoaDon.getTrangThai()));
                 hoaDon1.setDiaChi(hoaDon.getDiaChi());
@@ -236,6 +256,7 @@ public class HoaDonController {
                     chiTietSanPhamRepository.save(sanPhamChiTiet);
                 }
                 HoaDon updateHoaDon = hoaDonRepository.save(hoaDon1);
+
                 return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
             } else {
                 throw new Exception("khong co id" + id);
@@ -262,9 +283,22 @@ public class HoaDonController {
 
     @PostMapping("cancelHD/{id}")
     public ResponseEntity cancelHD(@PathVariable("id")String id , @RequestBody Object trangThai){
+        // cập nhật trang thái hóa đơn
         HoaDon hoaDon = hoaDonService.getHoaDon(id);
         hoaDon.setTrangThai(5);
         HoaDon don = hoaDonService.updateHoaDon(hoaDon);
+
+        // cập nhật lại số lượng hóa đơn
+
+        List<HoaDonChiTiet> listHDCT = hoaDonChiTietService.getHDCT(id);
+        System.out.println("SẢN Phẩm " + listHDCT);
+        for (HoaDonChiTiet donChiTiet : listHDCT){
+            SanPhamChiTiet sanPhamChiTiet = donChiTiet.getId_chi_tiet_san_pham();
+            sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() + donChiTiet.getSoLuong());
+            System.out.println(sanPhamChiTiet);
+            chiTietSanPhamRepository.save(sanPhamChiTiet);
+        }
+
         return new ResponseEntity(don , HttpStatus.OK);
     }
 

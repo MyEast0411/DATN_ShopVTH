@@ -1,8 +1,12 @@
 package com.example.shop.controller;
 
 import com.example.shop.entity.HoaDon;
+import com.example.shop.entity.HoaDonChiTiet;
 import com.example.shop.entity.KhachHang;
 import com.example.shop.entity.LichSuHoaDon;
+import com.example.shop.entity.SanPhamChiTiet;
+import com.example.shop.repositories.ChiTietSanPhamRepository;
+import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
 import com.example.shop.util.SendMail;
@@ -30,9 +34,15 @@ import java.util.List;
 public class LichSuHoaDonController {
     @Autowired
     private LichSuHoaDonService lichSuHoaDonService;
+    @Autowired
+    private HoaDonChiTietService hoaDonChiTietService;
 
     @Autowired
     private HoaDonService hoaDonService;
+
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
+
     @GetMapping("getLichSuHoaDons/{id}")
     public ResponseEntity<List<LichSuHoaDon>> getLichSuHoaDons(@PathVariable String id){
         List<LichSuHoaDon> list = lichSuHoaDonService.getLichSuHoaDons(id);
@@ -82,6 +92,14 @@ public class LichSuHoaDonController {
         System.out.println(lshd.getMoTaHoaDon());
         if(lshd.getMoTaHoaDon().equals("Hủy Hóa Đơn")){
             hoaDon.setTrangThai(5);
+            List<HoaDonChiTiet> listHDCT = hoaDonChiTietService.getHDCT(hoaDon.getId());
+
+            for (HoaDonChiTiet donChiTiet : listHDCT){
+                SanPhamChiTiet sanPhamChiTiet = donChiTiet.getId_chi_tiet_san_pham();
+                sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() + donChiTiet.getSoLuong());
+                System.out.println(sanPhamChiTiet);
+                chiTietSanPhamRepository.save(sanPhamChiTiet);
+            }
         }else{
             hoaDon.setTrangThai(hoaDon.getTrangThai()+1);
         }

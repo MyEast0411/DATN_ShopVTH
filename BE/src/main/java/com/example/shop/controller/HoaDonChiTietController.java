@@ -5,6 +5,7 @@ import com.example.shop.dto.*;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.requests.HoaDonChiTietUpdateRequest;
+import com.example.shop.service.LichSuHoaDonService;
 import com.example.shop.util.SendMail;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public class HoaDonChiTietController {
 
     @Autowired
     LichSuHoaDonRepository ssLSHD;
+    @Autowired
+    private LichSuHoaDonService lichSuHoaDonService;
     private String idNhanVien = "8fc123b4-c457-4447-99d3-f39faaec2c5b";
     @GetMapping("/getHDCT/{maHD}")
     public ResponseEntity getHDCT(@PathVariable String maHD) {
@@ -130,6 +133,16 @@ public class HoaDonChiTietController {
             HoaDon hoaDon = ssHD.findById(id_hoa_don).get();
             hoaDon.setTongTien(new BigDecimal("" + gia));
             ssHD.save(hoaDon);
+
+            LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                    .id_hoa_don(hoaDon)
+                    .moTaHoaDon(String.format("Khách hàng đã sửa cập nhật sản phẩm mã %s",
+                            hoaDonChiTiet.getId_chi_tiet_san_pham().getMa()))
+                    .deleted(1)
+                    .nguoiTao("Đông")
+                    .ngayTao(new Date(System.currentTimeMillis()))
+                    .build();
+            lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
             return ResponseEntity.ok("OK");
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,7 +170,7 @@ public class HoaDonChiTietController {
            }else{
                hoaDonChiTietExist.setSoLuong(hoaDonChiTietExist.getSoLuong() + hoaDonChiTiet.getSo_luong());
                ssHDCT.save(hoaDonChiTietExist);
-              
+
            }
             Double gia = ssHDCT.getMoneyBYHD(hoaDon.getId());
             hoaDon.setTongTien(new BigDecimal("" + gia));
