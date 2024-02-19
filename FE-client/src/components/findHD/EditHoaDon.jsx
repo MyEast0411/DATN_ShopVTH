@@ -406,8 +406,6 @@ function EditHoaDon() {
             .catch((e) => error());
         },
       });
-      // alert(idSPCT);
-      console.log(spct);
     }
   };
 
