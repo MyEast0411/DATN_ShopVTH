@@ -60,6 +60,7 @@ public class HoaDonController {
     @Autowired
     private HoaDonChiTietService hoaDonChiTietService;
 
+    private String idNhanVien = "8fc123b4-c457-4447-99d3-f39faaec2c5b";
     @GetMapping("getHoaDons")
     public ResponseEntity<List<HoaDon>> getHoaDons(
 //            @RequestParam(name = "page" , defaultValue = "0")Integer numPage
@@ -199,8 +200,35 @@ public class HoaDonController {
     ) {
         List<HoaDonChiTiet> hoaDonChiTietList = new ArrayList<>();
         for (Object[] row : hoaDonRepository.getHDCTByMaHD(hoaDonRepository.getHoaDonByMa(id).getId())) {
+            //coppy san pham chi tiet them vao` hoa don luc thanh toan'
+            SanPhamChiTiet sanPhamChiTiet = chiTietSanPhamRepository.findById((String) row[0]).get();
+            SanPhamChiTiet spct = SanPhamChiTiet.builder()
+                    .ma(sanPhamChiTiet.getMa())
+                    .ten(sanPhamChiTiet.getTen())
+                    .defaultImg(sanPhamChiTiet.getDefaultImg())
+                    .soLuongTon(sanPhamChiTiet.getSoLuongTon())
+                    .khoiLuong(sanPhamChiTiet.getKhoiLuong())
+                    .moTa(sanPhamChiTiet.getMoTa())
+                    .trangThai(sanPhamChiTiet.getTrangThai())
+                    .giaNhap(sanPhamChiTiet.getGiaNhap())
+                    .giaBan(sanPhamChiTiet.getGiaBan())
+                    .ngayTao(new Date())
+                    .ngaySua(sanPhamChiTiet.getNgaySua())
+                    .nguoiTao(sanPhamChiTiet.getNguoiTao())
+                    .nguoiSua(sanPhamChiTiet.getNguoiSua())
+                    .deleted(0)
+                    .id_san_pham(sanPhamChiTiet.getId_san_pham())
+                    .id_mau_sac(sanPhamChiTiet.getId_mau_sac())
+                    .id_kich_co(sanPhamChiTiet.getId_kich_co())
+                    .id_chat_lieu(sanPhamChiTiet.getId_chat_lieu())
+                    .id_the_loai(sanPhamChiTiet.getId_the_loai())
+                    .id_de_giay(sanPhamChiTiet.getId_de_giay())
+                    .id_thuong_hieu(sanPhamChiTiet.getId_thuong_hieu())
+                    .build();
+            System.out.println(spct);
+            chiTietSanPhamRepository.save(spct);
             HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
-                    .id_chi_tiet_san_pham(chiTietSanPhamRepository.findById((String) row[0]).get())
+                    .id_chi_tiet_san_pham(spct)
                     .soLuong(Integer.parseInt(row[1].toString()))
                     .build();
             hoaDonChiTietList.add(hoaDonChiTiet);
@@ -245,7 +273,9 @@ public class HoaDonController {
                 hoaDon1.setTenKhachHang(hoaDon.getTenKhachHang());
                 hoaDon1.setSdt(hoaDon.getSdt());
                 hoaDon1.setNgayTao(new Date());
+                hoaDon1.setTienGiam(BigDecimal.valueOf(Double.parseDouble( hoaDon.getTienGiam())));
                 hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
+                hoaDon1.setId_nhan_vien(ssNV.findById(idNhanVien).get());
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
                 for (HoaDonChiTiet hdct : hoaDonChiTietList) {
                     SanPhamChiTiet sanPhamChiTiet = chiTietSanPhamRepository.findById(hdct.getId_chi_tiet_san_pham().getId()).get();

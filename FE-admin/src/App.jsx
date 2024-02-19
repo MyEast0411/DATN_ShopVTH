@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ThemKhuyenMai from "./components/khuyenMai/ThemKhuyenMai";
 import ThemKhachHang from "./components/khachHang/ThemKhachHang";
 import ThemNhanVien from "./components/nhanVien/ThemNhanVien";
+import CapNhatNhanVien from "./components/nhanVien/CapNhatNhanVien";
 import ThemSanPham from "./components/sanPham/ThemSanPham";
 import ChiTietSanPham from "./components/sanPham/ChiTietSanPham";
 import DetailSanPham from "./components/sanPham/DetailSanPham";
@@ -46,6 +47,10 @@ const App = () => {
           <Route
             path="/quan-ly-tai-khoan/nhan-vien/them-nhan-vien"
             element={<ThemNhanVien />}
+          />
+          <Route
+            path="/quan-ly-tai-khoan/nhan-vien/cap-nhat-nhan-vien/:maNV"
+            element={<CapNhatNhanVien />}
           />
 
           <Route

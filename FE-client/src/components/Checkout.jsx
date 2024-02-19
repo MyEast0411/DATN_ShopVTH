@@ -160,7 +160,6 @@ export default function Checkout() {
   }, []);
   // lay id thanh pho
   useEffect(() => {
-    console.log(diaChi.thanhPho);
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
     const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";

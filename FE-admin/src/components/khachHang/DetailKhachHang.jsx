@@ -71,38 +71,42 @@ export default function ThemKhachHang() {
   };
   useEffect(() => {
     getProvinces().then((data) => {
-      setProvinces(data);
+      setProvinces(data.results);
     });
   }, []);
   useEffect(() => {
-    const names = provinces.map((item) => item.name);
+    const names = provinces.map((item) => item.province_name);
     setValueTP(names);
-    const provinceCode =
-      provinces.find((x) => x.name === khachHang.thanhPho)?.code || 1;
+    const thanhPho = listDiaChi.find((x) => x.id_khach_hang.id == khachHang.id)?.thanhPho;
+    const provinceCode = provinces.find((x) => x.province_name === thanhPho)?.province_id;
+    
     getDistricts(provinceCode).then((data) => {
-      setDistrict(data);
+      setDistrict(data.results);
     });
-    const valueH = district.map((item) => item.name);
+
+    const valueH = district.map((item) => item.district_name);
     setValueHuyen(valueH);
 
-    const districtCode =
-      district.find((x) => x.name === khachHang.huyen)?.code || 1;
+    const huyen = listDiaChi.find((x) => x.id_khach_hang.id == khachHang.id)?.huyen;
+    const districtCode = district.find((x) => x.district_name === huyen)?.district_id;
+
     getWards(districtCode).then((data) => {
-      setWard(data);
+      setWard(data.results);
     });
-    const valueXa = ward.map((item) => item.name);
+    const valueXa = ward.map((item) => item.ward_name);
     setValueXa(valueXa);
-  }, [provinces, district]);
+  }, [provinces,district]);
+
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
       if (item.code == provinceCode) {
-        // setKhachHang((prevKhachHang) => ({
-        //   ...prevKhachHang,
-        //   thanhPho: selectedProvince.name,
-        // }));
+        setKhachHang((prevKhachHang) => ({
+          ...prevKhachHang,
+          thanhPho: item.province_name,
+        }));
         setDiaChi((prevDiaChi) => ({
           ...prevDiaChi,
-          thanhPho: item.name,
+          thanhPho: item.province_name,
         }));
       }
     });
@@ -144,7 +148,6 @@ export default function ThemKhachHang() {
         }));
       }
     });
-    console.log(khachHang);
   };
   const [khachHang, setKhachHang] = useState({
     id: "",
@@ -190,7 +193,6 @@ export default function ThemKhachHang() {
       `http://localhost:8080/khach-hang/findByMa/${maKH}`
     );
     const khachHangData = result.data;
-
     setBackgroundImage(khachHangData.anhNguoiDung);
     setKhachHang({
       id: khachHangData.id,
@@ -201,7 +203,7 @@ export default function ThemKhachHang() {
       sdt: khachHangData.sdt,
       ngay_sinh: khachHangData.ngaySinh,
       email: khachHangData.email,
-      cccd: khachHangData.cccd,
+      cccd: khachHangData.cccd
     });
     setDiaChi((prevDiaChi) => ({
       ...prevDiaChi,
@@ -212,7 +214,6 @@ export default function ThemKhachHang() {
     const result = await axios.get(
       `http://localhost:8080/dia-chi/findByMa/${maKH}`
     );
-    console.log(result);
     setListDiaChi(result.data);
   };
   const setBackgroundImage = (url) => {
@@ -284,6 +285,7 @@ export default function ThemKhachHang() {
   };
 
   const handleChangeTP = (selectedValue, index) => {
+    console.log(selectedValue);
     const updatedListDiaChi = [...listDiaChi];
     const updatedItem = { ...updatedListDiaChi[index] };
     updatedItem.thanhPho = selectedValue;
@@ -347,7 +349,7 @@ export default function ThemKhachHang() {
   return (
     <>
       <div
-        class="grid grid-cols-3 gap-4 m-5"
+        className="grid grid-cols-3 gap-4 m-5"
         style={{
           fontSizfe: "8px",
           backgroundColor: "white",
@@ -566,8 +568,8 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn thành phố</option>
                     {provinces.map((province) => (
-                      <option key={province.code} value={province.code}>
-                        {province.name}
+                      <option key={province.province_id} value={province.province_id}>
+                        {province.province_name}
                       </option>
                     ))}
                   </select>
@@ -586,8 +588,8 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn huyện</option>
                     {districts.map((district) => (
-                      <option key={district.code} value={district.code}>
-                        {district.name}
+                      <option key={district.district_id} value={district.district_id}>
+                        {district.district_name}
                       </option>
                     ))}
                   </select>
@@ -606,8 +608,8 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn xã phường</option>
                     {wards.map((ward) => (
-                      <option key={ward.code} value={ward.code}>
-                        {ward.name}
+                      <option key={ward.ward_id} value={ward.ward_id}>
+                        {ward.ward_name}
                       </option>
                     ))}
                   </select>
@@ -657,7 +659,7 @@ export default function ThemKhachHang() {
             {listDiaChi.map((item, index) => (
               <AccordionItem
                 key={index}
-                aria-label="Địa chỉ 1"
+                aria-label="Địa chỉ n"
                 startContent={
                   <Avatar
                     isBordered

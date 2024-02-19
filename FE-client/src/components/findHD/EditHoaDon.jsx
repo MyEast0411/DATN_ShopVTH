@@ -403,7 +403,9 @@ function EditHoaDon() {
               getDataChiTietSanPham();
               handleOkLichSuSP();
             })
-            .catch((e) => error());
+            .catch((e) => {
+              console.log(e);
+            });
         },
       });
       // alert(idSPCT);

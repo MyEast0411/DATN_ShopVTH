@@ -225,7 +225,7 @@ export default function App() {
           <div className="relative flex items-center gap-4">
             <Tooltip content="Xem" showArrow={true}>
               <Link
-                to={`/edit-khach-hang/${sanPham.maKH}`}
+                to={`/quan-ly-tai-khoan/nhan-vien/cap-nhat-nhan-vien/${sanPham.maKH}`}
                 // style={{ display: "block" }}
                 className="button-link group relative"
               >

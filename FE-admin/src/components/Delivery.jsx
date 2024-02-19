@@ -64,10 +64,10 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
   useEffect(() => {
     const fetchData = async () => {
 
-      const provinceNames = provinces.map(item => item.name);
+      const provinceNames = provinces.map(item => item.ProvinceName);
       setValueTP(provinceNames);
-  
-      const provinceCode = provinces.find(x => x.name === diaChi.thanhPho)?.code;
+
+      const provinceCode = provinces.find(x => x.DistrictName === diaChi.thanhPho)?.code;
   
       if (provinceCode) {
         try {

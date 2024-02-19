@@ -200,9 +200,6 @@ public class VoucherController {
 
     }
 
-
-
-
     @Scheduled(fixedRate  = 1000)
     public void scheduleFixedDelayTask() {
         try {
