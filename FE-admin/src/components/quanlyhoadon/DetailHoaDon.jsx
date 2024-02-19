@@ -41,7 +41,7 @@ export default function DetailHoaDon() {
   });
   const [rowsSPCT, setRowsSPCT] = useState([]);
   // Timline and history
-  const [currentTimeLine, setCurrentTimeLine] = useState(0);
+  // const [currentTimeLine, setCurrentTimeLine] = useState(0);
   const [listTimeLineOnline, setListTimeLineOnline] = useState([]);
   const [rowsLichSu, setRowsLichSu] = useState([]);
 
@@ -197,24 +197,27 @@ export default function DetailHoaDon() {
     hideModal();
     await axios
       .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
-        moTaHoaDon: listTitleTimline[currentTimeLine + 1].title,
+        moTaHoaDon: listTitleTimline[info.trangThai + 1].title,
         deleted: 1,
         nguoiTao: "Cam",
         ghiChu: note,
       })
       .then((response) => {
         setIsLoading(false);
-        setCurrentTimeLine(currentTimeLine + 1);
-        toast.success(`${listTitleTimline[currentTimeLine].title} thành công`);
+        // setCurrentTimeLine(currentTimeLine + 1);
+        // setCurrentTimeLine(response.data.trangThai);
+        toast.success(`${listTitleTimline[info.trangThai].title} thành công`);
         // success(`${listTitleTimline[currentTimeLine].title} thành công`);
         getDataLichSu();
       });
   };
 
   const onHandleTimeLineChange = () => {
-    if (currentTimeLine < 6) {
+    if (info.trangThai < 6) {
       Modal.confirm({
-        title: `Bạn có muốn ${listTitleTimline[currentTimeLine].title} không ?`,
+        title: `Bạn có muốn ${
+          listTitleTimline[info.trangThai + 1].title
+        } không ?`,
         okText: "Yes",
         okType: "danger",
         onOk: () => {
@@ -225,6 +228,8 @@ export default function DetailHoaDon() {
           getDataLichSu();
         },
       });
+    } else {
+      alert("Please select : ", info.trangThai);
     }
   };
 
@@ -372,7 +377,7 @@ export default function DetailHoaDon() {
             };
           })
         );
-        setCurrentTimeLine(data.length);
+        // setCurrentTimeLine(data.length);
 
         setListTimeLineOnline(
           data.map((item, index) => {
@@ -388,7 +393,7 @@ export default function DetailHoaDon() {
           })
         );
 
-        console.log(listTimeLineOnline);
+        // console.log(listTimeLineOnline);
       })
       .catch((err) => {
         console.log(err);
@@ -425,14 +430,42 @@ export default function DetailHoaDon() {
       {contextHolder}
 
       <div className="conatiner mx-auto space-y-5">
-        <div className="row timeline bg-white">
-          <div className="row timeline justify-center" style={{ height: 300 }}>
-            {info.loaiHd === 0 ? (
-              <Skeleton isLoaded={isLoading} className="rounded-lg">
-                <Timeline minEvents={listTimeLineOnline.length} placeholder>
+        <div className=" bg-white">
+          <div
+            className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+            style={{ width: "100%" }}
+          >
+            <div style={{ width: "3000px" }}>
+              {info.loaiHd === 0 ? (
+                // <Skeleton isLoaded={isLoading} className="rounded-lg">
+                <Timeline minEvents={20} placeholder>
                   {listTimeLineOnline.map((item, i) => (
                     <TimelineEvent
-                      style={{ width: "100%" }}
+                      style={{ marginLeft: 0 }}
+                      color="#9c2919"
+                      icon={TbPackages}
+                      title={
+                        <p
+                          style={{ fontSize: 12, marginTop: 10, width: "70%" }}
+                        >
+                          {item.description}
+                        </p>
+                      }
+                      subtitle={
+                        <p
+                          style={{ fontSize: 12, marginTop: 10, width: "70%" }}
+                        >
+                          {item.subtitle}
+                        </p>
+                      }
+                    />
+                  ))}
+                </Timeline>
+              ) : (
+                // </Skeleton>
+                <Timeline minEvents={1} placeholder>
+                  {listTimeLineOnline.map((item, i) => (
+                    <TimelineEvent
                       color="#9c2919"
                       icon={TbPackages}
                       title={
@@ -444,184 +477,170 @@ export default function DetailHoaDon() {
                     />
                   ))}
                 </Timeline>
-              </Skeleton>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="row button-contact p-4 grid grid-cols-2">
+          <div className="row ">
+            {info.loaiHd === 0 && info.trangThai != 4 ? (
+              <Button
+                className="me-4"
+                color="blue"
+                type="primary"
+                onClick={showModal}
+                style={{ marginRight: 5 }}
+              >
+                {listTitleTimline[info.trangThai].title}
+                {/* {info.trangThai} */}
+                {/* Bước Tiếp Theo */}
+              </Button>
             ) : (
-              <Timeline minEvents={1} placeholder>
-                {listTimeLineOnline.map((item, i) => (
-                  <TimelineEvent
-                    color="#9c2919"
-                    icon={TbPackages}
-                    title={
-                      <p style={{ fontSize: 12, marginTop: 10 }}>
-                        {item.description}
-                      </p>
-                    }
-                    subtitle={item.subtitle}
-                  />
-                ))}
-              </Timeline>
+              ""
+            )}
+
+            <Modal
+              title="Ghi Chú"
+              style={{
+                top: 20,
+              }}
+              open={openTimeLine}
+              onOk={hideModal}
+              onCancel={hideModal}
+              okText="Xác Nhận Thao Tác"
+              cancelText="Hủy"
+              footer={() => (
+                <>
+                  <Button className="me-1" color="blue" onClick={hideModal}>
+                    Hủy
+                  </Button>
+                  <Button color="red" onClick={onHandleTimeLineChange}>
+                    Xác Nhận
+                  </Button>
+                </>
+              )}
+            >
+              <Input.TextArea
+                rows={4}
+                placeholder="Ghi chu ...."
+                value={note}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
+                // maxLength={}
+              />
+            </Modal>
+
+            {/* modal in hoa đơn */}
+
+            <Modal
+              title="Xuất Hóa Đơn"
+              open={isModalOpenHD}
+              // onOk={handleOkHD}
+              onCancel={handleCancelHD}
+              width={700}
+              style={{ top: 10 }}
+              footer={[
+                <Button
+                  key="back"
+                  onClick={handleCancelHD}
+                  className="me-3 "
+                  style={{ backgroundColor: "blue" }}
+                >
+                  Cancel
+                </Button>,
+                <Button
+                  key="submit"
+                  type="primary"
+                  onClick={downloadPDF}
+                  style={{ backgroundColor: "red" }}
+                >
+                  In Hóa Đơn
+                </Button>,
+              ]}
+            >
+              <ComponentToPrint
+                ref={componentRef}
+                data={rowsSPCT}
+                columns={columns}
+                inforKH={info}
+              />
+            </Modal>
+            <Button className="me-4" color="green" onClick={showModalHD}>
+              Xuất hoá đơn
+            </Button>
+            {info.loaiHd == !1 && info.trangThai < 4 && (
+              <Button className="me-4" color="red" onClick={cancelHD}>
+                Hủy Hóa Đơn
+              </Button>
             )}
           </div>
+          <div className="row grid justify-items-end">
+            <Button
+              className="me-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+              onClick={showModalLichSu}
+            >
+              Lịch Sử
+            </Button>
 
-          <div className="row button-contact p-4 grid grid-cols-2">
-            <div className="row ">
-              {info.loaiHd === 0 && info.trangThai != 4 ? (
-                <Button
-                  className="me-4"
-                  color="blue"
-                  type="primary"
-                  onClick={showModal}
-                  style={{ marginRight: 5 }}
-                >
-                  {/* {listTitleTimline[currentTimeLine].title} */}
-                  Bước Tiếp Theo
-                </Button>
-              ) : (
-                ""
+            <Modal
+              open={open}
+              title="Lịch Sử Hóa Đơn"
+              onOk={handleOkLichSu}
+              onCancel={handleCancelLichSu}
+              style={{ top: 20 }}
+              footer={() => (
+                <>
+                  <Button onClick={handleCancelLichSu}>OK</Button>
+                </>
               )}
-
-              <Modal
-                title="Ghi Chú"
-                style={{
-                  top: 20,
-                }}
-                open={openTimeLine}
-                onOk={hideModal}
-                onCancel={hideModal}
-                okText="Xác Nhận Thao Tác"
-                cancelText="Hủy"
-                footer={() => (
-                  <>
-                    <Button className="me-1" color="blue" onClick={hideModal}>
-                      Hủy
-                    </Button>
-                    <Button color="red" onClick={onHandleTimeLineChange}>
-                      Xác Nhận
-                    </Button>
-                  </>
-                )}
-              >
-                <Input.TextArea
-                  rows={4}
-                  placeholder="Ghi chu ...."
-                  value={note}
-                  onChange={(e) => {
-                    setNote(e.target.value);
-                  }}
-                  // maxLength={}
-                />
-              </Modal>
-
-              {/* modal in hoa đơn */}
-
-              <Modal
-                title="Xuất Hóa Đơn"
-                open={isModalOpenHD}
-                // onOk={handleOkHD}
-                onCancel={handleCancelHD}
-                width={700}
-                style={{ top: 10 }}
-                footer={[
-                  <Button
-                    key="back"
-                    onClick={handleCancelHD}
-                    className="me-3 "
-                    style={{ backgroundColor: "blue" }}
-                  >
-                    Cancel
-                  </Button>,
-                  <Button
-                    key="submit"
-                    type="primary"
-                    onClick={downloadPDF}
-                    style={{ backgroundColor: "red" }}
-                  >
-                    In Hóa Đơn
-                  </Button>,
-                ]}
-              >
-                <ComponentToPrint
-                  ref={componentRef}
-                  data={rowsSPCT}
-                  columns={columns}
-                  inforKH={info}
-                />
-              </Modal>
-              <Button className="me-4" color="green" onClick={showModalHD}>
-                Xuất hoá đơn
-              </Button>
-              {info.loaiHd == !1 && info.trangThai < 4 && (
-                <Button className="me-4" color="red" onClick={cancelHD}>
-                  Hủy Hóa Đơn
-                </Button>
-              )}
-            </div>
-            <div className="row grid justify-items-end">
-              <Button
-                className="me-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
-                onClick={showModalLichSu}
-              >
-                Lịch Sử
-              </Button>
-
-              <Modal
-                open={open}
-                title="Lịch Sử Hóa Đơn"
-                onOk={handleOkLichSu}
-                onCancel={handleCancelLichSu}
-                style={{ top: 20 }}
-                footer={() => (
-                  <>
-                    <Button onClick={handleCancelLichSu}>OK</Button>
-                  </>
-                )}
-              >
-                <div className="divide-y divide-blue-200">
-                  {rowsLichSu.map((item) => (
-                    <div className="mb-4">
+            >
+              <div className="divide-y divide-blue-200">
+                {rowsLichSu.map((item) => (
+                  <div className="mb-4">
+                    <p>
+                      <span className="font-bold">Mô tả : </span>
+                      &nbsp;&nbsp;
+                      {item.description}
+                    </p>
+                    {item.ghiChu && (
                       <p>
-                        <span className="font-bold">Mô tả : </span>
+                        <span className="font-bold">Ghi Chú : </span>
                         &nbsp;&nbsp;
-                        {item.description}
+                        {item.ghiChu}
                       </p>
-                      {item.ghiChu && (
-                        <p>
-                          <span className="font-bold">Ghi Chú : </span>
-                          &nbsp;&nbsp;
-                          {item.ghiChu}
-                        </p>
+                    )}
+
+                    <p>
+                      <span className="font-bold">Mã Nhân Viên : </span>
+                      &nbsp;&nbsp;
+                      {item?.id_hoa_don?.id_nhan_vien?.ma}
+                    </p>
+                    <p>
+                      <span className="font-bold">Tên Nhân Viên : </span>
+                      &nbsp;&nbsp;
+                      {item?.id_hoa_don?.id_nhan_vien?.ten}
+                    </p>
+                    <p>
+                      <span className="font-bold">Thoi gian : </span>
+                      &nbsp;&nbsp;
+                      {format(
+                        new Date(item.ngayTao),
+                        " hh:mm:ss ,   dd-MM-yyyy"
                       )}
-
-                      <p>
-                        <span className="font-bold">Mã Nhân Viên : </span>
-                        &nbsp;&nbsp;
-                        {item?.id_hoa_don?.id_nhan_vien?.ma}
-                      </p>
-                      <p>
-                        <span className="font-bold">Tên Nhân Viên : </span>
-                        &nbsp;&nbsp;
-                        {item?.id_hoa_don?.id_nhan_vien?.ten}
-                      </p>
-                      <p>
-                        <span className="font-bold">Thoi gian : </span>
-                        &nbsp;&nbsp;
-                        {format(
-                          new Date(item.ngayTao),
-                          " hh:mm:ss ,   dd-MM-yyyy"
-                        )}
-                      </p>
-                      <p>
-                        <span className="font-bold">Nguoi xac nhan : </span>
-                        &nbsp;&nbsp;
-                        {item.id_hoa_don.nguoiXacNhan == null
-                          ? "Admin"
-                          : item.id_hoa_don.nguoiXacNhan.ten}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </Modal>
-            </div>
+                    </p>
+                    <p>
+                      <span className="font-bold">Nguoi xac nhan : </span>
+                      &nbsp;&nbsp;
+                      {item.id_hoa_don.nguoiXacNhan == null
+                        ? "Admin"
+                        : item.id_hoa_don.nguoiXacNhan.ten}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Modal>
           </div>
         </div>
 
@@ -938,10 +957,6 @@ export default function DetailHoaDon() {
 }
 
 const listTitleTimline = [
-  {
-    title: ``,
-    icon: FiLoader,
-  },
   {
     title: `Chờ xác nhận`,
     icon: FiLoader,

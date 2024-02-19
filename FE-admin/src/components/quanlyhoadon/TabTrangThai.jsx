@@ -16,7 +16,6 @@ export default function TabTrangThai({
   const [size, setSize] = useState("large");
   const [key1, setKey] = useState(-1);
   useEffect(() => {
-    console.log(key1);
     getData(key1);
   }, [dataInput, dataSelect, ngayBatDau, ngayKetThuc, key1, list]);
 

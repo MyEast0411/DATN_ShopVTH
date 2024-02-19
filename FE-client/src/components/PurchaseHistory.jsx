@@ -79,6 +79,7 @@ export default function PurchaseHistory() {
     await axios
       .get(`http://localhost:8080/khach-hang/lich-su-mua-hang/${idkh}`)
       .then((response) => {
+        console.log(response.data);
         setList(
           filterOptions(
             response.data.map((data) => {
@@ -189,7 +190,10 @@ export default function PurchaseHistory() {
                     <span>Mã đơn hàng : {ls.hoaDon?.ma}</span>
                   </div>
                   <div className="mt-3 ms-5">
-                    Trạng Thái Hóa Đơn : {GetTrangThai(ls.trangThai)}
+                    Trạng Thái Hóa Đơn :{" "}
+                    {ls.hoaDon.loaiHd == 0
+                      ? GetTrangThai(ls.trangThai)
+                      : "Thành Công"}
                   </div>
                 </div>
                 <hr
@@ -250,9 +254,7 @@ export default function PurchaseHistory() {
                         <div className="w-3/12">
                           <span>
                             {" "}
-                            {Intl.NumberFormat().format(
-                              ls.hoaDon?.tongTien
-                            )}
+                            {Intl.NumberFormat().format(ls.hoaDon?.tongTien)}
                           </span>
                         </div>
                       </div>
@@ -266,7 +268,7 @@ export default function PurchaseHistory() {
                   </span>
                   <div>
                     <Button className="me-4">Mua lại</Button>
-                    {ls.hoaDon.trangThai == 0 && (
+                    {ls.hoaDon.trangThai < 2 && ls.hoaDon.tinhTrang == 0 && (
                       <>
                         <Link to={`/client/edit-hoa-don/${ls.hoaDon.id}`}>
                           <Button className="me-4">Sửa hóa đơn</Button>

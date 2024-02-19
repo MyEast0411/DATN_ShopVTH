@@ -408,8 +408,6 @@ function EditHoaDon() {
             });
         },
       });
-      // alert(idSPCT);
-      console.log(spct);
     }
   };
 
