@@ -132,6 +132,7 @@ public class HoaDonChiTietController {
             Double gia = ssHDCT.getMoneyBYHD(id_hoa_don);
             HoaDon hoaDon = ssHD.findById(id_hoa_don).get();
             hoaDon.setTongTien(new BigDecimal("" + gia));
+            hoaDon.setTrangThai(0);
             ssHD.save(hoaDon);
 
             LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()

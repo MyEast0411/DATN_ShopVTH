@@ -57,7 +57,7 @@ public class LichSuHoaDonController {
 //    http://localhost:8080/lich_su_hoa_don/add/
     @PostMapping("add/{idHD}")
     @Async
-    public ResponseEntity<LichSuHoaDon> addLichSuHoaDon(
+    public ResponseEntity addLichSuHoaDon(
             @PathVariable("idHD")HoaDon  hoaDon,
             @RequestBody LichSuHoaDon lshd
 
@@ -103,7 +103,7 @@ public class LichSuHoaDonController {
         }else{
             hoaDon.setTrangThai(hoaDon.getTrangThai()+1);
         }
-        hoaDonService.updateHoaDon(hoaDon);
+       HoaDon hoaDon1 = hoaDonService.updateHoaDon(hoaDon);
 
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
         String contentBody = "<html>" +
@@ -119,7 +119,7 @@ public class LichSuHoaDonController {
         else
             SendMail.SendMailOptions(khachHang.getEmail() , contentBody);
 
-        return ResponseEntity.ok(lichSuHoaDon);
+        return ResponseEntity.ok(hoaDon1);
     }
 
     @PutMapping("update/{id}")
