@@ -16,4 +16,5 @@ public class ThanhToanHoaDonDTO {
     private String diaChi;
     private String loaiHd;
     private String trangThai;
+    private String tienGiam;
 }

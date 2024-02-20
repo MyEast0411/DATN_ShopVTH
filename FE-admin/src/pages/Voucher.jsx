@@ -313,8 +313,8 @@ export default function Voucher() {
         return (
           <Image
             style={{
-              height: "100px",
-              width: "150px",
+              height: "80px",
+              width: "80px",
             }}
             src={hinhAnhURL}
             alt={user?.hinhAnh || "Ảnh sản phẩm"}

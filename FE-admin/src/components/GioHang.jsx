@@ -185,7 +185,7 @@ const GioHang = ({
 
         setThanhToan(updatedRows);
         const totalSoTien = updatedRows.reduce(
-          (sum, row) => sum + parseFloat(row.soTien.replace(".", "")),
+          (sum, row) => sum + parseFloat(row.soTien.replace(",", "")),
           0
         );
 
@@ -283,6 +283,7 @@ const GioHang = ({
             soTien: inputValue,
             maKH: khachHang.maKH,
             tongTien: tongTien,
+            tienGiam : duocGiam,
             trangThai: 4,
             loaiHd: 1, //1 - tại quầy 0 - online
           }
@@ -936,7 +937,7 @@ const GioHang = ({
             <span style={{ color: "red", fontSize: "16px" }}>
               {duocGiam == ""
                 ? ""
-                : "Mua thêm " + muaThem + " ₫ để được giảm " + duocGiam + " ₫"}
+                : "Mua thêm " + Intl.NumberFormat().format(muaThem) + " ₫ để được giảm " + Intl.NumberFormat().format(duocGiam) + " ₫"}
             </span>
             <div class="flex ...">
               <Switch

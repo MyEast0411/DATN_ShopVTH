@@ -111,7 +111,7 @@ export default function TableCommon({ data }) {
 
     switch (columnKey) {
       case "tenKhachHang":
-        return <p>{cellValue}</p>;
+        return <p>{cellValue == undefined ? "Khách lẻ" : cellValue}</p>;
       case "loaiHd":
         return cellValue == 1 ? (
           <Tag color="red">Tại quầy</Tag>

@@ -230,32 +230,32 @@ export default function App({ gioHang }) {
   const { ma } = useParams();
 
   const url = `http://localhost:8080/getAllSPCT`;
-  // React.useEffect(() => {
-  //   async function fetchChiTietSanPham() {
-  //     try {
-  //       const response = await axios.get(url);
+  React.useEffect(() => {
+    async function fetchChiTietSanPham() {
+      try {
+        const response = await axios.get(url);
 
-  //       const updatedRows = response.data.map((item, index) => ({
-  //         id: item.id,
-  //         stt: index + 1,
-  //         hinhAnh: item.defaultImg,
-  //         mauSac: item.id_mau_sac.maMau,
-  //         kichThuoc: item.id_kich_co.ten,
-  //         soLuongTon: item.soLuongTon,
-  //         deGiay: item.id_de_giay.ten,
-  //         donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
-  //         trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-  //         giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
-  //           ?.id_khuyen_mai.giaTriPhanTram,
-  //       }));
+        const updatedRows = response.data.map((item, index) => ({
+          id: item.id,
+          stt: index + 1,
+          hinhAnh: item.defaultImg,
+          mauSac: item.id_mau_sac.maMau,
+          kichThuoc: item.id_kich_co.ten,
+          soLuongTon: item.soLuongTon,
+          deGiay: item.id_de_giay.ten,
+          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
+          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+            ?.id_khuyen_mai.giaTriPhanTram,
+        }));
 
-  //       setSanPhams(updatedRows);
-  //     } catch (error) {
-  //       console.error("Lỗi khi gọi API: ", error);
-  //     }
-  //   }
-  //   fetchChiTietSanPham();
-  // }, [sanPhams]);
+        setSanPhams(updatedRows);
+      } catch (error) {
+        console.error("Lỗi khi gọi API: ", error);
+      }
+    }
+    fetchChiTietSanPham();
+  }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -288,7 +288,7 @@ export default function App({ gioHang }) {
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
+  const pages = Math.ceil(filteredItems.length / rowsPerPage == 0 ? 1 : filteredItems.length / rowsPerPage);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;

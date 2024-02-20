@@ -88,7 +88,7 @@ export default function CartItem({ users, columns, updateSoLuong }) {
       //     <span style={{ color: "black", fontSize: 20 }}>
       //       1
       //     </span>
-      //   );
+      // );
       case "thongtinsanpham":
         return (
           <div className="flex col-span-2 gap-4">
