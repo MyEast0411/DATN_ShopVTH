@@ -246,7 +246,7 @@ public class HoaDonChiTietController {
         System.out.println("getPhiVanChuyen: " + cartNotLoginDTO.getPhiVanChuyen());
         System.out.println("getPhuongThucThanhToan: " + cartNotLoginDTO.getPhuongThucThanhToan());
         System.out.println("getTongTien: " + cartNotLoginDTO.getTongTien());
-
+        System.out.println("getVoucher: " + cartNotLoginDTO.getVoucher());
         List<HoaDonChiTiet> listHDCT = new ArrayList<>();
         try {
             String maxMaString = ssHD.getMaxMa();
@@ -287,7 +287,14 @@ public class HoaDonChiTietController {
             ssLSHD.save(lichSuHoaDon);
             for (SanPhamChiTiet sanPhamChiTiet : cartNotLoginDTO.getSanPhams()) {
                 SanPhamChiTiet spct = sanPhamChiTiet;
+                if(sanPhamChiTiet.getSoLuongTon() <= 0 || sanPhamChiTiet.getSoLuongTon() - cartNotLoginDTO.getSoLuong() < 0) {
+                    return ResponseEntity.badRequest().body("Sản phẩm không đủ số lượng tồn !!!");
+                }
+                sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() - cartNotLoginDTO.getSoLuong());
+                ssSPCT.save(sanPhamChiTiet);
                 spct.setId(null);
+                spct.setDeleted(0);
+                spct.setNgayTao(new Date());
                 HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
                         .id_hoa_don(hd1)
                         .id_chi_tiet_san_pham(ssSPCT.save(spct))

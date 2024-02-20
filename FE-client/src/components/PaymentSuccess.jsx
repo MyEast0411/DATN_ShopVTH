@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { addToHoaDon } from "../apis/HoaDon";
+import logo from "./../assets/logo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSquareCheck,faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import "./style-payment.css"
 function PayMentSuccess() {
 
     const urlObject = new URL(window.location.href);

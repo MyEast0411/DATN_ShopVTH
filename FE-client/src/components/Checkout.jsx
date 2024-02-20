@@ -64,6 +64,8 @@ export default function Checkout() {
   const [muaThem, setMuaThem] = useState("");
   const [duocGiam, setDuocGiam] = useState("100");
   const [listVoucher, setListVoucher] = useState([]);
+  const [user, setUser] = useState({});
+
   useEffect(() => {
     if (localStorage?.getItem("user") != "")
       setUser(JSON.parse(localStorage.getItem("user")));
@@ -71,11 +73,22 @@ export default function Checkout() {
   }, []);
   //get list voucher dang co'
   const getVocherDuocDung = async () => {
-    const result = await axios.get("http://localhost:8080/voucher/getVouchers");
-    setListVoucher(result.data);
+    await axios.get("http://localhost:8080/voucher/getVouchers").then((response) => {
+      setListVoucher(response.data);
+    }).catch((err) => {console.log(err);});
   };
   useEffect(() => {
+    const getVocherDuocDung = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/voucher/getVouchers");
+        setListVoucher(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
     getVocherDuocDung();
+  }, []);
+  useEffect(() => {
     listVoucher.sort((b, a) => b.giaTriMin - a.giaTriMin);
 
     listVoucher.map((x, index) => {
@@ -116,8 +129,7 @@ export default function Checkout() {
         }
       }
     });
-  }, [tongTien, listVoucher]);
-
+  },[tongTien, listVoucher])
   // get thong tin khach hang
   const getKhachHang = async () => {
     const result = await axios.get(
@@ -157,7 +169,7 @@ export default function Checkout() {
   };
   useEffect(() => {
     getDiaChi();
-  }, []);
+  }, [diaChi]);
   // lay id thanh pho
   useEffect(() => {
     const apiUrl =
@@ -179,37 +191,40 @@ export default function Checkout() {
         setIdTP(id_tp);
       })
       .catch((error) => {});
-  }, [diaChi]);
+  }, [diaChi, idTP]);
   // lay id huyen theo api theo id tp
   useEffect(() => {
-    const apiUrl =
-      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
-    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+    if(idTP != undefined && idTP != '') {
+      const apiUrl =
+        "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
+      const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
 
-    const requestData = {
-      province_id: idTP,
-    };
+      const requestData = {
+        province_id: idTP,
+      };
 
-    axios
-      .get(apiUrl, {
-        headers: {
-          "Content-Type": "application/json",
-          Token: token,
-        },
-        params: requestData,
-      })
-      .then((response) => {
-        const id_huyen = response.data.data.find(
-          (item) => item.DistrictName === diaChi.huyen
-        )?.DistrictID;
-        setDistrict(response.data.data);
-        setIdHuyen(id_huyen);
-      })
-      .catch((error) => {});
-  }, [diaChi]);
+      axios
+        .get(apiUrl, {
+          headers: {
+            "Content-Type": "application/json",
+            Token: token,
+          },
+          params: requestData,
+        })
+        .then((response) => {
+          const id_huyen = response.data.data.find(
+            (item) => item.DistrictName === diaChi.huyen
+          )?.DistrictID;
+          setDistrict(response.data.data);
+          setIdHuyen(id_huyen);
+        })
+        .catch((error) => {});
+    }
+  }, [diaChi,idTP]);
 
   // lay id xa theo api theo id huyen
   useEffect(() => {
+    if(idHuyen != undefined && idHuyen != '') {
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
     const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -222,7 +237,6 @@ export default function Checkout() {
       .post(apiUrl, requestData, {
         headers: {
           "Content-Type": "application/json",
-          // 'ShopId': shopId,
           Token: token,
         },
       })
@@ -234,6 +248,7 @@ export default function Checkout() {
         setWard(response.data.data);
       })
       .catch((error) => {});
+    }
   }, [diaChi, idHuyen]);
 
   useEffect(() => {
@@ -250,10 +265,6 @@ export default function Checkout() {
   const [sanPhams, setSanPhams] = useState([]);
   const [dataLocal, setDataLocal] = useState([]);
   const [spinning, setSpinning] = React.useState(false);
-  const [user, setUser] = useState({});
-  useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user")));
-  }, []);
 
   const showLoader = (callback) => {
     setSpinning(true);
@@ -298,6 +309,7 @@ export default function Checkout() {
 
   // Tính thời gian dự kiến
   useEffect(() => {
+    if(idTP != undefined && idTP != '' && idHuyen != undefined && idHuyen != '' && idXa != undefined && idXa != '') {
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime";
     const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -333,10 +345,12 @@ export default function Checkout() {
         setDeliveryTime(formattedLeadtime);
       })
       .catch((error) => {});
+    }
   }, [idTP, idHuyen, idXa]);
 
   // Tính phí vận chuyển
   useEffect(() => {
+    if(idTP != undefined && idTP != '' && idHuyen != undefined && idHuyen != '' && idXa != undefined && idXa != '') {
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
     const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -371,6 +385,7 @@ export default function Checkout() {
         setShippingCost(response.data.data.total);
         setPhiVanChuyen(response.data.data.total);
       });
+    }
   }, [idTP, idHuyen, idXa]);
 
   const openNotificationWithIcon = (type, message) => {
@@ -570,7 +585,8 @@ export default function Checkout() {
               navigate("/");
             }, 2000);
           } catch (error) {
-            console.error("Error adding to HoaDon:", error);
+            openNotificationWithIcon("error", err);
+            // console.error("Error adding to HoaDon:", error);
           } finally {
             setSpinning(false);
           }
@@ -641,8 +657,8 @@ export default function Checkout() {
               <div className="inputGroupCodeSignUp">
                 <input
                   name="email"
-                  type="email"
-                  value={user.email}
+                  type="text"
+                  value={user?.email}
                   required
                   autoComplete="off"
                 />
@@ -681,9 +697,10 @@ export default function Checkout() {
 
               <div className="flex mb-5">
                 <Select
+                  label="Chọn thành phố"
                   placeholder="Thành phố"
                   onChange={(selectedValue) => handleChangeTP(selectedValue)}
-                  value={diaChi?.thanhPho}
+                  value={diaChi?.thanhPho || ''}
                   style={{ marginRight: "10px", width: "100%", height: "44px" }}
                 >
                   {options}
@@ -708,7 +725,8 @@ export default function Checkout() {
 
               <h2 className="text-[16px] pb-2">Phương thức thanh toán</h2>
               <div className="main-choose-payment-method">
-                <Radio.Group onChange={onChange} value={value}>
+                {/* onChange={onChange} */}
+                <Radio.Group value={value}>
                   <Space direction="vertical">
                     <Radio value={1} className="rdo">
                       <div className="flex items-center pt-1">
