@@ -268,7 +268,7 @@ export default function PurchaseHistory() {
                   </span>
                   <div>
                     <Button className="me-4">Mua lại</Button>
-                    {ls.hoaDon.trangThai < 2 && ls.hoaDon.tinhTrang == 0 && (
+                    {ls.hoaDon.trangThai < 2 && ls.hoaDon.loaiHd == 0 ? (
                       <>
                         <Link to={`/client/edit-hoa-don/${ls.hoaDon.id}`}>
                           <Button className="me-4">Sửa hóa đơn</Button>
@@ -277,6 +277,8 @@ export default function PurchaseHistory() {
                           Hủy Hóa Đơn
                         </Button>
                       </>
+                    ) : (
+                      ""
                     )}
 
                     {/* <Modal
