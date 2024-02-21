@@ -732,7 +732,7 @@ export default function DetailHoaDon() {
               </div>
             </div>
             <div className="flex justify-end">
-              {listTimeLineOnline.length < 4 && info.trangThai < 4 && (
+              {info.trangThai < 4 && (
                 <Button
                   onClick={() => {
                     showModalThem();
