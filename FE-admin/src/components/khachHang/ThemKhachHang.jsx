@@ -52,7 +52,11 @@ export default function ThemKhachHang() {
       if (item.code == provinceCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
-          thanhPho: item.name,
+          thanhPho: item.province_name,
+        }));
+        setDiaChi((prevDiaChi) => ({
+          ...prevDiaChi,
+          thanhPho: item.province_name,
         }));
       }
     });
@@ -66,7 +70,11 @@ export default function ThemKhachHang() {
       if (item.code == districtCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
-          huyen: item.name,
+          huyen: item.district_name,
+        }));
+        setDiaChi((prevDiaChi) => ({
+          ...prevDiaChi,
+          huyen: item.district_name,
         }));
       }
     });
@@ -80,7 +88,11 @@ export default function ThemKhachHang() {
       if (item.code == wardsCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
-          xa: item.name,
+          xa: item.ward_name,
+        }));
+        setDiaChi((prevDiaChi) => ({
+          ...prevDiaChi,
+          xa: item.ward_name,
         }));
       }
     });
@@ -198,6 +210,8 @@ export default function ThemKhachHang() {
     // Kiểm tra xem email có khớp với định dạng không
     return regex.test(email);
   }
+  const [form] = Form.useForm();
+
   const onSubmit = async () => {
     var currentDate = new Date();
     var dateObject = new Date(khachHang.ngay_sinh);
@@ -206,6 +220,7 @@ export default function ThemKhachHang() {
     var month = currentDate.getMonth() + 1; // Lưu ý: Tháng trong JavaScript bắt đầu từ 0
     var year = currentDate.getFullYear();
     var check = true;
+
     if (check) {
       await axios
         .post("http://localhost:8080/khach-hang/add", khachHang)
@@ -214,7 +229,8 @@ export default function ThemKhachHang() {
           navigate("/quan-ly-tai-khoan/khach-hang");
         })
         .catch((error) => {
-          toast.error(`😢 Thêm thất bại`);
+          console.log(error);
+          toast.error(error.response.data);
         });
     }
     cancelAdd();
@@ -275,9 +291,11 @@ export default function ThemKhachHang() {
 
         <div className="col-span-2 m-10">
           <Form
+            form={form}
             initialValues={{
               remember: true,
             }}
+            onFinish={onSubmit}
           >
             <div className="grid grid-cols-2 gap-4">
               <div className="left">
@@ -619,7 +637,8 @@ export default function ThemKhachHang() {
                       backgroundColor: "#1976d2",
                       marginBottom: "2px",
                     }}
-                    onClick={onSubmit}
+                    // onClick={handleAdd}
+                    type="primary"
                   >
                     Hoàn tất
                   </ButtonAnt>

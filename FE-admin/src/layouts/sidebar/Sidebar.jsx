@@ -175,7 +175,7 @@ const Sidebar = () => {
               />
               <div className="flex justify-start flex-col items-start">
                 <p className="w-40 leading-7 cursor-pointer text-s text-sm truncate text-gray-600">
-                  Vương Thúy Hiền
+                  donglun`
                 </p>
               </div>
             </NavLink>

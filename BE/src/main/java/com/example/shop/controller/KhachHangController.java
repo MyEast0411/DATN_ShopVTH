@@ -111,7 +111,15 @@ public class KhachHangController {
             }else {
                 urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
             }
-
+            for (KhachHang item:
+                 khachHangRepository.getAllKh()) {
+                if(item.getEmail().equals(khachHang.getEmail().trim())) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại !!!");
+                }
+                if(item.getSdt().equals(khachHang.getSdt().trim())) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại !!!");
+                }
+            }
             kh.setAnhNguoiDung(urlImg);
             kh.setMa("KH"+(maxMa + 1));
             kh.setCccd(khachHang.getCccd());
@@ -176,10 +184,21 @@ public class KhachHangController {
             diaChi.setHuyen(khachHang.getHuyen());
             diaChi.setXa(khachHang.getXa());
             diaChi.setTrangThai(2);
+            diaChi.setDeleted(1);
             diaChi.setQuocGia("Việt Nam");
             diaChi.setId_khach_hang(khachHangRepository.findById(khachHang.getId()).get());
             diaChiRepository.save(diaChi);
             return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Thêm thất bại");
+        }
+    }
+    @PostMapping("/dia-chi/switchTrangThai")
+    public ResponseEntity updateTrangThaiDiaChi(@RequestBody List<DiaChi> list) {
+        try {
+            System.out.println(list);
+            List<DiaChi> lst = diaChiRepository.saveAll(list);
+            return ResponseEntity.ok(lst);
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Thêm thất bại");
         }

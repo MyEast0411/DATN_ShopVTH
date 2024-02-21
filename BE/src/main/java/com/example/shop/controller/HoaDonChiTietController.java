@@ -288,7 +288,7 @@ public class HoaDonChiTietController {
             for (SanPhamChiTiet sanPhamChiTiet : cartNotLoginDTO.getSanPhams()) {
                 SanPhamChiTiet spct = sanPhamChiTiet;
                 if(sanPhamChiTiet.getSoLuongTon() <= 0 || sanPhamChiTiet.getSoLuongTon() - cartNotLoginDTO.getSoLuong() < 0) {
-                    return ResponseEntity.badRequest().body("Sản phẩm không đủ số lượng tồn !!!");
+                    return ResponseEntity.badRequest().body("Sản phẩm không " + sanPhamChiTiet.getTen() +" đủ số lượng tồn !!!");
                 }
                 sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() - cartNotLoginDTO.getSoLuong());
                 ssSPCT.save(sanPhamChiTiet);

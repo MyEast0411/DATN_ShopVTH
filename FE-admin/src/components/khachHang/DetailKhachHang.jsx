@@ -41,19 +41,21 @@ export default function ThemKhachHang() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
   const [listDiaChi, setListDiaChi] = useState([]);
-  const [isOn, setIsOn] = useState(false); // Khởi tạo trạng thái ban đầu là "off"
+  const [isOn, setIsOn] = useState(false);
   const [idToDelete, setIdToDelete] = useState("");
+
+  const [openComfirm, setOpenComfirm] = useState(false);
+  const handleSwitch = () => {
+    setOpenComfirm(true);
+  };
+  const cancelComfirm = () => {
+    setOpenComfirm(false);
+  };
+  const [indexDiaChi, setIndexDiaChi] = useState("");
   const handleSwitchChange = (index) => {
-    const updatedListDiaChi = [...listDiaChi];
+    handleSwitch();
+    setIndexDiaChi(index);
 
-    updatedListDiaChi[index].trangThai = 1;
-
-    updatedListDiaChi.forEach((item, i) => {
-      if (i !== index) {
-        item.trangThai = 0;
-      }
-    });
-    setListDiaChi(updatedListDiaChi);
   };
 
   const handleDelete = () => {
@@ -79,7 +81,7 @@ export default function ThemKhachHang() {
     setValueTP(names);
     const thanhPho = listDiaChi.find((x) => x.id_khach_hang.id == khachHang.id)?.thanhPho;
     const provinceCode = provinces.find((x) => x.province_name === thanhPho)?.province_id;
-    
+
     getDistricts(provinceCode).then((data) => {
       setDistrict(data.results);
     });
@@ -95,11 +97,11 @@ export default function ThemKhachHang() {
     });
     const valueXa = ward.map((item) => item.ward_name);
     setValueXa(valueXa);
-  }, [provinces,district]);
+  }, [provinces, district]);
 
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
-      if (item.code == provinceCode) {
+      if (item.province_id == provinceCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
           thanhPho: item.province_name,
@@ -110,41 +112,39 @@ export default function ThemKhachHang() {
         }));
       }
     });
-
     getDistricts(provinceCode).then((data) => {
-      setDistricts(data);
+      setDistricts(data.results);
     });
   };
 
   const handleDistrictChange = (districtCode) => {
-    console.log(districtCode);
     districts.map((item) => {
-      if (item.code == districtCode) {
-        // setKhachHang((prevKhachHang) => ({
-        //   ...prevKhachHang,
-        //   huyen: item.name,
-        // }));
+      if (item.district_id == districtCode) {
+        setKhachHang((prevKhachHang) => ({
+          ...prevKhachHang,
+          huyen: item.district_name,
+        }));
         setDiaChi((prevDiaChi) => ({
           ...prevDiaChi,
-          huyen: item.name,
+          huyen: item.district_name,
         }));
       }
     });
     getWards(districtCode).then((data) => {
-      setWards(data);
+      setWards(data.results);
     });
   };
 
   const handleWardsChange = (wardsCode) => {
     wards.map((item) => {
-      if (item.code == wardsCode) {
-        // setKhachHang((prevKhachHang) => ({
-        //   ...prevKhachHang,
-        //   xa: item.name,
-        // }));
+      if (item.ward_id == wardsCode) {
+        setKhachHang((prevKhachHang) => ({
+          ...prevKhachHang,
+          xa: item.ward_name,
+        }));
         setDiaChi((prevDiaChi) => ({
           ...prevDiaChi,
-          xa: item.name,
+          xa: item.ward_name,
         }));
       }
     });
@@ -222,7 +222,7 @@ export default function ThemKhachHang() {
   useEffect(() => {
     getKhachHang();
     getDiaChi();
-  }, [diaChi]);
+  }, []);
 
   const onChange = (e) => {
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
@@ -233,11 +233,11 @@ export default function ThemKhachHang() {
     setIsModalOpen(true);
   };
   const handleOk = async () => {
-    console.log(diaChi);
     await axios
       .post("http://localhost:8080/dia-chi/add", diaChi)
       .then((response) => {
         toast.success(`🎉 Thêm thành công`);
+        getKhachHang();
         getDiaChi();
       })
       .catch((error) => {
@@ -639,11 +639,14 @@ export default function ThemKhachHang() {
               </div>
               <Button
                 onClick={async () => {
+                  console.log(diaChi);
                   await axios
                     .post("http://localhost:8080/dia-chi/add", diaChi)
                     .then((response) => {
                       toast.success(`🎉 Thêm thành công`);
+                      getKhachHang();
                       getDiaChi();
+                      setDiaChi({});
                     })
                     .catch((error) => {
                       console.log(error);
@@ -689,7 +692,8 @@ export default function ThemKhachHang() {
                       handleChangeHuyen(selectedValue, index)
                     }
                     value={item.huyen}
-                    style={{ width: "21%", marginRight: "15px" }}
+                    style={{ width: "21%", marginRight: "15px", pointerEvents: "none" }}
+                    dropdownStyle={{ pointerEvents: "auto" }}
                   >
                     {optionHuyen}
                   </Select>
@@ -700,9 +704,10 @@ export default function ThemKhachHang() {
                       handleChangeXa(selectedValue, index)
                     }
                     value={item.xa}
-                    style={{ width: "23%", marginRight: "10px" }}
+                    style={{ width: "23%", marginRight: "10px", pointerEvents: "none" }}
+                    dropdownStyle={{ pointerEvents: "auto" }}
                   >
-                    {optionXa}
+                    {/* {optionXa} */}
                   </Select>
 
                   <input
@@ -744,39 +749,6 @@ export default function ThemKhachHang() {
                 </div>
               </AccordionItem>
             ))}
-
-            {/* <AccordionItem
-              key="2"
-              aria-label="Địa chỉ 2"
-              startContent={
-                <Avatar
-                  isBordered
-                  color="success"
-                  radius="lg"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBzzKBzwgurWanjvQl4kpN9w_CEtc27ryw5A&usqp=CAU"
-                />
-              }
-              subtitle="Cập nhật ngay"
-              title="Địa chỉ 2"
-            >
-              {defaultContent}
-            </AccordionItem> */}
-            {/* <AccordionItem
-              key="3"
-              aria-label="Địa chỉ 3"
-              startContent={
-                <Avatar
-                  isBordered
-                  color="warning"
-                  radius="lg"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBzzKBzwgurWanjvQl4kpN9w_CEtc27ryw5A&usqp=CAU"
-                />
-              }
-              subtitle="Cập nhật ngay"
-              title="Địa chỉ 3"
-            >
-              {defaultContent}
-            </AccordionItem> */}
           </Accordion>
           <div className="">
             {/* <Button
@@ -981,6 +953,8 @@ export default function ThemKhachHang() {
                 .delete(`http://localhost:8080/dia-chi/delete/${idToDelete}`)
                 .then((response) => {
                   toast("🎉 Xóa thành công");
+                  getKhachHang();
+                  getDiaChi();
                   cancelDelete();
                 })
                 .catch((error) => {
@@ -990,6 +964,55 @@ export default function ThemKhachHang() {
             }}
           >
             Vẫn xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openComfirm} onClose={cancelComfirm} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận sửa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn sửa địa chỉ này thành mặc định không?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelComfirm} color="warning">
+            Hủy
+          </Button>
+          <Button color="primary" onClick={() => {
+            const updatedListDiaChi = [...listDiaChi];
+            updatedListDiaChi[indexDiaChi].trangThai = 1;
+            updatedListDiaChi.forEach((item, i) => {
+              if (i !== indexDiaChi) {
+                item.trangThai = 2;
+              }
+            });
+            
+            axios.post('http://localhost:8080/dia-chi/switchTrangThai', updatedListDiaChi).then((res) => {
+              // setListDiaChi(res.data);
+              getDiaChi();
+              cancelComfirm();
+              toast("Đặt địa chỉ mặc định thành công");
+            })
+          }}
+          >
+            Vẫn sửa
           </Button>
         </DialogActions>
       </Dialog>

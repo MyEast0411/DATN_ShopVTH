@@ -71,7 +71,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App({ data,dataSearch }) {
+export default function App({ data, dataSearch }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -159,7 +159,7 @@ export default function App({ data,dataSearch }) {
   }, [data]);
 
   useEffect(() => {
-    setFilterValue(dataSearch);
+    setFilterValue(dataSearch.trim());
   },[dataSearch]);
 
   const hasSearchFilter = Boolean(filterValue);

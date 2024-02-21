@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../apis/Location_2";
 import { Button, Modal, Radio, Space, Spin, Select, Tooltip } from "antd";
-import { Row, Col } from "antd";
+import { toast } from "react-toastify";
 import { IoIosArrowBack } from "react-icons/io";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
@@ -585,7 +585,8 @@ export default function Checkout() {
               navigate("/");
             }, 2000);
           } catch (error) {
-            openNotificationWithIcon("error", err);
+            openNotificationWithIcon("error", error.response.data);
+            console.log(error.response.data);
             // console.error("Error adding to HoaDon:", error);
           } finally {
             setSpinning(false);

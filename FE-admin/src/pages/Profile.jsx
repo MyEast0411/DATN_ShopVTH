@@ -29,7 +29,7 @@ const Profile = () => {
 
               <div className="text-center mt-10">
                 <h3 className="text-xl font-semibold leading-normal text-blueGray-700 mb-2">
-                  Vương Thúy Hiền
+                  donglun`
                 </h3>
                 <p className="text-sm mb-2">...</p>
                 <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
