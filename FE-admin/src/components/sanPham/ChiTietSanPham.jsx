@@ -99,6 +99,11 @@ export default function ChiTietSanPham() {
   const [kichCo, setKichCo] = useState([]);
   const [nhanHieu, setNhanHieu] = useState([]);
   const [idDetailProduct, setIdDetailProduct] = useState([]);
+  const [page, setPage] = React.useState(1);
+  const [sanPhams, setSanPhams] = React.useState([]);
+  const { ma } = useParams();
+  const [kmspcts, setKmspcts] = useState([]);
+
   useEffect(() => {
     getAllNH();
     getAllMS();
@@ -107,6 +112,7 @@ export default function ChiTietSanPham() {
     getAllKC();
     getAllDG();
   }, []);
+
   const getAllNH = async () => {
     await axios.get("http://localhost:8080/getAllNH").then((response) => {
       setNhanHieu(response.data);
@@ -141,6 +147,7 @@ export default function ChiTietSanPham() {
       setKichCo(response.data);
     });
   };
+
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);
@@ -165,20 +172,22 @@ export default function ChiTietSanPham() {
     }
   };
   const [hinhAnh, setHinhAnh] = useState([]);
+
   const getAllHA = async () => {
     await axios.get("http://localhost:8080/getAllHinhAnh").then((response) => {
       setHinhAnh(response.data);
     });
   };
+
   useEffect(() => {
     getAllHA();
   }, []);
 
-  const [kmspcts, setKmspcts] = useState([]);
   const fetchKMSPCT = async () => {
     const data = await getAllKMSPCT();
     setKmspcts(data);
   };
+
   useEffect(() => {
     fetchKMSPCT();
   }, [kmspcts]);
@@ -194,9 +203,7 @@ export default function ChiTietSanPham() {
     column: "giaTriPhanTram",
     direction: "ascending",
   });
-  const [page, setPage] = React.useState(1);
-  const [sanPhams, setSanPhams] = React.useState([]);
-  const { ma } = useParams();
+
   const [sanPham, setSanPham] = useState({
     id_mau_sac: "",
     id_kich_co: "",
@@ -207,6 +214,7 @@ export default function ChiTietSanPham() {
     trangThai: "",
     maSP: ma,
   });
+
   const onChange = (e) => {
     const { name, value } = e.target;
 
@@ -215,6 +223,7 @@ export default function ChiTietSanPham() {
       [name]: value,
     }));
   };
+
   //load table khi loc 
   const fetchData = async () => {
     try {
@@ -242,6 +251,7 @@ export default function ChiTietSanPham() {
       console.error(error);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, [sanPham]);
@@ -262,10 +272,8 @@ export default function ChiTietSanPham() {
           soLuongTon: item.soLuongTon,
           tenSanPham: item.ten,
           deGiay: item.id_de_giay.ten,
-          giaBan: numeral(item.giaBan).format("0,0 VND"),
+          giaBan: numeral(item.giaBan).format("0,N0 VD"),
           trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
-            ?.id_khuyen_mai.giaTriPhanTram,
         }));
         // console.log(giaGiam)
         setSanPhams(updatedRows);
@@ -333,6 +341,7 @@ export default function ChiTietSanPham() {
 
     return <div className="discount-tag">{`${discount}% OFF`}</div>;
   };
+
   const handleSoLuongChange = (sanPhamId, value) => {
     setSanPhams((prevSanPhams) => {
       return prevSanPhams.map((sp) => {
@@ -377,8 +386,7 @@ export default function ChiTietSanPham() {
   const renderCell = React.useCallback(
     (sanPham, columnKey) => {
       const cellValue = sanPham[columnKey];
-      const giaGiam = sanPham.giaGiam;
-
+      
       switch (columnKey) {
         case "soLuongTon":
           return (
@@ -411,7 +419,8 @@ export default function ChiTietSanPham() {
                 alt={sanPham.ten || "Ảnh sản phẩm"}
                 classNames="m-5 relative"
               />
-              <DiscountTag discount={giaGiam} />
+              <DiscountTag discount={kmspcts.find((x) => x.id_chi_tiet_san_pham.id == sanPham.id)
+            ?.id_khuyen_mai.giaTriPhanTram} />
             </div>
           );
         case "trangThai":

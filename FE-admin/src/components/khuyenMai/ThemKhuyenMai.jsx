@@ -114,6 +114,13 @@ export default function ThemKhuyenMai() {
         return;
       }
 
+      console.log("selectedMaCTSPValues:", selectedMaCTSPValues)
+      if(selectedMaCTSPValues == null || selectedMaCTSPValues.length == 0 || selectedMaCTSPValues == ''){
+        toast.error("Vui lòng chọn sản phẩm giảm!");
+        handleCloseAddConfirmation();
+        return;
+      }
+
       const khuyenMai = {
         id: idKM,
         ten: ten,
@@ -121,6 +128,7 @@ export default function ThemKhuyenMai() {
         ngayBatDau: new Date(ngayBatDau).toISOString(),
         ngayKetThuc: new Date(ngayKetThuc).toISOString(),
       };
+      
       const response = await addKhuyenMai(khuyenMai, selectedMaCTSPValues);
 
       setTen("");
