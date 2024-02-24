@@ -213,7 +213,6 @@ const GioHang = ({
   const [listVoucher, setListVoucher] = useState([]);
 
   const getListVoucher = async () => {
-    console.log(activeKey);
     await axios
       .get(`http://localhost:8080/voucher/getVouchers`)
       .then((response) => {
@@ -587,7 +586,7 @@ const GioHang = ({
             footer={[]}
           >
             <div className="mt-5">
-              <TableSanPhamChiTiet gioHang={activeKey} />
+              <TableSanPhamChiTiet gioHang={activeKey} setIsModalOpenThem={setIsModalOpenThem}/>
             </div>
           </Modal>
           <Modal

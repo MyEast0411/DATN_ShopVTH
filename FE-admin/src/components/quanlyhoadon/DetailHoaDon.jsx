@@ -26,7 +26,7 @@ import { MdCancel } from "react-icons/md";
 import { Spinner, Skeleton } from "@nextui-org/react";
 import TableSanPham from "./TableSanPham";
 
-export default function DetailHoaDon() {
+export default function   DetailHoaDon() {
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
   const [info, setInfo] = useState({});
@@ -441,6 +441,7 @@ export default function DetailHoaDon() {
                 <Timeline minEvents={20} placeholder>
                   {listTimeLineOnline.map((item, i) => (
                     <TimelineEvent
+                      key={i}
                       style={{ marginLeft: 0 }}
                       color="#9c2919"
                       icon={TbPackages}
@@ -597,8 +598,8 @@ export default function DetailHoaDon() {
               )}
             >
               <div className="divide-y divide-blue-200">
-                {rowsLichSu.map((item) => (
-                  <div className="mb-4">
+                {rowsLichSu.map((item, index) => (
+                  <div className="mb-4" key={index}>
                     <p>
                       <span className="font-bold">Mô tả : </span>
                       &nbsp;&nbsp;
@@ -758,8 +759,8 @@ export default function DetailHoaDon() {
 
             <div className="row divide-y-4 divide-slate-400/25">
               <div className="row table-san-pham ">
-                {rowsSPCT.map((item) => (
-                  <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
+                {rowsSPCT.map((item, index) => (
+                  <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start" key={index}>
                     <img
                       src={item.imageUrl}
                       alt="product-image"

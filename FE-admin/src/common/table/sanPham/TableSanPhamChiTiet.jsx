@@ -86,7 +86,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App({ gioHang }) {
+export default function App({ gioHang, setIsModalOpenThem }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -160,10 +160,12 @@ export default function App({ gioHang }) {
       })
       .then((response) => {
         toast("🎉 Thêm thành công");
-        cancelDelete();
+        setIsModalOpenThem(false);
+        handleCancelThemSL();
+        // cancelDelete();
       })
       .catch((error) => {
-        toast(error.response.data);
+        toast(error);
       });
     cancelDelete();
     setIsModalOpenThemSL(false);

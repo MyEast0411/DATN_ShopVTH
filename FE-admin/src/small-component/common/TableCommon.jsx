@@ -145,7 +145,7 @@ export default function TableCommon({ data }) {
           <div className="relative flex items-center gap-4">
             <Tooltip content="Xem chi  tiết" showArrow={true}>
               <Link
-                to={`/detail-hoa-don/${user.ids}`}
+                to={`/quan-ly-hoa-don/detail-hoa-don/${user.ids}`}
                 // style={{ display: "block" }}
                 className="button-link group relative"
               >

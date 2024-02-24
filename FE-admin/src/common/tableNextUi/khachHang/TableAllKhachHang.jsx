@@ -78,6 +78,66 @@ export default function App({ data, dataSearch }) {
   const [rows, setRows] = React.useState([]);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
 
+  
+
+  const [filterValue, setFilterValue] = React.useState("");
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
+  const [visibleColumns, setVisibleColumns] = React.useState(
+    new Set(INITIAL_VISIBLE_COLUMNS)
+  );
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [sortDescriptor, setSortDescriptor] = React.useState({
+    column: "giaTriPhanTram",
+    direction: "ascending",
+  });
+  const [page, setPage] = React.useState(1);
+  const [sanPhams, setSanPhams] = React.useState([]);
+
+  const fetchChiTietSanPham = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/khach-hang/getAll"
+      );
+      const updatedRows = response.data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        maKH: item.ma,
+        anh: item.anhNguoiDung,
+        hoTen: item.ten,
+        cccd: item.email,
+        sdt: item.sdt,
+        ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
+        trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
+      }));
+      setSanPhams(updatedRows);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  }
+  if (data.length == 0) {
+    fetchChiTietSanPham();
+  } else {
+    const updatedRows = data.map((item, index) => ({
+      id: item.id,
+      stt: index + 1,
+      maKH: item.ma,
+      anh: item.anhNguoiDung,
+      hoTen: item.ten,
+      cccd: item.email,
+      sdt: item.sdt,
+      ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
+      trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
+    }));
+    setSanPhams(updatedRows);
+  }
+  React.useEffect(() => {
+    fetchChiTietSanPham();
+  }, [data]);
+
+  useEffect(() => {
+    setFilterValue(dataSearch.trim());
+  }, [dataSearch]);
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);
@@ -95,6 +155,7 @@ export default function App({ data, dataSearch }) {
         .then((response) => {
           toast("🎉 Xóa thành công");
           cancelDelete();
+          fetchChiTietSanPham();
         })
         .catch((error) => {
           toast("😢 Xóa thất bại");
@@ -102,66 +163,6 @@ export default function App({ data, dataSearch }) {
       cancelDelete();
     }
   };
-
-  const [filterValue, setFilterValue] = React.useState("");
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(
-    new Set(INITIAL_VISIBLE_COLUMNS)
-  );
-  const [statusFilter, setStatusFilter] = React.useState("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "giaTriPhanTram",
-    direction: "ascending",
-  });
-  const [page, setPage] = React.useState(1);
-  const [sanPhams, setSanPhams] = React.useState([]);
-  React.useEffect(() => {
-    console.log(data);
-    async function fetchChiTietSanPham() {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/khach-hang/getAll"
-        );
-        const updatedRows = response.data.map((item, index) => ({
-          id: item.id,
-          stt: index + 1,
-          maKH: item.ma,
-          anh: item.anhNguoiDung,
-          hoTen: item.ten,
-          cccd: item.email,
-          sdt: item.sdt,
-          ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
-          trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
-        }));
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
-    }
-    if(data.length == 0) {
-      fetchChiTietSanPham();
-    }else {
-      const updatedRows = data.map((item, index) => ({
-        id: item.id,
-        stt: index + 1,
-        maKH: item.ma,
-        anh: item.anhNguoiDung,
-        hoTen: item.ten,
-        cccd: item.email,
-        sdt: item.sdt,
-        ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
-        trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
-      }));
-      setSanPhams(updatedRows);
-    }
-    
-  }, [data]);
-
-  useEffect(() => {
-    setFilterValue(dataSearch.trim());
-  },[dataSearch]);
-
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -192,8 +193,8 @@ export default function App({ data, dataSearch }) {
       )
     );
   }, [sanPhams, filterValue, statusFilter]);
-  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length /rowsPerPage : 1);
-  
+  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
+
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;

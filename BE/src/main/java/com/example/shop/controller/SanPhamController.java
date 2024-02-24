@@ -291,7 +291,7 @@ public class SanPhamController {
                 for (SanPhamChiTiet spct : repo.findAll()) {
                     if (spct.getId().equals(x.getId())) {
                         spct.setSoLuongTon(x.getSoLuongTon());
-                        spct.setGiaBan(x.getGiaBan());
+                        spct.setGiaBan(BigDecimal.valueOf(Long.parseLong(x.getGiaBan().toString().replace(",",""))));
                         repo.save(spct);
                     }
                 }
