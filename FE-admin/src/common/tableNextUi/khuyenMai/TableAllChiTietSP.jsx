@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -17,23 +16,14 @@ import {
   Pagination,
   Image,
 } from "@nextui-org/react";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
-import { PlusIcon } from "../../otherComponents/PlusIcon";
 import { VerticalDotsIcon } from "../../otherComponents/VerticalDotsIcon";
 import { SearchIcon } from "../../otherComponents/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
-import { toast } from "react-toastify";
-import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
+import { getAllKMSPCT } from "../../../api/khuyenMai/KhuyenMaiApi";
 
 Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
 const url = "http://localhost:8080/";
@@ -51,11 +41,6 @@ const statusOptions = [
   { name: "Đang bán", uid: "Đang bán" },
   { name: "Ngừng bán", uid: "Ngừng bán" },
 ];
-
-const formateDateVietNam = (dateTimeStr) => {
-  const vietNamTime = DateTime.fromISO(dateTimeStr, { zone: "utc" });
-  return vietNamTime.toFormat("dd/MM/yyyy HH:mm");
-};
 
 const statusColorMap = {
   active: "success",
@@ -75,7 +60,10 @@ const INITIAL_VISIBLE_COLUMNS = [
   // "tinhTrang",
 ];
 
-export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValuesChange }) {
+export default function TableChiTietSanPham({
+  selectedMaValues,
+  onSelectedMaValuesChange,
+}) {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -89,25 +77,29 @@ export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValue
   });
   const [page, setPage] = React.useState(1);
   const [chiTietSanPhams, setChiTietSanPhams] = React.useState([]);
-  const [detailedProducts, setDetailedProducts] = useState([]);
   const [selectedMaCTSP, setSelectedMaCTSP] = useState([]);
-  
+  const [kmspcts, setKmspcts] = useState([]);
+  const [row, setRow] = useState([]);
+
+  useEffect(() => {
+    const fetchKMSPCT = async () => {
+      const data = await getAllKMSPCT();
+      setKmspcts(data);
+    };
+    fetchKMSPCT();
+  }, []);
 
   React.useEffect(() => {
     async function fetchChiTietSanPham() {
       const params = {
         ma: selectedMaValues,
       };
-      // console.log(selectedMaValues);
       const url = `http://localhost:8080/get-chiTietSP-by-ListMa/${selectedMaValues}`;
-      // const urlHinhAnh = "http://localhost:8080/getAllHA"
-
       try {
         if (selectedMaValues.length === 0) {
           setChiTietSanPhams([]);
         } else {
           const response = await axios.get(url);
-          console.log(response.data);
           const updatedRows = response.data.map((item, index) => ({
             id: index + 1,
             stt: index + 1,
@@ -115,9 +107,13 @@ export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValue
             anh: item.defaultImg,
             kichThuoc: item.id_kich_co.ten,
             mauSac: item.id_mau_sac.ten,
-            // tinhTrang: item.tinhTrang,
+            giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+              ?.id_khuyen_mai.giaTriPhanTram,
             trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
           }));
+          const arr = updatedRows.filter(item => item.giaGiam !== undefined);
+          const rowKeys = arr.map(item => String(item.id));
+          setRow(rowKeys);
           setChiTietSanPhams(updatedRows);
         }
       } catch (error) {
@@ -126,6 +122,14 @@ export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValue
     }
     fetchChiTietSanPham();
   }, [selectedMaValues]);
+
+  const DiscountTag = ({ discount }) => {
+    if (discount === undefined) {
+      return null;
+    }
+
+    return <div className="discount-tag">{`${discount}% OFF`}</div>;
+  };
 
   const idToMaMap = {};
   chiTietSanPhams.forEach((sanPham) => {
@@ -183,18 +187,28 @@ export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValue
     });
   }, [sortDescriptor, items]);
 
+
   const renderCell = React.useCallback((chiTietSanPham, columnKey) => {
     const cellValue = chiTietSanPham[columnKey];
 
     switch (columnKey) {
       case "anh":
         const hinhAnhURL = chiTietSanPham.anh;
+        const giaGiam = chiTietSanPham.giaGiam;
         return (
-          <Image
-            width={70}
-            src={hinhAnhURL}
-            alt={chiTietSanPham.ten || "Ảnh sản phẩm"}
-          />
+          <div
+            style={{
+              display: "inline-block",
+            }}
+          >
+            <Image
+              width={70}
+              src={hinhAnhURL}
+              alt={chiTietSanPham.ten || "Ảnh sản phẩm"}
+            />
+
+            <DiscountTag discount={giaGiam} />
+          </div>
         );
       case "trangThai":
         return (
@@ -271,7 +285,7 @@ export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValue
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-                 <div className="flex gap-3">
+          <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
@@ -396,6 +410,7 @@ export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValue
         aria-label="Example table with custom cells, pagination and sorting"
         // isHeaderSticky
         bottomContent={bottomContent}
+        disabledKeys={row}
         bottomContentPlacement="outside"
         classNames={{
           wrapper: "max-h-[382px]",
@@ -409,16 +424,17 @@ export default function TableChiTietSanPham({ selectedMaValues,onSelectedMaValue
         onSelectionChange={(selectedKeys) => {
           let selectedMaCTSP = [];
           if (selectedKeys === "all") {
-            selectedMaCTSP = chiTietSanPhams.map((chiTietSanPham) => chiTietSanPham.ma);
+            selectedMaCTSP = chiTietSanPhams.map(
+              (chiTietSanPham) => chiTietSanPham.ma
+            );
           } else {
             selectedMaCTSP = Array.from(selectedKeys).map(
               (id) => idToMaMap[id]
-              );
-            }
-            onSelectedMaValuesChange(selectedMaCTSP);
-            setSelectedKeys(selectedKeys);
-            setSelectedMaCTSP(selectedMaCTSP);
-            // console.log(selectedMaCTSP);
+            );
+          }
+          onSelectedMaValuesChange(selectedMaCTSP);
+          setSelectedKeys(selectedKeys);
+          setSelectedMaCTSP(selectedMaCTSP);
         }}
       >
         <TableHeader columns={headerColumns}>

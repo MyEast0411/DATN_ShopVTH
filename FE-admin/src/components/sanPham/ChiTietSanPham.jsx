@@ -224,7 +224,7 @@ export default function ChiTietSanPham() {
     }));
   };
 
-  //load table khi loc 
+  //load table khi loc
   const fetchData = async () => {
     try {
       const response = await axios.post(
@@ -369,14 +369,17 @@ export default function ChiTietSanPham() {
   };
   const handleOkUpdate = async () => {
     console.log(sanPhams);
-    await axios.put(`http://localhost:8080/updateSortSPCT`, sanPhams).then((response) => {
-      notification.success({
-        message: "Chỉnh sửa sản phẩm thành công",
+    await axios
+      .put(`http://localhost:8080/updateSortSPCT`, sanPhams)
+      .then((response) => {
+        notification.success({
+          message: "Chỉnh sửa sản phẩm thành công",
+        });
+        fetchData();
+      })
+      .catch((err) => {
+        console.log(err);
       });
-      fetchData();
-    }).catch((err) => {
-      console.log(err);
-    })
     setIsOpenModal(false);
   };
   const handleCancelUpdate = () => {
@@ -386,7 +389,7 @@ export default function ChiTietSanPham() {
   const renderCell = React.useCallback(
     (sanPham, columnKey) => {
       const cellValue = sanPham[columnKey];
-      
+
       switch (columnKey) {
         case "soLuongTon":
           return (
@@ -419,8 +422,12 @@ export default function ChiTietSanPham() {
                 alt={sanPham.ten || "Ảnh sản phẩm"}
                 classNames="m-5 relative"
               />
-              <DiscountTag discount={kmspcts.find((x) => x.id_chi_tiet_san_pham.id == sanPham.id)
-            ?.id_khuyen_mai.giaTriPhanTram} />
+              <DiscountTag
+                discount={
+                  kmspcts.find((x) => x.id_chi_tiet_san_pham.id == sanPham.id)
+                    ?.id_khuyen_mai.giaTriPhanTram
+                }
+              />
             </div>
           );
         case "trangThai":
@@ -457,11 +464,13 @@ export default function ChiTietSanPham() {
             <div className="relative flex items-center gap-4">
               <Tooltip content="Chi tiết" showArrow={true}>
                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon onClick={() => {
-                    showModalSP();
-                    setIdDetailProduct(sanPham.id);
-                    console.log(sanPham.id);
-                  }} />
+                  <EyeIcon
+                    onClick={() => {
+                      showModalSP();
+                      setIdDetailProduct(sanPham.id);
+                      console.log(sanPham.id);
+                    }}
+                  />
                 </span>
               </Tooltip>
 
@@ -635,7 +644,7 @@ export default function ChiTietSanPham() {
           page={page}
           total={totalPages}
           onChange={setPage}
-        // style={{ paddingLeft: "730px" }}
+          // style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -724,7 +733,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -752,7 +761,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -780,7 +789,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -808,7 +817,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -870,7 +879,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -898,7 +907,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -1091,9 +1100,10 @@ export default function ChiTietSanPham() {
           okText="Xác nhận"
           cancelText="Hủy"
           className="mt-64"
-          okButtonProps={{ style: { backgroundColor: 'green', color: 'white' } }}
-        >
-        </Modal>
+          okButtonProps={{
+            style: { backgroundColor: "green", color: "white" },
+          }}
+        ></Modal>
       </div>
     </>
   );
