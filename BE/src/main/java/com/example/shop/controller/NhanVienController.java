@@ -54,7 +54,13 @@ public class NhanVienController {
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
-    @PostMapping("add")
+
+    @GetMapping("/findByMa/{ma}")
+    public NhanVien findByMa(@PathVariable String ma) {
+        return nhanVienRepository.findByMa(ma);
+    }
+
+    @PostMapping("/add")
     public ResponseEntity add(@RequestBody NhanVienVM khachHang) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder(6);

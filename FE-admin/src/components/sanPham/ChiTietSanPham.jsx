@@ -256,29 +256,30 @@ export default function ChiTietSanPham() {
 
   //load tale theo ma sp
   const url = `http://localhost:8080/findByMa/${ma}`;
-  React.useEffect(() => {
-    async function fetchChiTietSanPham() {
-      try {
-        const response = await axios.get(url);
-        console.log(response.data);
-        const updatedRows = response.data.map((item, index) => ({
-          id: item.id,
-          stt: index + 1,
-          hinhAnh: item.defaultImg,
-          mauSac: item.id_mau_sac.maMau,
-          kichThuoc: item.id_kich_co.ten,
-          soLuongTon: item.soLuongTon,
-          tenSanPham: item.ten,
-          deGiay: item.id_de_giay.ten,
-          giaBan: item.giaBan,
-          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-        }));
-        // console.log(giaGiam)
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
+  const fetchChiTietSanPham = async () => {
+    try {
+      const response = await axios.get(url);
+      const updatedRows = response.data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        hinhAnh: item.defaultImg,
+        mauSac: item.id_mau_sac.maMau,
+        kichThuoc: item.id_kich_co.ten,
+        soLuongTon: item.soLuongTon,
+        tenSanPham: item.ten,
+        deGiay: item.id_de_giay.ten,
+        giaBan: item.giaBan,
+        trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+        giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+          ?.id_khuyen_mai.giaTriPhanTram
+      }));
+      setSanPhams(updatedRows);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
     }
+  }
+
+  useEffect(() => {
     fetchChiTietSanPham();
   }, []);
 
@@ -367,7 +368,6 @@ export default function ChiTietSanPham() {
     setIsOpenModal(true);
   };
   const handleOkUpdate = async () => {
-    console.log(sanPhams);
     await axios
       .put(`http://localhost:8080/updateSortSPCT`, sanPhams)
       .then((response) => {
@@ -375,6 +375,7 @@ export default function ChiTietSanPham() {
           message: "Chỉnh sửa sản phẩm thành công",
         });
         fetchData();
+        fetchChiTietSanPham();
       })
       .catch((err) => {
         console.log(err);

@@ -1,29 +1,70 @@
 import React, { useEffect, useRef, useState } from "react";
-import { QrReader } from "react-qr-reader";
-import { Modal, Select } from "antd";
+import { Modal, Select, Switch } from "antd";
 const { Option } = Select;
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
-import { AiOutlinePlus } from "react-icons/ai";
+import {
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
-import { Link, useNavigate } from "react-router-dom";
-import { Button as ButtonAnt } from "antd";
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { Button } from "@nextui-org/react";
+import { AiOutlinePlus } from "react-icons/ai";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Accordion, AccordionItem, Avatar, Button } from "@nextui-org/react";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
-export default function ThemNhanVien() {
+import { AiOutlineCamera } from "react-icons/ai";
+export default function ThemKhachHang() {
   let navigate = useNavigate();
-  const [listChucVu, setListChucVu] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
+  const [district, setDistrict] = useState([]);
   const [wards, setWards] = useState([]);
+  const [ward, setWard] = useState([]);
   const [value, setValue] = useState("");
+  const [codeHuyen, setCodeHuyen] = useState("");
+  const [codeXa, setCodeXa] = useState("");
+  const [valueTP, setValueTP] = useState([]);
+  const [valueHuyen, setValueHuyen] = useState([]);
+  const [valueXa, setValueXa] = useState([]);
   const [showScanner, setShowScanner] = useState(false);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
+  const [listDiaChi, setListDiaChi] = useState([]);
+  const [listChucVu, setListChucVu] = useState([]);
+  const [idToDelete, setIdToDelete] = useState("");
+
+  const [openComfirm, setOpenComfirm] = useState(false);
+  const handleSwitch = () => {
+    setOpenComfirm(true);
+  };
+  const cancelComfirm = () => {
+    setOpenComfirm(false);
+  };
+  const [indexDiaChi, setIndexDiaChi] = useState("");
+  const handleSwitchChange = (index) => {
+    handleSwitch();
+    setIndexDiaChi(index);
+
+  };
+
+  const handleDelete = () => {
+    setDeleteConfirmationOpen(true);
+  };
+  const cancelDelete = () => {
+    setDeleteConfirmationOpen(false);
+  };
   const handleAdd = () => {
     setDeleteConfirmationOpen(true);
   };
@@ -31,77 +72,100 @@ export default function ThemNhanVien() {
   const cancelAdd = () => {
     setDeleteConfirmationOpen(false);
   };
-
   useEffect(() => {
     getProvinces().then((data) => {
-      setProvinces(data);
+      setProvinces(data.results);
     });
   }, []);
+  useEffect(() => {
+    const names = provinces.map((item) => item.province_name);
+    setValueTP(names);
+    const thanhPho = listDiaChi.find((x) => x.id_khach_hang.id == khachHang.id)?.thanhPho;
+    const provinceCode = provinces.find((x) => x.province_name === thanhPho)?.province_id;
+
+    getDistricts(provinceCode).then((data) => {
+      setDistrict(data.results);
+    });
+
+    const valueH = district.map((item) => item.district_name);
+    setValueHuyen(valueH);
+
+    const huyen = listDiaChi.find((x) => x.id_khach_hang.id == khachHang.id)?.huyen;
+    const districtCode = district.find((x) => x.district_name === huyen)?.district_id;
+
+    getWards(districtCode).then((data) => {
+      setWard(data.results);
+    });
+    const valueXa = ward.map((item) => item.ward_name);
+    setValueXa(valueXa);
+  }, [provinces, district]);
+
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
-      if (item.code == provinceCode) {
+      if (item.province_id == provinceCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
-          thanhPho: item.name,
+          thanhPho: item.province_name,
         }));
       }
     });
     getDistricts(provinceCode).then((data) => {
-      setDistricts(data);
+      setDistricts(data.results);
     });
   };
 
   const handleDistrictChange = (districtCode) => {
     districts.map((item) => {
-      if (item.code == districtCode) {
+      if (item.district_id == districtCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
-          huyen: item.name,
+          huyen: item.district_name,
         }));
       }
     });
     getWards(districtCode).then((data) => {
-      setWards(data);
+      setWards(data.results);
     });
   };
 
   const handleWardsChange = (wardsCode) => {
     wards.map((item) => {
-      if (item.code == wardsCode) {
+      if (item.ward_id == wardsCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
-          xa: item.name,
+          xa: item.ward_name,
         }));
       }
     });
   };
   const [khachHang, setKhachHang] = useState({
+    id: "",
     ma: "",
     ten: "",
     anhNguoiDung: "",
-    gioi_tinh: "Nam",
+    gioi_tinh: "",
     sdt: "",
     ngay_sinh: "",
     email: "",
-    chucVu: "Nhân viên",
+    chucVu : "Nhân viên",
+    cccd: "",
     soNha: "",
     xa: "",
     huyen: "",
     thanhPho: "",
-    id_thuong_hieu: "",
   });
 
-  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, chucVu, soNha, xa, huyen, tinh, id_thuong_hieu } = khachHang;
+  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, chucVu, cccd, soNha, xa, huyen, thanhPho } = khachHang;
 
-  function parseDate(input) {
-    var parts = input.match(/(\d{2})(\d{2})(\d{4})/);
-    if (parts) {
-      var day = +parts[1];
-      var month = +parts[2];
-      var year = +parts[3];
-      return new Date(Date.UTC(year, month - 1, day));
+  function formatDate(dateString) {
+    if (dateString) {
+      const date = new Date(dateString);
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(date.getUTCDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
     }
-    return null; // Trả về null nếu chuỗi không hợp lệ
+    return "";
   }
   // modal thêm chức vụ
   const [isModalOpenCV, setIsModalOpenCV] = useState(false);
@@ -144,40 +208,50 @@ export default function ThemNhanVien() {
   useEffect(() => {
     getAllChucVu();
   }, [listChucVu]);
+  const { maNV } = useParams();
+  const getNhanVien = async () => {
+    const result = await axios.get(
+      `http://localhost:8080/nhan_vien/findByMa/${maNV}`
+    );
 
-  const options = listChucVu.map((item) => (
-    <Option key={item.id} value={item.id}>
-      {item.ten}
-    </Option>
-  ));
+    const khachHangData = result.data;
+    console.log(khachHangData);
+
+    const fullAddress = khachHangData.diaChi;
+    const parts = fullAddress.split(',');
+
+    const streetAddress = parts[0].trim(); // đường
+    const village = parts[1].trim(); // xã
+    const district = parts[2].trim(); // huyện
+    const city = parts[3].trim(); // tp
+
+    setBackgroundImage(khachHangData.anh);
+    setKhachHang({
+      id: khachHangData.id,
+      ma: khachHangData.ma,
+      ten: khachHangData.ten,
+      anhNguoiDung: khachHangData.anh,
+      gioi_tinh: khachHangData.gioiTinh,
+      sdt: khachHangData.sdt,
+      ngay_sinh: khachHangData.ngaySinh,
+      email: khachHangData.email,
+      cccd: khachHangData.cccd,
+      thanhPho: city,
+      huyen: district,
+      village: village,
+      duong: streetAddress
+    });
+  };
+
+  const setBackgroundImage = (url) => {
+    imgDivRef.current.style.backgroundImage = `url(${url})`;
+  };
+  useEffect(() => {
+    getNhanVien();
+  }, []);
 
   const onChange = (e) => {
-    console.log(e.target.value);
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
-  };
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-  const handleStartScanning = () => {
-    setShowScanner(true);
-  };
-
-  const handleEndScanning = () => {
-    setShowScanner(false);
-  };
-
-  const handleScan = (data) => {
-    if (data) {
-      console.log(data);
-      handleOk();
-    }
   };
 
   const handleError = (error) => {
@@ -198,8 +272,7 @@ export default function ThemNhanVien() {
       reader.onload = (e) => {
         console.log(file.name);
         const imageUrl = e.target.result;
-        console.log(imageUrl);
-        setKhachHang({ ...khachHang, anhNguoiDung: file.name });
+        setKhachHang({ ...khachHang, anhNguoiDung: imgLink + file.name });
         console.log(khachHang);
         imgDivRef.current.style.backgroundImage = `url(${imageUrl})`;
         imgDivRef.current.style.backgroundSize = "cover";
@@ -207,88 +280,71 @@ export default function ThemNhanVien() {
       reader.readAsDataURL(file);
     }
   };
-  const [errTen, setErrTen] = useState("");
-  const [errSdt, setErrSDT] = useState("");
-  const [errEmail, setErrEmail] = useState("");
-  const [errSoNha, setErrSoNha] = useState("");
-  // sdt
-  function validatePhoneNumber(phoneNumber) {
-    var regex = /^(0[2-9][0-9]{8})$/;
-    return regex.test(phoneNumber);
-  }
-  // email
-  function validateEmail(email) {
-    // Biểu thức chính quy cho địa chỉ email
-    var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    // Kiểm tra xem email có khớp với định dạng không
-    return regex.test(email);
-  }
-  const onSubmit = async () => {
-    // check validate
-    // ten
-    var check = true;
-    if (khachHang.ten == "") {
-      setErrTen("* Không được để trống tên");
-      check = false;
-    } else {
-      setErrTen("");
-    }
-    // so nha
-    var check = true;
-    if (khachHang.soNha == "") {
-      setErrSoNha("* Không được để trống số nhà/ngõ/đường");
-      check = false;
-    } else {
-      setErrSoNha("");
-    }
-    // sdt
 
-    if (khachHang.sdt == "") {
-      setErrSDT("* Không được để trống số điện thoại");
-      check = false;
-    } else {
-      if (validatePhoneNumber(khachHang.sdt)) {
-        setErrSDT("");
-      } else {
-        setErrSDT("* SDT không hợp lệ");
-        check = false;
-      }
-    }
-
-    // email
-    if (khachHang.email == "") {
-      setErrEmail("* Không được để trống email");
-      check = false;
-    } else {
-      if (validateEmail(khachHang.email)) {
-        setErrEmail("");
-      } else {
-        setErrEmail("* Email không hợp lệ");
-        check = false;
-      }
-    }
-
-    if (check) {
-      await axios
-        .post("http://localhost:8080/nhan_vien/add", khachHang)
-        .then((response) => {
-          toast.success(`🎉 Thêm thành công`);
-          navigate("/quan-ly-tai-khoan/nhan-vien");
-        })
-        .catch((error) => {
-          toast.error(`😢 Thêm thất bại`);
-        });
-    }
-    cancelAdd();
+  const handleChangeTP = (selectedValue, index) => {
+    console.log(selectedValue);
+    const updatedListDiaChi = [...listDiaChi];
+    const updatedItem = { ...updatedListDiaChi[index] };
+    updatedItem.thanhPho = selectedValue;
+    updatedListDiaChi[index] = updatedItem;
+    setListDiaChi(updatedListDiaChi);
   };
 
+  const handleChangeHuyen = (selectedValue, index) => {
+    const updatedListDiaChi = [...listDiaChi];
+    const updatedItem = { ...updatedListDiaChi[index] };
+    updatedItem.huyen = selectedValue;
+    updatedListDiaChi[index] = updatedItem;
+    setListDiaChi(updatedListDiaChi);
+  };
+
+  const handleChangeXa = (selectedValue, index) => {
+    const updatedListDiaChi = [...listDiaChi];
+    const updatedItem = { ...updatedListDiaChi[index] };
+    updatedItem.xa = selectedValue;
+    updatedListDiaChi[index] = updatedItem;
+    setListDiaChi(updatedListDiaChi);
+  };
+
+  const handleDuongChange = (e, index) => {
+    const { value } = e.target;
+    const updatedListDiaChi = [...listDiaChi];
+    updatedListDiaChi[index] = { ...updatedListDiaChi[index], duong: value };
+    setListDiaChi(updatedListDiaChi);
+  };
+
+  const options = valueTP.map((name) => (
+    <Option key={name} value={name}>
+      {name}
+    </Option>
+  ));
+
+  const optionHuyen = valueHuyen.map((name) => (
+    <Option key={name} value={name}>
+      {name}
+    </Option>
+  ));
+
+  const optionXa = valueXa.map((name) => (
+    <Option key={name} value={name}>
+      {name}
+    </Option>
+  ));
+
+  const onSubmit = async () => {
+    await axios
+      .post("http://localhost:8080/khach-hang/add", khachHang)
+      .then((response) => {
+        toast.success(`🎉 Thêm thành công`);
+        navigate("/quan-ly-tai-khoan/khach-hang");
+      })
+      .catch((error) => {
+        toast.error(`😢 Thêm thất bại`);
+      });
+    cancelAdd();
+  };
   return (
     <>
-      <div className="mb-2 font-normal border-gray-500 text-lg flex items-center">
-        <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>
-          👥 Chỉnh sửa thông tin nhân viên
-        </p>
-      </div>
       <div
         class="grid grid-cols-3 gap-4 m-5"
         style={{
@@ -350,7 +406,6 @@ export default function ThemNhanVien() {
                     onChange(e);
                   }}
                 />
-                <p style={{ color: "red" }}>{errTen}</p>
               </div>
               <div className="mb-8" style={{ display: "block" }}>
                 <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
@@ -430,7 +485,6 @@ export default function ThemNhanVien() {
                     onChange(e);
                   }}
                 />
-                <p style={{ color: "red" }}>{errEmail}</p>
               </div>
               <div className="mb-8">
                 <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -480,7 +534,7 @@ export default function ThemNhanVien() {
                                   dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
                   type="date"
                   name="ngay_sinh"
-                  value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ngay_sinh}
+                  value={formatDate(ngay_sinh)}
                   id="dateInput"
                   style={{
                     width: "100%",
@@ -490,49 +544,6 @@ export default function ThemNhanVien() {
                     onChange(e);
                   }}
                 />
-                <button
-                  type="button"
-                  style={{
-                    position: "absolute",
-                    top: -40,
-                    right: 0,
-                    fontSize: 15,
-                    borderRadius: 5,
-                    align: "left",
-                  }}
-                  className="bg-blue-500 text-white rounded w-32 h-10"
-                  onClick={showModal}
-                >
-                  <img src="https://cdn-icons-png.flaticon.com/512/241/241521.png" className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2" />
-                  <span className="ml-8">Quét QR</span>
-                </button>
-                <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ position: "relative" }} className="">
-                  <div>
-                    <QrReader
-                      onResult={(data) => {
-                        if (data != undefined) {
-                          handleOk();
-                          console.log(data.text);
-                          function splitString(inputString) {
-                            const values = inputString.split("|");
-                            return values;
-                          }
-                          const result = splitString(data.text);
-                          console.log(result);
-                          setKhachHang({
-                            ...khachHang,
-                            ten: result[2],
-                            cccd: result[0],
-                            ngay_sinh: result[3],
-                            gioi_tinh: result[4],
-                          });
-                        }
-                      }}
-                      onError={handleError}
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                </Modal>
               </div>
               <div className="mb-8 flex">
                 <FormControl>
@@ -588,7 +599,6 @@ export default function ThemNhanVien() {
                     onChange(e);
                   }}
                 />
-                <p style={{ color: "red" }}>{errSdt}</p>
               </div>
 
               <div className="mb-6">
@@ -626,14 +636,13 @@ export default function ThemNhanVien() {
                     onChange(e);
                   }}
                 />
-                <p style={{ color: "red" }}>{errSoNha}</p>
               </div>
               <div className="mt-6 flex items-center justify-end gap-x-6">
                 <Link to="/quan-ly-tai-khoan/nhan-vien" type="button" className="text-sm rounded-md  font-semibold leading-6 text-gray-900">
                   Cancel
                 </Link>
 
-                <ButtonAnt
+                <Button
                   type="primary"
                   style={{
                     backgroundColor: "#1976d2",
@@ -642,7 +651,7 @@ export default function ThemNhanVien() {
                   onClick={handleAdd}
                 >
                   Hoàn tất
-                </ButtonAnt>
+                </Button>
               </div>
             </div>
           </div>
@@ -668,14 +677,115 @@ export default function ThemNhanVien() {
           </div>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>Bạn có chắc muốn sửa nhân viên này?</DialogContentText>
+          <DialogContentText>
+            Bạn có chắc muốn sửa khách hàng này?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelAdd} color="warning">
             Hủy
           </Button>
           <Button color="primary" onClick={onSubmit}>
-            Vẫn thêm
+            Vẫn sửa
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận xóa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn xóa địa chỉ này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="warning">
+            Hủy
+          </Button>
+          <Button
+            color="primary"
+            onClick={async () => {
+              console.log(idToDelete);
+              await axios
+                .delete(`http://localhost:8080/dia-chi/delete/${idToDelete}`)
+                .then((response) => {
+                  toast("🎉 Xóa thành công");
+                  getKhachHang();
+                  getDiaChi();
+                  cancelDelete();
+                })
+                .catch((error) => {
+                  toast("😿 " + error.response.data);
+                });
+              cancelDelete();
+            }}
+          >
+            Vẫn xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openComfirm} onClose={cancelComfirm} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận sửa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn sửa địa chỉ này thành mặc định không?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelComfirm} color="warning">
+            Hủy
+          </Button>
+          <Button color="primary" onClick={() => {
+            const updatedListDiaChi = [...listDiaChi];
+            updatedListDiaChi[indexDiaChi].trangThai = 1;
+            updatedListDiaChi.forEach((item, i) => {
+              if (i !== indexDiaChi) {
+                item.trangThai = 2;
+              }
+            });
+
+            axios.post('http://localhost:8080/dia-chi/switchTrangThai', updatedListDiaChi).then((res) => {
+              // setListDiaChi(res.data);
+              getDiaChi();
+              cancelComfirm();
+              toast("Đặt địa chỉ mặc định thành công");
+            })
+          }}
+          >
+            Vẫn sửa
           </Button>
         </DialogActions>
       </Dialog>

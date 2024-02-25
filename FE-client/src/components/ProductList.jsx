@@ -58,7 +58,7 @@ export default function ProductList() {
             to={`/detail-product/${sanPham.id}`}
             className="card-product"
             key={sanPham.id}
-            onMouseOver={() => handleIdHover(sanPham.id)}
+            // onMouseOver={() => handleIdHover(sanPham.id)}
             onMouseLeave={handleMouseLeave}
           >
             <img

@@ -582,7 +582,7 @@ export default function Checkout() {
             setSpinning(true);
             openNotificationWithIcon("success", "Hoàn tất thanh toán");
             setTimeout(() => {
-              navigate("/");
+              navigate("/thanh-toan-thanh-cong");
             }, 2000);
           } catch (error) {
             openNotificationWithIcon("error", error.response.data);

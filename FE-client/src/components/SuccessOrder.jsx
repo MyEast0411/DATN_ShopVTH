@@ -37,7 +37,7 @@ export default function SuccessOrder() {
           </div>
           <div className="py-4 flex items-center justify-evenly">
             <button className="btn-view-order">
-              <a href="/tra-cuu">Xem đơn hàng</a>
+              <a href="/tracuu">Xem đơn hàng</a>
             </button>
 
             <a href="/shop" className="continue-shopping-btn">
