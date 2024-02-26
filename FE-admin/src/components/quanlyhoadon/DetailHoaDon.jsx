@@ -4,7 +4,7 @@ import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import axios from "axios";
-import { Table, Tag, message, Modal, Input } from "antd";
+import { Table, Tag, message, Modal, Input, Tooltip } from "antd";
 import { format } from "date-fns";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
 import { GiConfirmed, GiReceiveMoney } from "react-icons/gi";
@@ -752,7 +752,7 @@ export default function   DetailHoaDon() {
                 footer={[]}
               >
                 <div className="mt-5">
-                  <TableSanPham gioHang={info.ma} />
+                  <TableSanPham gioHang={info.ma} setIsModalOpenThem={setIsModalOpenThem} getInfoHD={getInfoHD}/>
                 </div>
               </Modal>
             </div>
@@ -804,24 +804,28 @@ export default function   DetailHoaDon() {
 
                         {listTimeLineOnline.length < 4 &&
                           info.trangThai < 4 && (
+                            <Tooltip title="Xóa sản phẩm" arrow={true}>
                             <Button
                               color="red"
                               onClick={() => onHandleDelete(item.id)}
                             >
                               <FaTrash />
                             </Button>
+                            </Tooltip>
                           )}
                         {listTimeLineOnline.length < 4 &&
                           info.trangThai < 4 && (
+                            <Tooltip title="Chỉnh sửa số lượng" arrow={true}>
                             <Button
                               color="yellow"
                               onClick={() => {
-                                showModalLichSu();
+                                showModalLichSuSP();;
                                 getSPCT(item.id);
                               }}
                             >
                               <FaPen />
                             </Button>
+                            </Tooltip>
                           )}
                       </div>
 

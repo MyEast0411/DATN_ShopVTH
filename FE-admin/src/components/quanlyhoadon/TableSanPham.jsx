@@ -76,7 +76,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function TableSanPham({ gioHang }) {
+export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -150,6 +150,8 @@ export default function TableSanPham({ gioHang }) {
       })
       .then((response) => {
         toast("🎉 Thêm thành công");
+        setIsModalOpenThem(false);
+        getInfoHD();
         cancelDelete();
       })
       .catch((error) => {
@@ -217,7 +219,57 @@ export default function TableSanPham({ gioHang }) {
   });
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
-  const { ma } = useParams();
+  
+  const [sanPham, setSanPham] = useState({
+    id_mau_sac: "",
+    id_kich_co: "",
+    id_chat_lieu: "",
+    id_de_giay: "",
+    id_thuong_hieu: "",
+    id_nhan_hieu: "",
+    trangThai: "",
+    maSP: "",
+  });
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+
+    setSanPham((prevSanPham) => ({
+      ...prevSanPham,
+      [name]: value,
+    }));
+  };
+  //load table khi loc
+  const fetchData = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/filterSPCT",
+        sanPham
+      );
+      const updatedRows = response.data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        tenSanPham: item.ten,
+        hinhAnh: item.defaultImg,
+        mauSac: item.id_mau_sac.maMau,
+        kichThuoc: item.id_kich_co.ten,
+        soLuongTon: item.soLuongTon,
+        deGiay: item.id_de_giay.ten,
+        giaBan: item.giaBan,
+        trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+        giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+          ?.id_khuyen_mai.giaTriPhanTram,
+      }));
+
+      setSanPhams(updatedRows);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [sanPham]);
 
   const url = `http://localhost:8080/getAllSPCT`;
   React.useEffect(() => {
@@ -245,7 +297,7 @@ export default function TableSanPham({ gioHang }) {
       }
     }
     fetchChiTietSanPham();
-  }, [sanPhams]);
+  }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -320,17 +372,18 @@ export default function TableSanPham({ gioHang }) {
               }}
             >
               <Image
-                width={150}
-                height={100}
+                width={90}
+                height={70}
                 src={hinhAnhURL}
                 alt={sanPham.ten || "Ảnh sản phẩm"}
                 classNames="m-5 relative"
-                style={{
-                  border: "1px solid #D8D9DA",
-                  padding: "10px",
-                }}
               />
-              <DiscountTag discount={giaGiam} />
+              <DiscountTag
+                discount={
+                  kmspcts.find((x) => x.id_chi_tiet_san_pham.id == sanPham.id)
+                    ?.id_khuyen_mai.giaTriPhanTram
+                }
+              />
             </div>
           );
         case "trangThai":
@@ -393,7 +446,7 @@ export default function TableSanPham({ gioHang }) {
           return cellValue;
       }
     },
-    [isModalOpenThemSL]
+    [sanPham, sanPhams]
   );
 
   const onNextPage = React.useCallback(() => {
@@ -427,53 +480,7 @@ export default function TableSanPham({ gioHang }) {
     setFilterValue("");
     setPage(1);
   }, []);
-  const [sanPham, setSanPham] = useState({
-    id_mau_sac: "",
-    id_kich_co: "",
-    id_chat_lieu: "",
-    id_de_giay: "",
-    id_thuong_hieu: "",
-    id_nhan_hieu: "",
-    trangThai: "",
-  });
-  const onChange = (e) => {
-    const { name, value } = e.target;
 
-    setSanPham((prevSanPham) => ({
-      ...prevSanPham,
-      [name]: value,
-    }));
-  };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:8080/filterSPCT",
-          sanPham
-        );
-        console.log(response.data);
-        const updatedRows = response.data.map((item, index) => ({
-          id: item.id,
-          stt: index + 1,
-          hinhAnh: item.defaultImg,
-          mauSac: item.id_mau_sac.maMau,
-          kichThuoc: item.id_kich_co.ten,
-          soLuongTon: item.soLuongTon,
-          deGiay: item.id_de_giay.ten,
-          donGia: numeral(item.giaBan).format("0,0 VND") + " VND",
-          trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
-          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
-            ?.id_khuyen_mai.giaTriPhanTram,
-        }));
-
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-  }, [sanPham]);
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
@@ -508,7 +515,7 @@ export default function TableSanPham({ gioHang }) {
                     <option
                       key={x.id}
                       value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                    //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -536,7 +543,7 @@ export default function TableSanPham({ gioHang }) {
                     <option
                       key={x.id}
                       value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                    //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -564,7 +571,7 @@ export default function TableSanPham({ gioHang }) {
                     <option
                       key={x.id}
                       value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                    //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -592,7 +599,7 @@ export default function TableSanPham({ gioHang }) {
                     <option
                       key={x.id}
                       value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                    //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -654,7 +661,7 @@ export default function TableSanPham({ gioHang }) {
                     <option
                       key={x.id}
                       value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                    //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -682,7 +689,7 @@ export default function TableSanPham({ gioHang }) {
                     <option
                       key={x.id}
                       value={x.id}
-                      //style={{ backgroundColor: x.maMau, color: "white" }}
+                    //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -904,7 +911,11 @@ export default function TableSanPham({ gioHang }) {
           <p>Nhập số lượng sản phẩm</p>
           <InputNumber
             onChange={(value) => {
-              setSoLuongDat(value);
+              if (value > soLuongSP.soLuongTon) {
+                  setSoLuongDat(soLuongSP.soLuongTon);
+              } else {
+                  setSoLuongDat(value);
+              }
             }}
             max={soLuongSP.soLuongTon}
           />

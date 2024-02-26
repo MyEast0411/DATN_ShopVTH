@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import InfoTop from "../../layout/InfoTop";
 import Header from "../../layout/Header";
 import Footer from "../../layout/Footer";
+import { Image } from "@nextui-org/react";
 import { getProvinces, getDistricts, getWards } from "../../apis/Location_2";
 const { Option } = Select;
 import { Input, Modal, Select, Button, DatePicker } from "antd";
@@ -119,7 +120,13 @@ function EditHoaDon() {
       {name}
     </Option>
   ));
+  const DiscountTag = ({ discount }) => {
+    if (discount === undefined) {
+      return null;
+    }
 
+    return <div className="discount-tag">{`${discount}% OFF`}</div>;
+  };
   const getInfoHD = async () => {
     const res = await axios.get(
       "http://localhost:8080/hoa_don/getHoaDon/" + id
@@ -204,7 +211,14 @@ function EditHoaDon() {
       }
     });
   };
-
+  const [kmspcts, setKmspcts] = useState([]);
+  const fetchKMSPCT = async () => {
+    const response = await axios.get(`http://localhost:8080/khuyen-mai/getAllKMSPCT`);
+    setKmspcts(response.data);
+  };
+  useEffect(() => {
+    fetchKMSPCT();
+  }, [kmspcts]);
   // sản phẩm
   const [rowsSPCT, setRowsSPCT] = useState([]);
   const getDataChiTietSanPham = async () => {
@@ -212,7 +226,6 @@ function EditHoaDon() {
       "http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id
     );
     const data = await res.data;
-    console.log(data);
     setRowsSPCT(
       data.map((item) => {
         return {
@@ -387,7 +400,7 @@ function EditHoaDon() {
       });
     } else {
       Modal.confirm({
-        title: `bạn có muốn cập nhật sản phẩm không ?`,
+        title: `Bạn có muốn cập nhật sản phẩm không ?`,
         okText: "Yes",
         okType: "danger",
         onOk: async () => {
@@ -464,7 +477,7 @@ function EditHoaDon() {
         )?.ProvinceID;
         setIdTP(id_tp);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }, [addressEdit]);
 
   // lay id huyen theo api theo id tp
@@ -492,7 +505,7 @@ function EditHoaDon() {
         )?.DistrictID;
         setIdHuyen(id_huyen);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }, [addressEdit]);
 
   // lay id xa theo api theo id huyen
@@ -519,7 +532,7 @@ function EditHoaDon() {
         )?.WardCode;
         setIdXa(id_xa);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }, [addressEdit, idHuyen]);
 
   // Tính thời gian dự kiến
@@ -558,7 +571,7 @@ function EditHoaDon() {
 
         // const formattedLeadtime = `${year}/${month}/${day}`;
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }, [idTP, idHuyen, idXa]);
 
   // Tính phí vận chuyển
@@ -962,15 +975,32 @@ function EditHoaDon() {
                 margin: "10px auto",
               }}
             >
-              {rowsSPCT.map((item) => (
+              {rowsSPCT.map((item, index) => (
                 <>
-                  <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
-                    <img
-                      src={item.imageUrl}
-                      alt="product-image"
-                      className="w-full rounded-lg sm:w-40 me-10 object-contain"
-                    />
-
+                  <div key={index} className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
+                    <div style={{ position: "relative" }}>
+                      <img
+                        src={item.imageUrl}
+                        alt="product-image"
+                        className="w-full rounded-lg sm:w-40 me-10 object-contain"
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          right: 16,
+                          left : -10,
+                          zIndex: 1, // Đảm bảo DiscountTag hiển thị trên img
+                        }}
+                      >
+                        <DiscountTag
+                          discount={
+                            kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+                              ?.id_khuyen_mai.giaTriPhanTram
+                          }
+                        />
+                      </div>
+                    </div>
                     <div className="flex justify-between w-full">
                       <div>
                         <div className=" sm:mt-0">

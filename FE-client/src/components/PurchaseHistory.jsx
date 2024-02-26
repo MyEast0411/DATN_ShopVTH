@@ -47,6 +47,23 @@ export default function PurchaseHistory() {
   const handleChange = (value) => {
     setCheckBox(value);
   };
+  // get all dot khuyen mai
+  const [kmspcts, setKmspcts] = useState([]);
+  const fetchKMSPCT = async () => {
+    const response = await axios.get(`http://localhost:8080/khuyen-mai/getAllKMSPCT`);
+    setKmspcts(response.data);
+  };
+  useEffect(() => {
+    fetchKMSPCT();
+  }, [kmspcts]);
+
+  const DiscountTag = ({ discount }) => {
+    if (discount === undefined) {
+      return null;
+    }
+
+    return <div className="discount-tag">{`${discount}% OFF`}</div>;
+  };
 
   const [api, contextHolder] = notification.useNotification();
   const handleCanceled = (idHD) => {
@@ -79,7 +96,6 @@ export default function PurchaseHistory() {
     await axios
       .get(`http://localhost:8080/khach-hang/lich-su-mua-hang/${idkh}`)
       .then((response) => {
-        console.log(response.data);
         setList(
           filterOptions(
             response.data.map((data) => {
@@ -232,17 +248,37 @@ export default function PurchaseHistory() {
                           alignItems: "center",
                         }}
                       >
-                        <div className="w-1/6 me-2">
-                          <Image
-                            src={sp.id_chi_tiet_san_pham.defaultImg}
-                            style={{
-                              width: "100",
-                              height: 100,
-                              borderRadius: "10",
-                              marginLeft: 20,
-                            }}
-                          />
+                        <div className="w-1/6 me-2" style={{ display: "inline-block" }}>
+                          <div style={{ position: "relative" }}>
+                            <Image
+                              src={sp.id_chi_tiet_san_pham.defaultImg}
+                              style={{
+                                width: "80",
+                                height: 100,
+                                borderRadius: 10,
+                                marginLeft: 20,
+                              }}
+                              classNames="m-5 relative"
+                            />
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                right: 70,
+                                left : -10,
+                                zIndex: 1,
+                              }}
+                            >
+                              <DiscountTag
+                                discount={
+                                  kmspcts.find((x) => x.id_chi_tiet_san_pham.id === sp.id_chi_tiet_san_pham.id)
+                                    ?.id_khuyen_mai.giaTriPhanTram
+                                }
+                              />
+                            </div>
+                          </div>
                         </div>
+
 
                         <div className="w-7/12">
                           <p>{`[${sp.id_chi_tiet_san_pham.ma}] ${sp.id_chi_tiet_san_pham.ten}`}</p>
@@ -254,7 +290,7 @@ export default function PurchaseHistory() {
                         <div className="w-3/12">
                           <span>
                             {" "}
-                            {Intl.NumberFormat().format(ls.hoaDon?.tongTien)}
+                            {Intl.NumberFormat().format(sp.id_chi_tiet_san_pham.giaBan)}
                           </span>
                         </div>
                       </div>
