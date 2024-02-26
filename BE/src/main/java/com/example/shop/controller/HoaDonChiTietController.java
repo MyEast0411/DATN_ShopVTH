@@ -128,14 +128,56 @@ public class HoaDonChiTietController {
                                      @RequestBody HoaDonChiTietUpdateRequest request
     ) {
         try {
+            boolean check = true;
             HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(id_hoa_don, id_san_pham);
-            hoaDonChiTiet.setSoLuong(request.getQuantity());
-            ssHDCT.save(hoaDonChiTiet);
-
+            System.out.println("id hd "+ hoaDonChiTiet.getId_hoa_don().getId());
+            System.out.println("id sp "+ hoaDonChiTiet.getId_chi_tiet_san_pham().getId());
+            for (HoaDonChiTiet hdct:
+                    ssHDCT.findAll()) {
+                if(hdct.getId_hoa_don().getId().equals(hoaDonChiTiet.getId_hoa_don().getId())
+                        && hdct.getId_chi_tiet_san_pham().getId().equals(hoaDonChiTiet.getId_chi_tiet_san_pham().getId())) {
+                    if (hoaDonChiTiet.getId_chi_tiet_san_pham().getDeleted() == 0) {
+                        System.out.println(1);
+                        HoaDonChiTiet hdChiTiet = HoaDonChiTiet.
+                                builder()
+                                .id_hoa_don(hoaDonChiTiet.getId_hoa_don())
+                                .id_chi_tiet_san_pham(ssSPCT.findSanPhamDangBan(hoaDonChiTiet.getId_chi_tiet_san_pham().getMa()))
+                                .soLuong(request.getQuantity() - hoaDonChiTiet.getSoLuong())
+                                .giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
+                                .deleted(1)
+                                .build();
+                        ssHDCT.save(hdChiTiet);
+                        check = false;
+                    } else {
+                        System.out.println(2);
+                        hdct.setSoLuong(request.getQuantity());
+                        hdct.setGiaTien(hdct.getId_chi_tiet_san_pham().getGiaBan());
+                        hdct.setDeleted(1);
+                        check = false;
+                        ssHDCT.save(hdct);
+                    }
+                }
+            }
+            if(check) {
+                if (hoaDonChiTiet.getId_chi_tiet_san_pham().getDeleted() == 0) {
+                    HoaDonChiTiet hdct = HoaDonChiTiet.
+                            builder()
+                            .id_hoa_don(hoaDonChiTiet.getId_hoa_don())
+                            .id_chi_tiet_san_pham(hoaDonChiTiet.getId_chi_tiet_san_pham())
+                            .soLuong(hoaDonChiTiet.getSoLuong())
+                            .giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
+                            .deleted(1)
+                            .build();
+                    ssHDCT.save(hdct);
+                } else {
+                    hoaDonChiTiet.setSoLuong(request.getQuantity());
+                    ssHDCT.save(hoaDonChiTiet);
+                }
+            }
             Double gia = ssHDCT.getMoneyBYHD(id_hoa_don);
             System.out.println(ssHDCT.getMoneyBYHD(id_hoa_don));
             HoaDon hoaDon = ssHD.findById(id_hoa_don).get();
-            hoaDon.setTongTien(new BigDecimal(gia));
+            hoaDon.setTongTien(new BigDecimal(gia).subtract(hoaDon.getTienGiam()).add(hoaDon.getTienShip()));
             ssHD.save(hoaDon);
 
             LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
@@ -161,7 +203,19 @@ public class HoaDonChiTietController {
             HoaDonChiTiet hoaDonChiTietExist = ssHDCT.getHDCT(hoaDon.getId(), hoaDonChiTiet.getId_san_pham());
             SanPhamChiTiet sp = ssSP.findById(hoaDonChiTiet.getId_san_pham()).get();
             BigDecimal tongTien = sp.getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSo_luong()));
+            boolean check = true;
 //            if (hoaDonChiTietExist == null) {
+            for (HoaDonChiTiet hdct:
+                 ssHDCT.findAll()) {
+                if(hdct.getId_hoa_don().getId().equals(hoaDon.getId()) && hdct.getId_chi_tiet_san_pham().getId().equals(hoaDonChiTiet.getId_san_pham())) {
+                    hdct.setSoLuong(hdct.getSoLuong() + 1);
+                    hdct.setGiaTien(hdct.getId_chi_tiet_san_pham().getGiaBan());
+                    hdct.setDeleted(1);
+                    check = false;
+                    ssHDCT.save(hdct);
+                }
+            }
+            if(check) {
                 HoaDonChiTiet hdct = HoaDonChiTiet.
                         builder()
                         .id_hoa_don(hoaDon)
@@ -171,10 +225,12 @@ public class HoaDonChiTietController {
                         .deleted(1)
                         .build();
                 ssHDCT.save(hdct);
+            }
 //            } else {
 //                hoaDonChiTietExist.setSoLuong(hoaDonChiTietExist.getSoLuong() + hoaDonChiTiet.getSo_luong());
 //                ssHDCT.save(hoaDonChiTietExist);
 //            }
+            System.out.println(check);
             Double gia = ssHDCT.getMoneyBYHD(hoaDon.getId());
             hoaDon.setTongTien(new BigDecimal("" + gia));
             ssHD.save(hoaDon);

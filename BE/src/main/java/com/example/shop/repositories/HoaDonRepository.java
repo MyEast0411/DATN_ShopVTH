@@ -57,11 +57,11 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
     Integer  countHD();
 
     @Query(value = "SELECT SUM(tong_tien) FROM hoa_don\n" +
-            "WHERE ngay_tao  like :ngayTao",nativeQuery = true)
+            "WHERE ngay_tao like :ngayTao",nativeQuery = true)
     Double  getDayInWeek(@Param("ngayTao")String ngayTao );
 
     @Query(value = "select * from hoa_don\n" +
-            "where id_khach_hang = :idKH",nativeQuery = true)
+            "where id_khach_hang = :idKH order by ngay_tao desc",nativeQuery = true)
     List<HoaDon>  getHDByKH(@Param("idKH")String idKH );
 
     @Query(value = "SELECT hoa_don.* FROM hoa_don JOIN voucher ON hoa_don.id_voucher = voucher.id WHERE voucher.id = :id",nativeQuery = true)

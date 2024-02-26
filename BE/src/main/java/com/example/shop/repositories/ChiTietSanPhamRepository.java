@@ -32,7 +32,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query(value = "select MAX(ma) from san_pham_chi_tiet", nativeQuery = true)
     String findMaxMa();
-
+    @Query(value = "select * from san_pham_chi_tiet where deleted = 1 and ma = :ma", nativeQuery = true)
+    SanPhamChiTiet findSanPhamDangBan(@Param("ma")String ma);
     @Query(value = "SELECT *\n" +
             "FROM san_pham_chi_tiet\n" +
             "WHERE trang_thai = :trang_thai AND deleted = 1 AND id_san_pham = :id_san_pham AND (\n" +
