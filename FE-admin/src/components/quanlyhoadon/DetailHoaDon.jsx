@@ -12,6 +12,7 @@ import { LuPackageCheck } from "react-icons/lu";
 import { FaShippingFast, FaFileInvoice, FaPen, FaCircle } from "react-icons/fa";
 import { TbPackages } from "react-icons/tb";
 import { MdAddCircle } from "react-icons/md";
+import { TbInfoTriangle } from "react-icons/tb";
 import {
   exportComponentAsJPEG,
   exportComponentAsPDF,
@@ -25,8 +26,17 @@ import { FaMoneyBillTransfer, FaPenClip, FaTrash } from "react-icons/fa6";
 import { MdCancel } from "react-icons/md";
 import { Spinner, Skeleton } from "@nextui-org/react";
 import TableSanPham from "./TableSanPham";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TableCell as TableCellMui,
+} from "@mui/material";
 
-export default function   DetailHoaDon() {
+export default function DetailHoaDon() {
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
   const [info, setInfo] = useState({});
@@ -337,32 +347,64 @@ export default function   DetailHoaDon() {
     });
   };
 
-  const onHandleUpdate = (idSPCT) => {
-    Modal.confirm({
-      title: `bạn có muốn xóa sản phẩm không ?`,
-      okText: "Yes",
-      okType: "danger",
-      onOk: async () => {
-        const res = await axios
-          .post(
-            `http://localhost:8080/hoa_don_chi_tiet/update/${id}/${idSPCT}`,
-            {
-              quantity: spct.quantity,
-            }
-          )
-          .then((response) => {
-            getDataLichSuThanhToan();
-            getInfoHD();
-            getDataChiTietSanPham();
-            getDataLichSu();
-            toast.success("Update thành công");
-          })
-          .catch((e) => error());
-      },
-    });
-    // alert(idSPCT);
-    console.log(spct);
+  const handleDelete = () => {
+    setDeleteConfirmationOpen(true);
   };
+
+  const cancelDelete = () => {
+    setDeleteConfirmationOpen(false);
+  };
+  const onHandleUpdate = async () => {
+    if (spct.id) {
+      setDeleteConfirmationOpen(true);
+      await axios
+        .post(
+          `http://localhost:8080/hoa_don_chi_tiet/update/${id}/${spct.id}`,
+          {
+            quantity: spct.quantity,
+          }
+        )
+        .then((response) => {
+          getDataLichSuThanhToan();
+          getInfoHD();
+          getDataChiTietSanPham();
+          getDataLichSu();
+          toast("🎉 Update thành công");
+          cancelDelete();
+        })
+        .catch((error) => {
+          toast("😢 Update thất bại");
+        });
+      cancelDelete();
+    }
+  };
+
+  // const onHandleUpdate = (idSPCT) => {
+  //   setDeleteConfirmationOpen(true);
+
+  //   Modal.confirm({
+  //     title: `bạn có muốn xóa sản phẩm không ?`,
+  //     okText: "Yes",
+  //     okType: "danger",
+  //     onOk: async () => {
+  //       const res = await axios
+  //         .post(
+  //           `http://localhost:8080/hoa_don_chi_tiet/update/${id}/${idSPCT}`,
+  //           {
+  //             quantity: spct.quantity,
+  //           }
+  //         )
+  //         .then((response) => {
+  //           getDataLichSuThanhToan();
+  //           getInfoHD();
+  //           getDataChiTietSanPham();
+  //           getDataLichSu();
+  //           toast.success("Update thành công");
+  //         })
+  //         .catch((e) => error());
+  //     },
+  //   });
+  // };
   const getDataLichSu = async () => {
     await axios
       .get(`http://localhost:8080/lich_su_hoa_don/getLichSuHoaDons/${id}`)
@@ -428,7 +470,6 @@ export default function   DetailHoaDon() {
   return (
     <>
       {contextHolder}
-
       <div className="conatiner mx-auto space-y-5">
         <div className=" bg-white">
           <div
@@ -760,7 +801,10 @@ export default function   DetailHoaDon() {
             <div className="row divide-y-4 divide-slate-400/25">
               <div className="row table-san-pham ">
                 {rowsSPCT.map((item, index) => (
-                  <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start" key={index}>
+                  <div
+                    className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
+                    key={index}
+                  >
                     <img
                       src={item.imageUrl}
                       alt="product-image"
@@ -802,7 +846,8 @@ export default function   DetailHoaDon() {
                           &nbsp;₫
                         </p>
 
-                        {listTimeLineOnline.length < 4 &&
+                        {
+                          // listTimeLineOnline.length < 4 &&
                           info.trangThai < 4 && (
                             <Button
                               color="red"
@@ -810,19 +855,19 @@ export default function   DetailHoaDon() {
                             >
                               <FaTrash />
                             </Button>
-                          )}
-                        {listTimeLineOnline.length < 4 &&
-                          info.trangThai < 4 && (
-                            <Button
-                              color="yellow"
-                              onClick={() => {
-                                showModalLichSu();
-                                getSPCT(item.id);
-                              }}
-                            >
-                              <FaPen />
-                            </Button>
-                          )}
+                          )
+                        }
+                        {info.trangThai < 4 && (
+                          <Button
+                            color="yellow"
+                            onClick={() => {
+                              showModalLichSuSP();
+                              getSPCT(item.id);
+                            }}
+                          >
+                            <FaPen />
+                          </Button>
+                        )}
                       </div>
 
                       {/* <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6"></div> */}
@@ -842,7 +887,8 @@ export default function   DetailHoaDon() {
                       color="yellow"
                       onClick={() => {
                         handleCancelLichSuSP();
-                        onHandleUpdate(spct.id);
+                        handleDelete();
+                        // onHandleUpdate(spct.id);
                       }}
                     >
                       <FaPen />
@@ -953,6 +999,39 @@ export default function   DetailHoaDon() {
           </div>
         </div>
       </div>
+      <Dialog open={deleteConfirmationOpen} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận xóa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn xóa khách hàng này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="warning">
+            Hủy
+          </Button>
+          <Button color="primary" onClick={onHandleUpdate}>
+            Cập nhật
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

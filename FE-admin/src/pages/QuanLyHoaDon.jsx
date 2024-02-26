@@ -46,6 +46,26 @@ export default function QuanLyHoaDon() {
     setNgayKetThuc("");
   };
 
+  const changeValueInput = (value) => {
+    if (value.trim() == "") setFilterValue("");
+    // else if (value[0] == " " || value[value.length - 1] == " ") {
+    //   const splittedStrings = value.split(" ");
+    //   const datanew = [];
+    //   console.log(splittedStrings.length);
+    //   if (splittedStrings.length > 1) {
+    //     for (let i = 0; i < splittedStrings.length; i++) {
+    //       if (splittedStrings[i] != "") {
+    //         datanew.push(splittedStrings[i]);
+    //       }
+    //     }
+    //   }
+    //   var newValue = datanew.join(" ");
+    //   console.log(newValue);
+    //   setFilterValue(newValue);
+    // }
+    else setFilterValue(value);
+  };
+
   return (
     <>
       <div>
@@ -94,7 +114,7 @@ export default function QuanLyHoaDon() {
                   startContent={<SearchIcon />}
                   value={dataInput}
                   // onClear={() => onClear()}
-                  onChange={(e) => setFilterValue(e.target.value)}
+                  onChange={(e) => changeValueInput(e.target.value)}
                 />
               </div>
               <label
