@@ -25,6 +25,7 @@ import DetailVoucher from "./components/voucher/DetailVoucher";
 import AddVoucher from "./components/voucher/AddVoucher";
 import ThongKe from "./pages/ThongKe";
 import LichSuMuaHang from "./components/khachHang/LichSuMuaHang";
+import KhuyenMaiUpdate from "./components/khuyenMai/KhuyenMaiUpdate";
 
 const App = () => {
   return (
@@ -43,6 +44,7 @@ const App = () => {
           <Route path="/khuyen-mai" element={<KhuyenMai />} />
           <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
           <Route path="/them-khuyen-mai/:idKM" element={<ThemKhuyenMai />} />
+          <Route path="/update-khuyen-mai/:idKM" element={<KhuyenMaiUpdate />} />
 
           <Route
             path="/quan-ly-tai-khoan/nhan-vien/them-nhan-vien"

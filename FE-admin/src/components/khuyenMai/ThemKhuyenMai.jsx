@@ -19,6 +19,11 @@ import TableChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiT
 import { useParams } from "react-router-dom";
 import { getKhuyenMaiById } from "../../api/khuyenMai/KhuyenMaiApi";
 
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { DatePicker } from "antd";
+dayjs.extend(customParseFormat);
+
 export default function ThemKhuyenMai() {
   const { idKM } = useParams();
   const [ten, setTen] = useState("");
@@ -39,22 +44,23 @@ export default function ThemKhuyenMai() {
   const [selectedMaValues, setSelectedMaValues] = useState([]);
   const [selectedMaCTSPValues, setSelectedMaCTSPValues] = useState([]);
 
+  const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
+
   const handleSelectedMaValuesChange = (newSelectedMaValues) => {
     setSelectedMaValues(newSelectedMaValues);
   };
   const handleOnchangeMaCTSP = (newSelectedMaValues) => {
     setSelectedMaCTSPValues(newSelectedMaValues);
   };
-  console.log(selectedMaCTSPValues);
 
-  const handleNgayBatDauChange = (e) => {
-    const newValue = e.target.value;
-    setNgayBatDau(newValue);
-    setSelectedStartDate(newValue);
+  const handleNgayBatDauChange = (date, dateString) => {
+    console.log("Ngay bat dau:", dateString);
+    setNgayBatDau(dateString);
   };
-  const handleNgayKetThucChange = (e) => {
-    const newValue = e.target.value;
-    setNgayKetThuc(newValue);
+
+  const handleNgayKetThucChange = (date, dateString) => {
+    console.log("Ngay ket thuc:", dateString);
+    setNgayKetThuc(dateString);
   };
 
   const minDate = `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}`;
@@ -69,8 +75,8 @@ export default function ThemKhuyenMai() {
   useEffect(() => {
     const fetchKhuyenMaiById = async () => {
       try {
-        const response = await getKhuyenMaiById(idKM);
-        const data = response;
+        const data = await getKhuyenMaiById(idKM);
+        console.log("data:", data);
         setTen(data.ten);
         setGiaTriPhanTram(data.giaTriPhanTram);
       } catch (error) {
@@ -105,8 +111,9 @@ export default function ThemKhuyenMai() {
         handleCloseAddConfirmation();
         return;
       }
-      const startDate = new Date(ngayBatDau);
-      const endDate = new Date(ngayKetThuc);
+
+      const startDate = dayjs(ngayBatDau, "DD/MM/YYYY").toDate();
+      const endDate = dayjs(ngayKetThuc, "DD/MM/YYYY").toDate();
 
       if (startDate >= endDate) {
         toast.error("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
@@ -114,8 +121,11 @@ export default function ThemKhuyenMai() {
         return;
       }
 
-      console.log("selectedMaCTSPValues:", selectedMaCTSPValues)
-      if(selectedMaCTSPValues == null || selectedMaCTSPValues.length == 0 || selectedMaCTSPValues == ''){
+      if (
+        selectedMaCTSPValues == null ||
+        selectedMaCTSPValues.length == 0 ||
+        selectedMaCTSPValues == ""
+      ) {
         toast.error("Vui lòng chọn sản phẩm giảm!");
         handleCloseAddConfirmation();
         return;
@@ -125,10 +135,9 @@ export default function ThemKhuyenMai() {
         id: idKM,
         ten: ten,
         giaTriPhanTram: giaTriPhanTram,
-        ngayBatDau: new Date(ngayBatDau).toISOString(),
-        ngayKetThuc: new Date(ngayKetThuc).toISOString(),
+        ngayBatDau: startDate,
+        ngayKetThuc: endDate,
       };
-      
       const response = await addKhuyenMai(khuyenMai, selectedMaCTSPValues);
 
       setTen("");
@@ -181,7 +190,6 @@ export default function ThemKhuyenMai() {
                   required
                 />
               </div>
-
               <div className="mb-5">
                 <label
                   htmlFor="phone"
@@ -206,49 +214,29 @@ export default function ThemKhuyenMai() {
                   ))}
                 </select>
               </div>
-
               <label
                 htmlFor="phone"
                 className="block -mb-4 mt-1 text-sm font-medium text-gray-900"
               >
                 Ngày bắt đầu
               </label>
-              <input
-                type="datetime-local"
-                id="ngayBatDauInput"
+              <DatePicker
+                placeholder="Chọn ngày bắt đầu"
+                defaultValue={dayjs("01/01/2015", dateFormatList[0])}
+                format={dateFormatList}
                 onChange={handleNgayBatDauChange}
-                required
-                min={minDate}
-                value={ngayBatDau}
-                style={{
-                  width: "100%",
-                  padding: "2px 5px",
-                  border: "1.5px solid #e1e1e1",
-                  borderRadius: "5px",
-                }}
-                className="mb-5"
               />
-
               <label
                 htmlFor="phone"
                 className="block -mb-4 mt-1 text-sm font-medium text-gray-900"
               >
                 Ngày kết thúc
               </label>
-              <input
-                value={ngayKetThuc}
-                type="datetime-local"
-                id="ngayKetThucInput"
+              <DatePicker
+                placeholder="Chọn ngày kết thúc"
+                defaultValue={dayjs("01/01/2015", dateFormatList[0])}
+                format={dateFormatList}
                 onChange={handleNgayKetThucChange}
-                required
-                min={selectedStartDate} // Set the minimum date based on selected start date
-                style={{
-                  width: "100%",
-                  padding: "2px 5px",
-                  border: "1.5px solid #e1e1e1",
-                  borderRadius: "5px",
-                }}
-                className="mb-5"
               />
             </div>
             <div className="flex justify-center">

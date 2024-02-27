@@ -66,6 +66,7 @@ public class KhuyenMaiController {
 
     @PostMapping("/add/{listMaCTSP}")
     public ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai, @PathVariable List<String> listMaCTSP) {
+        System.out.println(khuyenMai);
 
         try {
             if (khuyenMai.getId() != null) {
@@ -79,6 +80,7 @@ public class KhuyenMaiController {
                     existing.setNgaySua(new Date());
                     existing.setDeleted(0);
                     existing.setSwitchKM(khuyenMai.getSwitchKM());
+                    existing.setNgaySua(new Date());
                     khuyenMaiService.save(existing);
 
                     for (String maCTSP : listMaCTSP) {
@@ -195,10 +197,8 @@ public class KhuyenMaiController {
     public KhuyenMai batTatKhuyenMai(@PathVariable("id") KhuyenMai khuyenMai, @PathVariable String isSelected) {
         if (isSelected.equals("true")) {
             khuyenMai.setSwitchKM("Đã dừng");
-            System.out.println("Da dung");
         } else {
             khuyenMai.setSwitchKM("Đang diễn ra");
-            System.out.println("dang dien ra");
         }
         return khuyenMaiService.save(khuyenMai);
 

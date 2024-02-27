@@ -49,7 +49,7 @@ export default function DetailProduct() {
   };
   useEffect(() => {
     fetchKMSPCT();
-  }, [kmspcts]);
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage?.getItem("user");

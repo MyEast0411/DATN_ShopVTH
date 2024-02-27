@@ -42,6 +42,7 @@ import {
   searchByDate,
   findKmspctByKhuyenMaiId,
 } from "../../../api/khuyenMai/KhuyenMaiApi";
+import DetailKhuyenMai from "./DetailKhuyenMai";
 import { Settings } from "luxon";
 import { toast } from "react-toastify";
 import { TbInfoTriangle } from "react-icons/tb";
@@ -103,7 +104,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     onOpen();
     try {
       const response = await findKmspctByKhuyenMaiId(id);
-      console.log(response);
+      console.log("response:", response)
       setKhuyenMaiSPCT(response);
     } catch (error) {
       console.error("Error fetching khuyenMaiSPCT details:", error);
@@ -282,13 +283,17 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
                   <EyeIcon onClick={() => handleViewDetails(khuyenMai.id)} />
                 </span>
               </Tooltip>
-              <Tooltip content="Chỉnh sửa" showArrow={true}>
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <Link to={`/them-khuyen-mai/${khuyenMai.id}`}>
-                    <EditIcon />
-                  </Link>
-                </span>
-              </Tooltip>
+              {khuyenMai.trangThai !== "Đã kết thúc" &&
+                khuyenMai.trangThai !== "Đã dừng" &&
+                khuyenMai.trangThai !== "Đang diễn ra" && (
+                  <Tooltip content="Chỉnh sửa" showArrow={true}>
+                    <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                      <Link to={`/update-khuyen-mai/${khuyenMai.id}`}>
+                        <EditIcon />
+                      </Link>
+                    </span>
+                  </Tooltip>
+                )}
               <Tooltip color="danger" content="Xóa" showArrow={true}>
                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
                   <DeleteIcon onClick={() => handleDelete(khuyenMai.id)} />
@@ -600,28 +605,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
                 Thông tin khuyến mại
               </ModalHeader>
               <ModalBody>
-                {khuyenMaiSPCT.map((item, index) => (
-                  <div key={index} className="mx-auto">
-                    <p>
-                      Mã sản phẩm:{" "}
-                      <span className="font-medium">
-                        {item.id_chi_tiet_san_pham.ma}
-                      </span>
-                    </p>
-                    <p>
-                      Tên sản phẩm:{" "}
-                      <span className="font-medium">
-                        {item.id_chi_tiet_san_pham.ten}
-                      </span>
-                    </p>
-                    <p>
-                      Giá sản phẩm:{" "}
-                      <span className="font-medium">
-                        {item.id_chi_tiet_san_pham.giaBan}
-                      </span>
-                    </p>
-                  </div>
-                ))}
+                <DetailKhuyenMai khuyenMaiSPCT={khuyenMaiSPCT}/>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
