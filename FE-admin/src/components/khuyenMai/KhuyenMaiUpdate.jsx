@@ -150,7 +150,7 @@ export default function KhuyenMaiUpdate() {
           }}
         >
           <h2 className="text-center text-2xl font-bold text-gray-800 mb-5 ">
-            Chỉnh sửa khuyến mại
+            Chỉnh sửa đợt giảm giá
           </h2>
           <div>
             <label

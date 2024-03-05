@@ -24,9 +24,13 @@ export default function TabTrangThai({
       .filter((hd) => {
         if (dataInput === "") return hd;
         if (
-          hd.ma.toLowerCase().includes(dataInput.toLowerCase()) ||
-          hd.tenKhachHang?.toLowerCase().includes(dataInput.toLowerCase()) ||
-          hd.id_nhan_vien?.ten.toLowerCase().includes(dataInput.toLowerCase())
+          hd.ma.toLowerCase().includes(dataInput.trim().toLowerCase()) ||
+          hd.tenKhachHang
+            ?.toLowerCase()
+            .includes(dataInput.trim().toLowerCase()) ||
+          hd.id_nhan_vien?.ten
+            .toLowerCase()
+            .includes(dataInput.trim().toLowerCase())
         )
           return hd;
       })
@@ -91,7 +95,7 @@ export default function TabTrangThai({
       key: index,
       label: items[index],
       // children: <TableCommon dataSource={list} />,
-      children: <TableCommon data={list} />,
+      children: <TableCommon data={list} dataInput={dataInput} />,
     };
 
     data.push(item);
@@ -100,7 +104,7 @@ export default function TabTrangThai({
     key: -1,
     label: `Tất cả`,
     // children: <TableCommon dataSource={list} />,
-    children: <TableCommon data={list} />,
+    children: <TableCommon data={list} dataInput={dataInput} />,
   });
 
   return (

@@ -17,14 +17,6 @@ const KhuyenMai = () => {
   const [ngayKetThuc, setNgayKetThuc] = useState("");
   const [search, setSearch] = useState("");
 
-  // useEffect(
-  //   () => {
-  //     onSearch();
-  //   },
-  //   ngayBatDau,
-  //   ngayKetThuc
-  // );
-
   const formatToYYYYMMDDHHMM = (dateString) => {
     try {
       const parsedDate = parse(dateString, "dd-MM-yyyy HH:mm", new Date());

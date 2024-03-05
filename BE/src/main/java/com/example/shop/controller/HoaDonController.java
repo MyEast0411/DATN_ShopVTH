@@ -237,33 +237,7 @@ public class HoaDonController {
         try {
             HoaDon hoaDon1 = hoaDonRepository.getHoaDonByMa(id);
             System.out.println(hoaDon.toString());
-            if (hoaDon.getTrangThai().equals("1") && hoaDon.getLoaiHd().equals("0")) {
-                LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
-                        .id_hoa_don(hoaDon1)
-                        .moTaHoaDon("Chờ xác nhận")
-                        .deleted(1)
-                        .nguoiTao("Đông")
-                        .ngayTao(new Date(System.currentTimeMillis()))
-                        .build();
-                LichSuHoaDon lichSuHoaDon2 = LichSuHoaDon.builder()
-                        .id_hoa_don(hoaDon1)
-                        .moTaHoaDon("Xác nhận")
-                        .deleted(1)
-                        .nguoiTao("Đông")
-                        .ngayTao(new Date(System.currentTimeMillis()))
-                        .build();
-                lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
-                lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon2);
-            }else {
-                LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
-                        .id_hoa_don(hoaDon1)
-                        .moTaHoaDon("Đơn Hàng Thành Công")
-                        .deleted(1)
-                        .nguoiTao("Đông")
-                        .ngayTao(new Date(System.currentTimeMillis()))
-                        .build();
-                lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
-            }
+
 
             if (hoaDon1 != null) {
 
@@ -275,7 +249,7 @@ public class HoaDonController {
                 hoaDon1.setNgayTao(new Date());
                 hoaDon1.setTienGiam(BigDecimal.valueOf(Double.parseDouble( hoaDon.getTienGiam())));
                 hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
-                hoaDon1.setId_nhan_vien(ssNV.findById(idNhanVien).get());
+                hoaDon1.setId_nhan_vien(ssNV.findById(idNhanVien).orElse(null));
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
                 for (HoaDonChiTiet hdct : hoaDonChiTietList) {
                     SanPhamChiTiet sanPhamChiTiet = chiTietSanPhamRepository.findById(hdct.getId_chi_tiet_san_pham().getId()).get();
@@ -287,11 +261,43 @@ public class HoaDonController {
                 }
                 HoaDon updateHoaDon = hoaDonRepository.save(hoaDon1);
 
+
+                if (hoaDon.getTrangThai().equals("1") && hoaDon.getLoaiHd().equals("0")) {
+                    LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                            .id_hoa_don(hoaDon1)
+                            .moTaHoaDon("Chờ xác nhận")
+                            .deleted(1)
+                            .nguoiTao("Đông")
+                            .ngayTao(new Date(System.currentTimeMillis()))
+                            .build();
+                    LichSuHoaDon lichSuHoaDon2 = LichSuHoaDon.builder()
+                            .id_hoa_don(hoaDon1)
+                            .moTaHoaDon("Xác nhận")
+                            .deleted(1)
+                            .nguoiTao("Đông")
+                            .ngayTao(new Date(System.currentTimeMillis()))
+                            .build();
+                    lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
+                    lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon2);
+                }else {
+                    LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                            .id_hoa_don(hoaDon1)
+                            .moTaHoaDon("Đơn Hàng Thành Công")
+                            .deleted(1)
+                            .nguoiTao("Đông")
+                            .ngayTao(new Date(System.currentTimeMillis()))
+                            .build();
+                    lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
+                }
+
+
+
                 return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
             } else {
                 throw new Exception("khong co id" + id);
             }
         } catch (Exception exception) {
+            System.out.println(exception.getMessage());
             return ResponseEntity.badRequest().body("ERROR");
         }
     }

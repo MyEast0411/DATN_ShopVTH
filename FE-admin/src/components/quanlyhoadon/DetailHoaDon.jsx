@@ -4,7 +4,7 @@ import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import axios from "axios";
-import { Table, Tag, message, Modal, Input, Tooltip } from "antd";
+import { Table, Tag, message, Modal, Input } from "antd";
 import { format } from "date-fns";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
 import { GiConfirmed, GiReceiveMoney } from "react-icons/gi";
@@ -12,6 +12,7 @@ import { LuPackageCheck } from "react-icons/lu";
 import { FaShippingFast, FaFileInvoice, FaPen, FaCircle } from "react-icons/fa";
 import { TbPackages } from "react-icons/tb";
 import { MdAddCircle } from "react-icons/md";
+import { TbInfoTriangle } from "react-icons/tb";
 import {
   exportComponentAsJPEG,
   exportComponentAsPDF,
@@ -25,8 +26,17 @@ import { FaMoneyBillTransfer, FaPenClip, FaTrash } from "react-icons/fa6";
 import { MdCancel } from "react-icons/md";
 import { Spinner, Skeleton } from "@nextui-org/react";
 import TableSanPham from "./TableSanPham";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TableCell as TableCellMui,
+} from "@mui/material";
 
-export default function   DetailHoaDon() {
+export default function DetailHoaDon() {
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
   const [info, setInfo] = useState({});
@@ -767,7 +777,7 @@ export default function   DetailHoaDon() {
                 footer={[]}
               >
                 <div className="mt-5">
-                  <TableSanPham gioHang={info.ma} setIsModalOpenThem={setIsModalOpenThem} getInfoHD={getInfoHD}/>
+                  <TableSanPham gioHang={info.ma} />
                 </div>
               </Modal>
             </div>
@@ -993,6 +1003,39 @@ export default function   DetailHoaDon() {
           </div>
         </div>
       </div>
+      <Dialog open={deleteConfirmationOpen} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận xóa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn xóa khách hàng này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="warning">
+            Hủy
+          </Button>
+          <Button color="primary" onClick={onHandleUpdate}>
+            Cập nhật
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
