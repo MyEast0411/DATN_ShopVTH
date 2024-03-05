@@ -351,6 +351,7 @@ public class HoaDonChiTietController {
                 spct.setId(null);
                 spct.setDeleted(0);
                 spct.setNgayTao(new Date());
+                spct.setTen(spct.getTen() +"[OLD]");
                 HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
                         .id_hoa_don(hd1)
                         .id_chi_tiet_san_pham(ssSPCT.save(spct))

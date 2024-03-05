@@ -23,7 +23,8 @@ import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AiOutlineCamera } from "react-icons/ai";
-export default function ThemKhachHang() {
+export default function DetailKhachHang() {
+
   let navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -245,16 +246,6 @@ export default function ThemKhachHang() {
         toast.error(`${error.response.data}`);
       });
     setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleScan = (data) => {
-    if (data) {
-      console.log(data);
-      handleOk();
-    }
   };
 
   const handleError = (error) => {
@@ -687,7 +678,7 @@ export default function ThemKhachHang() {
                   </Select>
 
                   <Select
-                    placeholder="Thành phố"
+                    placeholder="Huyện"
                     onChange={(selectedValue) =>
                       handleChangeHuyen(selectedValue, index)
                     }
@@ -699,7 +690,7 @@ export default function ThemKhachHang() {
                   </Select>
 
                   <Select
-                    placeholder="Thành phố"
+                    placeholder="Xã"
                     onChange={(selectedValue) =>
                       handleChangeXa(selectedValue, index)
                     }

@@ -9,4 +9,6 @@ public interface ChucVuRepository extends JpaRepository<ChucVu,String> {
     @Query(value = "SELECT MAX(CAST(SUBSTRING(ma, 3) AS UNSIGNED)) as maxMa\n" +
             "FROM chuc_vu",nativeQuery = true)
     String getMaxMa();
+
+    ChucVu getChucVuByTen(String ten);
 }

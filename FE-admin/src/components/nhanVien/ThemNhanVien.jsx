@@ -34,20 +34,21 @@ export default function ThemNhanVien() {
 
   useEffect(() => {
     getProvinces().then((data) => {
-      setProvinces(data);
+      setProvinces(data.results);
     });
   }, []);
+
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
       if (item.code == provinceCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
-          thanhPho: item.name,
+          thanhPho: item.province_name,
         }));
       }
     });
     getDistricts(provinceCode).then((data) => {
-      setDistricts(data);
+      setDistricts(data.results);
     });
   };
 
@@ -56,12 +57,12 @@ export default function ThemNhanVien() {
       if (item.code == districtCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
-          huyen: item.name,
+          huyen: item.district_name,
         }));
       }
     });
     getWards(districtCode).then((data) => {
-      setWards(data);
+      setWards(data.results);
     });
   };
 
@@ -70,11 +71,12 @@ export default function ThemNhanVien() {
       if (item.code == wardsCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
-          xa: item.name,
+          xa: item.ward_name,
         }));
       }
     });
   };
+
   const [khachHang, setKhachHang] = useState({
     ma: "",
     ten: "",
@@ -443,9 +445,9 @@ export default function ThemNhanVien() {
                 >
                   <option value="">Chọn thành phố</option>
                   {provinces.map((province) => (
-                    <option key={province.code} value={province.code}>
-                      {province.name}
-                    </option>
+                      <option key={province.province_id} value={province.province_id}>
+                        {province.province_name}
+                      </option>
                   ))}
                 </select>
               </div>
@@ -460,9 +462,9 @@ export default function ThemNhanVien() {
                 >
                   <option value="">Chọn xã phường</option>
                   {wards.map((ward) => (
-                    <option key={ward.code} value={ward.code}>
-                      {ward.name}
-                    </option>
+                      <option key={ward.ward_id} value={ward.ward_id}>
+                        {ward.ward_name}
+                      </option>
                   ))}
                 </select>
               </div>
@@ -602,9 +604,9 @@ export default function ThemNhanVien() {
                 >
                   <option value="">Chọn huyện</option>
                   {districts.map((district) => (
-                    <option key={district.code} value={district.code}>
-                      {district.name}
-                    </option>
+                      <option key={district.district_id} value={district.district_id}>
+                        {district.district_name}
+                      </option>
                   ))}
                 </select>
               </div>

@@ -2,6 +2,7 @@ import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import InfoTop from "../layout/InfoTop";
 import AlsoLike from "./AlsoLike";
+import ShopRecommend from "../layout/ShopRecommend";
 
 export default function SuccessOrder() {
   return (
@@ -53,7 +54,7 @@ export default function SuccessOrder() {
           </div>
         </div>
       </div>
-      <AlsoLike />
+      <ShopRecommend />
       <Footer />
     </>
   );

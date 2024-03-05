@@ -204,7 +204,7 @@ public class HoaDonController {
             SanPhamChiTiet sanPhamChiTiet = chiTietSanPhamRepository.findById((String) row[0]).get();
             SanPhamChiTiet spct = SanPhamChiTiet.builder()
                     .ma(sanPhamChiTiet.getMa())
-                    .ten(sanPhamChiTiet.getTen())
+                    .ten(sanPhamChiTiet.getTen() + "[COPY]")
                     .defaultImg(sanPhamChiTiet.getDefaultImg())
                     .soLuongTon(sanPhamChiTiet.getSoLuongTon())
                     .khoiLuong(sanPhamChiTiet.getKhoiLuong())

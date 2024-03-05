@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
-import { AiOutlinePlus } from "react-icons/ai";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { AiOutlinePlus, AiOutlineCamera } from "react-icons/ai";
+import { Form, Link, useNavigate, useParams } from "react-router-dom";
 import { Accordion, AccordionItem, Avatar, Button } from "@nextui-org/react";
 import {
   Dialog,
@@ -23,8 +23,9 @@ import {
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { AiOutlineCamera } from "react-icons/ai";
-export default function ThemKhachHang() {
+import { useForm } from "antd/es/form/Form";
+export default function CapNhatNhanVien() {
+  const form = useForm();
   let navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -37,7 +38,6 @@ export default function ThemKhachHang() {
   const [valueTP, setValueTP] = useState([]);
   const [valueHuyen, setValueHuyen] = useState([]);
   const [valueXa, setValueXa] = useState([]);
-  const [showScanner, setShowScanner] = useState(false);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
@@ -46,22 +46,12 @@ export default function ThemKhachHang() {
   const [idToDelete, setIdToDelete] = useState("");
 
   const [openComfirm, setOpenComfirm] = useState(false);
-  const handleSwitch = () => {
-    setOpenComfirm(true);
-  };
+
   const cancelComfirm = () => {
     setOpenComfirm(false);
   };
   const [indexDiaChi, setIndexDiaChi] = useState("");
-  const handleSwitchChange = (index) => {
-    handleSwitch();
-    setIndexDiaChi(index);
 
-  };
-
-  const handleDelete = () => {
-    setDeleteConfirmationOpen(true);
-  };
   const cancelDelete = () => {
     setDeleteConfirmationOpen(false);
   };
@@ -77,28 +67,7 @@ export default function ThemKhachHang() {
       setProvinces(data.results);
     });
   }, []);
-  useEffect(() => {
-    const names = provinces.map((item) => item.province_name);
-    setValueTP(names);
-    const thanhPho = listDiaChi.find((x) => x.id_khach_hang.id == khachHang.id)?.thanhPho;
-    const provinceCode = provinces.find((x) => x.province_name === thanhPho)?.province_id;
 
-    getDistricts(provinceCode).then((data) => {
-      setDistrict(data.results);
-    });
-
-    const valueH = district.map((item) => item.district_name);
-    setValueHuyen(valueH);
-
-    const huyen = listDiaChi.find((x) => x.id_khach_hang.id == khachHang.id)?.huyen;
-    const districtCode = district.find((x) => x.district_name === huyen)?.district_id;
-
-    getWards(districtCode).then((data) => {
-      setWard(data.results);
-    });
-    const valueXa = ward.map((item) => item.ward_name);
-    setValueXa(valueXa);
-  }, [provinces, district]);
 
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
@@ -143,11 +112,11 @@ export default function ThemKhachHang() {
     ma: "",
     ten: "",
     anhNguoiDung: "",
-    gioi_tinh: "",
+    gioiTinh: "",
     sdt: "",
-    ngay_sinh: "",
+    ngaySinh: "",
     email: "",
-    chucVu : "Nhân viên",
+    chucVu: "Nhân viên",
     cccd: "",
     soNha: "",
     xa: "",
@@ -155,7 +124,7 @@ export default function ThemKhachHang() {
     thanhPho: "",
   });
 
-  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, chucVu, cccd, soNha, xa, huyen, thanhPho } = khachHang;
+  const { ma, ten, anhNguoiDung, gioiTinh, sdt, ngaySinh, email, chucVu, cccd, soNha, xa, huyen, thanhPho } = khachHang;
 
   function formatDate(dateString) {
     if (dateString) {
@@ -224,22 +193,23 @@ export default function ThemKhachHang() {
     const village = parts[1].trim(); // xã
     const district = parts[2].trim(); // huyện
     const city = parts[3].trim(); // tp
-
+    console.log(district);
     setBackgroundImage(khachHangData.anh);
     setKhachHang({
       id: khachHangData.id,
       ma: khachHangData.ma,
       ten: khachHangData.ten,
       anhNguoiDung: khachHangData.anh,
-      gioi_tinh: khachHangData.gioiTinh,
+      gioiTinh: khachHangData.gioiTinh,
       sdt: khachHangData.sdt,
-      ngay_sinh: khachHangData.ngaySinh,
+      ngaySinh: khachHangData.ngaySinh,
       email: khachHangData.email,
+      chucVu: khachHangData.id_chuc_vu.ten,
       cccd: khachHangData.cccd,
       thanhPho: city,
       huyen: district,
-      village: village,
-      duong: streetAddress
+      xa: village,
+      soNha: streetAddress
     });
   };
 
@@ -259,7 +229,7 @@ export default function ThemKhachHang() {
   };
   const handleChange = (event) => {
     console.log(event.target.value);
-    setKhachHang({ ...khachHang, gioi_tinh: event.target.value });
+    setKhachHang({ ...khachHang, gioiTinh: event.target.value });
     setValue(event.target.value);
   };
   const fileInputRef = useRef(null);
@@ -280,30 +250,60 @@ export default function ThemKhachHang() {
       reader.readAsDataURL(file);
     }
   };
+  useEffect(() => {
+    if (khachHang.id != '') {
+      const names = provinces.map((item) => item.province_name);
+      setValueTP(names);
 
-  const handleChangeTP = (selectedValue, index) => {
-    console.log(selectedValue);
-    const updatedListDiaChi = [...listDiaChi];
-    const updatedItem = { ...updatedListDiaChi[index] };
-    updatedItem.thanhPho = selectedValue;
-    updatedListDiaChi[index] = updatedItem;
-    setListDiaChi(updatedListDiaChi);
+      const provinceCode = provinces.find((x) => x.province_name === khachHang.thanhPho)?.province_id;
+
+      getDistricts(provinceCode).then((data) => {
+        const valueH = data.results.map((item) => item.district_name);
+        setValueHuyen(valueH);
+        setDistrict(data.results);
+      });
+
+      const districtCode = district.find((x) => x.district_name === khachHang.huyen)?.district_id;
+      getWards(districtCode).then((data) => {
+        const valueXa = data.results.map((item) => item.ward_name);
+        setValueXa(valueXa);
+      });
+    }
+  }, [khachHang, district]);
+  const handleChangeTP = (selectedValue) => {
+    const updatedKhachHang = { ...khachHang };
+
+    updatedKhachHang.thanhPho = selectedValue;
+
+    setKhachHang(updatedKhachHang);
+    const provinceCode = provinces.find((x) => x.province_name === selectedValue)?.province_id;
+
+    getDistricts(provinceCode).then((data) => {
+      const valueH = data.results.map((item) => item.district_name);
+      setValueHuyen(valueH);
+    });
   };
 
-  const handleChangeHuyen = (selectedValue, index) => {
-    const updatedListDiaChi = [...listDiaChi];
-    const updatedItem = { ...updatedListDiaChi[index] };
-    updatedItem.huyen = selectedValue;
-    updatedListDiaChi[index] = updatedItem;
-    setListDiaChi(updatedListDiaChi);
+  const handleChangeHuyen = (selectedValue) => {
+    const updatedKhachHang = { ...khachHang };
+
+    updatedKhachHang.huyen = selectedValue;
+
+    setKhachHang(updatedKhachHang);
+
+    const districtCode = district.find((x) => x.district_name === selectedValue)?.district_id;
+    getWards(districtCode).then((data) => {
+      const valueXa = data.results.map((item) => item.ward_name);
+      setValueXa(valueXa);
+    });
   };
 
-  const handleChangeXa = (selectedValue, index) => {
-    const updatedListDiaChi = [...listDiaChi];
-    const updatedItem = { ...updatedListDiaChi[index] };
-    updatedItem.xa = selectedValue;
-    updatedListDiaChi[index] = updatedItem;
-    setListDiaChi(updatedListDiaChi);
+  const handleChangeXa = (selectedValue) => {
+    const updatedKhachHang = { ...khachHang };
+
+    updatedKhachHang.xa = selectedValue;
+
+    setKhachHang(updatedKhachHang);
   };
 
   const handleDuongChange = (e, index) => {
@@ -332,11 +332,23 @@ export default function ThemKhachHang() {
   ));
 
   const onSubmit = async () => {
+    console.log(khachHang);
     await axios
-      .post("http://localhost:8080/khach-hang/add", khachHang)
+      .put("http://localhost:8080/nhan_vien/update", {
+        id : khachHang.id,
+        ma : khachHang.ma,
+        ten : khachHang.ten,
+        email : khachHang.email,
+        ngaySinh : khachHang.ngaySinh,
+        gioiTinh : khachHang.gioiTinh,
+        diaChi : `${khachHang.soNha},${khachHang.xa},${khachHang.huyen},${khachHang.thanhPho}`,
+        sdt : khachHang.sdt,
+        anh : khachHang.anh,
+        id_chuc_vu : listChucVu.find((x) => x.ten == khachHang.chucVu),
+      })
       .then((response) => {
-        toast.success(`🎉 Thêm thành công`);
-        navigate("/quan-ly-tai-khoan/khach-hang");
+        toast.success(`🎉 Cập nhật thành công`);
+        navigate("/quan-ly-tai-khoan/nhan-vien");
       })
       .catch((error) => {
         toast.error(`😢 Thêm thất bại`);
@@ -346,7 +358,7 @@ export default function ThemKhachHang() {
   return (
     <>
       <div
-        class="grid grid-cols-3 gap-4 m-5"
+        className="grid grid-cols-3 gap-4 m-5"
         style={{
           fontSizfe: "8px",
           backgroundColor: "white",
@@ -362,30 +374,38 @@ export default function ThemKhachHang() {
             borderColor: "#61677A",
           }}
         >
-          <h1 className="font-medium text-2xl mb-14">Ảnh đại diện</h1>
-          <div className="anh-dai-dien flex justify-center">
+          <h1 className="absolute top-3">Thông tin nhân viên</h1>
+          <div className="anh-dai-dien mt-14 flex justify-center">
             <div
-              className="relative cursor-pointer"
+              className="relative mb-10"
               style={{
-                width: "300px",
-                height: "300px",
+                width: "250px",
+                height: "250px",
                 backgroundColor: "white",
                 borderRadius: "50%",
                 border: "1px dashed #ccc",
+                backgroundSize: "cover",
               }}
               ref={imgDivRef}
             >
-              <span className="absolute text-4xl" style={{ top: "40%", left: "47%" }}>
-                +
-              </span>
-              <div className="absolute" style={{ top: "54%", left: "42%" }}>
-                <button onClick={() => fileInputRef.current.click()}>Tải ảnh</button>
+              <div
+                className="absolute blue-hover inline-block cursor-pointer hover:text-sky-700 text-center text-3xl"
+                style={{ bottom: "-35px", left: "45%" }}
+              >
+                <AiOutlineCamera onClick={() => fileInputRef.current.click()} />
               </div>
             </div>
           </div>
-          <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} ref={fileInputRef} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+            ref={fileInputRef}
+          />
         </div>
         <div className="col-span-2 m-10">
+          {/* <Form form={form}> */}
           <div className="grid grid-cols-2 gap-4">
             <div className="left">
               <div className="mb-8">
@@ -397,9 +417,9 @@ export default function ThemKhachHang() {
                   name="ten"
                   type="text"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
+                                      rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                      w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                        dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
                   placeholder="Nhập tên nhân viên"
                   required
                   onChange={(e) => {
@@ -417,6 +437,7 @@ export default function ThemKhachHang() {
                     value={chucVu}
                     name="id_nhan_vien"
                     onChange={(e) => {
+
                       setKhachHang({ ...khachHang, chucVu: e });
                     }}
                     style={{
@@ -476,9 +497,9 @@ export default function ThemKhachHang() {
                   value={email}
                   name="email"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
+                                      rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                      w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                        dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
                   placeholder="Email"
                   required
                   onChange={(e) => {
@@ -487,38 +508,30 @@ export default function ThemKhachHang() {
                 />
               </div>
               <div className="mb-8">
-                <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Chọn thành phố
-                </label>
-                <select
-                  id="city"
-                  className="bg-gray-50 border mb-24 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  onChange={(e) => handleProvinceChange(e.target.value)}
+                <Select
+                  placeholder="Thành phố"
+                  onChange={(selectedValue) =>
+                    handleChangeTP(selectedValue)
+                  }
+                  value={thanhPho}
+                  style={{ width: "100%", height: "40px", marginRight: "10px" }}
+                  className="mb-16 mt-7"
                 >
-                  <option value="">Chọn thành phố</option>
-                  {provinces.map((province) => (
-                    <option key={province.code} value={province.code}>
-                      {province.name}
-                    </option>
-                  ))}
-                </select>
+                  {options}
+                </Select>
               </div>
               <div className="mb-6">
-                <label htmlFor="wards" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Chọn xã phường
-                </label>
-                <select
-                  id="wards"
-                  onChange={(e) => handleWardsChange(e.target.value)}
-                  className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                <Select
+                  placeholder="Xã"
+                  onChange={(selectedValue) =>
+                    handleChangeXa(selectedValue)
+                  }
+                  value={xa}
+                  style={{ width: "100%", height: "40px", marginRight: "10px" }}
+                  className="mb-16 mt-9"
                 >
-                  <option value="">Chọn xã phường</option>
-                  {wards.map((ward) => (
-                    <option key={ward.code} value={ward.code}>
-                      {ward.name}
-                    </option>
-                  ))}
-                </select>
+                  {optionXa}
+                </Select>
               </div>
             </div>
 
@@ -529,12 +542,12 @@ export default function ThemKhachHang() {
                 </label>
                 <input
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                 w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                  dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
+                                  rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                  w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                    dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
                   type="date"
-                  name="ngay_sinh"
-                  value={formatDate(ngay_sinh)}
+                  name="ngaySinh"
+                  value={formatDate(ngaySinh)}
                   id="dateInput"
                   style={{
                     width: "100%",
@@ -564,7 +577,7 @@ export default function ThemKhachHang() {
                     aria-labelledby="demo-controlled-radio-buttons-group"
                     name="controlled-radio-buttons-group"
                     value={value}
-                    checked={gioi_tinh === "Nam"}
+                    checked={gioiTinh === "Nam"}
                     onChange={handleChange}
                   >
                     <div style={{ display: "flex", alignItems: "center" }}>
@@ -572,11 +585,11 @@ export default function ThemKhachHang() {
                         value="Nam"
                         control={<Radio />}
                         label="Nam"
-                        checked={gioi_tinh === "Nam"}
+                        checked={gioiTinh === "Nam"}
                         style={{ marginRight: "10px" }}
-                        name="gioi_tinh"
+                        name="gioiTinh"
                       />
-                      <FormControlLabel value="Nữ" name="gioi_tinh" checked={gioi_tinh === "Nữ"} control={<Radio />} label="Nữ" />
+                      <FormControlLabel value="Nữ" name="gioiTinh" checked={gioiTinh === "Nữ"} control={<Radio />} label="Nữ" />
                     </div>
                   </RadioGroup>
                 </FormControl>
@@ -590,9 +603,9 @@ export default function ThemKhachHang() {
                   name="sdt"
                   value={sdt}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20  dark:focus:border-blue-500"
+                                      rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                      w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                        dark:focus:ring-blue-500 mb-20  dark:focus:border-blue-500"
                   placeholder="Số điện thoại"
                   required
                   onChange={(e) => {
@@ -602,21 +615,17 @@ export default function ThemKhachHang() {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="District" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Chọn huyện
-                </label>
-                <select
-                  id="District"
-                  className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  onChange={(e) => handleDistrictChange(e.target.value)}
+                <Select
+                  placeholder="Huyện"
+                  onChange={(selectedValue) =>
+                    handleChangeHuyen(selectedValue)
+                  }
+                  value={huyen}
+                  style={{ width: "100%", height: "40px", marginRight: "15px" }}
+                  className="mb-16 mt-7"
                 >
-                  <option value="">Chọn huyện</option>
-                  {districts.map((district) => (
-                    <option key={district.code} value={district.code}>
-                      {district.name}
-                    </option>
-                  ))}
-                </select>
+                  {optionHuyen}
+                </Select>
               </div>
               <div className="mb-8">
                 <label htmlFor="phone" className="block mb-2 text-xl font-medium text-gray-900">
@@ -627,9 +636,9 @@ export default function ThemKhachHang() {
                   name="soNha"
                   value={soNha}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                    w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                    dark:focus:ring-blue-500 mb-20 mt-4 dark:focus:border-blue-500"
+                                  rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                                      w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                                      dark:focus:ring-blue-500 mb-20 mt-4 dark:focus:border-blue-500"
                   placeholder="Số nhà/Ngõ/Đường"
                   required
                   onChange={(e) => {
@@ -655,6 +664,7 @@ export default function ThemKhachHang() {
               </div>
             </div>
           </div>
+          {/* </Form> */}
         </div>
       </div>
       <Dialog open={deleteConfirmationOpen} onClose={cancelAdd} fullWidth>
@@ -678,7 +688,7 @@ export default function ThemKhachHang() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc muốn sửa khách hàng này?
+            Bạn có chắc muốn sửa nhân viên này?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -686,105 +696,6 @@ export default function ThemKhachHang() {
             Hủy
           </Button>
           <Button color="primary" onClick={onSubmit}>
-            Vẫn sửa
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
-        <DialogTitle>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "15px",
-            }}
-          >
-            <TbInfoTriangle
-              className="mr-2"
-              style={{
-                color: "red",
-                fontSize: "25px",
-              }}
-            />
-            <span>Xác nhận xóa</span>
-          </div>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn xóa địa chỉ này?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} color="warning">
-            Hủy
-          </Button>
-          <Button
-            color="primary"
-            onClick={async () => {
-              console.log(idToDelete);
-              await axios
-                .delete(`http://localhost:8080/dia-chi/delete/${idToDelete}`)
-                .then((response) => {
-                  toast("🎉 Xóa thành công");
-                  getKhachHang();
-                  getDiaChi();
-                  cancelDelete();
-                })
-                .catch((error) => {
-                  toast("😿 " + error.response.data);
-                });
-              cancelDelete();
-            }}
-          >
-            Vẫn xóa
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={openComfirm} onClose={cancelComfirm} fullWidth>
-        <DialogTitle>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "15px",
-            }}
-          >
-            <TbInfoTriangle
-              className="mr-2"
-              style={{
-                color: "red",
-                fontSize: "25px",
-              }}
-            />
-            <span>Xác nhận sửa</span>
-          </div>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn sửa địa chỉ này thành mặc định không?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelComfirm} color="warning">
-            Hủy
-          </Button>
-          <Button color="primary" onClick={() => {
-            const updatedListDiaChi = [...listDiaChi];
-            updatedListDiaChi[indexDiaChi].trangThai = 1;
-            updatedListDiaChi.forEach((item, i) => {
-              if (i !== indexDiaChi) {
-                item.trangThai = 2;
-              }
-            });
-
-            axios.post('http://localhost:8080/dia-chi/switchTrangThai', updatedListDiaChi).then((res) => {
-              // setListDiaChi(res.data);
-              getDiaChi();
-              cancelComfirm();
-              toast("Đặt địa chỉ mặc định thành công");
-            })
-          }}
-          >
             Vẫn sửa
           </Button>
         </DialogActions>

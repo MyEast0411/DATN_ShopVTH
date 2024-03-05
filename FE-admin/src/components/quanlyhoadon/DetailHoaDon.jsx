@@ -305,7 +305,7 @@ export default function   DetailHoaDon() {
         return {
           id: item.id_chi_tiet_san_pham.id,
           imageUrl: item.id_chi_tiet_san_pham.defaultImg,
-          name: item.id_chi_tiet_san_pham.id_san_pham.ten,
+          name: item.id_chi_tiet_san_pham.ten,
           kichco: item.id_chi_tiet_san_pham.id_kich_co.ten,
           mausac: item.id_chi_tiet_san_pham.id_mau_sac.ten,
           quantity: item.soLuong,
@@ -339,7 +339,7 @@ export default function   DetailHoaDon() {
 
   const onHandleUpdate = (idSPCT) => {
     Modal.confirm({
-      title: `bạn có muốn xóa sản phẩm không ?`,
+      title: `Bạn có muốn chỉnh sửa phẩm không ?`,
       okText: "Yes",
       okType: "danger",
       onOk: async () => {
@@ -424,7 +424,22 @@ export default function   DetailHoaDon() {
     });
     setInfo(data);
   };
+  const [kmspcts, setKmspcts] = useState([]);
+  const fetchKMSPCT = async () => {
+    const response = await axios.get(`http://localhost:8080/khuyen-mai/getAllKMSPCT`);
+    setKmspcts(response.data);
+  };
+  useEffect(() => {
+    fetchKMSPCT();
+  }, [kmspcts]);
 
+  const DiscountTag = ({ discount }) => {
+    if (discount === undefined) {
+      return null;
+    }
+
+    return <div className="discount-tag">{`${discount}% OFF`}</div>;
+  };
   return (
     <>
       {contextHolder}
@@ -761,18 +776,36 @@ export default function   DetailHoaDon() {
               <div className="row table-san-pham ">
                 {rowsSPCT.map((item, index) => (
                   <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start" key={index}>
-                    <img
-                      src={item.imageUrl}
-                      alt="product-image"
-                      className="w-full rounded-lg sm:w-40 me-10 object-contain"
-                    />
+                    <div style={{ position: "relative" }}>
+                      <img
+                        src={item.imageUrl}
+                        alt="product-image"
+                        className="w-full rounded-lg sm:w-40 me-10 object-contain"
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          right: 16,
+                          left : -10,
+                          zIndex: 1, // Đảm bảo DiscountTag hiển thị trên img
+                        }}
+                      >
+                        <DiscountTag
+                          discount={
+                            kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+                              ?.id_khuyen_mai.giaTriPhanTram
+                          }
+                        />
+                      </div>
+                    </div>
 
                     <div className="flex justify-between w-full">
                       <div>
                         <div className=" sm:mt-0">
                           <h2 className="text-lg font-medium text-gray-900 mb-3">
                             {item.name}
-                            {item.mausac.substring(3)}
+                            {/* {item.mausac.substring(3)} */}
                           </h2>
                           <p className="mb-3  font-medium text-gray-900">
                             Size: {item.kichco}
@@ -802,7 +835,8 @@ export default function   DetailHoaDon() {
                           &nbsp;₫
                         </p>
 
-                        {listTimeLineOnline.length < 4 &&
+                        {
+                          /* {listTimeLineOnline.length < 4 && */
                           info.trangThai < 4 && (
                             <Tooltip title="Xóa sản phẩm" arrow={true}>
                             <Button
@@ -812,8 +846,10 @@ export default function   DetailHoaDon() {
                               <FaTrash />
                             </Button>
                             </Tooltip>
-                          )}
-                        {listTimeLineOnline.length < 4 &&
+                          )
+                        }
+                        {
+                        //listTimeLineOnline.length < 4 &&
                           info.trangThai < 4 && (
                             <Tooltip title="Chỉnh sửa số lượng" arrow={true}>
                             <Button

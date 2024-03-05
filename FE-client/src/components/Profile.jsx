@@ -114,9 +114,10 @@ export default function Profile() {
 
   useEffect(() => {
     getProvinces().then((data) => {
-      setProvinces(data);
+      setProvinces(data.results);
     });
   }, []);
+
   useEffect(() => {
     const names = provinces.map((item) => item.name);
     setValueTP(names);

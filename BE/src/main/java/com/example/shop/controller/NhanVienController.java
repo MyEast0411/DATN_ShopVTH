@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 @RestController
@@ -100,7 +101,27 @@ public class NhanVienController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
     }
-
+    @PutMapping("/update")
+    public ResponseEntity updateNhanVien(@RequestBody NhanVien nhanVien) {
+        try {
+            NhanVien nv = nhanVienRepository.findByMa(nhanVien.getMa());
+            nv.setTen(nhanVien.getTen());
+            nv.setNgaySinh(nhanVien.getNgaySinh());
+            nv.setGioiTinh(nhanVien.getGioiTinh());
+            nv.setId_chuc_vu(chucVuRepository.getChucVuByTen("Nhân viên"));
+            nv.setEmail(nhanVien.getEmail());
+            nv.setSdt(nhanVien.getSdt());
+            nv.setDiaChi(nhanVien.getDiaChi());
+            nv.setId_chuc_vu(nhanVien.getId_chuc_vu());
+            nv.setNgaySua(new Date());
+            nv.setNguoiSua("Đông");
+            nhanVienRepository.save(nv);
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
+        }
+    }
     @PutMapping("/deleteSoft/{id}")
     public NhanVien deleteSoft(@PathVariable("id") NhanVien nhanVien) {
         nhanVien.setDeleted(0);

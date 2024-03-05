@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { IoIosArrowBack } from "react-icons/io";
 import { notification } from "antd";
 import successIcon from "../assets/successIcon.png";
+import errorIcon from "../assets/errorIcon.png";
 import { getAllHA } from "../apis/SanPham";
 import axios from "axios";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
@@ -167,11 +168,10 @@ export default function Checkout() {
       }
     });
   };
-  useEffect(() => {
-    getDiaChi();
-  }, [diaChi]);
+  
+
   // lay id thanh pho
-  useEffect(() => {
+  const getIdThanhPho = () => {
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
     const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -184,16 +184,17 @@ export default function Checkout() {
         },
       })
       .then((response) => {
-        setProvinces(response.data.data);
         const id_tp = response.data.data.find((item) =>
-          diaChi.thanhPho.includes(item.ProvinceName)
+          item.NameExtension.some((extension) => diaChi.thanhPho.includes(extension))
         )?.ProvinceID;
         setIdTP(id_tp);
       })
-      .catch((error) => {});
-  }, [diaChi, idTP]);
-  // lay id huyen theo api theo id tp
-  useEffect(() => {
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  const getIdHuyen = () => {
+    // lay id huyen theo api theo id tp
     if(idTP != undefined && idTP != '') {
       const apiUrl =
         "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
@@ -212,55 +213,72 @@ export default function Checkout() {
           params: requestData,
         })
         .then((response) => {
-          const id_huyen = response.data.data.find(
-            (item) => item.DistrictName === diaChi.huyen
+          const id_huyen = response.data.data.find((item) =>
+          item.NameExtension.some((extension) => diaChi.huyen.includes(extension))
           )?.DistrictID;
-          setDistrict(response.data.data);
           setIdHuyen(id_huyen);
         })
-        .catch((error) => {});
+        .catch((error) => {
+          console.log(error);
+        });
     }
-  }, [diaChi,idTP]);
+  }
 
-  // lay id xa theo api theo id huyen
-  useEffect(() => {
+  const getIdXa = () => {
     if(idHuyen != undefined && idHuyen != '') {
-    const apiUrl =
-      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
-    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+      const apiUrl =
+        "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
+      const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
 
-    const requestData = {
-      district_id: idHuyen,
-    };
+      const requestData = {
+        district_id: idHuyen,
+      };
 
-    axios
-      .post(apiUrl, requestData, {
-        headers: {
-          "Content-Type": "application/json",
-          Token: token,
-        },
-      })
-      .then((response) => {
-        const id_xa = response.data.data.find(
-          (item) => item.WardName === diaChi.xa
-        )?.WardCode;
-        setIdXa(id_xa);
-        setWard(response.data.data);
-      })
-      .catch((error) => {});
+      axios
+        .post(apiUrl, requestData, {
+          headers: {
+            "Content-Type": "application/json",
+            Token: token,
+          },
+        })
+        .then((response) => {
+          const id_xa = response.data.data.find((item) =>
+          item.NameExtension.some((extension) => diaChi.xa.includes(extension))
+          )?.WardCode;
+          setIdXa(id_xa);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
-  }, [diaChi, idHuyen]);
+  }
+  useEffect(() => {
+    getKhachHang();
+    getDiaChi();
+    getIdThanhPho();
+  }, [diaChi]);
 
   useEffect(() => {
-    const names = provinces.map((item) => item.ProvinceName);
+    getIdHuyen();
+    getIdXa();
+  },[idTP, idHuyen, idXa]);
+  useEffect(() => {
+    getProvinces().then((data) => {
+      setProvinces(data.results);
+    });
+  }, []);
+
+  useEffect(() => {
+    // console.log(provinces);
+    const names = provinces.map((item) => item.province_name);
     setValueTP(names);
 
-    const valueH = district.map((item) => item.DistrictName);
-    setValueHuyen(valueH);
+    // const valueH = district.map((item) => item.DistrictName);
+    // setValueHuyen(valueH);
 
-    const valueX = ward.map((item) => item.WardName);
-    setValueXa(valueX);
-  }, [provinces, district, ward]);
+    // const valueX = ward.map((item) => item.WardName);
+    // setValueXa(valueX);
+  }, [district, ward]);
 
   const [sanPhams, setSanPhams] = useState([]);
   const [dataLocal, setDataLocal] = useState([]);
@@ -388,13 +406,13 @@ export default function Checkout() {
     }
   }, [idTP, idHuyen, idXa]);
 
-  const openNotificationWithIcon = (type, message) => {
+  const openNotificationWithIcon = (type, message, icon) => {
     api[type]({
       message,
       duration: 1,
       icon: (
         <img
-          src={successIcon}
+          src={icon}
           alt=""
           style={{
             width: "7%",
@@ -580,12 +598,12 @@ export default function Checkout() {
             console.log("result:", result);
             localStorage.removeItem("maList");
             setSpinning(true);
-            openNotificationWithIcon("success", "Hoàn tất thanh toán");
+            openNotificationWithIcon("success", "Hoàn tất thanh toán",successIcon);
             setTimeout(() => {
               navigate("/thanh-toan-thanh-cong");
             }, 2000);
           } catch (error) {
-            openNotificationWithIcon("error", error.response.data);
+            openNotificationWithIcon("error", error.response.data,errorIcon);
             console.log(error.response.data);
             // console.error("Error adding to HoaDon:", error);
           } finally {
@@ -658,6 +676,7 @@ export default function Checkout() {
               <div className="inputGroupCodeSignUp">
                 <input
                   name="email"
+                  id="email"
                   type="text"
                   value={user?.email}
                   required
@@ -668,6 +687,7 @@ export default function Checkout() {
               <div className="inputGroupCodeSignUp">
                 <input
                   name="hoTen"
+                  id="hoTen"
                   type="text"
                   value={user?.ten}
                   required
@@ -678,6 +698,7 @@ export default function Checkout() {
               <div className="inputGroupCodeSignUp">
                 <input
                   name="soDienThoai"
+                  id="soDienThoai"
                   type="number"
                   required
                   autoComplete="off"
@@ -688,6 +709,7 @@ export default function Checkout() {
               <div className="inputGroupCodeSignUp">
                 <input
                   name="diaChi"
+                  id="diaChi"
                   type="text"
                   required
                   autoComplete="off"
@@ -726,10 +748,10 @@ export default function Checkout() {
 
               <h2 className="text-[16px] pb-2">Phương thức thanh toán</h2>
               <div className="main-choose-payment-method">
-                {/* onChange={onChange} */}
-                <Radio.Group value={value}>
+                
+                <Radio.Group value={value} onChange={onChange}>
                   <Space direction="vertical">
-                    <Radio value={1} className="rdo">
+                    <Radio value={1} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan1">
                       <div className="flex items-center pt-1">
                         <img
                           src="https://dienthoaigiasoc.vn/wp-content/uploads/2018/12/capitech_hinhthucthanhtoan.png"
@@ -739,7 +761,7 @@ export default function Checkout() {
                         <p>Thanh toán khi nhận hàng</p>
                       </div>
                     </Radio>
-                    <Radio value={2} className="rdo">
+                    <Radio value={2} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan2">
                       <div className="flex items-center pt-1">
                         <img
                           src="https://static.thenounproject.com/png/407799-200.png"
@@ -764,7 +786,7 @@ export default function Checkout() {
                         </div>
                       ) : null}
                     </Radio>
-                    <Radio value={3} className="rdo">
+                    <Radio value={3} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan3">
                       <div className="flex items-center pt-1">
                         <img
                           src="data:image/png;base64,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"
@@ -845,6 +867,7 @@ export default function Checkout() {
                 placeholder="Mã phiếu giảm giá"
                 type="text"
                 name="codeVC"
+                id="codeVC"
                 className="input-maGiamGia"
                 value={codeVC}
               />
@@ -917,19 +940,19 @@ export default function Checkout() {
             </div>
           </div>
           {listDiaChi.map((item, index) => (
-            <div className="w-full mb-10">
+            <div className="w-full mb-10" key={index}>
               <div className="flex justify-between space-x-4">
                 <div className="flex items-center">
                   <input
                     type="radio"
                     name="checkBoxDiaChi"
                     id="checkBoxDiaChi"
-                    checked
+                    checked={item.trangThai == 1 ? true : false}
                   />
                 </div>
                 <div className="w-1/2">
                   <p className="mb-3">Địa chỉ {index + 1}</p>
-                  <p className="mb-3">{`${item.duong}, xã ${item.xa}, huyện ${item.huyen}, thành phố ${item.thanhPho}`}</p>
+                  <p className="mb-3">{`${item.duong}, ${item.xa}, ${item.huyen},${item.thanhPho}`}</p>
                   {item.trangThai === 1 ? (
                     <p
                       className="w-1/4 p-1"
@@ -945,21 +968,6 @@ export default function Checkout() {
               </div>
             </div>
           ))}
-
-          {/* <div className="w-full">
-            <div className="flex justify-between space-x-4">
-              <div className="flex items-center">
-              <input type="radio" name="checkBoxDiaChi" id="checkBoxDiaChi" />
-              </div>
-              <div className="w-1/2">
-                <p className="mb-3">Địa chỉ 2</p>
-                <p className="mb-3">Số 125 Đường Nhuệ Giang, xã Tân Hội, huyện Đan Phượng, thành phố Hà Nội</p>
-              </div>
-              <div className="flex items-center">
-                <Button>Đặt địa chỉ mặc định</Button>
-              </div>
-            </div>
-          </div> */}
         </Modal>
       </div>
     </>

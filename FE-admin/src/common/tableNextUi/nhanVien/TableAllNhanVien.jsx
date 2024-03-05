@@ -205,7 +205,7 @@ export default function App() {
           <Image
             style={{ height: "120px", width: "150px" }}
             src={hinhAnhURL}
-            alt={sanPham.ten || "Ảnh sản phẩm"}
+            alt={"Ảnh nhân viên"}
             classNames="m-5"
           />
         );
