@@ -145,7 +145,7 @@ public class KhachHangController {
             diaChiRepository.save(diaChi);
 
             //gui mail
-            SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
+//            SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
 
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {

@@ -52,8 +52,6 @@ public class UploadAnh {
 //        }
 //    }
     public static String upload(String urlImg) {
-//        urlImg = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
-
         String userHome = System.getProperty("user.home");
 
         // Kết hợp với đường dẫn "Pictures/Saved Pictures"
@@ -63,10 +61,6 @@ public class UploadAnh {
         Path path = Paths.get(fullPath);
         File imageFile = new File(path+"\\"+urlImg);
         System.out.println(imageFile);
-
-
-
-//        File imageFile = new File("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\"+urlImg);
 
         if (imageFile.exists()) {
             try {
