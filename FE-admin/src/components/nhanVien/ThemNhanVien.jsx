@@ -1,14 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { QrReader } from "react-qr-reader";
-import { Modal, Select } from "antd";
-const { Option } = Select;
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
-import { AiOutlinePlus } from "react-icons/ai";
+import { Modal, Form, Input, Select } from "antd";
+import {
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
-import { parse } from "date-fns";
+import { AiOutlinePlus } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { Button as ButtonAnt } from "antd";
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { Button } from "@nextui-org/react";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
@@ -40,7 +50,7 @@ export default function ThemNhanVien() {
 
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
-      if (item.code == provinceCode) {
+      if (item.province_id == provinceCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
           thanhPho: item.province_name,
@@ -54,7 +64,7 @@ export default function ThemNhanVien() {
 
   const handleDistrictChange = (districtCode) => {
     districts.map((item) => {
-      if (item.code == districtCode) {
+      if (item.district_id == districtCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
           huyen: item.district_name,
@@ -68,7 +78,7 @@ export default function ThemNhanVien() {
 
   const handleWardsChange = (wardsCode) => {
     wards.map((item) => {
-      if (item.code == wardsCode) {
+      if (item.ward_id == wardsCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
           xa: item.ward_name,
@@ -89,11 +99,10 @@ export default function ThemNhanVien() {
     soNha: "",
     xa: "",
     huyen: "",
-    thanhPho: "",
-    id_thuong_hieu: "",
+    thanhPho: ""
   });
 
-  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, chucVu, soNha, xa, huyen, tinh, id_thuong_hieu } = khachHang;
+  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, chucVu, soNha, xa, huyen, thanhPho } = khachHang;
 
   function parseDate(input) {
     var parts = input.match(/(\d{2})(\d{2})(\d{4})/);
@@ -105,6 +114,7 @@ export default function ThemNhanVien() {
     }
     return null; // Trả về null nếu chuỗi không hợp lệ
   }
+
   // modal thêm chức vụ
   const [isModalOpenCV, setIsModalOpenCV] = useState(false);
   const [tenChucVu, setTenChucVu] = useState("");
@@ -145,7 +155,7 @@ export default function ThemNhanVien() {
 
   useEffect(() => {
     getAllChucVu();
-  }, [listChucVu]);
+  }, []);
 
   const options = listChucVu.map((item) => (
     <Option key={item.id} value={item.id}>
@@ -154,9 +164,10 @@ export default function ThemNhanVien() {
   ));
 
   const onChange = (e) => {
-    console.log(e.target.value);
+    console.log(e.target.name);
     setKhachHang({ ...khachHang, [e.target.name]: e.target.value });
   };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -166,20 +177,6 @@ export default function ThemNhanVien() {
   };
   const handleCancel = () => {
     setIsModalOpen(false);
-  };
-  const handleStartScanning = () => {
-    setShowScanner(true);
-  };
-
-  const handleEndScanning = () => {
-    setShowScanner(false);
-  };
-
-  const handleScan = (data) => {
-    if (data) {
-      console.log(data);
-      handleOk();
-    }
   };
 
   const handleError = (error) => {
@@ -194,6 +191,7 @@ export default function ThemNhanVien() {
   const imgDivRef = useRef(null);
   const imgLink = "https://i.ibb.co/TKQqYvT/";
   const handleImageUpload = (e) => {
+    console.log(e);
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -205,72 +203,19 @@ export default function ThemNhanVien() {
         console.log(khachHang);
         imgDivRef.current.style.backgroundImage = `url(${imageUrl})`;
         imgDivRef.current.style.backgroundSize = "cover";
+        // Sử dụng useRef để đặt nền ảnh
       };
       reader.readAsDataURL(file);
     }
   };
-  const [errTen, setErrTen] = useState("");
-  const [errSdt, setErrSDT] = useState("");
-  const [errEmail, setErrEmail] = useState("");
-  const [errSoNha, setErrSoNha] = useState("");
-  // sdt
-  function validatePhoneNumber(phoneNumber) {
-    var regex = /^(0[2-9][0-9]{8})$/;
-    return regex.test(phoneNumber);
-  }
-  // email
-  function validateEmail(email) {
-    // Biểu thức chính quy cho địa chỉ email
-    var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    // Kiểm tra xem email có khớp với định dạng không
-    return regex.test(email);
-  }
+
+  const [form] = Form.useForm();
+
   const onSubmit = async () => {
-    // check validate
-    // ten
-    var check = true;
-    if (khachHang.ten == "") {
-      setErrTen("* Không được để trống tên");
-      check = false;
-    } else {
-      setErrTen("");
-    }
-    // so nha
-    var check = true;
-    if (khachHang.soNha == "") {
-      setErrSoNha("* Không được để trống số nhà/ngõ/đường");
-      check = false;
-    } else {
-      setErrSoNha("");
-    }
-    // sdt
+    try {
+      // Kiểm tra hợp lệ của form
+      await form.validateFields();
 
-    if (khachHang.sdt == "") {
-      setErrSDT("* Không được để trống số điện thoại");
-      check = false;
-    } else {
-      if (validatePhoneNumber(khachHang.sdt)) {
-        setErrSDT("");
-      } else {
-        setErrSDT("* SDT không hợp lệ");
-        check = false;
-      }
-    }
-
-    // email
-    if (khachHang.email == "") {
-      setErrEmail("* Không được để trống email");
-      check = false;
-    } else {
-      if (validateEmail(khachHang.email)) {
-        setErrEmail("");
-      } else {
-        setErrEmail("* Email không hợp lệ");
-        check = false;
-      }
-    }
-
-    if (check) {
       await axios
         .post("http://localhost:8080/nhan_vien/add", khachHang)
         .then((response) => {
@@ -280,17 +225,14 @@ export default function ThemNhanVien() {
         .catch((error) => {
           toast.error(`😢 Thêm thất bại`);
         });
+      cancelAdd();
+    } catch (error) {
+      console.log(error);
+      cancelAdd();
     }
-    cancelAdd();
   };
-
   return (
     <>
-      <div className="mb-2 font-normal border-gray-500 text-lg flex items-center">
-        <p className="mt-1 mb-3" style={{ fontSize: "30px", fontWeight: "bolder" }}>
-          👥 Thêm nhân viên
-        </p>
-      </div>
       <div
         class="grid grid-cols-3 gap-4 m-5"
         style={{
@@ -321,44 +263,74 @@ export default function ThemNhanVien() {
               }}
               ref={imgDivRef}
             >
-              <span className="absolute text-4xl" style={{ top: "40%", left: "47%" }}>
+              <span
+                className="absolute text-4xl"
+                style={{ top: "40%", left: "47%" }}
+              >
                 +
               </span>
               <div className="absolute" style={{ top: "54%", left: "42%" }}>
-                <button onClick={() => fileInputRef.current.click()}>Tải ảnh</button>
+                <button onClick={() => fileInputRef.current.click()}>
+                  Tải ảnh
+                </button>
               </div>
             </div>
           </div>
-          <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} ref={fileInputRef} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+            ref={fileInputRef}
+          />
         </div>
+
         <div className="col-span-2 m-10">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="left">
-              <div className="mb-8">
-                <label htmlFor="phone" className="block  text-xl font-medium text-gray-900">
-                  Tên nhân viên
-                </label>
-                <input
-                  value={ten}
-                  name="ten"
-                  type="text"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="Nhập tên nhân viên"
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-                <p style={{ color: "red" }}>{errTen}</p>
-              </div>
-              <div className="mb-8" style={{ display: "block" }}>
-                <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
-                  Chức vụ
-                </label>
-                <div className="flex">
+          <Form
+            form={form}
+            initialValues={{
+              remember: true,
+            }}
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <div className="left">
+                <div className="mb-20">
+                  <p className="pb-2 font-bold">Tên khách hàng</p>
+                  <Form.Item
+                    name="ten"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Họ tên nhân viên không được để trống!",
+                      },
+                      {
+                        validator: (_, value) => {
+                          if (/\d/.test(value)) {
+                            return Promise.reject("Họ tên nhân viên không được chứa số!");
+                          } else {
+                            return Promise.resolve();
+                          }
+                      }},
+                    ]}
+                  >
+                    <Input
+                      value={ten}
+                      name="ten"
+                      style={{ height: "42px" }}
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                      placeholder="Nhập họ tên nhân viên"
+                    />
+                  </Form.Item>
+                </div>
+
+                <div className="mb-8" style={{ display: "block" }}>
+                  <p className="pb-2 font-bold">Chức vụ </p>
+                  <Form.Item
+                    name="chucVu"
+                  >
+                    <div className="flex">
                   <Select
                     placeholder="Chức vụ"
                     value={chucVu}
@@ -413,241 +385,297 @@ export default function ThemNhanVien() {
                     />
                   </div>
                 </Modal>
-              </div>
-              <div className="mb-8">
-                <label htmlFor="phone" className="block pt-2 text-xl font-medium text-gray-900">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  name="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  placeholder="Email"
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-                <p style={{ color: "red" }}>{errEmail}</p>
-              </div>
-              <div className="mb-8">
-                <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Chọn thành phố
-                </label>
-                <select
-                  id="city"
-                  className="bg-gray-50 border mb-24 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  onChange={(e) => handleProvinceChange(e.target.value)}
-                >
-                  <option value="">Chọn thành phố</option>
-                  {provinces.map((province) => (
+                  </Form.Item>
+                </div>
+
+                <div className="mb-20">
+                  <p className="pb-2 text-xl">Email nhân viên</p>
+                  <Form.Item
+                    name="email"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Email nhân viên đang để trống!",
+                      },
+                      {
+                        pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                        message: "Email nhân viên không hợp lệ!",
+                      },
+                    ]}
+                  >
+                    <Input
+                      value={email}
+                      name="email"
+                      style={{ height: "42px" }}
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                      placeholder="Nhập email nhân viên"
+                    />
+                  </Form.Item>
+                </div>
+                <div className="mb-8">
+                  <label
+                    htmlFor="city"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Chọn thành phố
+                  </label>
+                  <select
+                    id="city"
+                    className="bg-gray-50 border mb-24 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(e) => handleProvinceChange(e.target.value)}
+                  >
+                    <option value="">Chọn thành phố</option>
+                    {provinces.map((province) => (
                       <option key={province.province_id} value={province.province_id}>
                         {province.province_name}
                       </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-6">
-                <label htmlFor="wards" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Chọn xã phường
-                </label>
-                <select
-                  id="wards"
-                  onChange={(e) => handleWardsChange(e.target.value)}
-                  className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                >
-                  <option value="">Chọn xã phường</option>
-                  {wards.map((ward) => (
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="wards"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Chọn xã phường
+                  </label>
+                  <select
+                    id="wards"
+                    onChange={(e) => handleWardsChange(e.target.value)}
+                    className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  >
+                    <option value="">Chọn xã phường</option>
+                    {wards.map((ward) => (
                       <option key={ward.ward_id} value={ward.ward_id}>
                         {ward.ward_name}
                       </option>
-                  ))}
-                </select>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
 
-            <div className="right relative">
-              <div className="mb-8">
-                <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
-                  Ngày sinh
-                </label>
-                <input
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+              <div className="right relative">
+                <div className="mb-12">
+                  <label htmlFor="phone" className="block text-xl font-bold">
+                    Ngày sinh
+                  </label>
+                  <Input
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                 rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                  w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                                   dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                  type="date"
-                  name="ngay_sinh"
-                  value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ngay_sinh}
-                  id="dateInput"
-                  style={{
-                    width: "100%",
-                  }}
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-                <button
-                  type="button"
-                  style={{
-                    position: "absolute",
-                    top: -40,
-                    right: 0,
-                    fontSize: 15,
-                    borderRadius: 5,
-                    align: "left",
-                  }}
-                  className="bg-blue-500 text-white rounded w-32 h-10"
-                  onClick={showModal}
-                >
-                  <img src="https://cdn-icons-png.flaticon.com/512/241/241521.png" className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2" />
-                  <span className="ml-8">Quét QR</span>
-                </button>
-                <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ position: "relative" }} className="">
-                  <div>
-                    <QrReader
-                      onResult={(data) => {
-                        if (data != undefined) {
-                          handleOk();
-                          console.log(data.text);
-                          function splitString(inputString) {
-                            const values = inputString.split("|");
-                            return values;
-                          }
-                          const result = splitString(data.text);
-                          console.log(result);
-                          setKhachHang({
-                            ...khachHang,
-                            ten: result[2],
-                            cccd: result[0],
-                            ngay_sinh: result[3],
-                            gioi_tinh: result[4],
-                          });
-                        }
-                      }}
-                      onError={handleError}
-                      style={{ width: "100%" }}
+                    type="date"
+                    name="ngay_sinh"
+                    value={
+                      parseDate(ngay_sinh)
+                        ? parseDate(ngay_sinh).toISOString().slice(0, 10)
+                        : ngay_sinh
+                    }
+                    id="dateInput"
+                    style={{
+                      width: "100%",
+                    }}
+                    max={new Date().toISOString().slice(0, 10)}
+                    onChange={(e) => {
+                      onChange(e);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    style={{
+                      position: "absolute",
+                      top: -40,
+                      right: 0,
+                      fontSize: 15,
+                      borderRadius: 5,
+                      align: "left",
+                    }}
+                    className="bg-blue-500 text-white rounded w-32 h-10"
+                    onClick={showModal}
+                  >
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/241/241521.png"
+                      className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2"
                     />
-                  </div>
-                </Modal>
-              </div>
-              <div className="mb-8 flex">
-                <FormControl>
-                  <FormLabel
-                    id="demo-controlled-radio-buttons-group"
-                    style={{
-                      fontWeight: "bold",
-                      color: "#212121",
-                      fontSize: "20px",
-                    }}
+                    <span className="ml-8">Quét QR</span>
+                  </button>
+                  <Modal
+                    open={isModalOpen}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    style={{ position: "relative" }}
+                    className=""
                   >
-                    Giới tính
-                  </FormLabel>
-                  <RadioGroup
-                    style={{
-                      display: "flex",
-                    }}
-                    aria-labelledby="demo-controlled-radio-buttons-group"
-                    name="controlled-radio-buttons-group"
-                    value={value}
-                    checked={gioi_tinh === "Nam"}
-                    onChange={handleChange}
-                  >
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <FormControlLabel
-                        value="Nam"
-                        control={<Radio />}
-                        label="Nam"
-                        checked={gioi_tinh === "Nam"}
-                        style={{ marginRight: "10px" }}
-                        name="gioi_tinh"
+                    <div>
+                      <QrReader
+                        onResult={(data) => {
+                          if (data != undefined) {
+                            handleOk();
+                            function splitString(inputString) {
+                              const values = inputString.split("|");
+                              return values;
+                            }
+                            const result = splitString(data.text);
+                            console.log(result);
+                            setKhachHang({
+                              ...khachHang,
+                              ten: result[2],
+                              cccd: result[0],
+                              ngay_sinh: result[3],
+                              gioi_tinh: result[4],
+                            });
+                          }
+                        }}
+                        onError={handleError}
+                        style={{ width: "100%" }}
                       />
-                      <FormControlLabel value="Nữ" name="gioi_tinh" checked={gioi_tinh === "Nữ"} control={<Radio />} label="Nữ" />
                     </div>
-                  </RadioGroup>
-                </FormControl>
-              </div>
-              <div className="mb-8">
-                <label htmlFor="phone" className="block pt-14 text-xl font-medium text-gray-900">
-                  Số điện thoại
-                </label>
-                <input
-                  type="number"
-                  name="sdt"
-                  value={sdt}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                    rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                      dark:focus:ring-blue-500 mb-20  dark:focus:border-blue-500"
-                  placeholder="Số điện thoại"
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-                <p style={{ color: "red" }}>{errSdt}</p>
-              </div>
+                  </Modal>
+                </div>
+                <div className="flex" style={{ marginBottom: "89px" }}>
+                  <FormControl>
+                    <FormLabel
+                      id="demo-controlled-radio-buttons-group"
+                      style={{
+                        fontWeight: "bold",
+                        color: "#212121",
+                        fontSize: "17px",
+                      }}
+                    >
+                      Giới tính
+                    </FormLabel>
+                    <RadioGroup
+                      style={{
+                        display: "flex",
+                      }}
+                      aria-labelledby="demo-controlled-radio-buttons-group"
+                      name="controlled-radio-buttons-group"
+                      value={value}
+                      onChange={handleChange}
+                    >
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <FormControlLabel
+                          value="Nam"
+                          control={<Radio />}
+                          label="Nam"
+                          checked={gioi_tinh === "Nam"}
+                          style={{ marginRight: "10px" }}
+                        />
+                        <FormControlLabel
+                          value="Nữ"
+                          checked={gioi_tinh === "Nữ"}
+                          control={<Radio />}
+                          label="Nữ"
+                        />
+                      </div>
+                    </RadioGroup>
+                  </FormControl>
+                </div>
+                <div className="mb-20">
+                  <p className="pb-2 text-xl">Số điện thoại</p>
+                  <Form.Item
+                    name="sdt"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Số điện thoại đang trống!",
+                      },
+                      {
+                        pattern: /^0[0-9]{9}$/,
+                        message:
+                          "Sai định dạng số điện thoại!",
+                      }
+                    ]}
+                  >
+                    <Input
+                      value={sdt}
+                      name="sdt"
+                      style={{ height: "42px" }}
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                      placeholder="Nhập số điện thoại"
+                    />
+                  </Form.Item>
+                </div>
 
-              <div className="mb-6">
-                <label htmlFor="District" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Chọn huyện
-                </label>
-                <select
-                  id="District"
-                  className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  onChange={(e) => handleDistrictChange(e.target.value)}
-                >
-                  <option value="">Chọn huyện</option>
-                  {districts.map((district) => (
+                <div className="mb-6">
+                  <label
+                    htmlFor="District"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Chọn huyện
+                  </label>
+                  <select
+                    id="District"
+                    className="bg-gray-50 border mb-20 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(e) => handleDistrictChange(e.target.value)}
+                  >
+                    <option value="">Chọn huyện</option>
+                    {districts.map((district) => (
                       <option key={district.district_id} value={district.district_id}>
                         {district.district_name}
                       </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-8">
-                <label htmlFor="phone" className="block mb-2 text-xl font-medium text-gray-900">
-                  Số nhà/Ngõ/Đường
-                </label>
-                <input
-                  type="text"
-                  name="soNha"
-                  value={soNha}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-8">
+                  <label
+                    htmlFor="phone"
+                    className="block text-xl font-medium text-gray-900"
+                  >
+                    Số nhà/Ngõ/Đường
+                  </label>
+                  <Form.Item
+                    name="soNha"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Số nhà/Ngõ/Đường đang trống!",
+                      }
+                    ]}
+                  >
+                    <input
+                      type="text"
+                      name="soNha"
+                      value={soNha}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                 rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                     w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                    dark:focus:ring-blue-500 mb-20 mt-4 dark:focus:border-blue-500"
-                  placeholder="Số nhà/Ngõ/Đường"
-                  required
-                  onChange={(e) => {
-                    onChange(e);
-                  }}
-                />
-                <p style={{ color: "red" }}>{errSoNha}</p>
-              </div>
-              <div className="mt-6 flex items-center justify-end gap-x-6">
-                <Link to="/quan-ly-tai-khoan/nhan-vien" type="button" className="text-sm rounded-md  font-semibold leading-6 text-gray-900">
-                  Cancel
-                </Link>
+                                    dark:focus:ring-blue-500 mt-4 dark:focus:border-blue-500"
+                      placeholder="Số nhà/Ngõ/Đường"
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="mt-6 flex items-center justify-end gap-x-6">
+                  <Link
+                    to="/quan-ly-tai-khoan/khach-hang"
+                    type="button"
+                    className="text-sm rounded-md  font-semibold leading-6 text-gray-900"
+                  >
+                    Cancel
+                  </Link>
 
-                <ButtonAnt
-                  type="primary"
-                  style={{
-                    backgroundColor: "#1976d2",
-                    marginBottom: "2px",
-                  }}
-                  onClick={handleAdd}
-                >
-                  Hoàn tất
-                </ButtonAnt>
+                  <ButtonAnt
+                    htmlType="submit"
+                    style={{
+                      backgroundColor: "#1976d2",
+                      marginBottom: "2px",
+                    }}
+                    onClick={handleAdd}
+                    type="primary"
+                  >
+                    Hoàn tất
+                  </ButtonAnt>
+                </div>
               </div>
             </div>
-          </div>
+          </Form>
         </div>
       </div>
       <Dialog open={deleteConfirmationOpen} onClose={cancelAdd} fullWidth>
@@ -670,7 +698,9 @@ export default function ThemNhanVien() {
           </div>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>Bạn có chắc muốn thêm nhân viên này?</DialogContentText>
+          <DialogContentText>
+            Bạn có chắc muốn thêm nhân viên này?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelAdd} color="warning">

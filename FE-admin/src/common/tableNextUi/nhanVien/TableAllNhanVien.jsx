@@ -74,7 +74,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App() {
+export default function App({ data, dataSearch, status }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -120,30 +120,52 @@ export default function App() {
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
 
-  React.useEffect(() => {
-    async function fetchChiTietSanPham() {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/nhan_vien/getAll"
-        );
-        const updatedRows = response.data.map((item, index) => ({
-          id: item.id,
-          stt: index + 1,
-          maKH: item.ma,
-          anh: item.anh,
-          hoTen: item.ten,
-          chucVu: item?.id_chuc_vu.ten,
-          sdt: item.sdt,
-          ngaySinh: item.diaChi,
-          trangThai: item.trang_thai == 1 ? "Đang làm" : "Đã nghỉ",
-        }));
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
+  const fetchChiTietSanPham = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/nhan_vien/getAll"
+      );
+      const updatedRows = response.data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        maKH: item.ma,
+        anh: item.anh,
+        hoTen: item.ten,
+        chucVu: item?.id_chuc_vu.ten,
+        sdt: item.sdt,
+        ngaySinh: item.diaChi,
+        trangThai: item.trang_thai == 1 ? "Đang làm" : "Đã nghỉ",
+      }));
+      setSanPhams(updatedRows);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
     }
-    fetchChiTietSanPham();
-  }, [sanPhams]);
+  }
+
+  useEffect(() => {
+    if (status == -1) {
+      fetchChiTietSanPham();
+    } else if (data.length == 0) {
+      setSanPhams([]);
+    } else {
+      const updatedRows = data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        maKH: item.ma,
+        anh: item.anh,
+        hoTen: item.ten,
+        chucVu: item?.id_chuc_vu.ten,
+        sdt: item.sdt,
+        ngaySinh: item.diaChi,
+        trangThai: item.trang_thai == 1 ? "Đang làm" : "Đã nghỉ",
+      }));
+      setSanPhams(updatedRows);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    setFilterValue(dataSearch.trim());
+  }, [dataSearch]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -176,7 +198,7 @@ export default function App() {
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length /rowsPerPage : 1);
+  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;

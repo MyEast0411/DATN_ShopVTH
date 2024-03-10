@@ -71,15 +71,12 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App({ data, dataSearch }) {
+export default function App({ data, dataSearch, status }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
   const [rows, setRows] = React.useState([]);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
-
-  
-
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -115,29 +112,34 @@ export default function App({ data, dataSearch }) {
       console.error("Lỗi khi gọi API: ", error);
     }
   }
-  if (data.length == 0) {
-    fetchChiTietSanPham();
-  } else {
-    const updatedRows = data.map((item, index) => ({
-      id: item.id,
-      stt: index + 1,
-      maKH: item.ma,
-      anh: item.anhNguoiDung,
-      hoTen: item.ten,
-      cccd: item.email,
-      sdt: item.sdt,
-      ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
-      trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
-    }));
-    setSanPhams(updatedRows);
-  }
-  React.useEffect(() => {
-    fetchChiTietSanPham();
+  
+  
+
+  useEffect(() => {
+    if(status == -1) {
+      fetchChiTietSanPham();
+    } else if (data.length == 0) {
+      setSanPhams([]);
+    } else {
+      const updatedRows = data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        maKH: item.ma,
+        anh: item.anhNguoiDung,
+        hoTen: item.ten,
+        cccd: item.email,
+        sdt: item.sdt,
+        ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
+        trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
+      }));
+      setSanPhams(updatedRows);
+    }
   }, [data]);
 
   useEffect(() => {
     setFilterValue(dataSearch.trim());
   }, [dataSearch]);
+
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);

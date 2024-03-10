@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 //filter
 import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
@@ -20,7 +20,7 @@ import axios from "axios";
 export default function KhachHang() {
   const [search, setSearch] = React.useState("");
   const [data, setData] = React.useState([]);
-
+  const [status, setStatus] = useState("-1");
   const onSearchChange = React.useCallback((value) => {
     if (value) {
       setSearch(value);
@@ -29,12 +29,21 @@ export default function KhachHang() {
     }
   }, []);
   const handleChange = async (selectedValue) => {
-    const result = await axios.post(`http://localhost:8080/filterKhachHang`, {
-      selectedStatus: selectedValue,
-      textInput: search
-    })
-    setData(result.data);
+    setStatus(selectedValue);
+    if (selectedValue == -1) {
+      const result = await axios.get(
+        "http://localhost:8080/khach-hang/getAll"
+      );
+      setData(result.data);
+    } else {
+      const result = await axios.post(`http://localhost:8080/filterKhachHang`, {
+        selectedStatus: selectedValue,
+        textInput: search
+      })
+      setData(result.data);
+    }
   };
+
 
   return (
     <>
@@ -93,9 +102,9 @@ export default function KhachHang() {
                 />
               </div>
             </div>
-            <div className="p-5">
+            {/* <div className="p-5">
               <Slider style={{ width: "100%" }} />
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -128,7 +137,7 @@ export default function KhachHang() {
           }}
         >
           <div>
-            <TableAllKhachHang data={data} dataSearch={search} />
+            <TableAllKhachHang data={data} dataSearch={search} status={status}/>
           </div>
         </div>
       </div>
