@@ -7,6 +7,8 @@ import com.example.shop.entity.NhanVien;
 import com.example.shop.repositories.ChucVuRepository;
 import com.example.shop.repositories.NhanVienRepository;
 import com.example.shop.requests.ChucVuRequest;
+import com.example.shop.requests.SearchKhachHangRequest;
+import com.example.shop.requests.SearchNhanVienRequest;
 import com.example.shop.util.SendMail;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.KhachHangVM;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 @RestController
@@ -37,7 +40,7 @@ public class NhanVienController {
     }
     @GetMapping("/getAllChucVu")
     public ResponseEntity getAllChucVu() {
-        return ResponseEntity.ok(chucVuRepository.findAll());
+        return ResponseEntity.ok(chucVuRepository.getAllChucVu());
     }
     @PostMapping("/addChucVu")
     public ResponseEntity addChucVu(@RequestBody ChucVuRequest request) {
@@ -60,7 +63,15 @@ public class NhanVienController {
     public NhanVien findByMa(@PathVariable String ma) {
         return nhanVienRepository.findByMa(ma);
     }
-
+    @PostMapping("/filterNhanVien")
+    public ResponseEntity filterKhachHang(@RequestBody SearchNhanVienRequest nhanVien) {
+        try {
+            List<NhanVien> list = nhanVienRepository.filter(nhanVien.getSelectedStatus(),nhanVien.getTextInput(),nhanVien.getTextInput());
+            return ResponseEntity.ok(list);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
+        }
+    }
     @PostMapping("/add")
     public ResponseEntity add(@RequestBody NhanVienVM khachHang) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -88,7 +99,7 @@ public class NhanVienController {
             kh.setGioiTinh(khachHang.getGioi_tinh());
             kh.setNgaySinh(dateFormat.parse(khachHang.getNgay_sinh()));
             kh.setSdt(khachHang.getSdt());
-            kh.setDiaChi(khachHang.getSoNha() + "," + khachHang.getXa() + "," + khachHang.getHuyen());
+            kh.setDiaChi(khachHang.getSoNha() + "," + khachHang.getXa() + "," + khachHang.getHuyen() + "," + khachHang.getThanhPho());
             kh.setTrang_thai("1");
             kh.setDeleted(1);
             kh.setId_chuc_vu(chucVuRepository.findById(khachHang.getChucVu()).get());

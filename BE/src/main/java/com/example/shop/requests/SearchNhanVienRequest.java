@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SearchKhachHangRequest {
+public class SearchNhanVienRequest {
     private Integer selectedStatus;
     private String textInput;
 }
