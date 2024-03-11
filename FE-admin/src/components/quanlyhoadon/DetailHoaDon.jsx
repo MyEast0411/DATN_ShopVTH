@@ -4,7 +4,7 @@ import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import axios from "axios";
-import { Table, Tag, message, Modal, Input } from "antd";
+import { Table, Tag, message, Modal, Input, Tooltip } from "antd";
 import { format } from "date-fns";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
 import { GiConfirmed, GiReceiveMoney } from "react-icons/gi";
@@ -1003,7 +1003,7 @@ export default function DetailHoaDon() {
           </div>
         </div>
       </div>
-      <Dialog open={deleteConfirmationOpen} fullWidth>
+      {/* <Dialog open={deleteConfirmationOpen} fullWidth>
         <DialogTitle>
           <div
             style={{
@@ -1035,7 +1035,7 @@ export default function DetailHoaDon() {
             Cập nhật
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 }

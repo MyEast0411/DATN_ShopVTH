@@ -19,41 +19,7 @@ public class UploadAnh {
 
     private static final String IMGUR_CLIENT_ID = "9df5d9cecb5d8ee";
 
-//    public static void main(String[] args) {
-//        String imagePath = "C:\\Users\\Admin\\Pictures\\Saved Pictures\\hoi_va_trang.jpg";
-//
-//        File imageFile = new File(imagePath);
-//
-//        if (imageFile.exists()) {
-//            try {
-//                Retrofit retrofit = new Retrofit.Builder()
-//                        .baseUrl("https://api.imgur.com/3/")
-//                        .addConverterFactory(GsonConverterFactory.create())
-//                        .build();
-//
-//                ImgurService imgurService = retrofit.create(ImgurService.class);
-//
-//                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), imageFile);
-//                MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), requestBody);
-//
-//                Call<ImgurResponse> call = imgurService.uploadImage("Client-ID " + IMGUR_CLIENT_ID, imagePart);
-//                ImgurResponse response = call.execute().body();
-//
-//                if (response != null && response.success) {
-//                    System.out.println("Ảnh đã được tải lên thành công! Link Imgur: " + response.data.link);
-//                } else {
-//                    System.err.println("Không thể tải lên ảnh lên Imgur.");
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            System.err.println("Không tìm thấy tệp ảnh.");
-//        }
-//    }
     public static String upload(String urlImg) {
-//        urlImg = "C:\\Users\\ASUS\\Pictures\\Saved Pictures\\hoivatrang.png";
-
         String userHome = System.getProperty("user.home");
 
         // Kết hợp với đường dẫn "Pictures/Saved Pictures"
@@ -63,10 +29,6 @@ public class UploadAnh {
         Path path = Paths.get(fullPath);
         File imageFile = new File(path+"\\"+urlImg);
         System.out.println(imageFile);
-
-
-
-//        File imageFile = new File("C:\\Users\\NGUYEN VAN HOI\\OneDrive\\Hình ảnh\\Saved Pictures\\"+urlImg);
 
         if (imageFile.exists()) {
             try {

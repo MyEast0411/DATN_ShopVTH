@@ -68,7 +68,7 @@ export default function DetailVoucher() {
           setDataHoaDon(response.data.map((data) =>({
             id: data.id,
             ma: data.ma, 
-            giaTriMax: data.id_voucher.giaTriMax, 
+            giaTriMax: Intl.NumberFormat().format(data.id_voucher.giaTriMax), 
             ngaySuDung: data.ngayTao,
             khachHang: data.id_khach_hang==null?"Trang":data.id_khach_hang.ten,
           })))
@@ -169,7 +169,7 @@ export default function DetailVoucher() {
         <Space size="middle">
           <Link
             className="underline"
-            to={`/detail-hoa-don/${record.id}`}
+            to={`/quan-ly-hoa-don/detail-hoa-don/${record.id}`}
             onClick={() => setModalHD(true)}
           >
             Hiển thị hóa đơn
@@ -207,7 +207,7 @@ export default function DetailVoucher() {
               </div>
 
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div className="grid grid-cols-2 gap-1 ">
+                {/* <div className="grid grid-cols-2 gap-1 ">
                   <p className="font-medium text-lg">Tình Trạng : </p>
                   <div>
                     {trangThai === 1 ? (
@@ -217,6 +217,15 @@ export default function DetailVoucher() {
                     ) : (
                       <Tag color="yellow">Sắp diễn ra</Tag>
                     )}
+                  </div>
+                </div> */}
+                <div className="grid grid-cols-2 gap-1 ">
+                  <p className="font-medium text-lg">Code : </p>
+                  <div>
+                    <p className="italic text-sm font-medium">
+                      {" "}
+                      {voucherDetail.code}
+                    </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-1 ">
@@ -234,11 +243,10 @@ export default function DetailVoucher() {
 
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg">Code : </p>
+                  <p className="font-medium text-lg">Giá trị tối thiểu : </p>
                   <div>
-                    <p className="italic text-sm font-medium">
-                      {" "}
-                      {voucherDetail.code}
+                    <p className="italic text-sm font-medium" style={{ color: "red" }}>
+                      {Intl.NumberFormat().format(voucherDetail.giaTriMin)}&nbsp;₫
                     </p>
                   </div>
                 </div>
@@ -255,25 +263,31 @@ export default function DetailVoucher() {
 
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Ngày Bắt Đầu </p>
+                  <p className="font-medium text-lg"> Ngày Bắt Đầu :</p>
                   <p className="italic text-sm font-medium">
-                    {/* {format(
-                      new Date(voucherDetail.ngayBatDau),
-                      "yyyy-MM-dd hh:mm:ss"
-                    )} */}
-                    {/* {format(
-                      } */}
                     {voucherDetail.ngayBatDau}
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Ngày Kết Thúc </p>
+                  <p className="font-medium text-lg"> Ngày Kết Thúc :</p>
                   <p className="italic text-sm font-medium">
                     {voucherDetail.ngayKetThuc}
-                    {/* {format(
-                      new Date(voucherDetail.ngayKetThuc),
-                      "yyyy-MM-dd hh:mm:ss"
-                    )} */}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                <div className="grid grid-cols-2 gap-1 ">
+                  <p className="font-medium text-lg"> Số lượng : </p>
+                  <p className="italic text-sm font-medium">
+                    {voucherDetail.soLuong}
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-1 ">
+                  <p className="font-medium text-lg"> Loại : </p>
+                  <p className="italic text-sm font-medium">
+                    {/* {voucherDetail.ngayKetThuc} */}
+                    Riêng tư
                   </p>
                 </div>
               </div>

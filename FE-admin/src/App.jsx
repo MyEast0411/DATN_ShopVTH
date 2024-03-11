@@ -77,7 +77,7 @@ const App = () => {
 
           <Route path="/add-voucher" element={<AddVoucher />} />
           <Route path="/eidt-voucher/:id" element={<EditVoucher />} />
-          <Route path="/detail-voucher/:id" element={<DetailVoucher />} />
+          <Route path="/giam-gia/voucher/detail-voucher/:id" element={<DetailVoucher />} />
           <Route path="/giam-gia/voucher" element={<Voucher />} />
 
           <Route path="/quan-ly-san-pham" element={<Build />}>

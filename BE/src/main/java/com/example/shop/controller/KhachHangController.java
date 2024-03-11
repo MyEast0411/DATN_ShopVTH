@@ -136,6 +136,7 @@ public class KhachHangController {
 
             DiaChi diaChi = new DiaChi();
             diaChi.setDuong(khachHang.getSoNha());
+            diaChi.setDeleted(1);
             diaChi.setTrangThai(1);
             diaChi.setThanhPho(khachHang.getThanhPho());
             diaChi.setHuyen(khachHang.getHuyen());

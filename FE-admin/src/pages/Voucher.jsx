@@ -116,6 +116,37 @@ export default function Voucher() {
       setNgayBatDau("");
       setNgayKetThuc("");
     }
+  };  
+
+  const onChangeSideBar = async (selectedValue) => {
+    if (selectedValue == 0) {
+      getData();
+    } else {
+      const res = await axios.post(`http://localhost:8080/voucher/filterVoucher`, {
+        selectedStatus: dataSelect,
+        textInput: filterValue == "" ? null : filterValue,
+        gia : selectedValue,
+      });
+      setList(
+        res.data.map((item, index) => {
+          return {
+            id: index + 1,
+            ids: item.id,
+            ma: item.ma,
+            ten: item.ten,
+            code: item.code,
+            ngayBatDau: item.ngayBatDau,
+            ngayKetThuc: item.ngayKetThuc,
+            soLuong: item.soLuong,
+            ngayTao: item.ngayTao,
+            giaTriMax: item.giaTriMax,
+            trangThai: item.trangThai,
+            hinhAnh: item.hinhAnh,
+          };
+        })
+      );
+      setLoading(false);
+    }
   };
 
   const handleChange = (value) => {
@@ -209,7 +240,7 @@ export default function Voucher() {
 
   React.useEffect(() => {
     getData();
-  }, [action, list]);
+  }, [action]);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -236,15 +267,6 @@ export default function Voucher() {
 
   const filteredItems = React.useMemo(() => {
     let filteredUsers = [...list];
-
-    // if (hasSearchFilter) {
-    //   filteredUsers = filteredUsers.filter(
-    //     (user) =>
-    //       user.code.toLowerCase().includes(filterValue.toLowerCase()) ||
-    //       user.ten.toLowerCase().includes(filterValue.toLowerCase()) ||
-    //       user.ma.toLowerCase().includes(filterValue.toLowerCase())
-    //   );
-    // }
 
     filteredUsers = filterOptions(filteredUsers);
     if (
@@ -277,32 +299,6 @@ export default function Voucher() {
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
-  // const getWidthHeight = (source) => {
-  //   // Tạo một đối tượng hình ảnh
-  //   var img = new Image();
-
-  //   // Đặt đường dẫn của hình ảnh
-  //   img.src = source;
-
-  //   // Sự kiện được kích hoạt khi hình ảnh đã được tải lên
-  //   img.onload = function () {
-  //     // Lấy chiều rộng và chiều cao của hình ảnh
-  //     var width = img.width;
-  //     var height = img.height;
-
-  //     console.log("Chiều rộng: " + width + " pixels");
-  //     console.log("Chiều cao: " + height + " pixels");
-  //     return {
-  //       width: width,
-  //       height: height,
-  //     };
-  //   };
-
-  //   // Xử lý trường hợp hình ảnh không thể tải lên
-  //   img.onerror = function () {
-  //     console.error("Không thể tải hình ảnh từ URL.");
-  //   };
-  // };
 
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
@@ -350,9 +346,9 @@ export default function Voucher() {
         );
       case "trangThai":
         return cellValue === 1 ? (
-          <Tag color="red">Kích Hoạt</Tag>
+          <Tag color="green">Hoạt động</Tag>
         ) : (
-          <Tag color="green">Chưa Kích Hoạt</Tag>
+          <Tag color="red">Dừng hoạt động</Tag>
         );
 
       case "actions":
@@ -362,7 +358,7 @@ export default function Voucher() {
               <div>
                 <Tooltip title="Xem chi tiết" color="green">
                   <Link
-                    to={`/detail-voucher/${user.ids}`}
+                    to={`/giam-gia/voucher/detail-voucher/${user.ids}`}
                     className="button-link group relative"
                   >
                     <EyeIcon
@@ -646,7 +642,7 @@ export default function Voucher() {
                 <div className="w-1/2">
                   <p className="mb-1 font-bold">Tình Trạng</p>
                   <Select
-                    defaultValue="--Chọn tình trạng voucher--"
+                    defaultValue="Tất cả"
                     className="w-full"
                     // style={{ width: "100%" }}
                     onChange={handleChange}
@@ -661,10 +657,11 @@ export default function Voucher() {
                   <p className="mb-1 font-bold">Giá trị voucher</p>
                   <Slider
                     label="Giá trị(VND)"
-                    step={1000}
+                    step={5000}
                     minValue={0}
-                    maxValue={20000}
-                    defaultValue={priceOptions / 10}
+                    maxValue={priceOptions}
+                    defaultValue={0}
+                    onChange={onChangeSideBar}
                     formatOptions={{ style: "currency", currency: "VND" }}
                     className="max-w-md"
                   />
@@ -679,7 +676,7 @@ export default function Voucher() {
                   />
                 </div>
               </div>
-              <div className="w-full">
+              {/* <div className="w-full">
                 <div className="p-5 text-center mt-4">
                   <ButtonAntd
                     type="primary"
@@ -690,7 +687,7 @@ export default function Voucher() {
                     Làm mới
                   </ButtonAntd>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -808,7 +805,7 @@ export default function Voucher() {
 }
 
 const columns = [
-  { uid: "id", name: "Stt", sortable: true },
+  { uid: "id", name: "STT", sortable: true },
   { uid: "hinhAnh", name: "Hình Ảnh" },
   { uid: "ma", name: "Mã", sortable: true },
   { uid: "ten", name: "Tên", sortable: true },
@@ -824,7 +821,7 @@ const columns = [
 ];
 
 const options = [
-  { value: -1, label: "--Chọn tình trạng voucher--" },
+  { value: -1, label: "Tất cả" },
   { value: 0, label: " Dừng Hoạt động" },
   { value: 1, label: " Hoạt Động" },
 ];

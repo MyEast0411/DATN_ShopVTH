@@ -49,7 +49,7 @@ export default function ThemKhachHang() {
 
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
-      if (item.code == provinceCode) {
+      if (item.province_id == provinceCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
           thanhPho: item.province_name,
@@ -67,7 +67,7 @@ export default function ThemKhachHang() {
 
   const handleDistrictChange = (districtCode) => {
     districts.map((item) => {
-      if (item.code == districtCode) {
+      if (item.district_id == districtCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
           huyen: item.district_name,
@@ -85,7 +85,7 @@ export default function ThemKhachHang() {
 
   const handleWardsChange = (wardsCode) => {
     wards.map((item) => {
-      if (item.code == wardsCode) {
+      if (item.ward_id == wardsCode) {
         setKhachHang((prevKhachHang) => ({
           ...prevKhachHang,
           xa: item.ward_name,

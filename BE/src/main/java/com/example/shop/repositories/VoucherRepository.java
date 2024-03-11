@@ -32,4 +32,26 @@ public interface VoucherRepository extends JpaRepository<Voucher , String> {
     @Query(value = "select * from voucher where gia_tri_min > :price and deleted = 1", nativeQuery = true)
     List<Voucher> getVoucherByPrice(@Param("price")Double price);
 
+    @Query(value = """
+        SELECT *
+        FROM voucher
+        WHERE deleted = 0 AND trang_thai = :trang_thai\s
+            AND gia_tri_max >= :gia - 5000 AND gia_tri_max <= :gia + 5000
+            OR (ten LIKE '%:ten%' AND ten = '' AND ten = null)
+            OR (code LIKE '%:code%' AND code = '' AND code = null)
+        ORDER BY ngay_tao DESC
+    """,nativeQuery = true)
+    List<Voucher> filter(@Param("trang_thai") Integer trang_thai, @Param("ten") String ten, @Param("code") String code,@Param("gia")Integer gia);
+
+    @Query(value = """
+        SELECT *
+        FROM voucher
+        WHERE deleted = 0 AND (trang_thai = 1 OR trang_thai = 0)\s
+            AND gia_tri_max >= :gia - 5000 AND gia_tri_max <= :gia + 5000
+            OR (ten LIKE '%:ten%' AND ten = '' AND ten = null)
+            OR (code LIKE '%:code%' AND code = '' AND code = null)
+        ORDER BY ngay_tao DESC
+    """,nativeQuery = true)
+    List<Voucher> filterByTrangThai(@Param("ten") String ten, @Param("code") String code,@Param("gia")Integer gia);
+
 }

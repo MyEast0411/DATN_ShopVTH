@@ -3,6 +3,9 @@ package com.example.shop.controller;
 import com.example.shop.entity.KhachHang;
 import com.example.shop.entity.KhachHangVoucher;
 import com.example.shop.entity.Voucher;
+import com.example.shop.repositories.VoucherRepository;
+import com.example.shop.requests.SearchKhachHangRequest;
+import com.example.shop.requests.SearchVoucherRequest;
 import com.example.shop.service.KhachHangService;
 import com.example.shop.service.KhachHangVoucherService;
 import com.example.shop.service.VoucherService;
@@ -41,6 +44,8 @@ public class VoucherController {
 
     @Autowired
     private VoucherService voucherService;
+    @Autowired
+    private VoucherRepository voucherRepository;
     @Autowired
     private KhachHangVoucherService khachHangVoucherService;
     @Autowired
@@ -196,10 +201,20 @@ public class VoucherController {
             listkh.add(khachHang);
         }
         return ResponseEntity.ok(listkh);
-
-
     }
-
+    @PostMapping("/filterVoucher")
+    public ResponseEntity filterVoucher(@RequestBody SearchVoucherRequest voucher) {
+        try {
+            if(voucher.getSelectedStatus() == -1) {
+                List<Voucher> list = voucherRepository.filterByTrangThai(voucher.getTextInput(),voucher.getTextInput(), voucher.getGia());
+                return ResponseEntity.ok(list);
+            }
+            List<Voucher> list = voucherRepository.filter(voucher.getSelectedStatus(),voucher.getTextInput(),voucher.getTextInput(), voucher.getGia());
+            return ResponseEntity.ok(list);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
+        }
+    }
     @Scheduled(fixedRate  = 1000)
     public void scheduleFixedDelayTask() {
         try {
