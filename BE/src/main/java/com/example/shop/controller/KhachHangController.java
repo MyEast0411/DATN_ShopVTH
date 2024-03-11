@@ -138,6 +138,7 @@ public class KhachHangController {
             diaChi.setDuong(khachHang.getSoNha());
             diaChi.setDeleted(1);
             diaChi.setTrangThai(1);
+            diaChi.setDeleted(1);
             diaChi.setThanhPho(khachHang.getThanhPho());
             diaChi.setHuyen(khachHang.getHuyen());
             diaChi.setXa(khachHang.getXa());
@@ -146,7 +147,7 @@ public class KhachHangController {
             diaChiRepository.save(diaChi);
 
             //gui mail
-            SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
+//            SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
 
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {

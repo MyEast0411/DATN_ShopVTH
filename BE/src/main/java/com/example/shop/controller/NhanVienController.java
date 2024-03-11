@@ -88,10 +88,23 @@ public class NhanVienController {
         //
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
         Integer maxMa = Integer.parseInt(nhanVienRepository.findMaxMa());
-        System.out.println(khachHang);
+        String urlImg = "";
         try {
             NhanVien kh = new NhanVien();
-            String urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
+            if(khachHang.getAnhNguoiDung() == null || khachHang.getAnhNguoiDung().equals("")) {
+                urlImg = "https://i.ibb.co/Zfpv5xv/z4990910514033-c5e7b06a688bc0bd64e7d55442f212a6.jpg";
+            }else {
+                urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
+            }
+            for (NhanVien item:
+                    nhanVienRepository.getAllNhanVien()) {
+                if(item.getEmail().equals(khachHang.getEmail().trim())) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại !!!");
+                }
+                if(item.getSdt().equals(khachHang.getSdt().trim())) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại !!!");
+                }
+            }
             kh.setAnh(urlImg);
             kh.setMa("NV"+(maxMa + 1));
             kh.setTen(khachHang.getTen());

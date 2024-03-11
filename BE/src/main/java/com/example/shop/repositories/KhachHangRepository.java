@@ -12,7 +12,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang,String> {
     List<KhachHang> getAllKh();
 
     @Query(value = "SELECT kh FROM KhachHang kh where kh.ma = :ma and kh.deleted = 1")
-    KhachHang findByMa(String ma);
+    KhachHang findByMa(@Param("ma") String ma);
 
     @Query(value = "SELECT MAX(substr(ma,3)) FROM khach_hang",nativeQuery = true)
     String findMaxMa();
