@@ -11,4 +11,6 @@ public interface KhachHangVoucherService {
 
     List<String> getKHbyVoucher(String id);
 
+    KhachHangVoucher save(KhachHangVoucher khachHangVoucher);
+
 }

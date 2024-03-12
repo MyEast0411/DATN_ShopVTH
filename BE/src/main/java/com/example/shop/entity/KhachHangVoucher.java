@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "khach_hang_voucer")
+@Table(name = "khach_hang_voucher")
 @IdClass(KhachHangVoucherId.class)
 public class KhachHangVoucher {
     @Id

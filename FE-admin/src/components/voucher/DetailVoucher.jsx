@@ -2,20 +2,31 @@ import axios from "axios";
 import React, { Component, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { Tag, Table, Space, Modal, Input } from "antd";
+import { Tag, Table, Space, Modal, Input, InputNumber } from "antd";
 import { Button } from "@material-tailwind/react";
 import moment from "moment/moment";
+import TableKhachHang from "./TableKhachHang";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { Link } from "react-router-dom";
-
+import { TbInfoTriangle } from "react-icons/tb";
+import { toast } from "react-toastify";
 export default function DetailVoucher() {
   const { id } = useParams();
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [voucherDetail, setVoucherDetail] = useState({});
   const [modalHD, setModalHD] = useState(false);
   const [trangThai, setTrangThai] = useState(false);
   const [data, setData] = useState([]);
   const [dataKhachHang, setDataKhachHang] = useState([]);
   const [dataHoaDon, setDataHoaDon] = useState([]);
-
+  const [modalThemKachHang, setModalThemKhachHang] = useState(false);
+  const [voucher, setVoucher] = useState({});
   useEffect(() => {
     const getData = async () => {
       const res = await axios
@@ -37,8 +48,8 @@ export default function DetailVoucher() {
 
           setTrangThai(
             convertTinhTrang(
-              format(new Date(item.ngayBatDau), "yyyy-MM-dd hh:mm:ss"),
-              format(new Date(item.ngayKetThuc), "yyyy-MM-dd hh:mm:ss")
+              format(new Date(item?.ngayBatDau), "yyyy-MM-dd hh:mm:ss"),
+              format(new Date(item?.ngayKetThuc), "yyyy-MM-dd hh:mm:ss")
             )
           );
         })
@@ -52,7 +63,7 @@ export default function DetailVoucher() {
       const res = await axios
         .get(`http://localhost:8080/voucher/getKhachHang/${id}`)
         .then((response) => {
-          setDataKhachHang(response.data.map((data, i) =>({...data,stt:++i})))
+          setDataKhachHang(response.data.map((data, i) => ({ ...data, stt: ++i })))
 
         })
         .catch((error) => console.log(error));
@@ -65,12 +76,12 @@ export default function DetailVoucher() {
       const res = await axios
         .get(`http://localhost:8080/hoa_don/getHoaDonbyVoucher/${id}`)
         .then((response) => {
-          setDataHoaDon(response.data.map((data) =>({
+          setDataHoaDon(response.data.map((data) => ({
             id: data.id,
-            ma: data.ma, 
-            giaTriMax: Intl.NumberFormat().format(data.id_voucher.giaTriMax), 
+            ma: data.ma,
+            giaTriMax: Intl.NumberFormat().format(data.id_voucher.giaTriMax),
             ngaySuDung: data.ngayTao,
-            khachHang: data.id_khach_hang==null?"Trang":data.id_khach_hang.ten,
+            khachHang: data.id_khach_hang == null ? "Trang" : data.id_khach_hang.ten,
           })))
           console.log(response.data)
         })
@@ -98,6 +109,67 @@ export default function DetailVoucher() {
     };
     fetchHoaDonByIdVoucher();
   }, []);
+
+  const showModalThemKhachHang = () => {
+    console.log(123);
+    setModalThemKhachHang(true);
+  }
+
+  const okModalThemKhachHang = () => {
+    setModalThemKhachHang(false);
+  }
+
+  const cancelModalThemKhachHang = () => {
+    setModalThemKhachHang(false);
+  }
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setVoucherDetail((preVoucher) => ({
+      ...preVoucher,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdate = () => {
+    setConfirmationOpen(true);
+  };
+
+  const cancelConfirm = () => {
+    setConfirmationOpen(false);
+  };
+
+  const confirmUpdate = async () => {
+    console.log(voucherDetail);
+      await axios.put(`http://localhost:8080/voucher/updateVoucher`, {
+        id : voucherDetail.id,
+        ten : voucherDetail.ten,
+        ma : voucherDetail.ma,
+        code : voucherDetail.code,
+        giaTriMax : voucherDetail.giaTriMax,
+        giaTriMin : voucherDetail.giaTriMin,
+        soLuong : voucherDetail.soLuong
+      }
+      ).then((response) => {
+          toast("Cập nhật phiếu giảm giá thành công");
+          const nbd = moment(new Date(response.data.ngayBatDau)).format(
+            "  HH:mm:ss   , DD-MM-YYYY"
+          );
+          const nkt = moment(new Date(response.data.ngayKetThuc)).format(
+            "  HH:mm:ss   , DD-MM-YYYY"
+          );
+          setVoucherDetail({
+            ...response.data,
+            ngayBatDau: nbd,
+
+            ngayKetThuc: nkt,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      cancelConfirm();
+  };
 
   function convertTinhTrang(ngayBatDau, ngayKetThuc) {
     const timeBD = new Date(ngayBatDau).getTime();
@@ -184,24 +256,22 @@ export default function DetailVoucher() {
       <div className="conatiner mx-auto space-y-5">
         <div className="row thong-tin-hoa-don bg-white space-y-5 ">
           <div className="row mb-10">
-            <p className="font-medium p-4 text-2xl"> Thông tin voucher</p>
+            <p className="font-medium p-4 text-2xl"> Thông tin phiếu giảm giá</p>
             <hr style={{ backgroundColor: "black", height: 2, padding: 1 }} />
           </div>
           <div className="row divide-y-8 divide-slate-400/25 ">
             <div className="row mb-10 space-y-8" style={{ padding: "0 60px" }}>
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div className="grid grid-cols-2 gap-1  ">
-                  <p className="font-medium text-lg">Mã voucher : </p>
+                <div className="grid grid-cols-2 gap-1">
+                  <p className="font-medium text-lg">Mã giảm giá : </p>
                   <p className="italic text-sm font-medium ">
-                    {" "}
-                    {voucherDetail.ma}
+                    <Input value={voucherDetail.ma} className="w-2/3" onChange={onChange} name="ma" />
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Tên voucher : </p>
+                  <p className="font-medium text-lg"> Tên giảm giá : </p>
                   <p className="italic text-sm font-medium">
-                    {" "}
-                    {voucherDetail.ten}
+                    <Input value={voucherDetail.ten} className="w-2/3" onChange={onChange} name="ten" />
                   </p>
                 </div>
               </div>
@@ -223,8 +293,7 @@ export default function DetailVoucher() {
                   <p className="font-medium text-lg">Code : </p>
                   <div>
                     <p className="italic text-sm font-medium">
-                      {" "}
-                      {voucherDetail.code}
+                      <Input value={voucherDetail.code} className="w-2/3" onChange={onChange} name="code" />
                     </p>
                   </div>
                 </div>
@@ -246,7 +315,13 @@ export default function DetailVoucher() {
                   <p className="font-medium text-lg">Giá trị tối thiểu : </p>
                   <div>
                     <p className="italic text-sm font-medium" style={{ color: "red" }}>
-                      {Intl.NumberFormat().format(voucherDetail.giaTriMin)}&nbsp;₫
+                      <InputNumber value={Intl.NumberFormat().format(voucherDetail.giaTriMin)} className="w-2/3"
+                        onChange={(value) => {
+                          setVoucherDetail((preVoucher) => ({
+                            ...preVoucher,
+                            giaTriMin: value,
+                          }))
+                        }} name="giaTriMin" />
                     </p>
                   </div>
                 </div>
@@ -256,11 +331,38 @@ export default function DetailVoucher() {
                     className="italic text-sm font-medium"
                     style={{ color: "red" }}
                   >
-                    {Intl.NumberFormat().format(voucherDetail.giaTriMax)}&nbsp;₫
+                    <InputNumber value={Intl.NumberFormat().format(voucherDetail.giaTriMax)} className="w-2/3"
+                      onChange={(value) => {
+                        setVoucherDetail((preVoucher) => ({
+                          ...preVoucher,
+                          giaTriMax: value,
+                        }))
+                      }} name="giaTriMax" />
                   </p>
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                <div className="grid grid-cols-2 gap-1 ">
+                  <p className="font-medium text-lg"> Số lượng : </p>
+                  <p className="italic text-sm font-medium">
+                    <InputNumber value={voucherDetail.soLuong} className="w-2/3"
+                      onChange={(value) => {
+                        setVoucherDetail((preVoucher) => ({
+                          ...preVoucher,
+                          soLuong: value,
+                        }))
+                      }} name="soLuong" />
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-1 ">
+                  <p className="font-medium text-lg"> Loại : </p>
+                  <p className="italic text-sm font-medium">
+                    {voucherDetail.loai}
+                    {/* Riêng tư */}
+                  </p>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div className="grid grid-cols-2 gap-1 ">
                   <p className="font-medium text-lg"> Ngày Bắt Đầu :</p>
@@ -275,26 +377,14 @@ export default function DetailVoucher() {
                   </p>
                 </div>
               </div>
-
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Số lượng : </p>
-                  <p className="italic text-sm font-medium">
-                    {voucherDetail.soLuong}
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Loại : </p>
-                  <p className="italic text-sm font-medium">
-                    {/* {voucherDetail.ngayKetThuc} */}
-                    Riêng tư
-                  </p>
-                </div>
-              </div>
             </div>
 
             <div className="row divide-y-4 divide-slate-400/25">
-              <div className="row table-san-pham "></div>
+              <div className="row table-san-pham flex justify-end">
+                <Button onClick={handleUpdate}>
+                  Cập nhật
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -307,6 +397,25 @@ export default function DetailVoucher() {
             <div className="row mb-10 space-y-8" style={{ padding: "0 60px" }}>
               <Table columns={columns1} dataSource={dataKhachHang} />
             </div>
+            <div className="row divide-y-4 divide-slate-400/25">
+              <div className="row table-san-pham flex justify-end">
+                <Button onClick={showModalThemKhachHang}>
+                  Thêm khách hàng
+                </Button>
+
+                <Modal
+                  onOk={okModalThemKhachHang}
+                  onCancel={cancelModalThemKhachHang}
+                  open={modalThemKachHang}
+                  width={1000}
+                  footer={[]}
+                >
+                  <div className="mt-5">
+                    <TableKhachHang idVoucher={voucherDetail.id} setDataKhachHang={setDataKhachHang} setModalThemKhachHang={setModalThemKhachHang} />
+                  </div>
+                </Modal>
+              </div>
+            </div>
           </div>
 
           <div className="row mb-10">
@@ -318,7 +427,6 @@ export default function DetailVoucher() {
               <Table columns={columns} dataSource={dataHoaDon} />
             </div>
           </div>
-
           <Modal
             title="Hóa đơn"
             style={{
@@ -463,6 +571,39 @@ export default function DetailVoucher() {
               </div>
             </div>
           </Modal>
+          <Dialog open={confirmationOpen} onClose={cancelConfirm} fullWidth>
+          <DialogTitle>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: "15px",
+              }}
+            >
+              <TbInfoTriangle
+                className="mr-2"
+                style={{
+                  color: "red",
+                  fontSize: "25px",
+                }}
+              />
+              <span>Xác nhận cập nhật</span>
+            </div>
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Bạn có chắc muốn cập nhật phiếu giảm giá này?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={cancelConfirm} color="warning">
+              Hủy
+            </Button>
+            <Button color="primary" onClick={confirmUpdate}>
+              Hoàn tất
+            </Button>
+          </DialogActions>
+        </Dialog>
         </div>
       </div>
     </>
@@ -521,3 +662,5 @@ const column = [
     key: "address",
   },
 ];
+
+

@@ -704,7 +704,7 @@ export default function Voucher() {
                 marginBottom: "2px",
               }}
             >
-              <Link to={"/add-voucher"}>+ Tạo phiếu giảm giá</Link>
+              <Link to={"/giam-gia/voucher/add-voucher"}>+ Tạo phiếu giảm giá</Link>
             </ButtonAntd>
           </div>
           <div

@@ -62,6 +62,9 @@ public class Voucher {
     @Column(name = "trang_thai")
     private Integer trangThai;
 
+    @Column(name = "loai")
+    private String loai;
+
     @Column(name = "anh_voucher")
     private String hinhAnh;
 

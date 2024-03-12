@@ -314,7 +314,7 @@ export default function ChiTietSanPham() {
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
+  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -533,10 +533,7 @@ export default function ChiTietSanPham() {
     setFilterValue("");
     setPage(1);
   }, []);
-  const onRowSelection = (row) => {
-    // Trả về false để ngăn không cho người dùng chọn dòng
-    return false;
-  };
+
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
@@ -642,7 +639,7 @@ export default function ChiTietSanPham() {
           showShadow
           color="primary"
           page={page}
-          total={totalPages}
+          total={pages}
           onChange={setPage}
           // style={{ paddingLeft: "730px" }}
         />

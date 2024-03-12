@@ -22,4 +22,9 @@ public class KhachHangVoucherServiceImpl implements KhachHangVoucherService {
     public List<String> getKHbyVoucher(String id) {
         return repository.getKhachHangByVoucher(id);
     }
+
+    @Override
+    public KhachHangVoucher save(KhachHangVoucher khachHangVoucher) {
+        return repository.save(khachHangVoucher);
+    }
 }
