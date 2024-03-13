@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { Component, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { Tag, Table, Space, Modal, Input, InputNumber } from "antd";
+import { Tag, Table, Space, Modal, Input, InputNumber, Form } from "antd";
 import { Button } from "@material-tailwind/react";
 import moment from "moment/moment";
 import TableKhachHang from "./TableKhachHang";
@@ -16,6 +16,7 @@ import {
 import { Link } from "react-router-dom";
 import { TbInfoTriangle } from "react-icons/tb";
 import { toast } from "react-toastify";
+import { useForm } from "antd/es/form/Form";
 export default function DetailVoucher() {
   const { id } = useParams();
   const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -26,13 +27,35 @@ export default function DetailVoucher() {
   const [dataKhachHang, setDataKhachHang] = useState([]);
   const [dataHoaDon, setDataHoaDon] = useState([]);
   const [modalThemKachHang, setModalThemKhachHang] = useState(false);
-  const [voucher, setVoucher] = useState({});
+  const [form] = Form.useForm();
+  const [initialValues, setInitialValues] = useState({
+    id: "",
+    ma: "",
+    ten: "",
+    code: "",
+    trangThai: "",
+    giaTriMax: "",
+    giaTriMin: "",
+    soLuong: "",
+    loai: ""
+  });
   useEffect(() => {
     const getData = async () => {
       const res = await axios
         .get(`http://localhost:8080/voucher/getVoucher/${id}`)
         .then((response) => {
           console.log(response.data);
+          setInitialValues({
+            id: response.data.id,
+            ma: response.data.ma,
+            ten: response.data.ten,
+            code: response.data.code,
+            trangThai: response.data.trangThai,
+            giaTriMax: Intl.NumberFormat().format(response.data.giaTriMax),
+            giaTriMin: Intl.NumberFormat().format(response.data.giaTriMin),
+            soLuong: response.data.soLuong,
+            loai: response.data.loai,
+          })
           const nbd = moment(new Date(response.data.ngayBatDau)).format(
             "  HH:mm:ss   , DD-MM-YYYY"
           );
@@ -140,35 +163,44 @@ export default function DetailVoucher() {
   };
 
   const confirmUpdate = async () => {
-    console.log(voucherDetail);
+    try {
+      await form.validateFields();
+      console.log(voucherDetail);
+
       await axios.put(`http://localhost:8080/voucher/updateVoucher`, {
-        id : voucherDetail.id,
-        ten : voucherDetail.ten,
-        ma : voucherDetail.ma,
-        code : voucherDetail.code,
-        giaTriMax : voucherDetail.giaTriMax,
-        giaTriMin : voucherDetail.giaTriMin,
-        soLuong : voucherDetail.soLuong
+        id: voucherDetail.id,
+        ten: voucherDetail.ten,
+        ma: voucherDetail.ma,
+        code: voucherDetail.code,
+        giaTriMax: voucherDetail.giaTriMax,
+        giaTriMin: voucherDetail.giaTriMin,
+        soLuong: voucherDetail.soLuong
       }
       ).then((response) => {
-          toast("Cập nhật phiếu giảm giá thành công");
-          const nbd = moment(new Date(response.data.ngayBatDau)).format(
-            "  HH:mm:ss   , DD-MM-YYYY"
-          );
-          const nkt = moment(new Date(response.data.ngayKetThuc)).format(
-            "  HH:mm:ss   , DD-MM-YYYY"
-          );
-          setVoucherDetail({
-            ...response.data,
-            ngayBatDau: nbd,
+        toast("Cập nhật phiếu giảm giá thành công");
+        const nbd = moment(new Date(response.data.ngayBatDau)).format(
+          "  HH:mm:ss   , DD-MM-YYYY"
+        );
+        const nkt = moment(new Date(response.data.ngayKetThuc)).format(
+          "  HH:mm:ss   , DD-MM-YYYY"
+        );
+        setVoucherDetail({
+          ...response.data,
+          ngayBatDau: nbd,
 
-            ngayKetThuc: nkt,
-          });
-        })
+          ngayKetThuc: nkt,
+        });
+      })
         .catch((error) => {
           console.log(error);
         });
       cancelConfirm();
+
+    } catch (error) {
+      console.log(error);
+      cancelConfirm();
+    }
+
   };
 
   function convertTinhTrang(ngayBatDau, ngayKetThuc) {
@@ -250,7 +282,9 @@ export default function DetailVoucher() {
       ),
     },
   ];
-
+  useEffect(() => {
+    form.resetFields();
+  }, [initialValues]);
   return (
     <>
       <div className="conatiner mx-auto space-y-5">
@@ -260,24 +294,45 @@ export default function DetailVoucher() {
             <hr style={{ backgroundColor: "black", height: 2, padding: 1 }} />
           </div>
           <div className="row divide-y-8 divide-slate-400/25 ">
-            <div className="row mb-10 space-y-8" style={{ padding: "0 60px" }}>
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div className="grid grid-cols-2 gap-1">
-                  <p className="font-medium text-lg">Mã giảm giá : </p>
-                  <p className="italic text-sm font-medium ">
-                    <Input value={voucherDetail.ma} className="w-2/3" onChange={onChange} name="ma" />
-                  </p>
+            <Form form={form} initialValues={initialValues}>
+              <div className="row mb-10 space-y-8" style={{ padding: "0 60px" }}>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="grid grid-cols-2 gap-1">
+                    <p className="font-medium text-lg">Mã giảm giá : </p>
+                    <p className="italic text-sm font-medium ">
+                      <Form.Item
+                        name="ma"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Mã phiếu giảm giá không được để trống!",
+                          }
+                        ]}
+                      >
+                        <Input value={voucherDetail.ma} className="w-2/3" onChange={onChange} name="ma" />
+                      </Form.Item>
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 ">
+                    <p className="font-medium text-lg"> Tên giảm giá : </p>
+                    <p className="italic text-sm font-medium">
+                      <Form.Item
+                        name="ten"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Tên phiếu giảm giá không được để trống!",
+                          }
+                        ]}
+                      >
+                        <Input value={voucherDetail.ten} className="w-2/3" onChange={onChange} name="ten" />
+                      </Form.Item>
+                    </p>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Tên giảm giá : </p>
-                  <p className="italic text-sm font-medium">
-                    <Input value={voucherDetail.ten} className="w-2/3" onChange={onChange} name="ten" />
-                  </p>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                {/* <div className="grid grid-cols-2 gap-1 ">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  {/* <div className="grid grid-cols-2 gap-1 ">
                   <p className="font-medium text-lg">Tình Trạng : </p>
                   <div>
                     {trangThai === 1 ? (
@@ -289,103 +344,145 @@ export default function DetailVoucher() {
                     )}
                   </div>
                 </div> */}
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg">Code : </p>
-                  <div>
+                  <div className="grid grid-cols-2 gap-1 ">
+                    <p className="font-medium text-lg">Code : </p>
+                    <div>
+                      <p className="italic text-sm font-medium">
+                        <Form.Item
+                          name="code"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Code phiếu giảm giá không được để trống!",
+                            }
+                          ]}
+                        >
+                          <Input value={voucherDetail.code} className="w-2/3" onChange={onChange} name="code" />
+                        </Form.Item>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 ">
+                    <p className="font-medium text-lg">Trạng Thái : </p>
+                    <p>
+                      {" "}
+                      {voucherDetail.trangThai == 1 ? (
+                        <Tag color="red">Kích Hoạt</Tag>
+                      ) : (
+                        <Tag color="green">Chưa Kích Hoạt</Tag>
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="grid grid-cols-2 gap-1 ">
+                    <p className="font-medium text-lg">Giá trị tối thiểu : </p>
+                    <div>
+                      <p className="italic text-sm font-medium" style={{ color: "red" }}>
+                        <Form.Item
+                          name="giaTriMin"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Giá trị tối thiểu phiếu giảm giá không được để trống!",
+                            }
+                          ]}
+                        >
+                          <InputNumber value={Intl.NumberFormat().format(voucherDetail.giaTriMin)} className="w-2/3"
+                            onChange={(value) => {
+                              setVoucherDetail((preVoucher) => ({
+                                ...preVoucher,
+                                giaTriMin: value,
+                              }))
+                            }} name="giaTriMin" />
+                        </Form.Item>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 ">
+                    <p className="font-medium text-lg">Mệnh Giá : </p>
+                    <p
+                      className="italic text-sm font-medium"
+                      style={{ color: "red" }}
+                    >
+                      <Form.Item
+                        name="giaTriMax"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Mệnh giá phiếu giảm giá không được để trống!",
+                          }
+                        ]}
+                      >
+                        <InputNumber value={Intl.NumberFormat().format(voucherDetail.giaTriMax)} className="w-2/3"
+                          onChange={(value) => {
+                            setVoucherDetail((preVoucher) => ({
+                              ...preVoucher,
+                              giaTriMax: value,
+                            }))
+                          }} name="giaTriMax" />
+                      </Form.Item>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="grid grid-cols-2 gap-1 ">
+                    <p className="font-medium text-lg"> Số lượng : </p>
                     <p className="italic text-sm font-medium">
-                      <Input value={voucherDetail.code} className="w-2/3" onChange={onChange} name="code" />
+                      <Form.Item
+                        name="soLuong"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Số lượng phiếu giảm giá không được để trống!",
+                          }
+                        ]}
+                      >
+                        <InputNumber value={voucherDetail.soLuong} className="w-2/3"
+                          onChange={(value) => {
+                            setVoucherDetail((preVoucher) => ({
+                              ...preVoucher,
+                              soLuong: value,
+                            }))
+                          }} name="soLuong" />
+                      </Form.Item>
+
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 ">
+                    <p className="font-medium text-lg"> Loại : </p>
+                    <p className="italic text-sm font-medium">
+                      {voucherDetail.loai}
+                      {/* Riêng tư */}
                     </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg">Trạng Thái : </p>
-                  <p>
-                    {" "}
-                    {voucherDetail.trangThai == 1 ? (
-                      <Tag color="red">Kích Hoạt</Tag>
-                    ) : (
-                      <Tag color="green">Chưa Kích Hoạt</Tag>
-                    )}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg">Giá trị tối thiểu : </p>
-                  <div>
-                    <p className="italic text-sm font-medium" style={{ color: "red" }}>
-                      <InputNumber value={Intl.NumberFormat().format(voucherDetail.giaTriMin)} className="w-2/3"
-                        onChange={(value) => {
-                          setVoucherDetail((preVoucher) => ({
-                            ...preVoucher,
-                            giaTriMin: value,
-                          }))
-                        }} name="giaTriMin" />
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="grid grid-cols-2 gap-1 ">
+                    <p className="font-medium text-lg"> Ngày Bắt Đầu :</p>
+                    <p className="italic text-sm font-medium">
+                      {voucherDetail.ngayBatDau}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 ">
+                    <p className="font-medium text-lg"> Ngày Kết Thúc :</p>
+                    <p className="italic text-sm font-medium">
+                      {voucherDetail.ngayKetThuc}
                     </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg">Mệnh Giá : </p>
-                  <p
-                    className="italic text-sm font-medium"
-                    style={{ color: "red" }}
-                  >
-                    <InputNumber value={Intl.NumberFormat().format(voucherDetail.giaTriMax)} className="w-2/3"
-                      onChange={(value) => {
-                        setVoucherDetail((preVoucher) => ({
-                          ...preVoucher,
-                          giaTriMax: value,
-                        }))
-                      }} name="giaTriMax" />
-                  </p>
-                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Số lượng : </p>
-                  <p className="italic text-sm font-medium">
-                    <InputNumber value={voucherDetail.soLuong} className="w-2/3"
-                      onChange={(value) => {
-                        setVoucherDetail((preVoucher) => ({
-                          ...preVoucher,
-                          soLuong: value,
-                        }))
-                      }} name="soLuong" />
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Loại : </p>
-                  <p className="italic text-sm font-medium">
-                    {voucherDetail.loai}
-                    {/* Riêng tư */}
-                  </p>
+              <div className="row divide-y-4 divide-slate-400/25">
+                <div className="row table-san-pham flex justify-end">
+                  <Button onClick={handleUpdate}>
+                    Cập nhật
+                  </Button>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Ngày Bắt Đầu :</p>
-                  <p className="italic text-sm font-medium">
-                    {voucherDetail.ngayBatDau}
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-1 ">
-                  <p className="font-medium text-lg"> Ngày Kết Thúc :</p>
-                  <p className="italic text-sm font-medium">
-                    {voucherDetail.ngayKetThuc}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="row divide-y-4 divide-slate-400/25">
-              <div className="row table-san-pham flex justify-end">
-                <Button onClick={handleUpdate}>
-                  Cập nhật
-                </Button>
-              </div>
-            </div>
+            </Form>
           </div>
         </div>
         <div className="row thong-tin-hoa-don bg-white space-y-5 ">
@@ -572,38 +669,38 @@ export default function DetailVoucher() {
             </div>
           </Modal>
           <Dialog open={confirmationOpen} onClose={cancelConfirm} fullWidth>
-          <DialogTitle>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                paddingBottom: "15px",
-              }}
-            >
-              <TbInfoTriangle
-                className="mr-2"
+            <DialogTitle>
+              <div
                 style={{
-                  color: "red",
-                  fontSize: "25px",
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: "15px",
                 }}
-              />
-              <span>Xác nhận cập nhật</span>
-            </div>
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Bạn có chắc muốn cập nhật phiếu giảm giá này?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={cancelConfirm} color="warning">
-              Hủy
-            </Button>
-            <Button color="primary" onClick={confirmUpdate}>
-              Hoàn tất
-            </Button>
-          </DialogActions>
-        </Dialog>
+              >
+                <TbInfoTriangle
+                  className="mr-2"
+                  style={{
+                    color: "red",
+                    fontSize: "25px",
+                  }}
+                />
+                <span>Xác nhận cập nhật</span>
+              </div>
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Bạn có chắc muốn cập nhật phiếu giảm giá này?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={cancelConfirm} color="warning">
+                Hủy
+              </Button>
+              <Button color="primary" onClick={confirmUpdate}>
+                Hoàn tất
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
       </div>
     </>

@@ -142,22 +142,6 @@ export default function AddVoucher() {
 
   // add data
   const onHandleAdd = async () => {
-    // if (
-    //   !voucherNew.code ||
-    //   !voucherNew.ten ||
-    //   !voucherNew.giaTriMax ||
-    //   !voucherNew.giaTriMin ||
-    //   !voucherNew.soLuong ||
-    //   !voucherNew.ngayBatDau ||
-    //   !voucherNew.ngayKetThuc
-    //   // !voucherNew.hinhAnh //Không cần nhất thiết phải thêm ảnh
-    // ) {
-    //   toast.error(`ERROR`, {
-    //     position: "top-right",
-    //     autoClose: 2000,
-    //   });
-    //   return;
-    // }
 
     if (value === 2 && listKhachHang.length === 0) {
       toast.error(`Bạn chưa chọn user để áp dụng !!!`, {
