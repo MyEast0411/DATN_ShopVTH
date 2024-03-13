@@ -211,26 +211,26 @@ export default function MauSac() {
       case "ma":
         return (
           <Tooltip content={sanPham.ma} showArrow={true}>
-          <Chip
-            color="white"
-            style={{
-              backgroundColor: sanPham.ma,
-              color: sanPham.ma, 
-              fontSize: "13px",
-              textAlign: "center",
-              padding: "1px 6px",
-              borderRadius: "5px",
-              border : "1px solid #CCC",
-              width : "150px",
-              cursor : "pointer"
-            }}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
+            <Chip
+              color="white"
+              style={{
+                backgroundColor: sanPham.ma,
+                color: sanPham.ma,
+                fontSize: "13px",
+                textAlign: "center",
+                padding: "1px 6px",
+                borderRadius: "5px",
+                border: "1px solid #CCC",
+                width: "150px",
+                cursor: "pointer"
+              }}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue}
+            </Chip>
           </Tooltip>
-      );
+        );
       case "hanhDong":
         return (
           <div className="relative flex items-center gap-4">
@@ -522,9 +522,38 @@ export default function MauSac() {
               backgroundColor: "#1976d2",
               marginBottom: "2px",
             }}
+          // onClick={}
           >
-            <Link to={"/"}>+ Tạo màu sắc</Link>
+            + Tạo màu sắc
           </ButtonAntd>
+
+          <Modal
+            title="Thêm màu sắc"
+            open={isModalOpenMS}
+            onOk={handleOkMS}
+            onCancel={handleCancelMS}
+            cancelText="Cancel"
+            okText="Thêm"
+            style={{ position: "relative" }}
+          >
+            <div>
+              <label
+                htmlFor="country"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Tên kích cỡ
+              </label>
+              <input
+                type="text"
+                name="tenKichCo"
+                // value={tenKichCo}
+                className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                placeholder="Nhập tên màu sắc"
+                // onChange={(e) => onChangeKC(e)}
+                style={{ borderRadius: "5px" }}
+              />
+            </div>
+          </Modal>
         </div>
         <div
           className="drop-shadow-lg font-normal border-gray-500 text-lg	"
