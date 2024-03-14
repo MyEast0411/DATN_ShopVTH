@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 
 //filter
 import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
-import FilterMa from "../common/filter/sanPham/FilterMa";
 import axios from "axios";
 
-import { Button as ButtonAntd } from "antd";
+import { Button as ButtonAntd, Modal, Form } from "antd";
 import { Link } from "react-router-dom";
+
+//loading
+import TailSpinLoading from "../components/loading/TailSpinLoading";
 
 //table
 import {
@@ -83,6 +85,8 @@ export default function KichCo() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
+  const [loading, setLoading] = useState(true);
+  const [form] = Form.useForm();
 
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
@@ -95,11 +99,13 @@ export default function KichCo() {
   };
 
   const confirmDelete = async () => {
+    console.log(idToDelete);
     if (idToDelete) {
       await axios
-        .delete(`http://localhost:8080/delete/${idToDelete}`)
+        .put(`http://localhost:8080/kich-co/deleteKichCo/${idToDelete}`)
         .then((response) => {
           toast("🎉 Xóa thành công");
+          fetchChiTietSanPham();
           cancelDelete();
         })
         .catch((error) => {
@@ -124,25 +130,31 @@ export default function KichCo() {
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
 
-  React.useEffect(() => {
-    async function fetchChiTietSanPham() {
-      try {
-        const response = await axios.get(url);
-        const updatedRows = response.data.map((item, index) => ({
-          id: item.id,
-          stt: index + 1,
-          ma: item.ma,
-          ten: item.ten,
-          trangThai: item.deleted == 1 ? "Hoạt động" : "Không hoạt động",
-        }));
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
+  async function fetchChiTietSanPham() {
+    try {
+      const response = await axios.get(url);
+      const updatedRows = response.data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        ma: item.ma,
+        ten: item.ten,
+        trangThai: item.deleted == 1 ? "Hoạt động" : "Không hoạt động",
+      }));
+      setSanPhams(updatedRows);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
     }
+  }
+  React.useEffect(() => {
     fetchChiTietSanPham();
-  }, [sanPhams]);
+  }, []);
 
+  const onChange = (e) => {
+    setKichCo({ ...kichCo, [e.target.name]: e.target.value });
+  };
+  const onChangeDetail = (e) => {
+    setKichCoDetail({ ...kichCoDetail, [e.target.name]: e.target.value });
+  };
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -174,7 +186,7 @@ export default function KichCo() {
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
+  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -209,17 +221,11 @@ export default function KichCo() {
         );
       case "hanhDong":
         return (
-          <div className="relative flex items-center gap-4">
+          <div className="relative flex items-center gap-4" >
             <Tooltip content="Chi tiết" showArrow={true}>
-              <Link
-                to={`/edit-san-pham/${sanPham.ma}`}
-                style={{ display: "block" }}
-                className="button-link group relative"
-              >
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon />
-                </span>
-              </Link>
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50" onClick={() => showModalDetailKichCo(sanPham.ma)}>
+                <EyeIcon />
+              </span>
             </Tooltip>
 
             <div className="group relative" style={{ position: "relative" }}>
@@ -273,15 +279,6 @@ export default function KichCo() {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-end gap-3 items-end">
-          {/* <Input
-            isClearable
-            className="w-full sm:max-w-[30%]"
-            placeholder="Tìm kiếm bất kỳ..."
-            startContent={<SearchIcon />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          /> */}
           <div className="flex gap-3 items-end">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -367,22 +364,6 @@ export default function KichCo() {
         <span className="w-[30%] text-small text-default-400">
           Tổng {sanPhams.length} kích cỡ
         </span>
-        {/* <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
-        </span> */}
-        {/* <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={totalPages}
-          initialPage={1}
-          style={{paddingLeft : "730px"}}
-          onChange={setPage}
-        /> */}
         <div className="flex flex-wrap gap-4 items-center">
           {sizes.map((size) => (
             <Pagination
@@ -419,9 +400,150 @@ export default function KichCo() {
       </div>
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+
+  const [isModalAddKichCo, setIsModalAddKichCo] = useState(false);
+  const [kichCo, setKichCo] = useState({
+    ma: "",
+    ten: ""
+  });
+
+  const showModalAddKichCo = () => {
+    setIsModalAddKichCo(true);
+  };
+  const handleOkAddKichCo = async () => {
+    setLoading(true);
+    console.log(kichCo);
+    try {
+      await form.validateFields();
+
+      await axios
+        .post("http://localhost:8080/kich-co/addKichCo", kichCo)
+        .then((response) => {
+          console.log(response);
+          if (response.status == 200) {
+            toast.success(`Thêm thành công`, {
+              position: "top-right",
+              autoClose: 2000,
+            });
+            setLoading(false);
+            fetchChiTietSanPham();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error(`Thêm thất bại`, {
+            position: "top-right",
+            autoClose: 2000,
+          });
+          setLoading(false);
+        });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+
+    setIsModalAddKichCo(false);
+  };
+  const handleCancelAddKichCo = () => {
+    setIsModalAddKichCo(false);
+  };
+
+  const [initValue, setInitialValue] = useState({});
+  const [isModalDetailKichCo, setIsModalDetailKichCo] = useState(false);
+  const [kichCoDetail, setKichCoDetail] = useState({
+    id: "",
+    ma: "",
+    ten: "",
+    ngay_tao: "",
+    nguoi_tao: "",
+    nguoi_sua: "",
+    ngay_sua: "",
+    deleted: ""
+  });
+
+  const showModalDetailKichCo = async (value) => {
+    setIsModalDetailKichCo(true);
+    await axios.get(`http://localhost:8080/kich-co/getByMa/${value}`)
+      .then((res) => {
+        console.log(res.data);
+        setKichCoDetail({
+          id: res.data.id,
+          ma: res.data.ma,
+          ten: res.data.ten,
+          ngay_tao: res.data.ngayTao,
+          nguoi_tao: res.data.nguoiTao,
+          nguoi_sua: res.data.nguoiSua,
+          ngay_sua: res.data.ngaySua,
+          deleted: res.data.deleted == 1 ? "Hoạt động" : "Ngừng hoạt động"
+        });
+        setInitialValue({
+          id: res.data.id,
+          ma: res.data.ma,
+          ten: res.data.ten,
+          ngay_tao: res.data.ngayTao,
+          nguoi_tao: res.data.nguoiTao,
+          nguoi_sua: res.data.nguoiSua,
+          ngay_sua: res.data.ngaySua,
+          deleted: res.data.deleted == 1 ? "Hoạt động" : "Ngừng hoạt động"
+        });
+      }).catch((error) => {
+        console.log(error);
+      })
+
+  };
+
+  const handleCancelDetailKichCo = () => {
+    setIsModalDetailKichCo(false);
+  };
+
+  const handleOkDetailKichCo = async () => {
+    setLoading(true);
+    try {
+      await form.validateFields();
+
+      await axios
+        .put("http://localhost:8080/kich-co/updateKichCo", {
+          id : kichCoDetail.id,
+          ten : kichCoDetail.ten,
+          ma : kichCoDetail.ma
+        })
+        .then((response) => {
+          console.log(response);
+          if (response.status == 200) {
+            toast.success(`Cập nhật thành công thành công`, {
+              position: "top-right",
+              autoClose: 2000,
+            });
+            setTimeout(() => {
+              setLoading(false);
+            }, 1000);
+            
+            fetchChiTietSanPham();
+          }
+        })
+        .catch((error) => {
+          toast.error(error.data, {
+            position: "top-right",
+            autoClose: 2000,
+          });
+          setLoading(false);
+        });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+
+    setIsModalDetailKichCo(false);
+  };
+
+  useEffect(() => {
+    form.resetFields();
+  }, [initValue]);
   return (
     <>
+      {/* {loading ? ( <TailSpinLoading/> ) :  */}
       <div>
+        {loading && <TailSpinLoading/>}
         <h2 className="mb-5 font-bold text-2xl">Quản Lý Kích Cỡ</h2>
         <div>
           <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex items-center">
@@ -461,28 +583,16 @@ export default function KichCo() {
               </div>
             </div>
             <div className="p-5">
-                <Slider 
-                  label="Khoảng kích cỡ"
-                  size="sm"
-                  step={1} 
-                  minValue={0} 
-                  maxValue={50} 
-                  defaultValue={[0, 50]} 
-                  className="max-w-md w-1/2"
-                />
+              <Slider
+                label="Khoảng kích cỡ"
+                size="sm"
+                step={1}
+                minValue={0}
+                maxValue={50}
+                defaultValue={[0, 50]}
+                className="max-w-md w-1/2"
+              />
             </div>
-            {/* <div className="p-5 text-center mt-4">
-              <ButtonAntd
-                type="primary"
-                style={{
-                  backgroundColor: "#1976d2",
-                  marginBottom: "2px",
-                  marginLeft: "150%",
-                }}
-              >
-                Làm mới
-              </ButtonAntd>
-            </div> */}
           </div>
         </div>
 
@@ -498,8 +608,9 @@ export default function KichCo() {
               backgroundColor: "#1976d2",
               marginBottom: "2px",
             }}
+            onClick={showModalAddKichCo}
           >
-            <Link to={"/quan-ly-san-pham/san-pham/them-san-pham"}>+ Tạo kích cỡ</Link>
+            + Tạo kích cỡ
           </ButtonAntd>
         </div>
         <div
@@ -594,6 +705,196 @@ export default function KichCo() {
                 </Button>
               </DialogActions>
             </Dialog>
+            <Modal
+              title="Thêm kích cỡ"
+              open={isModalAddKichCo}
+              onOk={handleOkAddKichCo}
+              onCancel={handleCancelAddKichCo}
+              cancelText="Hủy"
+              okText="Thêm"
+              style={{ position: "relative" }}
+            >
+              <Form form={form} initialValues={""}>
+                <div>
+                  <label htmlFor="ma" className="block text-sm font-medium leading-6 text-gray-900">
+                    Mã kích cỡ
+                  </label>
+                  <Form.Item
+                    name="ma"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Mã kích cỡ không được để trống!",
+                      }
+                    ]}>
+                    <Input
+                      name="ma"
+                      placeholder="Nhập mã kích cỡ"
+                      style={{ borderRadius: "5px" }}
+                      onChange={onChange}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Tên kích cỡ
+                  </label>
+                  <Form.Item
+                    name="ten"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Tên kích cỡ không được để trống!",
+                      },
+                      {
+                        validator: (_, value) => {
+                          if (/\D/.test(value)) {
+                            return Promise.reject("Tên kích cỡ không được chứa chữ!");
+                          } else {
+                            return Promise.resolve();
+                          }
+                        }
+                      },
+                    ]}
+                  >
+                    <Input
+                      name="ten"
+                      placeholder="Nhập tên kích cỡ"
+                      style={{ borderRadius: "5px" }}
+                      onChange={onChange}
+                    />
+                  </Form.Item>
+                </div>
+              </Form>
+            </Modal>
+
+            <Modal
+              title="Chi tiết kích cỡ"
+              open={isModalDetailKichCo}
+              onOk={handleOkDetailKichCo}
+              onCancel={handleCancelDetailKichCo}
+              cancelText="Hủy"
+              okText="Hoàn tất"
+              style={{ position: "relative" }}
+            >
+              <Form form={form} initialValues={initValue}>
+                <div>
+                  <label htmlFor="ma" className="block text-sm font-medium leading-6 text-gray-900">
+                    Mã kích cỡ
+                  </label>
+                  <Form.Item
+                    name="ma"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Mã kích cỡ không được để trống!",
+                      }
+                    ]}>
+                    <Input
+                      value={kichCoDetail?.ma}
+                      name="ma"
+                      placeholder="Nhập mã kích cỡ"
+                      style={{ borderRadius: "5px" }}
+                      onChange={onChangeDetail}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Tên kích cỡ
+                  </label>
+                  <Form.Item
+                    name="ten"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Tên kích cỡ không được để trống!",
+                      },
+                      {
+                        validator: (_, value) => {
+                          if (/\D/.test(value)) {
+                            return Promise.reject("Tên kích cỡ không được chứa chữ!");
+                          } else {
+                            return Promise.resolve();
+                          }
+                        }
+                      },
+                    ]}
+                  >
+                    <Input
+                      value={kichCoDetail?.ten}
+                      name="ten"
+                      placeholder="Nhập tên kích cỡ"
+                      style={{ borderRadius: "5px" }}
+                      onChange={onChangeDetail}
+                    />
+                  </Form.Item>
+                  <label htmlFor="deleted" className="block text-sm font-medium leading-6 text-gray-900">
+                    Trạng thái
+                  </label>
+                  <Form.Item
+                    name="deleted"
+                  >
+                    <Input
+                      value={kichCoDetail?.deleted}
+                      name="deleted"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Ngày tạo
+                  </label>
+                  <Form.Item
+                    name="ngay_tao"
+                    
+                  >
+                    <Input
+                      value={kichCoDetail?.ngay_tao}
+                      name="ngay_tao"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                      onChange={onChange}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Người tạo
+                  </label>
+                  <Form.Item
+                    name="nguoi_tao"
+                  >
+                    <Input
+                      value={kichCoDetail?.nguoi_tao}
+                      name="nguoi_tao"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Ngày sửa
+                  </label>
+                  <Form.Item
+                    name="ngay_sua"
+                  >
+                    <Input
+                      value={kichCoDetail?.ngay_sua}
+                      name="ngay_sua"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Người sửa
+                  </label>
+                  <Form.Item
+                    name="nguoi_sua"
+                  >
+                    <Input
+                      value={kichCoDetail?.nguoi_sua}
+                      name="nguoi_sua"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                    />
+                  </Form.Item>
+                </div>
+              </Form>
+            </Modal>
           </div>
         </div>
       </div>
