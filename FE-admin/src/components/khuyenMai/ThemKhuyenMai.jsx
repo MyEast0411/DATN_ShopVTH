@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "antd";
+import { Button, DatePicker } from "antd";
 import { toast } from "react-toastify";
-
 import { addKhuyenMai } from "../../api/khuyenMai/KhuyenMaiApi";
 import {
   Dialog,
@@ -21,7 +20,6 @@ import { getKhuyenMaiById } from "../../api/khuyenMai/KhuyenMaiApi";
 
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { DatePicker } from "antd";
 dayjs.extend(customParseFormat);
 
 export default function ThemKhuyenMai() {
@@ -34,36 +32,25 @@ export default function ThemKhuyenMai() {
 
   const chuyenTrang = useNavigate();
   const percentValues = Array.from({ length: 60 }, (_, index) => index + 1);
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-  const currentDay = currentDate.getDate().toString().padStart(2, "0");
-  const currentHour = currentDate.getHours().toString().padStart(2, "0");
-  const currentMinute = currentDate.getMinutes().toString().padStart(2, "0");
-  const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedMaValues, setSelectedMaValues] = useState([]);
   const [selectedMaCTSPValues, setSelectedMaCTSPValues] = useState([]);
-
-  const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
 
   const handleSelectedMaValuesChange = (newSelectedMaValues) => {
     setSelectedMaValues(newSelectedMaValues);
   };
+
   const handleOnchangeMaCTSP = (newSelectedMaValues) => {
     setSelectedMaCTSPValues(newSelectedMaValues);
   };
 
   const handleNgayBatDauChange = (date, dateString) => {
-    console.log("Ngay bat dau:", dateString);
-    setNgayBatDau(dateString);
+    setNgayBatDau(date);
   };
 
   const handleNgayKetThucChange = (date, dateString) => {
-    console.log("Ngay ket thuc:", dateString);
-    setNgayKetThuc(dateString);
+    setNgayKetThuc(date);
   };
 
-  const minDate = `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}`;
   const handleOpenAddConfirmation = () => {
     setAddConfirmationOpen(true);
   };
@@ -86,18 +73,9 @@ export default function ThemKhuyenMai() {
     fetchKhuyenMaiById();
   }, [idKM]);
 
-  function hasTimeOverlap(existingPromotion, newPromotion) {
-    const existingStartDate = new Date(existingPromotion.ngayBatDau);
-    const existingEndDate = new Date(existingPromotion.ngayKetThuc);
-    const newStartDate = new Date(newPromotion.ngayBatDau);
-    const newEndDate = new Date(newPromotion.ngayKetThuc);
-
-    return (
-      (newStartDate >= existingStartDate && newStartDate <= existingEndDate) ||
-      (newEndDate >= existingStartDate && newEndDate <= existingEndDate) ||
-      (newStartDate <= existingStartDate && newEndDate >= existingEndDate)
-    );
-  }
+  const handleTenInputChange = (e) => {
+    setTen(e.target.value);
+  };
 
   const confirmAdd = async () => {
     try {
@@ -112,10 +90,7 @@ export default function ThemKhuyenMai() {
         return;
       }
 
-      const startDate = dayjs(ngayBatDau, "DD/MM/YYYY").toDate();
-      const endDate = dayjs(ngayKetThuc, "DD/MM/YYYY").toDate();
-
-      if (startDate >= endDate) {
+      if (ngayBatDau >= ngayKetThuc) {
         toast.error("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
         handleCloseAddConfirmation();
         return;
@@ -135,10 +110,11 @@ export default function ThemKhuyenMai() {
         id: idKM,
         ten: ten,
         giaTriPhanTram: giaTriPhanTram,
-        ngayBatDau: startDate,
-        ngayKetThuc: endDate,
+        ngayBatDau: ngayBatDau,
+        ngayKetThuc: ngayKetThuc,
       };
       const response = await addKhuyenMai(khuyenMai, selectedMaCTSPValues);
+      console.log("response:", response);
 
       setTen("");
       setGiaTriPhanTram(1);
@@ -153,6 +129,17 @@ export default function ThemKhuyenMai() {
       handleCloseAddConfirmation();
     }
   };
+
+  // Hàm để vô hiệu hóa các ngày trong quá khứ
+  const disabledDate = (current) => {
+    const today = dayjs();
+    return current && current < today.startOf("day");
+  };
+
+  // Hàm để vô hiệu hóa các ngày nhỏ hơn ngày bắt đầu
+  function disabledEndDate(current) {
+    return current && current < dayjs(ngayBatDau).startOf("day");
+  }
 
   return (
     <>
@@ -184,7 +171,7 @@ export default function ThemKhuyenMai() {
                 <input
                   type="text"
                   value={ten}
-                  onChange={(e) => setTen(e.target.value)}
+                  onInput={handleTenInputChange} 
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Nhập tên khuyến mại"
                   required
@@ -222,8 +209,12 @@ export default function ThemKhuyenMai() {
               </label>
               <DatePicker
                 placeholder="Chọn ngày bắt đầu"
-                defaultValue={dayjs("01/01/2015", dateFormatList[0])}
-                format={dateFormatList}
+                // defaultValue={dayjs("01/01/2015", dateFormatList[0])}
+                showTime={{
+                  defaultValue: dayjs("00:00:00", "HH:mm:ss"),
+                }}
+                disabledDate={disabledDate}
+                format="DD-MM-YYYY HH:mm:ss"
                 onChange={handleNgayBatDauChange}
               />
               <label
@@ -234,8 +225,11 @@ export default function ThemKhuyenMai() {
               </label>
               <DatePicker
                 placeholder="Chọn ngày kết thúc"
-                defaultValue={dayjs("01/01/2015", dateFormatList[0])}
-                format={dateFormatList}
+                showTime={{
+                  defaultValue: dayjs("00:00:00", "HH:mm:ss"),
+                }}
+                format="DD-MM-YYYY HH:mm:ss"
+                disabledDate={disabledEndDate}
                 onChange={handleNgayKetThucChange}
               />
             </div>

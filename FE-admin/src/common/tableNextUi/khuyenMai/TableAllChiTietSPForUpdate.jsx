@@ -23,10 +23,11 @@ import { capitalize } from "../../otherComponents/utils";
 import { DateTime } from "luxon";
 import { Settings } from "luxon";
 import axios from "axios";
-import { getAllKMSPCT } from "../../../api/khuyenMai/KhuyenMaiApi";
+import {
+  getAllKMSPCT,
+  findKmspctByKhuyenMaiId,
+} from "../../../api/khuyenMai/KhuyenMaiApi";
 
-Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
-const url = "http://localhost:8080/";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
   { name: "Mã", uid: "ma", sortable: true },
@@ -52,6 +53,7 @@ statusColorMap["Ngừng bán"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
+  "ma",
   "anh",
   "ten",
   "kichThuoc",
@@ -63,6 +65,8 @@ const INITIAL_VISIBLE_COLUMNS = [
 export default function TableChiTietSanPham({
   selectedMaValues,
   onSelectedMaValuesChange,
+  idKM,
+  onSelectedRowKey,
 }) {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -80,6 +84,7 @@ export default function TableChiTietSanPham({
   const [selectedMaCTSP, setSelectedMaCTSP] = useState([]);
   const [kmspcts, setKmspcts] = useState([]);
   const [rowKey, setRowKey] = useState([]);
+  const [khuyenMais, setKhuyenMais] = useState([]);
 
   useEffect(() => {
     const fetchKMSPCT = async () => {
@@ -87,6 +92,16 @@ export default function TableChiTietSanPham({
       setKmspcts(data);
     };
     fetchKMSPCT();
+  }, []);
+
+  useEffect(() => {
+    const fetchKhuyenMaiData = async () => {
+      try {
+        const response = await findKmspctByKhuyenMaiId(idKM);
+        setKhuyenMais(response);
+      } catch (error) {}
+    };
+    fetchKhuyenMaiData();
   }, []);
 
   React.useEffect(() => {
@@ -111,8 +126,15 @@ export default function TableChiTietSanPham({
               ?.id_khuyen_mai.giaTriPhanTram,
             trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
           }));
-          const arr = updatedRows.filter((item) => item.giaGiam !== undefined);
+
+          const arr = updatedRows.filter((updatedRow) => {
+            return khuyenMais.some((khuyenMai) => {
+              return khuyenMai.id_chi_tiet_san_pham.ma === updatedRow.ma;
+            });
+          });
+
           const rowKeys = arr.map((item) => String(item.id));
+
           setRowKey(rowKeys);
           setChiTietSanPhams(updatedRows);
         }
@@ -401,37 +423,43 @@ export default function TableChiTietSanPham({
       </div>
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+
+  const handleSelectionChange = (keys) => {
+    setRowKey(keys);
+    getListSelectedMa(keys);
+  };
+
+  const getListSelectedMa = (keys) => {
+    let newSelectedMaCTSP = [];
+    if (keys === "all") {
+      newSelectedMaCTSP = chiTietSanPhams.map(
+        (chiTietSanPham) => chiTietSanPham.ma
+      );
+    } else {
+      newSelectedMaCTSP = Array.from(keys).map((id) => idToMaMap[id]);
+    }
+    setSelectedMaCTSP(newSelectedMaCTSP);
+    onSelectedMaValuesChange(newSelectedMaCTSP);
+  };
+
+  useEffect(() => {onSelectedRowKey(rowKey)}, [selectedMaCTSP, rowKey]);
+
   return (
     <>
       <Table
         aria-label="Example table with custom cells, pagination and sorting"
         bottomContent={bottomContent}
-        disabledKeys={rowKey}
         bottomContentPlacement="outside"
         classNames={{
-          wrapper: "max-h-[382px ]",
+          wrapper: "max-h-[500x]",
         }}
-        selectedKeys={selectedKeys} 
+        selectedKeys={rowKey}
         selectionMode="multiple"
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
         onSortChange={setSortDescriptor}
-        onSelectionChange={(selectedKeys) => {
-          let selectedMaCTSP = [];
-          if (selectedKeys === "all") {
-            selectedMaCTSP = chiTietSanPhams.map(
-              (chiTietSanPham) => chiTietSanPham.ma
-            );
-          } else {
-            selectedMaCTSP = Array.from(selectedKeys).map(
-              (id) => idToMaMap[id]
-            );
-          }
-          onSelectedMaValuesChange(selectedMaCTSP);
-          setSelectedKeys(selectedKeys);
-          setSelectedMaCTSP(selectedMaCTSP);
-        }}
+        onSelectionChange={handleSelectionChange}
       >
         <TableHeader columns={headerColumns}>
           {(column) => (

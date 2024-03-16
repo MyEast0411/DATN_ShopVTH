@@ -1,333 +1,342 @@
-import React, { useEffect, useState } from "react";
-import moment from "moment/moment";
-import { Button } from "antd";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Settings } from "luxon";
+import { Button, DatePicker } from "antd";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
-  getKhuyenMaiById,
-  updateKhuyenMai,
-} from "../../api/khuyenMai/KhuyenMaiApi";
-import {
-  Button as ButtonMaterial,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-Settings.defaultZoneName = "Asia/Ho_Chi_Minh";
+import {
+  getKhuyenMaiById,
+  updateKhuyenMai,
+} from "../../api/khuyenMai/KhuyenMaiApi";
+import TableAllSanPham from "../../common/tableNextUi/khuyenMai/TableAllSanPham";
+import TableChiTietSanPham from "../../common/tableNextUi/khuyenMai/TableAllChiTietSPForUpdate";
+import { BiSolidMessageAltAdd } from "react-icons/bi";
+import { Button as NextuiButton } from "@nextui-org/button";
 
 export default function KhuyenMaiUpdate() {
   let { idKM } = useParams();
-  const chuyenTrang = useNavigate();
+  const [khuyenMai, setKhuyenMai] = useState({});
+  const percentValues = Array.from({ length: 60 }, (_, index) => index + 1);
+  const [ngayBatDau, setNgayBatDau] = useState("");
+  const [ngayKetThuc, setNgayKetThuc] = useState("");
   const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
+  const chuyenTrang = useNavigate();
+  const [ten, setTen] = useState("");
+  const [giaTriPhanTram, setGiaTriPhanTram] = useState("");
+  const [rowKey, setRowKey] = useState([]);
 
-  const [selectedStartDate, setSelectedStartDate] = useState("");
-  const [selectedEndDate, setSelectedEndDate] = useState("");
+  // start 2 table: TableAllChiTietSP, TableAllSanPham
+  const [selectedMaValues, setSelectedMaValues] = useState([]);
+  const [selectedMaCTSPValues, setSelectedMaCTSPValues] = useState([]);
 
-  function formatDateToISOString(date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
+  const handleSelectedMaValuesChange = (newSelectedMaValues) => {
+    setSelectedMaValues(newSelectedMaValues);
+  };
 
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
+  const handleOnchangeMaCTSP = (newSelectedMaValues) => {
+    console.log("newSelectedMaValues", newSelectedMaValues);
+    setSelectedMaCTSPValues(newSelectedMaValues);
+  };
+
+  const handleRowKey = (rowKey) => {
+    console.log("handleRowKey", rowKey);
+    if (rowKey.length === 0) {
+      setSelectedMaCTSPValues("do-not-change");
+    }
+    setRowKey(rowKey);
+  };
+  // end 2 table: TableAllChiTietSP, TableAllSanPham
 
   const handleOpenUpdateConfirmation = () => {
     setUpdateConfirmationOpen(true);
   };
+
   const handleCloseUpdateConfirmation = () => {
     setUpdateConfirmationOpen(false);
-  };
-
-  const [currentDateTime, setCurrentDateTime] = useState(
-    moment().format("YYYY-MM-DDTHH:mm:ss")
-  );
-  const percentValues = Array.from({ length: 90 }, (_, index) => index + 1);
-
-  const [khuyenMai, setKhuyenMai] = useState({
-    ma: "",
-    ten: "",
-    ngayBatDau: "",
-    ngayKetThuc: "",
-    giaTriPhanTram: 1,
-  });
-
-  const handleStartDateChange = (event) => {
-    setSelectedStartDate(event.target.value);
-  };
-
-  const handleEndDateChange = (event) => {
-    setSelectedEndDate(event.target.value);
   };
 
   useEffect(() => {
     const fetchKhuyenMaiData = async () => {
       try {
         const response = await getKhuyenMaiById(idKM);
-
-        setKhuyenMai({
-          ma: response.ma,
-          ten: response.ten,
-          ngayBatDau: response.ngayBatDau,
-          ngayKetThuc: response.ngayKetThuc,
-          giaTriPhanTram: response.giaTriPhanTram,
-        });
-        setSelectedStartDate(
-          formatDateToISOString(new Date(response.ngayBatDau))
-        );
-        setSelectedEndDate(
-          formatDateToISOString(new Date(response.ngayKetThuc))
-        );
+        setNgayBatDau(response.ngayBatDau);
+        setNgayKetThuc(response.ngayKetThuc);
+        setKhuyenMai(response);
+        setGiaTriPhanTram(response.giaTriPhanTram);
+        setTen(response.ten);
       } catch (error) {
-        console.error("Error fetching KhuyenMai data:", error);
+        console.log(error);
       }
     };
-
     fetchKhuyenMaiData();
-  }, [idKM]);
+  }, []);
 
-  const handleUpdateKhuyenMai = async () => {
-    if (khuyenMai.ngayBatDau >= khuyenMai.ngayKetThuc) {
-      toast.error("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
-      handleCloseUpdateConfirmation();
-      return;
-    }
+  const handleTenInputChange = (e) => {
+    setTen(e.target.value);
+  };
+  
 
-    if (!khuyenMai.ten || !khuyenMai.ngayBatDau || !khuyenMai.ngayKetThuc) {
-      toast.error("Vui lòng điền đầy đủ thông tin");
-      handleCloseUpdateConfirmation();
-      return;
-    }
-
-    const updatedKhuyenMai = {
-      ma: khuyenMai.ma,
-      ten: khuyenMai.ten,
-      ngayBatDau: selectedStartDate,
-      ngayKetThuc: selectedEndDate,
-      giaTriPhanTram: khuyenMai.giaTriPhanTram,
-      ngaySua: currentDateTime,
-      nguoiTao: "Nguyễn Văn Hội",
-      nguoiSua: "Nguyễn Văn Hội",
-    };
-
+  const confirmUpdate = async () => {
     try {
-      const response = await updateKhuyenMai(idKM, updatedKhuyenMai);
+      console.log("ten: ", ten);
+      console.log("ngayBatDau: ", ngayBatDau);
+      console.log("ngayKetThuc: ", ngayKetThuc);
+      if (ten === "") {
+        toast.error("Tên khuyên mại đang trống!");
+        handleCloseUpdateConfirmation();
+        return;
+      }
+      if (ngayBatDau === "" || ngayKetThuc === "") {
+        toast.error("Bạn chưa chọn ngày!");
+        handleCloseUpdateConfirmation();
+        return;
+      }
+
+      if (ngayBatDau >= ngayKetThuc) {
+        toast.error("Ngày bắt đầu phải nhỏ hơn ngày kết thúc");
+        handleCloseUpdateConfirmation();
+        return;
+      }
+
+      if(selectedMaCTSPValues != 'do-not-change' && selectedMaCTSPValues.length === 0){
+        toast.error("Vui lòng chọn sản phẩm giảm!");
+        handleCloseUpdateConfirmation();
+        return;
+      }
+
+      const khuyenMai = {
+        id: idKM,
+        ten: ten.trim(),
+        giaTriPhanTram: giaTriPhanTram,
+        ngayBatDau: ngayBatDau,
+        ngayKetThuc: ngayKetThuc,
+      };
+      console.log("khuyenMai:", khuyenMai);
+      const response = await updateKhuyenMai(khuyenMai, selectedMaCTSPValues);
+
+      setTen("");
+      // setGiaTriPhanTram(1);
+      setNgayBatDau("");
+      setNgayKetThuc("");
       handleCloseUpdateConfirmation();
-      toast.success(`Cập nhật thành công`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast("🎉 Chỉnh sửa thành công!");
       chuyenTrang("/khuyen-mai");
     } catch (error) {
-      toast.error("Dữ liệu không hợp lệ");
-      console.error("Lỗi khi cập nhật khuyến mãi:", error);
+      console.error("Error updating KhuyenMai:", error);
+      toast.error("Khuyến mãi trùng thời gian với khuyến mãi khác!");
+      handleCloseUpdateConfirmation();
     }
   };
+  // Hàm để vô hiệu hóa các ngày trong quá khứ
+  const disabledDate = (current) => {
+    const today = dayjs();
+    return current && current < today.startOf("day");
+  };
+
+  // Hàm để vô hiệu hóa các ngày nhỏ hơn ngày bắt đầu
+  function disabledEndDate(current) {
+    return current && current < dayjs(ngayBatDau).startOf("day");
+  }
 
   return (
     <>
-      <div
-        className="flex justify-center m-auto"
-        style={{
-          width: "80%",
-          fontSizfe: "8px",
-          backgroundColor: "white",
-          padding: "20px 10px",
-          borderRadius: "8px",
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
-          transition: "transform 0.2s",
-        }}
-      >
-        <form
-          className="bg-slate-500 rounded"
+      <div className="flex justify-between gap-4">
+        <div
+          className="grid pl-5 sticky top-0"
           style={{
+            width: "30%",
+            backgroundColor: "white",
+            padding: "10px",
+            borderRadius: "5px",
+            boxShadow: " 0 0 5px 1px #ccc",
+            height: "710px",
+            textOverflow: "none",
+          }}
+        >
+          <form className="bg-slate-500 rounded">
+            <h2 className="text-xl mb-10 font-bold text-gray-800">
+              Chỉnh sửa đợt giảm giá
+            </h2>
+            <div className="grid gap-6 mb-6 md:grid-cols-1">
+              <div className="mb-5">
+                <label
+                  htmlFor="phone"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Tên khuyến mại
+                </label>
+                <input
+                  type="text"
+                  defaultValue={ten}
+                  onInput={handleTenInputChange} 
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Nhập tên khuyến mại"
+                  required
+                />
+              </div>
+              <div className="mb-5">
+                <label
+                  htmlFor="phone"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Giá trị giảm
+                </label>
+                <select
+                  value={giaTriPhanTram}
+                  onChange={(e) => setGiaTriPhanTram(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "2px 5px",
+                    border: "1.5px solid #e1e1e1",
+                    borderRadius: "5px",
+                  }}
+                >
+                  {percentValues.map((percent) => (
+                    <option key={percent} value={percent}>
+                      {percent}%
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <label
+                htmlFor="phone"
+                className="block -mb-4 mt-1 text-sm font-medium text-gray-900"
+              >
+                Ngày bắt đầu
+              </label>
+              <DatePicker
+                placeholder="Chọn ngày bắt đầu"
+                showTime={{
+                  defaultValue: dayjs("00:00:00", "HH:mm:ss"),
+                }}
+                disabledDate={disabledDate}
+                format="DD-MM-YYYY HH:mm:ss"
+                value={dayjs(ngayBatDau)}
+                // defaultValue={dayjs('2019-09-03', dateFormat)}
+                onChange={(date, dateString) => setNgayBatDau(date)}
+              />
+              <label
+                htmlFor="phone"
+                className="block -mb-4 mt-1 text-sm font-medium text-gray-900"
+              >
+                Ngày kết thúc
+              </label>
+              <DatePicker
+                placeholder="Chọn ngày kết thúc"
+                disabledDate={disabledEndDate}
+                showTime={{
+                  defaultValue: dayjs("00:00:00", "HH:mm:ss"),
+                }}
+                format="DD-MM-YYYY HH:mm:ss"
+                value={dayjs(ngayKetThuc)}
+                onChange={(date, dateString) => setNgayKetThuc(date)}
+              />
+            </div>
+            <div className="flex justify-center">
+              <Button
+                type="primary"
+                style={{
+                  backgroundColor: "#1976d2",
+                  marginBottom: "2px",
+                }}
+                onClick={handleOpenUpdateConfirmation}
+              >
+                Hoàn tất
+              </Button>
+            </div>
+          </form>
+        </div>
+        <div
+          className="pl-5 border-l-[2px]"
+          style={{
+            borderColor: "#ccc",
+            height: "80%",
             width: "100%",
           }}
         >
-          <h2 className="text-center text-2xl font-bold text-gray-800 mb-5 ">
-            Chỉnh sửa đợt giảm giá
+          <h2 className="text-xl mb-1 -mt-2 font-bold text-gray-800">
+            Sản phẩm
           </h2>
-          <div>
-            <label
-              htmlFor="idKM"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              ID khuyến mại
-            </label>
-            <input
-              type="text"
-              id="idKM"
-              className="bg-gray-50 border border-gray-300  text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="ID khuyến mại"
-              value={idKM}
-              required
-              readOnly
+          <div
+            className="p-5"
+            style={{
+              backgroundColor: "white",
+              padding: "10px",
+              borderRadius: "5px",
+              boxShadow: " 0 0 5px 2px #ccc",
+            }}
+          >
+            <TableAllSanPham
+              onSelectedMaValuesChange={handleSelectedMaValuesChange}
             />
           </div>
+          <h2 className="text-xl mt-7 mb-1 mr-5 font-bold text-gray-800">
+            Chi tiết sản phẩm
+          </h2>
+          <div
+            className="p-5"
+            style={{
+              backgroundColor: "white",
+              padding: "10px",
+              borderRadius: "5px",
+              boxShadow: " 0 0 5px 2px #ccc",
+            }}
+          >
+            <TableChiTietSanPham
+              selectedMaValues={selectedMaValues}
+              onSelectedMaValuesChange={handleOnchangeMaCTSP}
+              idKM={idKM}
+              onSelectedRowKey={handleRowKey}
+            />
+          </div>
+        </div>
 
-          <div className="mt-5">
-            <label
-              htmlFor="ma"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Mã khuyến mại
-            </label>
-            <input
-              type="text"
-              id="ma"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Nhập mã khuyến mại"
-              value={khuyenMai.ma}
-              required
-              readOnly
-            />
-          </div>
-          <div className="mb-6 mt-5">
-            <label
-              htmlFor="ten"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Tên
-            </label>
-            <input
-              type="text"
-              id="ten"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Nhập tên khuyến mại"
-              required
-              onChange={(e) =>
-                setKhuyenMai({ ...khuyenMai, ten: e.target.value })
-              }
-              value={khuyenMai.ten}
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="so_nha"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Ngày bắt đầu
-            </label>
-            <input
-              type="datetime-local"
-              id="startDateInput"
-              value={selectedStartDate}
-              onChange={handleStartDateChange}
-              style={{
-                width: "100%",
-                border: "1px solid #e4e4e4",
-                borderRadius: "4px",
-                padding: "3px 7px",
-              }}
-            />
-          </div>
-
-          <div className="mb-6">
-            <label
-              htmlFor="so_nha"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Ngày kết thúc
-            </label>
-            <input
-              type="datetime-local"
-              id="endDateInput"
-              value={selectedEndDate}
-              onChange={handleEndDateChange}
-              style={{
-                width: "100%",
-                border: "1px solid #e4e4e4",
-                borderRadius: "4px",
-                padding: "3px 7px",
-              }}
-            />
-          </div>
-
-          <div className="mb-6">
-            <label
-              htmlFor="email"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Giá trị phần trăm
-            </label>
-            <select
-              onChange={(e) =>
-                setKhuyenMai({ ...khuyenMai, giaTriPhanTram: e.target.value })
-              }
-              style={{
-                width: "100%",
-                border: "1px solid #e4e4e4",
-                borderRadius: "4px",
-                padding: "3px 7px",
-              }}
-              value={khuyenMai.giaTriPhanTram}
-            >
-              {percentValues.map((percent) => (
-                <option key={percent} value={percent}>
-                  {percent}%
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-6">
-            <label
-              htmlFor="so_nha"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Ngày cập nhật
-            </label>
-            <input
-              type="datetime-local"
-              value={currentDateTime}
-              format="DD/MM/YYYY"
-              disabled
-              style={{
-                width: "100%",
-                border: "1px solid #e4e4e4",
-                borderRadius: "4px",
-                padding: "3px 7px",
-              }}
-            />
-          </div>
-          <div className="text-center">
-            <Button
-              type="primary"
-              style={{
-                backgroundColor: "#1976d2",
-                marginBottom: "2px",
-              }}
-              onClick={handleOpenUpdateConfirmation}
-            >
-              Cập nhật
-            </Button>
-          </div>
-        </form>
         <Dialog
           open={updateConfirmationOpen}
           onClose={handleCloseUpdateConfirmation}
         >
-          <DialogTitle>Xác nhận cập nhật</DialogTitle>
+          <DialogTitle>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: "15px",
+              }}
+            >
+              <BiSolidMessageAltAdd
+                className="mr-2"
+                style={{
+                  color: "#00A9FF",
+                  fontSize: "35px",
+                }}
+              />
+              <span>Xác nhận chỉnh sửa</span>
+            </div>
+          </DialogTitle>
           <DialogContent>
             <DialogContentText>
               Bạn có chắc muốn chỉnh sửa khuyến mại này?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <ButtonMaterial
+            <NextuiButton
               onClick={handleCloseUpdateConfirmation}
-              color="primary"
+              color="warning"
             >
               Hủy
-            </ButtonMaterial>
-            <ButtonMaterial onClick={handleUpdateKhuyenMai} color="primary">
+            </NextuiButton>
+            <NextuiButton onClick={confirmUpdate} color="success">
               Xác nhận
-            </ButtonMaterial>
+            </NextuiButton>
           </DialogActions>
         </Dialog>
       </div>
