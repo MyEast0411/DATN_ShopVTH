@@ -76,20 +76,36 @@ public class LichSuHoaDonController {
         listIcon.add(" 🙌🙌🙌🙌 ");
         listIcon.add(" 😎😎😎😎 ");
         listIcon.add(" 😞😞😞😞 ");
+        List<String> listTitleTimline = List.of("Chờ xác nhận", "Xác Nhận", "Chờ Vận Chuyển", "Giao Hàng", "Hoàn Thành");
+
+        LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+
+             if (lshd.getMoTaHoaDon().equals("Lùi Hóa Đơn")){
+                 LichSuHoaDon lichSuHoaDon1 =
+                         LichSuHoaDon.builder()
+                                 .id_hoa_don(hoaDon)
+                                 .moTaHoaDon(listTitleTimline.get(hoaDon.getTrangThai()-1))
+                                 .deleted(lshd.getDeleted())
+                                 .ghiChu(lshd.getGhiChu())
+                                 .nguoiTao(lshd.getNguoiTao())
+                                 .ngayTao(new Date(System.currentTimeMillis()))
+                                 .build();
+                 lichSuHoaDon= lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon1);
+             }else{
+                 LichSuHoaDon lichSuHoaDon1 =
+                         LichSuHoaDon.builder()
+                                 .id_hoa_don(hoaDon)
+                                 .moTaHoaDon(lshd.getMoTaHoaDon())
+                                 .deleted(lshd.getDeleted())
+                                 .ghiChu(lshd.getGhiChu())
+                                 .nguoiTao(lshd.getNguoiTao())
+                                 .ngayTao(new Date(System.currentTimeMillis()))
+                                 .build();
+                 lichSuHoaDon= lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon1);
+             }
 
 
 
-        LichSuHoaDon lichSuHoaDon =
-                LichSuHoaDon.builder()
-                        .id_hoa_don(hoaDon)
-                        .moTaHoaDon(lshd.getMoTaHoaDon())
-                        .deleted(lshd.getDeleted())
-                        .ghiChu(lshd.getGhiChu())
-                        .nguoiTao(lshd.getNguoiTao())
-                        .ngayTao(new Date(System.currentTimeMillis()))
-                        .build();
-        lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
-        System.out.println(lshd.getMoTaHoaDon());
         if(lshd.getMoTaHoaDon().equals("Hủy Hóa Đơn")){
             hoaDon.setTrangThai(5);
             List<HoaDonChiTiet> listHDCT = hoaDonChiTietService.getHDCT(hoaDon.getId());
@@ -97,10 +113,13 @@ public class LichSuHoaDonController {
             for (HoaDonChiTiet donChiTiet : listHDCT){
                 SanPhamChiTiet sanPhamChiTiet = donChiTiet.getId_chi_tiet_san_pham();
                 sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() + donChiTiet.getSoLuong());
-                System.out.println(sanPhamChiTiet);
+
                 chiTietSanPhamRepository.save(sanPhamChiTiet);
             }
-        }else{
+        } else if (lshd.getMoTaHoaDon().equals("Lùi Hóa Đơn")) {
+            hoaDon.setTrangThai(hoaDon.getTrangThai()-1);
+            System.out.println("Lui hóa đơn");
+        } else{
             hoaDon.setTrangThai(hoaDon.getTrangThai()+1);
         }
        HoaDon hoaDon1 = hoaDonService.updateHoaDon(hoaDon);
