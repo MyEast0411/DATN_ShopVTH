@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
+
 import {
   Table,
   TableHeader,
@@ -104,7 +108,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     onOpen();
     try {
       const response = await findKmspctByKhuyenMaiId(id);
-      console.log("response:", response)
+      console.log("response:", response);
       setKhuyenMaiSPCT(response);
     } catch (error) {
       console.error("Error fetching khuyenMaiSPCT details:", error);
@@ -139,6 +143,18 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     }
   };
 
+  function formatDate(dateString) {
+    const dateObject = new Date(dateString);
+    const day = dateObject.getUTCDate().toString().padStart(2, "0");
+    const month = (dateObject.getUTCMonth() + 1).toString().padStart(2, "0");
+    const year = dateObject.getUTCFullYear();
+    const hours = dateObject.getUTCHours().toString().padStart(2, "0");
+    const minutes = dateObject.getUTCMinutes().toString().padStart(2, "0");
+    const seconds = dateObject.getUTCSeconds().toString().padStart(2, "0");
+
+    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+  }
+
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -161,13 +177,10 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
           ...khuyenMai,
           id: khuyenMai.id,
           stt: index + 1,
-          ngayBatDau: format(
-            new Date(khuyenMai.ngayBatDau),
-            "dd-MM-yyyy HH:mm"
-          ),
-          ngayKetThuc: format(
+          ngayBatDau: dayjs(khuyenMai.ngayBatDau, dateFormatList[1]),
+          ngayKetThuc: formatDate(
             new Date(khuyenMai.ngayKetThuc),
-            "dd-MM-yyyy HH:mm"
+            "dd-MM-yyyy HH:mm:ss"
           ),
         }));
         setKhuyenMais(khuyenMaisFormatted);
@@ -179,11 +192,11 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
           stt: index + 1,
           ngayBatDau: format(
             new Date(khuyenMai.ngayBatDau),
-            "dd-MM-yyyy HH:mm"
+            "dd-MM-yyyy HH:mm:ss"
           ),
           ngayKetThuc: format(
             new Date(khuyenMai.ngayKetThuc),
-            "dd-MM-yyyy HH:mm"
+            "dd-MM-yyyy HH:mm:ss"
           ),
         }));
         setKhuyenMais(khuyenMaisFormatted);
@@ -196,7 +209,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
   useEffect(() => {
     fetchKhuyenMais();
     setFilterValue(search);
-  }, [khuyenMais, nbd, nkt, search]);
+  }, [nbd, nkt, search]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -388,18 +401,6 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-end gap-3 items-end">
-          {/* <Input
-            isClearable
-            className="w-full sm:max-w-[30%]"
-            placeholder="Tìm kiếm bất kỳ..."
-            startContent={<SearchIcon />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          /> */}
-          {/* <Input type="datetime-local" label="Từ ngày" />
-          <Input type="datetime-local" label="Đến ngày"/> */}
-
           <div className="flex flex-end gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -605,7 +606,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
                 Thông tin khuyến mại
               </ModalHeader>
               <ModalBody>
-                <DetailKhuyenMai khuyenMaiSPCT={khuyenMaiSPCT}/>
+                <DetailKhuyenMai khuyenMaiSPCT={khuyenMaiSPCT} />
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>

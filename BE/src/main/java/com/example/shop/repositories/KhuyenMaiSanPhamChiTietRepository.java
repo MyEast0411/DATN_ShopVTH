@@ -3,9 +3,11 @@ package com.example.shop.repositories;
 import com.example.shop.entity.KhuyenMai;
 import com.example.shop.entity.KhuyenMaiSanPhamChiTiet;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -38,5 +40,12 @@ public interface KhuyenMaiSanPhamChiTietRepository extends JpaRepository<KhuyenM
             "WHERE km.id = :id", nativeQuery = true)
     List<KhuyenMaiSanPhamChiTiet> findKmspctByKhuyenMaiId(@Param("id") String id);
 
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE khuyen_mai_spct\n" +
+            "FROM khuyen_mai_spct\n" +
+            "INNER JOIN khuyen_mai ON khuyen_mai.id = khuyen_mai_spct.id_khuyen_mai\n" +
+            "WHERE khuyen_mai.id = :id", nativeQuery = true)
+    void deleteKMSPCTByIdKhuyenMai(@Param("id") String id);
 
 }

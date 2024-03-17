@@ -135,7 +135,7 @@ public class KhuyenMaiScheduler {
                 }
             }
         } catch (Exception e) {
-            logger.error("An error occurred during applyDiscounts: {}", e.getMessage(), e);
+//            logger.error("An error occurred during applyDiscounts: {}", e.getMessage(), e);
         }
     }
 
