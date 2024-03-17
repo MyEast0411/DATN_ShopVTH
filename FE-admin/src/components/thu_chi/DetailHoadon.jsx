@@ -254,67 +254,67 @@ function DetailHoadon() {
   };
 
   const confirmThanhToan = async () => {
-    if (inputValue != null) {
-      await axios
-        .post("http://localhost:8080/thanh-toan/addThanhToan", {
-          maHD: info.maHD,
-          maGiaoDich: "",
-          soTien: tongTien,
-          phuongThuc: "Tiền mặt",
-        })
-        .then((response) => {
-          toast("🎉 Thêm thành công");
-          getThanhToan();
-          cancelTienMat();
-        })
-        .catch((error) => {
-          toast("😢 Thêm thất bại");
-        });
-      cancelTienMat();
-    }
+    // if (inputValue != null) {
+    await axios
+      .post("http://localhost:8080/thanh-toan/addThanhToan", {
+        maHD: info.maHD,
+        maGiaoDich: "",
+        soTien: tongTien,
+        phuongThuc: "Tiền mặt",
+      })
+      .then((response) => {
+        toast("🎉 Thêm thành công");
+        getThanhToan();
+        cancelTienMat();
+      })
+      .catch((error) => {
+        toast("😢 Thêm thất bại");
+      });
+    cancelTienMat();
+    // }
   };
   //modal chuyen khoan
-  const showModalCK = () => {
-    setIsModalOpenCK(true);
-  };
-  const handleOkCK = async () => {
-    if (inputValue == null) {
-      toast.error(`Chưa nhập tiền khách đưa`);
-      cancelTienMat();
-      return;
-    }
-    if (inputValue > tongTien) {
-      setTienThua(inputValue - tongTien);
-      setTienKhachDua(tongTien);
-      setInputValue("");
-    } else {
-      setTienKhachDua(inputValue);
-      setKhachCanTra(tongTien - inputValue);
-      setInputValue("");
-    }
-    if (inputValue != null) {
-      await axios
-        .post("http://localhost:8080/thanh-toan/addThanhToan", {
-          maHD: activeKey,
-          soTien: inputValue,
-          maGiaoDich: maGiaoDich,
-          phuongThuc: "Chuyển khoản",
-        })
-        .then((response) => {
-          toast("🎉 Thêm thành công");
-          getThanhToan();
-          cancelTienMat();
-        })
-        .catch((error) => {
-          toast("😢 Thêm thất bại");
-        });
-      cancelTienMat();
-    }
-    setIsModalOpenCK(false);
-  };
-  const handleCancelCK = () => {
-    setIsModalOpenCK(false);
-  };
+  // const showModalCK = () => {
+  //   setIsModalOpenCK(true);
+  // };
+  // const handleOkCK = async () => {
+  //   if (inputValue == null) {
+  //     toast.error(`Chưa nhập tiền khách đưa`);
+  //     cancelTienMat();
+  //     return;
+  //   }
+  //   if (inputValue > tongTien) {
+  //     setTienThua(inputValue - tongTien);
+  //     setTienKhachDua(tongTien);
+  //     setInputValue("");
+  //   } else {
+  //     setTienKhachDua(inputValue);
+  //     setKhachCanTra(tongTien - inputValue);
+  //     setInputValue("");
+  //   }
+  //   if (inputValue != null) {
+  //     await axios
+  //       .post("http://localhost:8080/thanh-toan/addThanhToan", {
+  //         maHD: activeKey,
+  //         soTien: inputValue,
+  //         maGiaoDich: maGiaoDich,
+  //         phuongThuc: "Chuyển khoản",
+  //       })
+  //       .then((response) => {
+  //         toast("🎉 Thêm thành công");
+  //         getThanhToan();
+  //         cancelTienMat();
+  //       })
+  //       .catch((error) => {
+  //         toast("😢 Thêm thất bại");
+  //       });
+  //     cancelTienMat();
+  //   }
+  //   setIsModalOpenCK(false);
+  // };
+  // const handleCancelCK = () => {
+  //   setIsModalOpenCK(false);
+  // };
 
   const handleOpen = () => setOpen(!open);
   // get spct
