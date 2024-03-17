@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-//import java.math.RoundingMode;
+import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -128,7 +128,7 @@ public class KhuyenMaiScheduler {
                     // Áp dụng giảm giá
                     BigDecimal originalPrice = spct.getGiaBan();
                     BigDecimal discountedPrice = originalPrice.multiply(BigDecimal.valueOf(1 - (discountPercentage / 100)));
-//                    discountedPrice = discountedPrice.setScale(0, RoundingMode.DOWN); //format định dạng
+                    discountedPrice = discountedPrice.setScale(0, RoundingMode.DOWN); //format định dạng
                     spct.setGiaBan(discountedPrice);
                     spct.setNgaySua(currentDate);
                     sanPhamChiTietService.save(spct);

@@ -102,7 +102,7 @@ export default function ChatLieu() {
     console.log(idToDelete);
     if (idToDelete) {
       await axios
-        .put(`http://localhost:8080/kich-co/deleteKichCo/${idToDelete}`)
+        .put(`http://localhost:8080/chat-lieu/deleteChatLieu/${idToDelete}`)
         .then((response) => {
           toast("🎉 Xóa thành công");
           fetchChiTietSanPham();
@@ -279,15 +279,15 @@ export default function ChatLieu() {
         <div className="flex justify-end gap-3 items-end">
           <div className="flex gap-3 items-end">
             <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
+              {/* <DropdownTrigger className="hidden sm:flex">
                 <Button
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
                 >
                   Trạng thái
                 </Button>
-              </DropdownTrigger>
-              <DropdownMenu
+              </DropdownTrigger> */}
+              {/* <DropdownMenu
                 disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
@@ -300,7 +300,7 @@ export default function ChatLieu() {
                     {capitalize(status.name)}
                   </DropdownItem>
                 ))}
-              </DropdownMenu>
+              </DropdownMenu> */}
             </Dropdown>
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -415,7 +415,7 @@ export default function ChatLieu() {
       await form.validateFields();
 
       await axios
-        .post("http://localhost:8080/kich-co/addKichCo", kichCo)
+        .post("http://localhost:8080/chat-lieu/addChatLieu", kichCo)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -424,23 +424,24 @@ export default function ChatLieu() {
               autoClose: 2000,
             });
             setLoading(false);
+            setIsModalAddKichCo(false);
             fetchChiTietSanPham();
           }
         })
         .catch((error) => {
           console.log(error);
-          toast.error(`Thêm thất bại`, {
+          toast.error(`${error.response.data}`, {
             position: "top-right",
             autoClose: 2000,
           });
           setLoading(false);
+          setIsModalAddKichCo(false);
         });
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
 
-    setIsModalAddKichCo(false);
   };
   const handleCancelAddKichCo = () => {
     setIsModalAddKichCo(false);
@@ -461,7 +462,7 @@ export default function ChatLieu() {
 
   const showModalDetailKichCo = async (value) => {
     setIsModalDetailKichCo(true);
-    await axios.get(`http://localhost:8080/kich-co/getByMa/${value}`)
+    await axios.get(`http://localhost:8080/chat-lieu/getByMa/${value}`)
       .then((res) => {
         console.log(res.data);
         setKichCoDetail({
@@ -500,7 +501,7 @@ export default function ChatLieu() {
       await form.validateFields();
 
       await axios
-        .put("http://localhost:8080/kich-co/updateKichCo", {
+        .put("http://localhost:8080/chat-lieu/updateChatLieu", {
           id : kichCoDetail.id,
           ten : kichCoDetail.ten,
           ma : kichCoDetail.ma
@@ -691,7 +692,7 @@ export default function ChatLieu() {
               </DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  Bạn có chắc muốn xóa kích cỡ này?
+                  Bạn có chắc muốn xóa chất liệu này?
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
@@ -704,7 +705,7 @@ export default function ChatLieu() {
               </DialogActions>
             </Dialog>
             <Modal
-              title="Thêm kích cỡ"
+              title="Thêm chất liệu"
               open={isModalAddKichCo}
               onOk={handleOkAddKichCo}
               onCancel={handleCancelAddKichCo}
@@ -715,47 +716,38 @@ export default function ChatLieu() {
               <Form form={form} initialValues={""}>
                 <div>
                   <label htmlFor="ma" className="block text-sm font-medium leading-6 text-gray-900">
-                    Mã kích cỡ
+                    Mã chất liệu
                   </label>
                   <Form.Item
                     name="ma"
                     rules={[
                       {
                         required: true,
-                        message: "Mã kích cỡ không được để trống!",
+                        message: "Mã chất liệu không được để trống!",
                       }
                     ]}>
                     <Input
                       name="ma"
-                      placeholder="Nhập mã kích cỡ"
+                      placeholder="Nhập mã chất liệu"
                       style={{ borderRadius: "5px" }}
                       onChange={onChange}
                     />
                   </Form.Item>
                   <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
-                    Tên kích cỡ
+                    Tên chất liệu
                   </label>
                   <Form.Item
                     name="ten"
                     rules={[
                       {
                         required: true,
-                        message: "Tên kích cỡ không được để trống!",
-                      },
-                      {
-                        validator: (_, value) => {
-                          if (/\D/.test(value)) {
-                            return Promise.reject("Tên kích cỡ không được chứa chữ!");
-                          } else {
-                            return Promise.resolve();
-                          }
-                        }
-                      },
+                        message: "Tên chất liệu không được để trống!",
+                      }
                     ]}
                   >
                     <Input
                       name="ten"
-                      placeholder="Nhập tên kích cỡ"
+                      placeholder="Nhập tên chất liệu"
                       style={{ borderRadius: "5px" }}
                       onChange={onChange}
                     />
@@ -765,7 +757,7 @@ export default function ChatLieu() {
             </Modal>
 
             <Modal
-              title="Chi tiết kích cỡ"
+              title="Chi tiết chất liệu"
               open={isModalDetailKichCo}
               onOk={handleOkDetailKichCo}
               onCancel={handleCancelDetailKichCo}
@@ -783,42 +775,33 @@ export default function ChatLieu() {
                     rules={[
                       {
                         required: true,
-                        message: "Mã kích cỡ không được để trống!",
+                        message: "Mã chất liệu không được để trống!",
                       }
                     ]}>
                     <Input
                       value={kichCoDetail?.ma}
                       name="ma"
-                      placeholder="Nhập mã kích cỡ"
+                      placeholder="Nhập mã chất liệu"
                       style={{ borderRadius: "5px" }}
                       onChange={onChangeDetail}
                     />
                   </Form.Item>
                   <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
-                    Tên kích cỡ
+                    Tên chất liệu
                   </label>
                   <Form.Item
                     name="ten"
                     rules={[
                       {
                         required: true,
-                        message: "Tên kích cỡ không được để trống!",
-                      },
-                      {
-                        validator: (_, value) => {
-                          if (/\D/.test(value)) {
-                            return Promise.reject("Tên kích cỡ không được chứa chữ!");
-                          } else {
-                            return Promise.resolve();
-                          }
-                        }
-                      },
+                        message: "Tên chất liệu không được để trống!",
+                      }
                     ]}
                   >
                     <Input
                       value={kichCoDetail?.ten}
                       name="ten"
-                      placeholder="Nhập tên kích cỡ"
+                      placeholder="Nhập tên chất liệu"
                       style={{ borderRadius: "5px" }}
                       onChange={onChangeDetail}
                     />
@@ -841,7 +824,6 @@ export default function ChatLieu() {
                   </label>
                   <Form.Item
                     name="ngay_tao"
-                    
                   >
                     <Input
                       value={kichCoDetail?.ngay_tao}

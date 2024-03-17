@@ -1,10 +1,11 @@
 package com.example.shop.controller;
 
-import com.example.shop.entity.ChatLieu;
-import com.example.shop.entity.KichCo;
-import com.example.shop.repositories.ChatLieuRepository;
-import com.example.shop.requests.UpdateChatLieuRequest;
-import com.example.shop.requests.UpdateKichCoRequest;
+import com.example.shop.entity.DeGiay;
+import com.example.shop.entity.ThuongHieu;
+import com.example.shop.repositories.DeGiayRepository;
+import com.example.shop.repositories.ThuongHieuRepository;
+import com.example.shop.requests.UpdateDeGiayRequest;
+import com.example.shop.requests.UpdateThuongHieuRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,13 +16,13 @@ import java.util.Date;
 @Controller
 @RestController
 @CrossOrigin("*")
-@RequestMapping("chat-lieu")
-public class ChatLieuController {
+@RequestMapping("de-giay")
+public class DeGiayController {
     @Autowired
-    private ChatLieuRepository repo;
+    private DeGiayRepository repo;
 
-    @GetMapping("getAllChatLieu")
-    public ResponseEntity getAllChatLieu() {
+    @GetMapping("getAllDeGiay")
+    public ResponseEntity getAllDeGiay() {
         return ResponseEntity.ok(repo.getAll());
     }
 
@@ -30,23 +31,23 @@ public class ChatLieuController {
         return ResponseEntity.ok(repo.findByMa(ma));
     }
 
-    @PostMapping("/addChatLieu")
-    public ResponseEntity addChatLieu(@RequestBody ChatLieu chatLieu) {
+    @PostMapping("/addDeGiay")
+    public ResponseEntity addDeGiay(@RequestBody DeGiay request) {
         try {
-            if(repo.existsByMa(chatLieu.getMa())) {
-                return ResponseEntity.badRequest().body("Đã tồn tại mã chất liệu này");
+            if(repo.existsByMa(request.getMa())) {
+                return ResponseEntity.badRequest().body("Đã tồn tại mã đế giày này");
             }
-            if(repo.existsByTen(chatLieu.getTen())) {
-                return ResponseEntity.badRequest().body("Đã tồn tại chất liệu này");
+            if(repo.existsByTen(request.getTen())) {
+                return ResponseEntity.badRequest().body("Đã tồn tại đế giày này");
             }
-            ChatLieu cl = ChatLieu.builder()
-                    .ma(chatLieu.getMa())
-                    .ten(chatLieu.getTen())
+            DeGiay deGiay = DeGiay.builder()
+                    .ma(request.getMa())
+                    .ten(request.getTen())
                     .ngayTao(new Date())
                     .nguoiTao("Đông")
                     .deleted(1)
                     .build();
-            repo.save(cl);
+            repo.save(deGiay);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
@@ -54,12 +55,12 @@ public class ChatLieuController {
         }
     }
 
-    @PutMapping("deleteChatLieu/{maChatLieu}")
-    public ResponseEntity deleteChatLieu(@PathVariable String maChatLieu) {
+    @PutMapping("deleteDeGiay/{maDeGiay}")
+    public ResponseEntity deleteDeGiay(@PathVariable String maDeGiay) {
         try {
-            ChatLieu cl = repo.findByMa(maChatLieu);
-            cl.setDeleted(0);
-            repo.save(cl);
+            DeGiay deGiay = repo.findByMa(maDeGiay);
+            deGiay.setDeleted(0);
+            repo.save(deGiay);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
@@ -67,10 +68,10 @@ public class ChatLieuController {
         }
     }
 
-    @PutMapping("updateChatLieu")
-    public ResponseEntity updateChatLieu(@RequestBody UpdateChatLieuRequest request) {
+    @PutMapping("updateDeGiay")
+    public ResponseEntity updateDeGiay(@RequestBody UpdateDeGiayRequest request) {
         try {
-            ChatLieu cl = repo.findById(request.getId()).get();
+            DeGiay cl = repo.findById(request.getId()).get();
             cl.setMa(request.getMa());
             cl.setTen(request.getTen());
             cl.setNgaySua(new Date());

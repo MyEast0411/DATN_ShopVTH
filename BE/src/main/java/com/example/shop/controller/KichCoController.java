@@ -35,6 +35,7 @@ public class KichCoController {
             KichCo kc = KichCo.builder()
                     .ma(kichCo.getMa())
                     .ten(kichCo.getTen())
+                    .ngayTao(new Date())
                     .nguoiTao("Đông")
                     .deleted(1)
                     .build();

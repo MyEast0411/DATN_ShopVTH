@@ -75,7 +75,7 @@ const Sidebar = () => {
       name: "quan-ly-san-pham",
       icon: RiBuilding3Line,
       menus: ["san-pham", "the-loai", "de-giay", "mau-sac","kich-co","thuong-hieu","nhan-hieu","chat-lieu"],
-      subTitles: ["Sản phẩm", "Thể loại", "Đế giày", "Màu sắc","Kích cỡ","Thương hiệu","Nhãn hiệu","Chất liệu"],
+      subTitles: ["Sản phẩm", "Thể loại", "Đế giày", "Màu sắc","Kích cỡ","Thương hiệu","Chất liệu"],
       mainTitle: "Quản lý sản phẩm",
     },
     {

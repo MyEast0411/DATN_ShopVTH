@@ -12,4 +12,10 @@ public interface ChatLieuRepository extends JpaRepository<ChatLieu, String> {
 
     @Query(value = "SELECT cl FROM ChatLieu cl WHERE cl.deleted = 1 ORDER BY cl.ngayTao ASC")
     List<ChatLieu> getAll();
+
+    ChatLieu findByMa(String ma);
+
+    Boolean existsByTen(String ten);
+
+    Boolean existsByMa(String ma);
 }
