@@ -550,20 +550,17 @@ export default function DetailKhachHang() {
                   >
                     Chọn thành phố
                   </label>
-                  <select
+                  <Select
                     id="city"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    onChange={(e) => {
-                      handleProvinceChange(e.target.value);
-                    }}
-                  >
-                    <option value="">Chọn thành phố</option>
-                    {provinces.map((province) => (
-                      <option key={province.province_id} value={province.province_id}>
-                        {province.province_name}
-                      </option>
-                    ))}
-                  </select>
+                    className="block w-full h-9 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={handleProvinceChange}
+                    options={provinces.map((province) => ({
+                      label: province.province_name,
+                      value: province.province_id
+                    }))}
+                    placeholder="Chọn thành phố"
+                    value={provinces.find((item) => item.province_name === thanhPho)?.province_id}
+                  />
                 </div>
                 <div className="mb-6">
                   <label
@@ -572,10 +569,22 @@ export default function DetailKhachHang() {
                   >
                     Chọn huyện
                   </label>
-                  <select
+                  <Select
+                    id="city"
+                    className="block w-full h-9 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={handleDistrictChange}
+                    options={districts.map((district) => ({
+                      label: district.district_name,
+                      value: district.district_id
+                    }))}
+                    placeholder="Chọn huyện"
+                    value={districts.find((item) => item.district_name == huyen)?.district_id}
+                  />
+                  {/* <select
                     id="District"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(e) => handleDistrictChange(e.target.value)}
+                    value={districts.find((item) => item.district_name == huyen)?.district_id}
                   >
                     <option value="">Chọn huyện</option>
                     {districts.map((district) => (
@@ -583,7 +592,7 @@ export default function DetailKhachHang() {
                         {district.district_name}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
                 </div>
                 <div className="mb-6">
                   <label
@@ -592,10 +601,22 @@ export default function DetailKhachHang() {
                   >
                     Chọn xã phường
                   </label>
-                  <select
+                  <Select
+                    id="city"
+                    className="block w-full h-9 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={handleWardsChange}
+                    options={wards.map((ward) => ({
+                      label: ward.ward_name,
+                      value: ward.ward_id
+                    }))}
+                    placeholder="Chọn xã"
+                    value={wards.find((item) => item.ward_name == xa)?.ward_id}
+                  />
+                  {/* <select
                     id="wards"
                     onChange={(e) => handleWardsChange(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value={wards.find((item) => item.ward_name == xa)?.ward_id}
                   >
                     <option value="">Chọn xã phường</option>
                     {wards.map((ward) => (
@@ -603,7 +624,7 @@ export default function DetailKhachHang() {
                         {ward.ward_name}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
                 </div>
               </div>
               <div className="mb-8">
@@ -630,14 +651,30 @@ export default function DetailKhachHang() {
               </div>
               <Button
                 onClick={async () => {
-                  console.log(diaChi);
+                  if(diaChi.thanhPho == '') {
+                    toast.error("Không được để trống thành phố");
+                    return;
+                  }
+                  if(diaChi.huyen == '') {
+                    toast.error("Không được để trống huyện");
+                    return;
+                  }
+                  if(diaChi.xa == '') {
+                    toast.error("Không được để trống xã");
+                    return;
+                  }
                   await axios
                     .post("http://localhost:8080/dia-chi/add", diaChi)
                     .then((response) => {
                       toast.success(`🎉 Thêm thành công`);
                       getKhachHang();
                       getDiaChi();
-                      setDiaChi({});
+                      setDiaChi({
+                        thanhPho : "",
+                        huyen : "",
+                        xa : "",
+                        soNha : ""
+                      });
                     })
                     .catch((error) => {
                       console.log(error);

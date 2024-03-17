@@ -105,20 +105,20 @@ public class KhachHangController {
         String randomString = sb.toString();
         String urlImg = "";
         try {
-            KhachHang kh = new KhachHang();
-            if(khachHang.getAnhNguoiDung() == null || khachHang.getAnhNguoiDung().equals("")) {
-                urlImg= "https://i.ibb.co/Zfpv5xv/z4990910514033-c5e7b06a688bc0bd64e7d55442f212a6.jpg";
-            }else {
-                urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
-            }
             for (KhachHang item:
-                 khachHangRepository.getAllKh()) {
+                    khachHangRepository.getAllKh()) {
                 if(item.getEmail().equals(khachHang.getEmail().trim())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại !!!");
                 }
                 if(item.getSdt().equals(khachHang.getSdt().trim())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại !!!");
                 }
+            }
+            KhachHang kh = new KhachHang();
+            if(khachHang.getAnhNguoiDung() == null || khachHang.getAnhNguoiDung().equals("")) {
+                urlImg= "https://i.ibb.co/Zfpv5xv/z4990910514033-c5e7b06a688bc0bd64e7d55442f212a6.jpg";
+            }else {
+                urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
             }
             kh.setAnhNguoiDung(urlImg);
             kh.setMa("KH"+(maxMa + 1));

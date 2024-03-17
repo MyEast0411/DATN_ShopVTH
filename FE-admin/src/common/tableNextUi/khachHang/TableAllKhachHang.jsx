@@ -188,7 +188,7 @@ export default function App({ data, dataSearch, status }) {
       );
       return filteredSanPhams;
     }
-
+    setPage(1);
     return sanPhams.filter((sanPham) =>
       Object.values(sanPham).some((value) =>
         String(value).toLowerCase().includes(filterText)

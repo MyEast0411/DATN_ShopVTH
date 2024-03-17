@@ -11,6 +11,7 @@ import { Button } from "@nextui-org/react";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
+import TailSpinLoading from "../loading/TailSpinLoading";
 export default function ThemKhachHang() {
   let navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
@@ -22,6 +23,7 @@ export default function ThemKhachHang() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
   const [diaChi, setDiaChi] = useState({});
+  const [loading, setLoading] = useState(false);
   const handleAdd = () => {
     setDeleteConfirmationOpen(true);
   };
@@ -159,45 +161,55 @@ export default function ThemKhachHang() {
       reader.readAsDataURL(file);
     }
   };
-  const [errSoNha, setErrSoNha] = useState("");
-  const [errNgaySinh, setErrNgaySinh] = useState("");
-  // sdt
-  function validatePhoneNumber(phoneNumber) {
-    var regex = /^(0[2-9][0-9]{8})$/;
-    return regex.test(phoneNumber);
-  }
-  // email
-  function validateEmail(email) {
-    // Biểu thức chính quy cho địa chỉ email
-    var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    // Kiểm tra xem email có khớp với định dạng không
-    return regex.test(email);
-  }
+
   const [form] = Form.useForm();
 
   const onSubmit = async () => {
+    setLoading(true);
     try {
       await form.validateFields();
+      cancelAdd();
+      if(khachHang.thanhPho == '') {
+        toast.error("Bạn chưa chọn thành phố");
+        setLoading(false);
+        return;
+      }
+      if(khachHang.huyen == '') {
+        toast.error("Bạn chưa chọn huyện");
+        setLoading(false);
+        return;
+      }
+      if(khachHang.xa == '') {
+        toast.error("Bạn chưa chọn xã");
+        setLoading(false);
+        return;
+      }
 
       await axios
         .post("http://localhost:8080/khach-hang/add", khachHang)
         .then((response) => {
-          toast.success(`🎉 Thêm thành công`);
-          navigate("/quan-ly-tai-khoan/khach-hang");
+          if(response.status == 200) {
+            toast.success(`🎉 Thêm thành công`);
+            setLoading(false);
+            navigate("/quan-ly-tai-khoan/khach-hang");
+          }
         })
         .catch((error) => {
           console.log(error);
           toast.error(error.response.data);
+          setLoading(false);
         });
     } catch (err) {
       console.log(err);
+      setLoading(false);
+      cancelAdd();
     }
-    cancelAdd();
   };
   return (
     <>
+      {loading && <TailSpinLoading/>}
       <div
-        class="grid grid-cols-3 gap-4 m-5"
+        className="grid grid-cols-3 gap-4 m-5"
         style={{
           fontSizfe: "8px",
           backgroundColor: "white",
@@ -243,7 +255,7 @@ export default function ThemKhachHang() {
             initialValues={{
               remember: true,
             }}
-            onFinish={onSubmit}
+            // onFinish={onSubmit}
           >
             <div className="grid grid-cols-2 gap-4">
               <div className="left">
@@ -275,7 +287,7 @@ export default function ThemKhachHang() {
                 </div>
 
                 <div className="mb-20">
-                  <p className="pb-2 text-xl">Tên khách hàng</p>
+                  <p className="pb-2">Tên khách hàng</p>
                   <Form.Item
                     name="ten"
                     rules={[
@@ -302,7 +314,7 @@ export default function ThemKhachHang() {
                 </div>
 
                 <div className="mb-8">
-                  <p className="pb-2 text-xl">Email khách hàng</p>
+                  <p className="pb-2">Email khách hàng</p>
                   <Form.Item
                     name="email"
                     rules={[
@@ -365,28 +377,36 @@ export default function ThemKhachHang() {
               </div>
 
               <div className="right relative">
-                <div className="mb-12">
-                  <label htmlFor="phone" className="block text-xl font-bold">
-                    Ngày sinh
-                  </label>
-                  <Input
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                 w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                  dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                    type="date"
+                <div className="mb-20">
+                  <p className="pb-2">Ngày sinh</p>
+                  <Form.Item
                     name="ngay_sinh"
-                    value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ngay_sinh}
-                    id="dateInput"
-                    style={{
-                      width: "100%",
-                    }}
-                    max={new Date().toISOString().slice(0, 10)}
-                    onChange={(e) => {
-                      onChange(e);
-                    }}
-                  />
-                  <p style={{ color: "red" }}>{errNgaySinh}</p>
+                    rules={[
+                      {
+                        required: true,
+                        message: "Ngày sinh đang trống!",
+                      }
+                    ]}
+                  >
+                    <Input
+                      // className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                      //             rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                      //             w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                      //               dark:focus:ring-blue-500 mb-16 dark:focus:border-blue-500"
+                      type="date"
+                      name="ngay_sinh"
+                      value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ngay_sinh}
+                      id="dateInput"
+                      style={{
+                        width: "100%",
+                        height : "42px"
+                      }}
+                      max={new Date().toISOString().slice(0, 10)}
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                    />
+                  </Form.Item>
                   <button
                     type="button"
                     style={{
@@ -430,9 +450,11 @@ export default function ThemKhachHang() {
                     </div>
                   </Modal>
                 </div>
-                <div className="flex" style={{ marginBottom: "87px" }}>
+                <p className="">Giới tính</p>
+                <div className="flex" style={{ marginBottom: "82px" }}>
+                
                   <FormControl>
-                    <FormLabel
+                    {/* <FormLabel
                       id="demo-controlled-radio-buttons-group"
                       style={{
                         fontWeight: "bold",
@@ -441,7 +463,7 @@ export default function ThemKhachHang() {
                       }}
                     >
                       Giới tính
-                    </FormLabel>
+                    </FormLabel> */}
                     <RadioGroup
                       style={{
                         display: "flex",
@@ -529,8 +551,6 @@ export default function ThemKhachHang() {
                       }}
                     />
                   </Form.Item>
-
-                  <p style={{ color: "red" }}>{errSoNha}</p>
                 </div>
                 <div className="mt-6 flex items-center justify-end gap-x-6">
                   <Link to="/quan-ly-tai-khoan/khach-hang" type="button" className="text-sm rounded-md  font-semibold leading-6 text-gray-900">
@@ -585,6 +605,7 @@ export default function ThemKhachHang() {
           </Button>
         </DialogActions>
       </Dialog>
+      
     </>
   );
 }
