@@ -1,8 +1,8 @@
 package com.example.shop.controller;
 
-import com.example.shop.entity.MauSac;
+import com.example.shop.entity.DeGiay;
 import com.example.shop.entity.TheLoai;
-import com.example.shop.repositories.MauSacRepository;
+import com.example.shop.repositories.DeGiayRepository;
 import com.example.shop.repositories.TheLoaiRepository;
 import com.example.shop.requests.UpdateDeGiayRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,39 +15,38 @@ import java.util.Date;
 @Controller
 @RestController
 @CrossOrigin("*")
-@RequestMapping("mau-sac")
-public class MauSacController {
-
+@RequestMapping("the-loai")
+public class TheLoaiController {
     @Autowired
-    private MauSacRepository repo;
+    private TheLoaiRepository repo;
 
-    @GetMapping("getAllMauSac")
-    public ResponseEntity getAllKichCo() {
+    @GetMapping("getAllTheLoai")
+    public ResponseEntity getAllTheLoai() {
         return ResponseEntity.ok(repo.getAll());
     }
 
     @GetMapping("getByMa/{ma}")
     public ResponseEntity getByMa(@PathVariable String ma) {
-        return ResponseEntity.ok(repo.findByMaMau(ma));
+        return ResponseEntity.ok(repo.findByMa(ma));
     }
 
-    @PostMapping("/addMauSac")
-    public ResponseEntity addMauSac(@RequestBody MauSac request) {
+    @PostMapping("/addTheLoai")
+    public ResponseEntity addTheLoai(@RequestBody TheLoai request) {
         try {
-            if(repo.existsByMaMau(request.getMaMau())) {
-                return ResponseEntity.badRequest().body("Đã tồn tại mã màu này");
+            if(repo.existsByMa(request.getMa())) {
+                return ResponseEntity.badRequest().body("Đã tồn tại mã thể loại này");
             }
             if(repo.existsByTen(request.getTen())) {
-                return ResponseEntity.badRequest().body("Đã tồn tại màu sắc này");
+                return ResponseEntity.badRequest().body("Đã tồn tại thể loại này");
             }
-            MauSac mauSac = MauSac.builder()
-                    .maMau(request.getMaMau())
+            TheLoai theLoai = TheLoai.builder()
+                    .ma(request.getMa())
                     .ten(request.getTen())
                     .ngayTao(new Date())
                     .nguoiTao("Đông")
                     .deleted(1)
                     .build();
-            repo.save(mauSac);
+            repo.save(theLoai);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
@@ -55,12 +54,12 @@ public class MauSacController {
         }
     }
 
-    @PutMapping("deleteTheLoai/{maMauSac}")
-    public ResponseEntity deleteMauSac(@PathVariable String maMauSac) {
+    @PutMapping("deleteTheLoai/{maTheLoai}")
+    public ResponseEntity deleteTheLoai(@PathVariable String maTheLoai) {
         try {
-            MauSac mauSac = repo.findByMaMau(maMauSac);
-            mauSac.setDeleted(0);
-            repo.save(mauSac);
+            TheLoai theLoai = repo.findByMa(maTheLoai);
+            theLoai.setDeleted(0);
+            repo.save(theLoai);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             e.printStackTrace();
@@ -68,17 +67,17 @@ public class MauSacController {
         }
     }
 
-    @PutMapping("updateMauSac")
-    public ResponseEntity updateMauSac(@RequestBody UpdateDeGiayRequest request) {
+    @PutMapping("updateTheLoai")
+    public ResponseEntity updateTheLoai(@RequestBody UpdateDeGiayRequest request) {
         try {
-            if(repo.existsByMaMau(request.getMa())) {
-                return ResponseEntity.badRequest().body("Đã tồn tại mã màu này");
+            if(repo.existsByMa(request.getMa())) {
+                return ResponseEntity.badRequest().body("Đã tồn tại mã thể loại này");
             }
             if(repo.existsByTen(request.getTen())) {
-                return ResponseEntity.badRequest().body("Đã tồn tại màu sắc này");
+                return ResponseEntity.badRequest().body("Đã tồn tại thể loại này");
             }
-            MauSac cl = repo.findById(request.getId()).get();
-            cl.setMaMau(request.getMa());
+            TheLoai cl = repo.findById(request.getId()).get();
+            cl.setMa(request.getMa());
             cl.setTen(request.getTen());
             cl.setNgaySua(new Date());
             cl.setNguoiSua("Đông");

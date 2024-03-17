@@ -79,7 +79,7 @@ export default function TableChiTietSanPham({
   const [chiTietSanPhams, setChiTietSanPhams] = React.useState([]);
   const [selectedMaCTSP, setSelectedMaCTSP] = useState([]);
   const [kmspcts, setKmspcts] = useState([]);
-  const [row, setRow] = useState([]);
+  const [rowKey, setRowKey] = useState([]);
 
   useEffect(() => {
     const fetchKMSPCT = async () => {
@@ -111,9 +111,9 @@ export default function TableChiTietSanPham({
               ?.id_khuyen_mai.giaTriPhanTram,
             trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
           }));
-          const arr = updatedRows.filter(item => item.giaGiam !== undefined);
-          const rowKeys = arr.map(item => String(item.id));
-          setRow(rowKeys);
+          const arr = updatedRows.filter((item) => item.giaGiam !== undefined);
+          const rowKeys = arr.map((item) => String(item.id));
+          setRowKey(rowKeys);
           setChiTietSanPhams(updatedRows);
         }
       } catch (error) {
@@ -186,7 +186,6 @@ export default function TableChiTietSanPham({
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
-
 
   const renderCell = React.useCallback((chiTietSanPham, columnKey) => {
     const cellValue = chiTietSanPham[columnKey];
@@ -402,20 +401,17 @@ export default function TableChiTietSanPham({
       </div>
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
-
   return (
     <>
       <Table
-        // style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
-        // isHeaderSticky
         bottomContent={bottomContent}
-        disabledKeys={row}
+        disabledKeys={rowKey}
         bottomContentPlacement="outside"
         classNames={{
-          wrapper: "max-h-[382px]",
+          wrapper: "max-h-[382px ]",
         }}
-        selectedKeys={selectedKeys}
+        selectedKeys={selectedKeys} 
         selectionMode="multiple"
         sortDescriptor={sortDescriptor}
         topContent={topContent}

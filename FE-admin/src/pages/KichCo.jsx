@@ -85,7 +85,7 @@ export default function KichCo() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   const handleDelete = (idToDelete) => {
@@ -211,7 +211,6 @@ export default function KichCo() {
       case "trangThai":
         return (
           <Chip
-            // className="capitalize"
             color={statusColorMap[sanPham.trangThai]}
             size="sm"
             variant="flat"
@@ -234,7 +233,6 @@ export default function KichCo() {
                   <DeleteIcon onClick={() => handleDelete(sanPham.ma)} />
                 </span>
               </Tooltip>
-              {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
             </div>
           </div>
         );

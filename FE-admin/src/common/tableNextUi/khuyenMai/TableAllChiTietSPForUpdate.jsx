@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -16,40 +15,32 @@ import {
   Chip,
   Pagination,
   Image,
-  Tooltip,
 } from "@nextui-org/react";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TableCell as TableCellMui,
-} from "@mui/material";
-import { format } from "date-fns";
+import { VerticalDotsIcon } from "../../otherComponents/VerticalDotsIcon";
+import { SearchIcon } from "../../otherComponents/SearchIcon";
 import { ChevronDownIcon } from "../../otherComponents/ChevronDownIcon";
 import { capitalize } from "../../otherComponents/utils";
+import { DateTime } from "luxon";
+import { Settings } from "luxon";
 import axios from "axios";
-import { toast } from "react-toastify";
-import { DeleteIcon } from "../../otherComponents/DeleteIcon";
-import { EyeIcon } from "../../otherComponents/EyeIcon";
-import { TbInfoTriangle } from "react-icons/tb";
-import { FaHistory } from "react-icons/fa";
+import {
+  getAllKMSPCT,
+  findKmspctByKhuyenMaiId,
+} from "../../../api/khuyenMai/KhuyenMaiApi";
 
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "Ảnh", uid: "hinhAnh", sortable: true, align: "center" },
-  { name: "Họ tên", uid: "hoTen", sortable: true },
-  { name: "Email", uid: "cccd", sortable: true },
-  { name: "Số điện thoại", uid: "sdt", sortable: true },
-  { name: "Ngày sinh", uid: "ngaySinh", sortable: true },
-  { name: "Trạng thái", uid: "trangThai" },
-  { name: "Hành Động", uid: "hanhDong" },
+  { name: "Mã", uid: "ma", sortable: true },
+  { name: "Ảnh", uid: "anh" },
+  // { name: "Tên", uid: "ten", sortable: true },
+  { name: "Kích thước", uid: "kichThuoc", sortable: true },
+  { name: "Màu sắc", uid: "mauSac" },
+  { name: "Trạng thái", uid: "trangThai", sortable: true },
 ];
 
 const statusOptions = [
-  { name: "Kích hoạt", uid: "Kích hoạt" },
-  { name: "Chưa kích hoạt", uid: "Chưa kích hoạt" },
+  { name: "Đang bán", uid: "Đang bán" },
+  { name: "Ngừng bán", uid: "Ngừng bán" },
 ];
 
 const statusColorMap = {
@@ -57,26 +48,26 @@ const statusColorMap = {
   paused: "danger",
   incoming: "warning",
 };
-statusColorMap["Kích hoạt"] = "success";
-statusColorMap["Chưa kích hoạt"] = "danger";
+statusColorMap["Đang bán"] = "success";
+statusColorMap["Ngừng bán"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
-  "hinhAnh",
-  "hoTen",
-  "cccd",
-  "sdt",
-  "ngaySinh",
+  "ma",
+  "anh",
+  "ten",
+  "kichThuoc",
+  "mauSac",
   "trangThai",
-  "hanhDong",
+  // "tinhTrang",
 ];
 
-export default function App({ data, dataSearch, status }) {
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
-  const [idToDelete, setIdToDelete] = useState(null);
-  const [totalPages, setTotalPages] = React.useState(1);
-  const [rows, setRows] = React.useState([]);
-  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
+export default function TableChiTietSanPham({
+  selectedMaValues,
+  onSelectedMaValuesChange,
+  idKM,
+  onSelectedRowKey,
+}) {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -89,82 +80,84 @@ export default function App({ data, dataSearch, status }) {
     direction: "ascending",
   });
   const [page, setPage] = React.useState(1);
-  const [sanPhams, setSanPhams] = React.useState([]);
-
-  const fetchChiTietSanPham = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/khach-hang/getAll"
-      );
-      const updatedRows = response.data.map((item, index) => ({
-        id: item.id,
-        stt: index + 1,
-        maKH: item.ma,
-        anh: item.anhNguoiDung,
-        hoTen: item.ten,
-        cccd: item.email,
-        sdt: item.sdt,
-        ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
-        trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
-      }));
-      setSanPhams(updatedRows);
-    } catch (error) {
-      console.error("Lỗi khi gọi API: ", error);
-    }
-  }
-  
-  
+  const [chiTietSanPhams, setChiTietSanPhams] = React.useState([]);
+  const [selectedMaCTSP, setSelectedMaCTSP] = useState([]);
+  const [kmspcts, setKmspcts] = useState([]);
+  const [rowKey, setRowKey] = useState([]);
+  const [khuyenMais, setKhuyenMais] = useState([]);
 
   useEffect(() => {
-    if(status == -1) {
-      fetchChiTietSanPham();
-    } else if (data.length == 0) {
-      setSanPhams([]);
-    } else {
-      const updatedRows = data.map((item, index) => ({
-        id: item.id,
-        stt: index + 1,
-        maKH: item.ma,
-        anh: item.anhNguoiDung,
-        hoTen: item.ten,
-        cccd: item.email,
-        sdt: item.sdt,
-        ngaySinh: format(new Date(item.ngaySinh), "dd-MM-yyyy"),
-        trangThai: item.trangThai == 1 ? "Kích hoạt" : "Chưa kích hoạt",
-      }));
-      setSanPhams(updatedRows);
-    }
-  }, [data]);
+    const fetchKMSPCT = async () => {
+      const data = await getAllKMSPCT();
+      setKmspcts(data);
+    };
+    fetchKMSPCT();
+  }, []);
 
   useEffect(() => {
-    setFilterValue(dataSearch.trim());
-  }, [dataSearch]);
+    const fetchKhuyenMaiData = async () => {
+      try {
+        const response = await findKmspctByKhuyenMaiId(idKM);
+        setKhuyenMais(response);
+      } catch (error) {}
+    };
+    fetchKhuyenMaiData();
+  }, []);
 
-  const handleDelete = (idToDelete) => {
-    setIdToDelete(idToDelete);
-    setDeleteConfirmationOpen(true);
-  };
+  React.useEffect(() => {
+    async function fetchChiTietSanPham() {
+      const params = {
+        ma: selectedMaValues,
+      };
+      const url = `http://localhost:8080/get-chiTietSP-by-ListMa/${selectedMaValues}`;
+      try {
+        if (selectedMaValues.length === 0) {
+          setChiTietSanPhams([]);
+        } else {
+          const response = await axios.get(url);
+          const updatedRows = response.data.map((item, index) => ({
+            id: index + 1,
+            stt: index + 1,
+            ma: item.ma,
+            anh: item.defaultImg,
+            kichThuoc: item.id_kich_co.ten,
+            mauSac: item.id_mau_sac.ten,
+            giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+              ?.id_khuyen_mai.giaTriPhanTram,
+            trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+          }));
 
-  const cancelDelete = () => {
-    setIdToDelete(null);
-    setDeleteConfirmationOpen(false);
-  };
+          const arr = updatedRows.filter((updatedRow) => {
+            return khuyenMais.some((khuyenMai) => {
+              return khuyenMai.id_chi_tiet_san_pham.ma === updatedRow.ma;
+            });
+          });
 
-  const confirmDelete = async () => {
-    if (idToDelete) {
-      await axios
-        .put(`http://localhost:8080/khach-hang/deleteSoft/${idToDelete}`)
-        .then((response) => {
-          toast("🎉 Xóa thành công");
-          cancelDelete();
-          fetchChiTietSanPham();
-        })
-        .catch((error) => {
-          toast("😢 Xóa thất bại");
-        });
-      cancelDelete();
+          const rowKeys = arr.map((item) => String(item.id));
+
+          setRowKey(rowKeys);
+          setChiTietSanPhams(updatedRows);
+        }
+      } catch (error) {
+        console.error("Lỗi khi gọi API: ", error);
+      }
     }
+    fetchChiTietSanPham();
+  }, [selectedMaValues]);
+
+  const DiscountTag = ({ discount }) => {
+    if (discount === undefined) {
+      return null;
+    }
+
+    return <div className="discount-tag">{`${discount}% OFF`}</div>;
   };
+
+  const idToMaMap = {};
+  chiTietSanPhams.forEach((sanPham) => {
+    idToMaMap[sanPham.id] = sanPham.ma;
+  });
+
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -177,31 +170,34 @@ export default function App({ data, dataSearch, status }) {
 
   const filteredItems = React.useMemo(() => {
     const filterText = filterValue.toLowerCase();
-    let filteredSanPhams = [...sanPhams];
+    let filteredChiTietSanPhams = [...chiTietSanPhams];
 
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredSanPhams = filteredSanPhams.filter((sanPham) =>
-        Array.from(statusFilter).includes(sanPham.trangThai)
+      filteredChiTietSanPhams = filteredChiTietSanPhams.filter(
+        (chiTietSanPham) =>
+          Array.from(statusFilter).includes(chiTietSanPham.trangThai)
       );
-      return filteredSanPhams;
+      return filteredChiTietSanPhams;
     }
-    setPage(1);
-    return sanPhams.filter((sanPham) =>
-      Object.values(sanPham).some((value) =>
+
+    return chiTietSanPhams.filter((chiTietSanPham) =>
+      Object.values(chiTietSanPham).some((value) =>
         String(value).toLowerCase().includes(filterText)
       )
     );
-  }, [sanPhams, filterValue, statusFilter]);
-  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
+  }, [chiTietSanPhams, filterValue, statusFilter]);
+
+  const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
+
     return filteredItems.slice(start, end);
-  }, [page, filteredItems]);
+  }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
     return [...items].sort((a, b) => {
@@ -213,24 +209,33 @@ export default function App({ data, dataSearch, status }) {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((sanPham, columnKey) => {
-    const cellValue = sanPham[columnKey];
+  const renderCell = React.useCallback((chiTietSanPham, columnKey) => {
+    const cellValue = chiTietSanPham[columnKey];
+
     switch (columnKey) {
-      case "hinhAnh":
-        const hinhAnhURL = sanPham.anh;
+      case "anh":
+        const hinhAnhURL = chiTietSanPham.anh;
+        const giaGiam = chiTietSanPham.giaGiam;
         return (
-          <Image
-            style={{ height: "120px", width: "150px" }}
-            src={hinhAnhURL}
-            alt={sanPham.ten || "Ảnh sản phẩm"}
-            classNames="m-5"
-          />
+          <div
+            style={{
+              display: "inline-block",
+            }}
+          >
+            <Image
+              width={70}
+              src={hinhAnhURL}
+              alt={chiTietSanPham.ten || "Ảnh sản phẩm"}
+            />
+
+            <DiscountTag discount={giaGiam} />
+          </div>
         );
       case "trangThai":
         return (
           <Chip
             // className="capitalize"
-            color={statusColorMap[sanPham.trangThai]}
+            color={statusColorMap[chiTietSanPham.trangThai]}
             size="sm"
             variant="flat"
           >
@@ -239,34 +244,17 @@ export default function App({ data, dataSearch, status }) {
         );
       case "hanhDong":
         return (
-          <div className="relative flex items-center gap-4">
-            <Tooltip content="Lịch sử hóa đơn" showArrow={true}>
-              <Link
-                to={`/lich-su-mua-hang/${sanPham.id}`}
-                // style={{ display: "block" }}
-                className="button-link group relative"
-              >
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <FaHistory />
-                </span>
-              </Link>
-            </Tooltip>
-            <Tooltip content="Xem" showArrow={true}>
-              <Link
-                to={`/quan-ly-tai-khoan/khach-hang/edit-khach-hang/${sanPham.maKH}`}
-                // style={{ display: "block" }}
-                className="button-link group relative"
-              >
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon />
-                </span>
-              </Link>
-            </Tooltip>
-            <Tooltip color="danger" content="Xóa" showArrow={true}>
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <DeleteIcon onClick={() => handleDelete(sanPham.id)} />
-              </span>
-            </Tooltip>
+          <div className="relative flex justify-end items-center gap-2">
+            <Dropdown>
+              <DropdownTrigger>
+                <Button isIconOnly size="sm" variant="light">
+                  <VerticalDotsIcon className="text-default-300" />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                <DropdownItem>Xem</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         );
       default:
@@ -288,7 +276,6 @@ export default function App({ data, dataSearch, status }) {
 
   const onRowsPerPageChange = React.useCallback((e) => {
     setRowsPerPage(Number(e.target.value));
-    setTotalPages(Math.ceil(filteredItems.length / Number(e.target.value)));
     setPage(1);
   }, []);
 
@@ -309,8 +296,8 @@ export default function App({ data, dataSearch, status }) {
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <div className="flex justify-end gap-3 items-end">
-          {/* <Input
+        <div className="flex justify-between gap-3 items-end">
+          <Input
             isClearable
             className="w-full sm:max-w-[30%]"
             placeholder="Tìm kiếm bất kỳ..."
@@ -318,8 +305,8 @@ export default function App({ data, dataSearch, status }) {
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
-          /> */}
-          <div className="flex gap-3 items-end">
+          />
+          <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
@@ -372,7 +359,7 @@ export default function App({ data, dataSearch, status }) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Tổng {sanPhams.length} khách hàng
+            Tổng {chiTietSanPhams.length} sản phẩm chi tiết
           </span>
           <label className="flex items-center text-default-400 text-small">
             Dòng tối đa:
@@ -393,7 +380,7 @@ export default function App({ data, dataSearch, status }) {
     statusFilter,
     visibleColumns,
     onRowsPerPageChange,
-    sanPhams.length,
+    chiTietSanPhams.length,
     onSearchChange,
     hasSearchFilter,
   ]);
@@ -401,11 +388,11 @@ export default function App({ data, dataSearch, status }) {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        {/* <span className="w-[30%] text-small text-default-400">
+        <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
-        </span> */}
+            : `${selectedKeys.size} sản phẩm chi tiết đã được chọn`}
+        </span>
         <Pagination
           isCompact
           showControls
@@ -413,8 +400,7 @@ export default function App({ data, dataSearch, status }) {
           color="primary"
           page={page}
           total={pages}
-          onChange={(page) => setPage(page)}
-          style={{ paddingLeft: "730px" }}
+          onChange={setPage}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -438,23 +424,42 @@ export default function App({ data, dataSearch, status }) {
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
+  const handleSelectionChange = (keys) => {
+    setRowKey(keys);
+    getListSelectedMa(keys);
+  };
+
+  const getListSelectedMa = (keys) => {
+    let newSelectedMaCTSP = [];
+    if (keys === "all") {
+      newSelectedMaCTSP = chiTietSanPhams.map(
+        (chiTietSanPham) => chiTietSanPham.ma
+      );
+    } else {
+      newSelectedMaCTSP = Array.from(keys).map((id) => idToMaMap[id]);
+    }
+    setSelectedMaCTSP(newSelectedMaCTSP);
+    onSelectedMaValuesChange(newSelectedMaCTSP);
+  };
+
+  useEffect(() => {onSelectedRowKey(rowKey)}, [selectedMaCTSP, rowKey]);
+
   return (
     <>
       <Table
-        style={{ height: "382px" }}
         aria-label="Example table with custom cells, pagination and sorting"
-        // isHeaderSticky
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{
-          wrapper: "max-h-[382px] p-0",
+          wrapper: "max-h-[500x]",
         }}
-        selectedKeys={selectedKeys}
+        selectedKeys={rowKey}
+        selectionMode="multiple"
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
         onSortChange={setSortDescriptor}
+        onSelectionChange={handleSelectionChange}
       >
         <TableHeader columns={headerColumns}>
           {(column) => (
@@ -468,7 +473,7 @@ export default function App({ data, dataSearch, status }) {
           )}
         </TableHeader>
         <TableBody
-          emptyContent={"Không tìm thấy khách hàng nào!"}
+          emptyContent={"Không tìm thấy sản phẩm nào!"}
           items={sortedItems}
         >
           {(item) => (
@@ -480,39 +485,6 @@ export default function App({ data, dataSearch, status }) {
           )}
         </TableBody>
       </Table>
-      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
-        <DialogTitle>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "15px",
-            }}
-          >
-            <TbInfoTriangle
-              className="mr-2"
-              style={{
-                color: "red",
-                fontSize: "25px",
-              }}
-            />
-            <span>Xác nhận xóa</span>
-          </div>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn xóa khách hàng này?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} color="warning">
-            Hủy
-          </Button>
-          <Button color="primary" onClick={confirmDelete}>
-            Vẫn xóa
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 }

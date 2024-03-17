@@ -66,13 +66,71 @@ public class KhuyenMaiController {
 
     @PostMapping("/add/{listMaCTSP}")
     public ResponseEntity addKhuyenMai(@RequestBody KhuyenMai khuyenMai, @PathVariable List<String> listMaCTSP) {
-        System.out.println(khuyenMai);
+        try {
+            Date currentDate = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentDate);
+            calendar.add(Calendar.DATE, 20); // Thêm 20 ngày vào currentDate
+
+            Date currentDatePlus20Days = calendar.getTime();
+            List<KhuyenMai> overlappingPromotions = khuyenMaiService.findOverlappingPromotions(
+                    khuyenMai.getNgayBatDau(),
+                    khuyenMai.getNgayKetThuc()
+            );
+            if (!overlappingPromotions.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khuyến mãi trùng thời gian với khuyến mãi khác.");
+            }
+            khuyenMai.setMa(generateUniqueMaKhuyenMai());
+            khuyenMai.setNgayTao(new Date());
+            khuyenMai.setNgaySua(new Date());
+            khuyenMai.setDeleted(0);
+            if (khuyenMai.getNgayBatDau().after(currentDatePlus20Days)) {
+                khuyenMai.setSwitchKM("Chưa diễn ra");
+                khuyenMai.setTrangThai("Chưa diễn ra");
+            } else if (khuyenMai.getNgayBatDau().after(currentDate)) {
+                khuyenMai.setSwitchKM("Sắp diễn ra");
+                khuyenMai.setTrangThai("Sắp diễn ra");
+            } else if (khuyenMai.getNgayKetThuc().before(currentDate)) {
+                khuyenMai.setSwitchKM("Đã kết thúc");
+                khuyenMai.setTrangThai("Đã kết thúc");
+            } else {
+                khuyenMai.setSwitchKM("Đang diễn ra");
+                khuyenMai.setTrangThai("Đang diễn ra");
+            }
+            khuyenMaiService.save(khuyenMai);
+            for (String maCTSP : listMaCTSP) {
+                List<SanPhamChiTiet> spctList = chiTietSPRepo.getSPCTByMaSPCT(Collections.singletonList(maCTSP));
+                if (!spctList.isEmpty()) {
+                    for (SanPhamChiTiet spct : spctList) {
+                        KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
+                        kmspct.setId_khuyen_mai(khuyenMai);
+                        kmspct.setId_chi_tiet_san_pham(spct);
+                        kmspct.setGiaCu(spct.getGiaBan());
+                        kmspctrepo.save(kmspct);
+                    }
+                }
+            }
+
+            return ResponseEntity.ok("Thêm mới thành công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
+        }
+    }
+
+
+    @PostMapping("/update/{listMaCTSP}")
+    public ResponseEntity updateKhuyenMai(@RequestBody KhuyenMai khuyenMai, @PathVariable List<String> listMaCTSP) {
+        System.out.println("list ma: " + listMaCTSP);
+
+        Optional<KhuyenMai> existingKhuyenMai = khuyenMaiService.findById(khuyenMai.getId());
 
         try {
-            if (khuyenMai.getId() != null) {
-                Optional<KhuyenMai> existingKhuyenMai = khuyenMaiService.findById(khuyenMai.getId());
+            if (listMaCTSP != null && !listMaCTSP.isEmpty() && listMaCTSP.get(0).equals("do-not-change")) {
+                // Giữ nguyên sản phẩm giảm giá cũ
                 if (existingKhuyenMai.isPresent()) {
                     KhuyenMai existing = existingKhuyenMai.get();
+                    System.out.println(existing);
                     existing.setTen(khuyenMai.getTen());
                     existing.setNgayBatDau(khuyenMai.getNgayBatDau());
                     existing.setNgayKetThuc(khuyenMai.getNgayKetThuc());
@@ -82,79 +140,44 @@ public class KhuyenMaiController {
                     existing.setSwitchKM(khuyenMai.getSwitchKM());
                     existing.setNgaySua(new Date());
                     khuyenMaiService.save(existing);
+                }
+            } else {
+                // Xóa sản phẩm được khuyến mại trước đó và áp dụng giảm giá sản phẩm mới theo listMaCTSP
+                if (existingKhuyenMai.isPresent()) {
+                    KhuyenMai existing = existingKhuyenMai.get();
+                    kmspctrepo.deleteKMSPCTByIdKhuyenMai(existing.getId());
 
+                    // Áp dụng giảm giá mới theo listMaCTSP
+                    existing.setTen(khuyenMai.getTen());
+                    existing.setNgayBatDau(khuyenMai.getNgayBatDau());
+                    existing.setNgayKetThuc(khuyenMai.getNgayKetThuc());
+                    existing.setGiaTriPhanTram(khuyenMai.getGiaTriPhanTram());
+                    existing.setNgaySua(new Date());
+                    existing.setDeleted(0);
+                    existing.setSwitchKM(khuyenMai.getSwitchKM());
+                    existing.setNgaySua(new Date());
                     for (String maCTSP : listMaCTSP) {
                         List<SanPhamChiTiet> spctList = chiTietSPRepo.getSPCTByMaSPCT(Collections.singletonList(maCTSP));
                         if (!spctList.isEmpty()) {
                             for (SanPhamChiTiet spct : spctList) {
                                 KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
-                                kmspct.setId_khuyen_mai(existing);
+                                kmspct.setId_khuyen_mai(khuyenMai);
                                 kmspct.setId_chi_tiet_san_pham(spct);
                                 kmspct.setGiaCu(spct.getGiaBan());
-
                                 kmspctrepo.save(kmspct);
                             }
                         }
                     }
-                    return ResponseEntity.ok("Cập nhật thành công");
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khuyến mãi không tồn tại");
-                }
-            } else {
-                Date currentDate = new Date();
-                List<KhuyenMai> khuyenMaiList = khuyenMaiService.findAll();
+                    khuyenMaiService.save(existing);
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(currentDate);
-                calendar.add(Calendar.DATE, 20); // Thêm 20 ngày vào currentDate
-
-                Date currentDatePlus20Days = calendar.getTime();
-                List<KhuyenMai> overlappingPromotions = khuyenMaiService.findOverlappingPromotions(
-                        khuyenMai.getNgayBatDau(),
-                        khuyenMai.getNgayKetThuc()
-                );
-                if (!overlappingPromotions.isEmpty()) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khuyến mãi trùng thời gian với khuyến mãi khác.");
                 }
-                khuyenMai.setMa(generateUniqueMaKhuyenMai());
-                khuyenMai.setNgayTao(new Date());
-                khuyenMai.setNgaySua(new Date());
-                khuyenMai.setDeleted(0);
-                if (khuyenMai.getNgayBatDau().after(currentDatePlus20Days)) {
-                    khuyenMai.setSwitchKM("Chưa diễn ra");
-                    khuyenMai.setTrangThai("Chưa diễn ra");
-                } else if (khuyenMai.getNgayBatDau().after(currentDate)) {
-                    khuyenMai.setSwitchKM("Sắp diễn ra");
-                    khuyenMai.setTrangThai("Sắp diễn ra");
-                } else if (khuyenMai.getNgayKetThuc().before(currentDate)) {
-                    khuyenMai.setSwitchKM("Đã kết thúc");
-                    khuyenMai.setTrangThai("Đã kết thúc");
-                } else {
-                    khuyenMai.setSwitchKM("Đang diễn ra");
-                    khuyenMai.setTrangThai("Đang diễn ra");
-                }
-                khuyenMaiService.save(khuyenMai);
-                for (String maCTSP : listMaCTSP) {
-                    List<SanPhamChiTiet> spctList = chiTietSPRepo.getSPCTByMaSPCT(Collections.singletonList(maCTSP));
-                    if (!spctList.isEmpty()) {
-                        for (SanPhamChiTiet spct : spctList) {
-                            KhuyenMaiSanPhamChiTiet kmspct = new KhuyenMaiSanPhamChiTiet();
-                            kmspct.setId_khuyen_mai(khuyenMai);
-                            kmspct.setId_chi_tiet_san_pham(spct);
-                            kmspct.setGiaCu(spct.getGiaBan());
-                            kmspctrepo.save(kmspct);
-                        }
-                    }
-                }
-
-                return ResponseEntity.ok("Thêm mới thành công");
             }
+            return ResponseEntity.ok("Cập nhật thành công");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
     }
-
 
     @GetMapping("/find-khuyenMai-byId/{id}")
     public ResponseEntity<KhuyenMai> findById(@PathVariable String id) {

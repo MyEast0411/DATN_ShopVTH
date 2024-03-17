@@ -1,7 +1,6 @@
 package com.example.shop.controller;
 
 
-import com.example.shop.dto.SanPhamChiTietDTO;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.requests.DeGiayRequest;

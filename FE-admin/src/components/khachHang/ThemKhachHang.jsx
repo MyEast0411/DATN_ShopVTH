@@ -1,28 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import { Modal, Form, Input } from "antd";
-import {
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@mui/material";
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { Button as ButtonAnt } from "antd";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { Button } from "@nextui-org/react";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
 import { toast } from "react-toastify";
+import TailSpinLoading from "../loading/TailSpinLoading";
 export default function ThemKhachHang() {
   let navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
@@ -34,6 +23,7 @@ export default function ThemKhachHang() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
   const [diaChi, setDiaChi] = useState({});
+  const [loading, setLoading] = useState(false);
   const handleAdd = () => {
     setDeleteConfirmationOpen(true);
   };
@@ -114,20 +104,7 @@ export default function ThemKhachHang() {
     thanhPho: "",
   });
 
-  const {
-    ma,
-    ten,
-    anhNguoiDung,
-    gioi_tinh,
-    sdt,
-    ngay_sinh,
-    email,
-    cccd,
-    soNha,
-    xa,
-    huyen,
-    tinh,
-  } = khachHang;
+  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, cccd, soNha, xa, huyen, tinh } = khachHang;
 
   function parseDate(input) {
     var parts = input.match(/(\d{2})(\d{2})(\d{4})/);
@@ -184,45 +161,55 @@ export default function ThemKhachHang() {
       reader.readAsDataURL(file);
     }
   };
-  const [errSoNha, setErrSoNha] = useState("");
-  const [errNgaySinh, setErrNgaySinh] = useState("");
-  // sdt
-  function validatePhoneNumber(phoneNumber) {
-    var regex = /^(0[2-9][0-9]{8})$/;
-    return regex.test(phoneNumber);
-  }
-  // email
-  function validateEmail(email) {
-    // Biểu thức chính quy cho địa chỉ email
-    var regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    // Kiểm tra xem email có khớp với định dạng không
-    return regex.test(email);
-  }
+
   const [form] = Form.useForm();
 
   const onSubmit = async () => {
+    setLoading(true);
     try {
       await form.validateFields();
+      cancelAdd();
+      if(khachHang.thanhPho == '') {
+        toast.error("Bạn chưa chọn thành phố");
+        setLoading(false);
+        return;
+      }
+      if(khachHang.huyen == '') {
+        toast.error("Bạn chưa chọn huyện");
+        setLoading(false);
+        return;
+      }
+      if(khachHang.xa == '') {
+        toast.error("Bạn chưa chọn xã");
+        setLoading(false);
+        return;
+      }
 
       await axios
         .post("http://localhost:8080/khach-hang/add", khachHang)
         .then((response) => {
-          toast.success(`🎉 Thêm thành công`);
-          navigate("/quan-ly-tai-khoan/khach-hang");
+          if(response.status == 200) {
+            toast.success(`🎉 Thêm thành công`);
+            setLoading(false);
+            navigate("/quan-ly-tai-khoan/khach-hang");
+          }
         })
         .catch((error) => {
           console.log(error);
           toast.error(error.response.data);
+          setLoading(false);
         });
     } catch (err) {
       console.log(err);
+      setLoading(false);
+      cancelAdd();
     }
-    cancelAdd();
   };
   return (
     <>
+      {loading && <TailSpinLoading/>}
       <div
-        class="grid grid-cols-3 gap-4 m-5"
+        className="grid grid-cols-3 gap-4 m-5"
         style={{
           fontSizfe: "8px",
           backgroundColor: "white",
@@ -251,26 +238,15 @@ export default function ThemKhachHang() {
               }}
               ref={imgDivRef}
             >
-              <span
-                className="absolute text-4xl"
-                style={{ top: "40%", left: "47%" }}
-              >
+              <span className="absolute text-4xl" style={{ top: "40%", left: "47%" }}>
                 +
               </span>
               <div className="absolute" style={{ top: "54%", left: "42%" }}>
-                <button onClick={() => fileInputRef.current.click()}>
-                  Tải ảnh
-                </button>
+                <button onClick={() => fileInputRef.current.click()}>Tải ảnh</button>
               </div>
             </div>
           </div>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-            ref={fileInputRef}
-          />
+          <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} ref={fileInputRef} />
         </div>
 
         <div className="col-span-2 m-10">
@@ -279,7 +255,7 @@ export default function ThemKhachHang() {
             initialValues={{
               remember: true,
             }}
-            onFinish={onSubmit}
+            // onFinish={onSubmit}
           >
             <div className="grid grid-cols-2 gap-4">
               <div className="left">
@@ -311,7 +287,7 @@ export default function ThemKhachHang() {
                 </div>
 
                 <div className="mb-20">
-                  <p className="pb-2 text-xl">Tên khách hàng</p>
+                  <p className="pb-2">Tên khách hàng</p>
                   <Form.Item
                     name="ten"
                     rules={[
@@ -321,8 +297,7 @@ export default function ThemKhachHang() {
                       },
                       {
                         pattern: /^[^\d]*$/,
-                        message:
-                          "Tên khách hàng không hợp lệ! Không được nhập số.",
+                        message: "Tên khách hàng không hợp lệ! Không được nhập số.",
                       },
                     ]}
                   >
@@ -339,7 +314,7 @@ export default function ThemKhachHang() {
                 </div>
 
                 <div className="mb-8">
-                  <p className="pb-2 text-xl">Email khách hàng</p>
+                  <p className="pb-2">Email khách hàng</p>
                   <Form.Item
                     name="email"
                     rules={[
@@ -366,10 +341,7 @@ export default function ThemKhachHang() {
                   </Form.Item>
                 </div>
                 <div className="mb-8 mt-20">
-                  <label
-                    htmlFor="city"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
+                  <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Chọn thành phố
                   </label>
                   <select
@@ -379,20 +351,14 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn thành phố</option>
                     {provinces.map((province) => (
-                      <option
-                        key={province.province_id}
-                        value={province.province_id}
-                      >
+                      <option key={province.province_id} value={province.province_id}>
                         {province.province_name}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="mb-6">
-                  <label
-                    htmlFor="wards"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
+                  <label htmlFor="wards" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Chọn xã phường
                   </label>
                   <select
@@ -411,32 +377,36 @@ export default function ThemKhachHang() {
               </div>
 
               <div className="right relative">
-                <div className="mb-12">
-                  <label htmlFor="phone" className="block text-xl font-bold">
-                    Ngày sinh
-                  </label>
-                  <Input
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
-                                rounded-lg focus:ring-blue-500 focus:border-blue-500 block
-                                 w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                                  dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
-                    type="date"
+                <div className="mb-20">
+                  <p className="pb-2">Ngày sinh</p>
+                  <Form.Item
                     name="ngay_sinh"
-                    value={
-                      parseDate(ngay_sinh)
-                        ? parseDate(ngay_sinh).toISOString().slice(0, 10)
-                        : ngay_sinh
-                    }
-                    id="dateInput"
-                    style={{
-                      width: "100%",
-                    }}
-                    max={new Date().toISOString().slice(0, 10)}
-                    onChange={(e) => {
-                      onChange(e);
-                    }}
-                  />
-                  <p style={{ color: "red" }}>{errNgaySinh}</p>
+                    rules={[
+                      {
+                        required: true,
+                        message: "Ngày sinh đang trống!",
+                      }
+                    ]}
+                  >
+                    <Input
+                      // className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                      //             rounded-lg focus:ring-blue-500 focus:border-blue-500 block
+                      //             w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
+                      //               dark:focus:ring-blue-500 mb-16 dark:focus:border-blue-500"
+                      type="date"
+                      name="ngay_sinh"
+                      value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ngay_sinh}
+                      id="dateInput"
+                      style={{
+                        width: "100%",
+                        height : "42px"
+                      }}
+                      max={new Date().toISOString().slice(0, 10)}
+                      onChange={(e) => {
+                        onChange(e);
+                      }}
+                    />
+                  </Form.Item>
                   <button
                     type="button"
                     style={{
@@ -450,19 +420,10 @@ export default function ThemKhachHang() {
                     className="bg-blue-500 text-white rounded w-32 h-10"
                     onClick={showModal}
                   >
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/241/241521.png"
-                      className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2"
-                    />
+                    <img src="https://cdn-icons-png.flaticon.com/512/241/241521.png" className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2" />
                     <span className="ml-8">Quét QR</span>
                   </button>
-                  <Modal
-                    open={isModalOpen}
-                    onOk={handleOk}
-                    onCancel={handleCancel}
-                    style={{ position: "relative" }}
-                    className=""
-                  >
+                  <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ position: "relative" }} className="">
                     <div>
                       <QrReader
                         onResult={(data) => {
@@ -489,9 +450,11 @@ export default function ThemKhachHang() {
                     </div>
                   </Modal>
                 </div>
-                <div className="flex" style={{ marginBottom: "87px" }}>
+                <p className="">Giới tính</p>
+                <div className="flex" style={{ marginBottom: "82px" }}>
+                
                   <FormControl>
-                    <FormLabel
+                    {/* <FormLabel
                       id="demo-controlled-radio-buttons-group"
                       style={{
                         fontWeight: "bold",
@@ -500,7 +463,7 @@ export default function ThemKhachHang() {
                       }}
                     >
                       Giới tính
-                    </FormLabel>
+                    </FormLabel> */}
                     <RadioGroup
                       style={{
                         display: "flex",
@@ -511,19 +474,8 @@ export default function ThemKhachHang() {
                       onChange={handleChange}
                     >
                       <div style={{ display: "flex", alignItems: "center" }}>
-                        <FormControlLabel
-                          value="Nam"
-                          control={<Radio />}
-                          label="Nam"
-                          checked={gioi_tinh === "Nam"}
-                          style={{ marginRight: "10px" }}
-                        />
-                        <FormControlLabel
-                          value="Nữ"
-                          checked={gioi_tinh === "Nữ"}
-                          control={<Radio />}
-                          label="Nữ"
-                        />
+                        <FormControlLabel value="Nam" control={<Radio />} label="Nam" checked={gioi_tinh === "Nam"} style={{ marginRight: "10px" }} />
+                        <FormControlLabel value="Nữ" checked={gioi_tinh === "Nữ"} control={<Radio />} label="Nữ" />
                       </div>
                     </RadioGroup>
                   </FormControl>
@@ -556,10 +508,7 @@ export default function ThemKhachHang() {
                 </div>
 
                 <div className="mb-6">
-                  <label
-                    htmlFor="District"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
+                  <label htmlFor="District" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Chọn huyện
                   </label>
                   <select
@@ -569,20 +518,14 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn huyện</option>
                     {districts.map((district) => (
-                      <option
-                        key={district.district_id}
-                        value={district.district_id}
-                      >
+                      <option key={district.district_id} value={district.district_id}>
                         {district.district_name}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="mb-8">
-                  <label
-                    htmlFor="phone"
-                    className="block text-xl font-medium text-gray-900"
-                  >
+                  <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
                     Số nhà/Ngõ/Đường
                   </label>
                   <Form.Item
@@ -608,15 +551,9 @@ export default function ThemKhachHang() {
                       }}
                     />
                   </Form.Item>
-
-                  <p style={{ color: "red" }}>{errSoNha}</p>
                 </div>
                 <div className="mt-6 flex items-center justify-end gap-x-6">
-                  <Link
-                    to="/quan-ly-tai-khoan/khach-hang"
-                    type="button"
-                    className="text-sm rounded-md  font-semibold leading-6 text-gray-900"
-                  >
+                  <Link to="/quan-ly-tai-khoan/khach-hang" type="button" className="text-sm rounded-md  font-semibold leading-6 text-gray-900">
                     Cancel
                   </Link>
 
@@ -657,9 +594,7 @@ export default function ThemKhachHang() {
           </div>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Bạn có chắc muốn thêm khách hàng này?
-          </DialogContentText>
+          <DialogContentText>Bạn có chắc muốn thêm khách hàng này?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelAdd} color="warning">
@@ -670,6 +605,7 @@ export default function ThemKhachHang() {
           </Button>
         </DialogActions>
       </Dialog>
+      
     </>
   );
 }
