@@ -1,12 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import { Modal, Form, Input } from "antd";
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import {
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 import { getProvinces, getDistricts, getWards } from "../../api/Location";
 import { parse } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { Button as ButtonAnt } from "antd";
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { Button } from "@nextui-org/react";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
@@ -102,7 +114,20 @@ export default function ThemKhachHang() {
     thanhPho: "",
   });
 
-  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, cccd, soNha, xa, huyen, tinh } = khachHang;
+  const {
+    ma,
+    ten,
+    anhNguoiDung,
+    gioi_tinh,
+    sdt,
+    ngay_sinh,
+    email,
+    cccd,
+    soNha,
+    xa,
+    huyen,
+    tinh,
+  } = khachHang;
 
   function parseDate(input) {
     var parts = input.match(/(\d{2})(\d{2})(\d{4})/);
@@ -226,15 +251,26 @@ export default function ThemKhachHang() {
               }}
               ref={imgDivRef}
             >
-              <span className="absolute text-4xl" style={{ top: "40%", left: "47%" }}>
+              <span
+                className="absolute text-4xl"
+                style={{ top: "40%", left: "47%" }}
+              >
                 +
               </span>
               <div className="absolute" style={{ top: "54%", left: "42%" }}>
-                <button onClick={() => fileInputRef.current.click()}>Tải ảnh</button>
+                <button onClick={() => fileInputRef.current.click()}>
+                  Tải ảnh
+                </button>
               </div>
             </div>
           </div>
-          <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} ref={fileInputRef} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+            ref={fileInputRef}
+          />
         </div>
 
         <div className="col-span-2 m-10">
@@ -285,7 +321,8 @@ export default function ThemKhachHang() {
                       },
                       {
                         pattern: /^[^\d]*$/,
-                        message: "Tên khách hàng không hợp lệ! Không được nhập số.",
+                        message:
+                          "Tên khách hàng không hợp lệ! Không được nhập số.",
                       },
                     ]}
                   >
@@ -329,7 +366,10 @@ export default function ThemKhachHang() {
                   </Form.Item>
                 </div>
                 <div className="mb-8 mt-20">
-                  <label htmlFor="city" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="city"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Chọn thành phố
                   </label>
                   <select
@@ -339,14 +379,20 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn thành phố</option>
                     {provinces.map((province) => (
-                      <option key={province.province_id} value={province.province_id}>
+                      <option
+                        key={province.province_id}
+                        value={province.province_id}
+                      >
                         {province.province_name}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="mb-6">
-                  <label htmlFor="wards" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="wards"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Chọn xã phường
                   </label>
                   <select
@@ -376,7 +422,11 @@ export default function ThemKhachHang() {
                                   dark:focus:ring-blue-500 mb-20 dark:focus:border-blue-500"
                     type="date"
                     name="ngay_sinh"
-                    value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ngay_sinh}
+                    value={
+                      parseDate(ngay_sinh)
+                        ? parseDate(ngay_sinh).toISOString().slice(0, 10)
+                        : ngay_sinh
+                    }
                     id="dateInput"
                     style={{
                       width: "100%",
@@ -400,10 +450,19 @@ export default function ThemKhachHang() {
                     className="bg-blue-500 text-white rounded w-32 h-10"
                     onClick={showModal}
                   >
-                    <img src="https://cdn-icons-png.flaticon.com/512/241/241521.png" className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2" />
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/241/241521.png"
+                      className="h-6 w-6 absolute left-4 top-1/2 transform -translate-y-1/2"
+                    />
                     <span className="ml-8">Quét QR</span>
                   </button>
-                  <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ position: "relative" }} className="">
+                  <Modal
+                    open={isModalOpen}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    style={{ position: "relative" }}
+                    className=""
+                  >
                     <div>
                       <QrReader
                         onResult={(data) => {
@@ -452,8 +511,19 @@ export default function ThemKhachHang() {
                       onChange={handleChange}
                     >
                       <div style={{ display: "flex", alignItems: "center" }}>
-                        <FormControlLabel value="Nam" control={<Radio />} label="Nam" checked={gioi_tinh === "Nam"} style={{ marginRight: "10px" }} />
-                        <FormControlLabel value="Nữ" checked={gioi_tinh === "Nữ"} control={<Radio />} label="Nữ" />
+                        <FormControlLabel
+                          value="Nam"
+                          control={<Radio />}
+                          label="Nam"
+                          checked={gioi_tinh === "Nam"}
+                          style={{ marginRight: "10px" }}
+                        />
+                        <FormControlLabel
+                          value="Nữ"
+                          checked={gioi_tinh === "Nữ"}
+                          control={<Radio />}
+                          label="Nữ"
+                        />
                       </div>
                     </RadioGroup>
                   </FormControl>
@@ -486,7 +556,10 @@ export default function ThemKhachHang() {
                 </div>
 
                 <div className="mb-6">
-                  <label htmlFor="District" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="District"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Chọn huyện
                   </label>
                   <select
@@ -496,14 +569,20 @@ export default function ThemKhachHang() {
                   >
                     <option value="">Chọn huyện</option>
                     {districts.map((district) => (
-                      <option key={district.district_id} value={district.district_id}>
+                      <option
+                        key={district.district_id}
+                        value={district.district_id}
+                      >
                         {district.district_name}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="mb-8">
-                  <label htmlFor="phone" className="block text-xl font-medium text-gray-900">
+                  <label
+                    htmlFor="phone"
+                    className="block text-xl font-medium text-gray-900"
+                  >
                     Số nhà/Ngõ/Đường
                   </label>
                   <Form.Item
@@ -533,7 +612,11 @@ export default function ThemKhachHang() {
                   <p style={{ color: "red" }}>{errSoNha}</p>
                 </div>
                 <div className="mt-6 flex items-center justify-end gap-x-6">
-                  <Link to="/quan-ly-tai-khoan/khach-hang" type="button" className="text-sm rounded-md  font-semibold leading-6 text-gray-900">
+                  <Link
+                    to="/quan-ly-tai-khoan/khach-hang"
+                    type="button"
+                    className="text-sm rounded-md  font-semibold leading-6 text-gray-900"
+                  >
                     Cancel
                   </Link>
 
@@ -574,7 +657,9 @@ export default function ThemKhachHang() {
           </div>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>Bạn có chắc muốn thêm khách hàng này?</DialogContentText>
+          <DialogContentText>
+            Bạn có chắc muốn thêm khách hàng này?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelAdd} color="warning">

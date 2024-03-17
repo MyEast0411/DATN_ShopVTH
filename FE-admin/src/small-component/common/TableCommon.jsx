@@ -13,11 +13,10 @@ import {
   Tooltip,
 } from "@nextui-org/react";
 
-import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
-import { EyeIcon } from "../../common/otherComponents/EyeIcon";
+
 import { Modal, Tag } from "antd";
-import { DeleteIcon } from "../../common/otherComponents/DeleteIcon";
+
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -225,47 +224,3 @@ const columns = [
   { uid: "tongTien", name: "Tổng Tiền" },
   { uid: "actions", name: "Thao tác" },
 ];
-
-const GetTrangThai = ({ tinhTrang }) => {
-  if (tinhTrang == 0)
-    return (
-      <Tag color="#8e008e">
-        <span className=" text-sm ">Chờ Xác Nhận</span>
-      </Tag>
-    );
-  if (tinhTrang == 1)
-    return (
-      <Tag color="#ff8e00">
-        {" "}
-        <span className=" text-sm ">Xác Nhận</span>
-      </Tag>
-    );
-  if (tinhTrang == 2)
-    return (
-      <Tag color="#C8D52D">
-        {" "}
-        <span className=" text-sm ">Chờ Vận Chuyển</span>
-      </Tag>
-    );
-  if (tinhTrang == 3)
-    return (
-      <Tag color="#C8D52D">
-        {" "}
-        <span className=" text-sm ">Giao Hàng</span>
-      </Tag>
-    );
-  if (tinhTrang == 4)
-    return (
-      <Tag color="#400098">
-        {" "}
-        <span className=" text-sm ">Hoàn Thành</span>
-      </Tag>
-    );
-  if (tinhTrang == 5)
-    return (
-      <Tag color="#ff0000">
-        {" "}
-        <span className=" text-sm ">Hủy</span>
-      </Tag>
-    );
-};

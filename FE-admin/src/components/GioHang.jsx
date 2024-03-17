@@ -282,7 +282,7 @@ const GioHang = ({
             soTien: inputValue,
             maKH: khachHang.maKH,
             tongTien: tongTien,
-            tienGiam : duocGiam,
+            tienGiam: duocGiam,
             trangThai: 4,
             loaiHd: 1, //1 - tại quầy 0 - online
           }
@@ -586,7 +586,10 @@ const GioHang = ({
             footer={[]}
           >
             <div className="mt-5">
-              <TableSanPhamChiTiet gioHang={activeKey} setIsModalOpenThem={setIsModalOpenThem}/>
+              <TableSanPhamChiTiet
+                gioHang={activeKey}
+                setIsModalOpenThem={setIsModalOpenThem}
+              />
             </div>
           </Modal>
           <Modal
@@ -936,7 +939,11 @@ const GioHang = ({
             <span style={{ color: "red", fontSize: "16px" }}>
               {duocGiam == ""
                 ? ""
-                : "Mua thêm " + Intl.NumberFormat().format(muaThem) + " ₫ để được giảm " + Intl.NumberFormat().format(duocGiam) + " ₫"}
+                : "Mua thêm " +
+                  Intl.NumberFormat().format(muaThem) +
+                  " ₫ để được giảm " +
+                  Intl.NumberFormat().format(duocGiam) +
+                  " ₫"}
             </span>
             <div class="flex ...">
               <Switch
