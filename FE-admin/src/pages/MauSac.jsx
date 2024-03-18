@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 
 //filter
 import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
-import FilterMa from "../common/filter/sanPham/FilterMa";
 import axios from "axios";
 
-import { Button as ButtonAntd } from "antd";
+import { Button as ButtonAntd, Modal, Form, Col, Row } from "antd";
 import { Link } from "react-router-dom";
+
+//loading
+import TailSpinLoading from "../components/loading/TailSpinLoading";
 
 //table
 import {
@@ -49,12 +51,12 @@ import { EyeIcon } from "../common/otherComponents/EyeIcon";
 import { HiOutlineClipboardList } from "react-icons/hi";
 
 //other
+import convert from "color-convert";
 
-const url = "http://localhost:8080/mau-sac/getAllMauSac";
 const columns = [
   { name: "STT", uid: "stt", sortable: true },
-  { name: "Mã màu", uid: "ma", sortable: true },
-  { name: "Tên màu", uid: "ten", sortable: true },
+  { name: "Mã", uid: "ma", sortable: true },
+  { name: "Tên", uid: "ten", sortable: true },
   { name: "Trạng thái", uid: "trangThai", sortable: true },
   { name: "Hành Động", uid: "hanhDong" },
 ];
@@ -79,10 +81,12 @@ const INITIAL_VISIBLE_COLUMNS = [
   "trangThai",
   "hanhDong",
 ];
-export default function MauSac() {
+export default function ChatLieu() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
+  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
 
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
@@ -95,11 +99,13 @@ export default function MauSac() {
   };
 
   const confirmDelete = async () => {
+    console.log(idToDelete);
     if (idToDelete) {
       await axios
-        .delete(`http://localhost:8080/delete/${idToDelete}`)
+        .put(`http://localhost:8080/mau-sac/deleteMauSac/${idToDelete}`)
         .then((response) => {
           toast("🎉 Xóa thành công");
+          fetchChiTietSanPham();
           cancelDelete();
         })
         .catch((error) => {
@@ -109,6 +115,23 @@ export default function MauSac() {
     }
   };
 
+  const getColorName = (colorCode) => {
+    try {
+      const hexCode = colorCode.replace("#", "").toUpperCase();
+      const rgb = convert.hex.rgb(hexCode);
+      const colorName = convert.rgb.keyword(rgb);
+      if (colorName === null) {
+        return "Unknown"; // Trường hợp không tìm thấy tên màu
+      } else {
+        return colorName; // Trả về tên màu
+      }
+    } catch (error) {
+      console.log(error);
+      return "Không tìm thấy màu sắc";
+    }
+    
+  };
+  
   const sizes = ["md"];
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -121,29 +144,35 @@ export default function MauSac() {
     column: "giaTriPhanTram",
     direction: "ascending",
   });
-  const [page, setPage] = React.useState("1");
-
+  const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
+  const url = "http://localhost:8080/mau-sac/getAllMauSac";
 
-  React.useEffect(() => {
-    async function fetchChiTietSanPham() {
-      try {
-        const response = await axios.get(url);
-        const updatedRows = response.data.map((item, index) => ({
-          id: item.id,
-          stt: index + 1,
-          ma: item.maMau,
-          ten: item.ten,
-          trangThai: item.deleted == 1 ? "Hoạt động" : "Không hoạt động",
-        }));
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
+  async function fetchChiTietSanPham() {
+    try {
+      const response = await axios.get(url);
+      const updatedRows = response.data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        ma: item.maMau,
+        ten: item.ten,
+        trangThai: item.deleted == 1 ? "Hoạt động" : "Không hoạt động",
+      }));
+      setSanPhams(updatedRows);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
     }
+  }
+  React.useEffect(() => {
     fetchChiTietSanPham();
-  }, [sanPhams]);
+  }, []);
 
+  const onChange = (e) => {
+    setKichCo({ ...kichCo, [e.target.name]: e.target.value });
+  };
+  const onChangeDetail = (e) => {
+    setKichCoDetail({ ...kichCoDetail, [e.target.name]: e.target.value });
+  };
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -175,7 +204,7 @@ export default function MauSac() {
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
+  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -197,17 +226,6 @@ export default function MauSac() {
   const renderCell = React.useCallback((sanPham, columnKey) => {
     const cellValue = sanPham[columnKey];
     switch (columnKey) {
-      case "trangThai":
-        return (
-          <Chip
-            // className="capitalize"
-            color={statusColorMap[sanPham.trangThai]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
       case "ma":
         return (
           <Tooltip content={sanPham.ma} showArrow={true}>
@@ -231,19 +249,23 @@ export default function MauSac() {
             </Chip>
           </Tooltip>
         );
+      case "trangThai":
+        return (
+          <Chip
+            color={statusColorMap[sanPham.trangThai]}
+            size="sm"
+            variant="flat"
+          >
+            {cellValue}
+          </Chip>
+        );
       case "hanhDong":
         return (
-          <div className="relative flex items-center gap-4">
+          <div className="relative flex items-center gap-4" >
             <Tooltip content="Chi tiết" showArrow={true}>
-              <Link
-                to={`/edit-san-pham/${sanPham.ma}`}
-                style={{ display: "block" }}
-                className="button-link group relative"
-              >
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                  <EyeIcon />
-                </span>
-              </Link>
+              <span className="text-lg text-default-400 cursor-pointer active:opacity-50" onClick={() => showModalDetailKichCo(sanPham.id)}>
+                <EyeIcon />
+              </span>
             </Tooltip>
 
             <div className="group relative" style={{ position: "relative" }}>
@@ -252,7 +274,6 @@ export default function MauSac() {
                   <DeleteIcon onClick={() => handleDelete(sanPham.ma)} />
                 </span>
               </Tooltip>
-              {/* <span className="text invisible group-hover:visible absolute -top-2 left-8 border border-gray-500 p-2">Xóa</span> */}
             </div>
           </div>
         );
@@ -276,7 +297,7 @@ export default function MauSac() {
   const onRowsPerPageChange = React.useCallback((e) => {
     setRowsPerPage(Number(e.target.value));
     setTotalPages(Math.ceil(filteredItems.length / Number(e.target.value)));
-    // setPage(1);
+    setPage(1);
   }, []);
 
   const onSearchChange = React.useCallback((value) => {
@@ -297,26 +318,17 @@ export default function MauSac() {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-end gap-3 items-end">
-          {/* <Input
-            isClearable
-            className="w-full sm:max-w-[30%]"
-            placeholder="Tìm kiếm bất kỳ..."
-            startContent={<SearchIcon />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          /> */}
           <div className="flex gap-3 items-end">
             <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
+              {/* <DropdownTrigger className="hidden sm:flex">
                 <Button
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
                 >
                   Trạng thái
                 </Button>
-              </DropdownTrigger>
-              <DropdownMenu
+              </DropdownTrigger> */}
+              {/* <DropdownMenu
                 disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
@@ -329,7 +341,7 @@ export default function MauSac() {
                     {capitalize(status.name)}
                   </DropdownItem>
                 ))}
-              </DropdownMenu>
+              </DropdownMenu> */}
             </Dropdown>
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -391,22 +403,6 @@ export default function MauSac() {
         <span className="w-[30%] text-small text-default-400">
           Tổng {sanPhams.length} màu sắc
         </span>
-        {/* <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
-        </span> */}
-        {/* <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={totalPages}
-          initialPage={1}
-          style={{paddingLeft : "730px"}}
-          onChange={setPage}
-        /> */}
         <div className="flex flex-wrap gap-4 items-center">
           {sizes.map((size) => (
             <Pagination
@@ -418,7 +414,7 @@ export default function MauSac() {
               initialPage={1}
               size={size}
               page={page}
-              onChange={(page) => setPage(page)}
+              onChange={setPage}
             />
           ))}
         </div>
@@ -443,9 +439,152 @@ export default function MauSac() {
       </div>
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+
+  const [isModalAddKichCo, setIsModalAddKichCo] = useState(false);
+  const [kichCo, setKichCo] = useState({
+    maMau: "",
+    ten: ""
+  });
+
+  const showModalAddKichCo = () => {
+    setIsModalAddKichCo(true);
+  };
+  const handleOkAddKichCo = async () => {
+    setLoading(true);
+    console.log(kichCo);
+    try {
+      await form.validateFields();
+
+      await axios
+        .post("http://localhost:8080/mau-sac/addMauSac", kichCo)
+        .then((response) => {
+          console.log(response);
+          if (response.status == 200) {
+            toast.success(`Thêm thành công`, {
+              position: "top-right",
+              autoClose: 2000,
+            });
+            setLoading(false);
+            setIsModalAddKichCo(false);
+            fetchChiTietSanPham();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error(`${error.response.data}`, {
+            position: "top-right",
+            autoClose: 2000,
+          });
+          setLoading(false);
+          setIsModalAddKichCo(false);
+        });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+
+  };
+  const handleCancelAddKichCo = () => {
+    setIsModalAddKichCo(false);
+  };
+
+  const [initValue, setInitialValue] = useState({});
+  const [isModalDetailKichCo, setIsModalDetailKichCo] = useState(false);
+  const [kichCoDetail, setKichCoDetail] = useState({
+    id: "",
+    ma: "",
+    ten: "",
+    ngay_tao: "",
+    nguoi_tao: "",
+    nguoi_sua: "",
+    ngay_sua: "",
+    deleted: ""
+  });
+
+  const showModalDetailKichCo = async (value) => {
+    console.log(value);
+    setIsModalDetailKichCo(true);
+    await axios.get(`http://localhost:8080/mau-sac/getByMa/${value}`)
+      .then((res) => {
+        console.log(res.data);
+        setKichCoDetail({
+          id: res.data.id,
+          maMau: res.data.maMau,
+          ten: res.data.ten,
+          ngay_tao: res.data.ngayTao,
+          nguoi_tao: res.data.nguoiTao,
+          nguoi_sua: res.data.nguoiSua,
+          ngay_sua: res.data.ngaySua,
+          deleted: res.data.deleted == 1 ? "Hoạt động" : "Ngừng hoạt động"
+        });
+        setInitialValue({
+          id: res.data.id,
+          maMau: res.data.maMau,
+          ten: res.data.ten,
+          ngay_tao: res.data.ngayTao,
+          nguoi_tao: res.data.nguoiTao,
+          nguoi_sua: res.data.nguoiSua,
+          ngay_sua: res.data.ngaySua,
+          deleted: res.data.deleted == 1 ? "Hoạt động" : "Ngừng hoạt động"
+        });
+      }).catch((error) => {
+        console.log(error);
+      })
+
+  };
+
+  const handleCancelDetailKichCo = () => {
+    setIsModalDetailKichCo(false);
+  };
+
+  const handleOkDetailKichCo = async () => {
+    setLoading(true);
+    try {
+      await form.validateFields();
+
+      await axios
+        .put("http://localhost:8080/mau-sac/updateMauSac", {
+          id: kichCoDetail.id,
+          ten: kichCoDetail.ten,
+          ma: kichCoDetail.ma
+        })
+        .then((response) => {
+          console.log(response);
+          if (response.status == 200) {
+            toast.success(`Cập nhật thành công thành công`, {
+              position: "top-right",
+              autoClose: 2000,
+            });
+            setTimeout(() => {
+              setLoading(false);
+            }, 1000);
+
+            fetchChiTietSanPham();
+          }
+        })
+        .catch((error) => {
+          toast.error(error.data, {
+            position: "top-right",
+            autoClose: 2000,
+          });
+          setLoading(false);
+        });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+
+    setIsModalDetailKichCo(false);
+  };
+
+  useEffect(() => {
+    form.resetFields();
+  }, [initValue]);
   return (
     <>
+      {/* {loading ? ( <TailSpinLoading/> ) :  */}
       <div>
+        {loading && <TailSpinLoading />}
         <h2 className="mb-5 font-bold text-2xl">Quản Lý Màu Sắc</h2>
         <div>
           <div className="mb-2 border-b-[1px] font-normal  border-gray-500 text-lg flex items-center">
@@ -484,29 +623,17 @@ export default function MauSac() {
                 <FilterTrangThai style={{ width: "100%" }} />
               </div>
             </div>
-            {/* <div className="p-5">
-                <Slider 
-                  label="Khoảng kích cỡ"
-                  size="sm"
-                  step={1} 
-                  minValue={0} 
-                  maxValue={50} 
-                  defaultValue={[0, 50]} 
-                  className="max-w-md w-1/2"
-                />
-            </div> */}
-            {/* <div className="p-5 text-center mt-4">
-              <ButtonAntd
-                type="primary"
-                style={{
-                  backgroundColor: "#1976d2",
-                  marginBottom: "2px",
-                  marginLeft: "150%",
-                }}
-              >
-                Làm mới
-              </ButtonAntd>
-            </div> */}
+            <div className="p-5">
+              {/* <Slider
+                label="Khoảng chất liệu"
+                size="sm"
+                step={1}
+                minValue={0}
+                maxValue={50}
+                defaultValue={[0, 50]}
+                className="max-w-md w-1/2"
+              /> */}
+            </div>
           </div>
         </div>
 
@@ -522,38 +649,10 @@ export default function MauSac() {
               backgroundColor: "#1976d2",
               marginBottom: "2px",
             }}
-          // onClick={}
+            onClick={showModalAddKichCo}
           >
             + Tạo màu sắc
           </ButtonAntd>
-
-          <Modal
-            title="Thêm màu sắc"
-            open={isModalOpenMS}
-            onOk={handleOkMS}
-            onCancel={handleCancelMS}
-            cancelText="Cancel"
-            okText="Thêm"
-            style={{ position: "relative" }}
-          >
-            <div>
-              <label
-                htmlFor="country"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Tên kích cỡ
-              </label>
-              <input
-                type="text"
-                name="tenKichCo"
-                // value={tenKichCo}
-                className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                placeholder="Nhập tên màu sắc"
-                // onChange={(e) => onChangeKC(e)}
-                style={{ borderRadius: "5px" }}
-              />
-            </div>
-          </Modal>
         </div>
         <div
           className="drop-shadow-lg font-normal border-gray-500 text-lg	"
@@ -598,7 +697,7 @@ export default function MauSac() {
                 )}
               </TableHeader>
               <TableBody
-                emptyContent={"Không tìm thấy sản phẩm nào!"}
+                emptyContent={"Không tìm thấy màu sắc nào!"}
                 items={sortedItems}
               >
                 {(item) => (
@@ -647,6 +746,200 @@ export default function MauSac() {
                 </Button>
               </DialogActions>
             </Dialog>
+            <Modal
+              title="Thêm màu sắc"
+              visible={isModalAddKichCo}
+              onCancel={() => setIsModalAddKichCo(false)}
+              footer={[
+                <Button key="cancel" onClick={() => setIsModalAddKichCo(false)}>
+                  Hủy
+                </Button>,
+                <Button key="submit" type="primary" onClick={handleOkAddKichCo}>
+                  Thêm
+                </Button>
+              ]}
+            >
+              <Form form={form} layout="vertical" initialValues={kichCo}>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Bảng màu"
+                      name="code"
+                      rules={[
+                        { required: true, message: "Vui lòng chọn màu" },
+                        { max: 50, message: "Tên màu sắc tối đa 50 ký tự" },
+                      ]}
+                    >
+                      <Input
+                        type="color"
+                        style={{ height: "200px", marginTop : "150px" }}
+                        onChange={(e) => {
+                          const maMau = e.target.value;
+                          const tenMau = getColorName(maMau);
+                          setKichCo({
+                            maMau : maMau,
+                            ten : tenMau
+                          })
+                          form.setFieldsValue({ name: tenMau }); // Cập nhật giá trị cho trường "Tên màu sắc"
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Mã màu sắc"
+                      name="code"
+                      rules={[
+                        { required: true, message: "Vui lòng nhập mã màu" },
+                        { max: 50, message: "Tên màu sắc tối đa 50 ký tự" },
+                      ]}
+                    >
+                      <Input placeholder="Tên mã màu" style={{ height: "40px" }} onChange={(e) => {
+                          const maMau = e.target.value;
+                          const tenMau = getColorName(maMau);
+                          setKichCo({
+                            maMau : maMau,
+                            ten : tenMau
+                          })
+                          form.setFieldsValue({ name: tenMau });
+                        }}/>
+                    </Form.Item>
+                    <Form.Item
+                      label="Tên màu sắc"
+                      name="name"
+                      readOnly
+                      rules={[
+                        { required: true, message: "Vui lòng nhập tên màu" },
+                        { max: 50, message: "Tên màu sắc tối đa 50 ký tự" },
+                      ]}
+                    >
+                      <Input placeholder="Tên màu sắc" style={{ height: "40px" }} />
+                    </Form.Item>
+                    
+                  </Col>
+                </Row>
+              </Form>
+            </Modal>
+
+            <Modal
+              title="Chi tiết màu sắc"
+              open={isModalDetailKichCo}
+              onOk={handleOkDetailKichCo}
+              onCancel={handleCancelDetailKichCo}
+              cancelText="Hủy"
+              okText="Hoàn tất"
+              style={{ position: "relative" }}
+            >
+              <Form form={form} initialValues={initValue}>
+                <div>
+                  <label htmlFor="ma" className="block text-sm font-medium leading-6 text-gray-900">
+                    Mã màu sắc
+                  </label>
+                  <Form.Item
+                    name="maMau"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Mã màu sắc không được để trống!",
+                      }
+                    ]}>
+                    <Input
+                      value={kichCoDetail?.maMau}
+                      name="maMau"
+                      placeholder="Nhập mã màu sắc"
+                      style={{ borderRadius: "5px" }}
+                      onChange={onChangeDetail}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Tên màu sắc
+                  </label>
+                  <Form.Item
+                    name="ten"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Tên màu sắc không được để trống!",
+                      }
+                    ]}
+                  >
+                    <Input
+                      value={kichCoDetail?.ten}
+                      name="ten"
+                      placeholder="Nhập tên màu sắc"
+                      style={{ borderRadius: "5px" }}
+                      onChange={onChangeDetail}
+                    />
+                  </Form.Item>
+                  <label htmlFor="deleted" className="block text-sm font-medium leading-6 text-gray-900">
+                    Trạng thái
+                  </label>
+                  <Form.Item
+                    name="deleted"
+                  >
+                    <Input
+                      value={kichCoDetail?.deleted}
+                      name="deleted"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Ngày tạo
+                  </label>
+                  <Form.Item
+                    name="ngay_tao"
+                  >
+                    <Input
+                      value={kichCoDetail?.ngay_tao}
+                      name="ngay_tao"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                      onChange={onChange}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Người tạo
+                  </label>
+                  <Form.Item
+                    name="nguoi_tao"
+                  >
+                    <Input
+                      value={kichCoDetail?.nguoi_tao}
+                      name="nguoi_tao"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Ngày sửa
+                  </label>
+                  <Form.Item
+                    name="ngay_sua"
+                  >
+                    <Input
+                      value={kichCoDetail?.ngay_sua}
+                      name="ngay_sua"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                    />
+                  </Form.Item>
+                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                    Người sửa
+                  </label>
+                  <Form.Item
+                    name="nguoi_sua"
+                  >
+                    <Input
+                      value={kichCoDetail?.nguoi_sua}
+                      name="nguoi_sua"
+                      readOnly
+                      style={{ borderRadius: "5px" }}
+                    />
+                  </Form.Item>
+                </div>
+              </Form>
+            </Modal>
           </div>
         </div>
       </div>

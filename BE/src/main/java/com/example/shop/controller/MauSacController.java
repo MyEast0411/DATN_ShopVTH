@@ -26,9 +26,9 @@ public class MauSacController {
         return ResponseEntity.ok(repo.getAll());
     }
 
-    @GetMapping("getByMa/{ma}")
-    public ResponseEntity getByMa(@PathVariable String ma) {
-        return ResponseEntity.ok(repo.findByMaMau(ma));
+    @GetMapping("getByMa/{id}")
+    public ResponseEntity getByMa(@PathVariable String id) {
+        return ResponseEntity.ok(repo.findById(id).get());
     }
 
     @PostMapping("/addMauSac")
