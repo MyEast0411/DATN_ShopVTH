@@ -177,7 +177,9 @@ public class HoaDonChiTietController {
             Double gia = ssHDCT.getMoneyBYHD(id_hoa_don);
             System.out.println(ssHDCT.getMoneyBYHD(id_hoa_don));
             HoaDon hoaDon = ssHD.findById(id_hoa_don).get();
-            hoaDon.setTongTien(new BigDecimal(gia).subtract(hoaDon.getTienGiam()).add(hoaDon.getTienShip()));
+            hoaDon.setTongTien(new BigDecimal(gia)
+                    .subtract(hoaDon.getTienGiam()== null?new BigDecimal("0") :hoaDon.getTienGiam())
+                    .add(hoaDon.getTienShip()== null?new BigDecimal("0") :hoaDon.getTienShip()));
             ssHD.save(hoaDon);
 
             LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()

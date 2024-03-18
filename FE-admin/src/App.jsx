@@ -20,12 +20,13 @@ import DetailSanPham from "./components/sanPham/DetailSanPham";
 import DetailKhachHang from "./components/khachHang/DetailKhachHang";
 
 import EditVoucher from "./components/voucher/EditVoucher";
-import DetailHoaDon from "./components/quanlyhoadon/DetailHoaDon";
+
 import DetailVoucher from "./components/voucher/DetailVoucher";
 import AddVoucher from "./components/voucher/AddVoucher";
 import ThongKe from "./pages/ThongKe";
-import LichSuMuaHang from "./components/khachHang/LichSuMuaHang";
+
 import KhuyenMaiUpdate from "./components/khuyenMai/KhuyenMaiUpdate";
+import DetailHoadon from "./components/thu_chi/DetailHoadon";
 
 const App = () => {
   return (
@@ -39,12 +40,18 @@ const App = () => {
           <Route path="/thong-ke" element={<ThongKe />} />
 
           <Route path="/quan-ly-hoa-don" element={<QuanLyHoaDon />} />
-          <Route path="/quan-ly-hoa-don/detail-hoa-don/:id" element={<DetailHoaDon />} />
+          <Route
+            path="/quan-ly-hoa-don/detail-hoa-don/:id"
+            element={<DetailHoadon />}
+          />
 
           <Route path="/khuyen-mai" element={<KhuyenMai />} />
           <Route path="/them-khuyen-mai" element={<ThemKhuyenMai />} />
           <Route path="/them-khuyen-mai/:idKM" element={<ThemKhuyenMai />} />
-          <Route path="/update-khuyen-mai/:idKM" element={<KhuyenMaiUpdate />} />
+          <Route
+            path="/update-khuyen-mai/:idKM"
+            element={<KhuyenMaiUpdate />}
+          />
 
           <Route
             path="/quan-ly-tai-khoan/nhan-vien/them-nhan-vien"
@@ -63,7 +70,7 @@ const App = () => {
             path="/quan-ly-tai-khoan/khach-hang/edit-khach-hang/:maKH"
             element={<DetailKhachHang />}
           />
-          <Route path="/lich-su-mua-hang/:idkh" element={<LichSuMuaHang />} />
+          {/* <Route path="/lich-su-mua-hang/:idkh" element={<LichSuMuaHang />} /> */}
 
           <Route
             path="/quan-ly-san-pham/san-pham/them-san-pham"
@@ -75,9 +82,15 @@ const App = () => {
           />
           <Route path="/update-san-pham/:maSP" element={<DetailSanPham />} />
 
-          <Route path="/giam-gia/voucher/add-voucher" element={<AddVoucher />} />
+          <Route
+            path="/giam-gia/voucher/add-voucher"
+            element={<AddVoucher />}
+          />
           <Route path="/eidt-voucher/:id" element={<EditVoucher />} />
-          <Route path="/giam-gia/voucher/detail-voucher/:id" element={<DetailVoucher />} />
+          <Route
+            path="/giam-gia/voucher/detail-voucher/:id"
+            element={<DetailVoucher />}
+          />
           <Route path="/giam-gia/voucher" element={<Voucher />} />
 
           <Route path="/quan-ly-san-pham" element={<Build />}>

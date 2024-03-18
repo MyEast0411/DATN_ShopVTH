@@ -76,7 +76,11 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD }) {
+export default function TableSanPham({
+  gioHang,
+  setIsModalOpenThem,
+  getInfoHD,
+}) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -219,7 +223,7 @@ export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD })
   });
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
-  
+
   const [sanPham, setSanPham] = useState({
     id_mau_sac: "",
     id_kich_co: "",
@@ -330,7 +334,9 @@ export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD })
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
+  const pages = Math.ceil(
+    filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1
+  );
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -515,7 +521,7 @@ export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD })
                     <option
                       key={x.id}
                       value={x.id}
-                    //style={{ backgroundColor: x.maMau, color: "white" }}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -543,7 +549,7 @@ export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD })
                     <option
                       key={x.id}
                       value={x.id}
-                    //style={{ backgroundColor: x.maMau, color: "white" }}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -571,7 +577,7 @@ export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD })
                     <option
                       key={x.id}
                       value={x.id}
-                    //style={{ backgroundColor: x.maMau, color: "white" }}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -599,7 +605,7 @@ export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD })
                     <option
                       key={x.id}
                       value={x.id}
-                    //style={{ backgroundColor: x.maMau, color: "white" }}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -661,7 +667,7 @@ export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD })
                     <option
                       key={x.id}
                       value={x.id}
-                    //style={{ backgroundColor: x.maMau, color: "white" }}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -689,7 +695,7 @@ export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD })
                     <option
                       key={x.id}
                       value={x.id}
-                    //style={{ backgroundColor: x.maMau, color: "white" }}
+                      //style={{ backgroundColor: x.maMau, color: "white" }}
                     >
                       {x.ten}
                     </option>
@@ -912,9 +918,9 @@ export default function TableSanPham({ gioHang, setIsModalOpenThem, getInfoHD })
           <InputNumber
             onChange={(value) => {
               if (value > soLuongSP.soLuongTon) {
-                  setSoLuongDat(soLuongSP.soLuongTon);
+                setSoLuongDat(soLuongSP.soLuongTon);
               } else {
-                  setSoLuongDat(value);
+                setSoLuongDat(value);
               }
             }}
             max={soLuongSP.soLuongTon}

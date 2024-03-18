@@ -247,8 +247,12 @@ public class HoaDonController {
                 hoaDon1.setTenKhachHang(hoaDon.getTenKhachHang());
                 hoaDon1.setSdt(hoaDon.getSdt());
                 hoaDon1.setNgayTao(new Date());
-                hoaDon1.setTienGiam(BigDecimal.valueOf(Double.parseDouble( hoaDon.getTienGiam())));
-                hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
+                if (hoaDon.getTienGiam() == null || hoaDon.getTienGiam() == ""){
+                    hoaDon1.setTienGiam(new BigDecimal("0"));
+                }else{
+                    hoaDon1.setTienGiam(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTienGiam())));
+                }
+                 hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
                 hoaDon1.setId_nhan_vien(ssNV.findById(idNhanVien).orElse(null));
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
                 for (HoaDonChiTiet hdct : hoaDonChiTietList) {

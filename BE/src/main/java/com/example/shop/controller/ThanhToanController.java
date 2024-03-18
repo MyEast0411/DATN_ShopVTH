@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -67,6 +68,7 @@ public class ThanhToanController {
             ThanhToan tt = ThanhToan.builder()
                     .hinhThuc(thanhToan.getPhuongThuc())
                     .ma_giao_dich(thanhToan.getMaGiaoDich())
+                    .ngayTao(new Date())
                     .soTien(thanhToan.getSoTien())
                     .build();
             ThanhToan newThanhToan = thanhToanService.addThanhToan(tt);
@@ -74,6 +76,7 @@ public class ThanhToanController {
             HinhThucThanhToan hinhThucThanhToan = HinhThucThanhToan.builder()
                     .id_hoa_don(hd)
                     .id_thanh_toan(newThanhToan)
+                    .ngayTao(new Date())
                     .build();
             hinhThucThanhToanService.save(hinhThucThanhToan);
             System.out.println(tt);
