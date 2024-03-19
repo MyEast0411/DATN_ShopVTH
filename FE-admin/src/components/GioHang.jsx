@@ -185,7 +185,7 @@ const GioHang = ({
 
         setThanhToan(updatedRows);
         const totalSoTien = updatedRows.reduce(
-          (sum, row) => sum + parseFloat(row.soTien.replace(",", "")),
+          (sum, row) => sum + parseFloat(row.soTien.replace(".", "")),
           0
         );
 

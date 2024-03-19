@@ -36,11 +36,14 @@ import { faMoneyBillTransfer } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import { CiWarning } from "react-icons/ci";
 import { Table as TableAntd } from "antd";
+import ComponentToPrint from "./InHoaDon";
 
 function DetailHoadon() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
   const [addLSHDConfirmationOpen, setAddLSHDConfirmationOpen] = useState(false);
+  const [cancleHDConfirmationOpen, setCancleHDConfirmationOpen] =
+    useState(false);
   const [luiHDConfirmationOpen, setLuiHDConfirmationOpen] = useState(false);
   const [thanhToanConfirmationOpen, setThanhToanConfirmationOpen] =
     useState(false);
@@ -61,6 +64,7 @@ function DetailHoadon() {
   const [isModalOpenTT, setIsModalOpenTT] = useState(false);
   const [openTimeLine, setOpenTimeLine] = useState(false);
   const [openModalLui, setOpenModalLui] = useState(false);
+  const [openModalHuy, setOpenModalHuy] = useState(false);
   const [inputValue, setInputValue] = useState(null);
   const [maGiaoDich, setMaGiaoDich] = useState("");
   const [khachCanTra, setKhachCanTra] = useState("");
@@ -70,6 +74,39 @@ function DetailHoadon() {
   const [tienThua, setTienThua] = useState("0 ₫");
   const [loading, setLoading] = useState(false);
   const [openFixHD, setOpenFixHD] = useState(false);
+  const [isModalOpenHD, setIsModalOpenHD] = useState(false);
+  const componentRef = useRef();
+  //in hoa đơn
+  const showModalHD = () => {
+    setIsModalOpenHD(true);
+  };
+  const handleCancelHD = () => {
+    setIsModalOpenHD(false);
+  };
+  const downloadPDF = () => {
+    const input = componentRef.current;
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4", true);
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 20;
+      pdf.addImage(
+        imgData,
+        "PNG",
+        imgX,
+        imgY,
+        imgWidth * ratio,
+        imgHeight * ratio
+      );
+      pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
+    });
+    setIsModalOpenHD(false);
+  };
 
   const showModalFixHD = () => {
     setOpenFixHD(true);
@@ -93,7 +130,7 @@ function DetailHoadon() {
     setNote("");
     setOpenTimeLine(false);
   };
-
+  // Lùi Trạng Thái Hóa Đơn
   const showModalLui = () => {
     setOpenModalLui(true);
   };
@@ -102,7 +139,7 @@ function DetailHoadon() {
     setNote("");
     setOpenModalLui(false);
   };
-  // Lùi Trạng Thái Hóa Đơn
+
   const onHandleLuiHD = () => {
     if (note) {
       setLuiHDConfirmationOpen(true);
@@ -445,6 +482,46 @@ function DetailHoadon() {
     getDataLichSu();
   };
 
+  // hủy hóa đơn
+  const showModalHuy = () => {
+    setOpenModalHuy(true);
+  };
+
+  const hideModalHuy = () => {
+    setNote("");
+    setOpenModalHuy(false);
+  };
+  const onHandleCancelHD = () => {
+    hideModalHuy();
+    setCancleHDConfirmationOpen(true);
+  };
+
+  const cancelCancelHD = () => {
+    setCancleHDConfirmationOpen(false);
+  };
+  const confirmCancelHD = async () => {
+    await axios
+      .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
+        moTaHoaDon: "Hủy Hóa Đơn",
+        deleted: 1,
+        nguoiTao: "Cam",
+        ghiChu: note,
+      })
+      .then((response) => {
+        toast("🎉 Xóa thành công");
+        fetchKMSPCT();
+        getDataLichSuThanhToan();
+        getInfoHD();
+        getDataChiTietSanPham();
+        getDataLichSu();
+      })
+
+      .catch((error) => {
+        toast("😢 Xóa thất bại");
+      });
+    cancelDelete();
+  };
+  // xóa sp
   const onHandleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);
@@ -661,11 +738,84 @@ function DetailHoadon() {
               ""
             )}
 
-            <Button className="me-4" style={{ marginRight: 10 }}>
+            <Button
+              className="me-4"
+              style={{ marginRight: 10 }}
+              onClick={showModalHD}
+            >
               Xuất hoá đơn
             </Button>
+            <Modal
+              title="Xuất Hóa Đơn"
+              open={isModalOpenHD}
+              // onOk={handleOkHD}
+              onCancel={handleCancelHD}
+              width={700}
+              style={{ top: 10 }}
+              footer={[
+                <Button
+                  key="back"
+                  onClick={handleCancelHD}
+                  className="me-3 "
+                  style={{ backgroundColor: "blue" }}
+                >
+                  Cancel
+                </Button>,
+                <Button
+                  key="submit"
+                  type="primary"
+                  onClick={downloadPDF}
+                  style={{ backgroundColor: "red" }}
+                >
+                  In Hóa Đơn
+                </Button>,
+              ]}
+            >
+              <ComponentToPrint
+                ref={componentRef}
+                data={rowsSPCT}
+                columns={columns}
+                inforKH={info}
+              />
+            </Modal>
 
-            <Button className="me-4">Hủy Hóa Đơn</Button>
+            {info.loaiHd == !1 && info.trangThai < 4 && (
+              <Button className="me-4" onClick={showModalHuy}>
+                Hủy Hóa Đơn
+              </Button>
+            )}
+
+            <Modal
+              title="Ghi Chú"
+              style={{
+                top: 20,
+              }}
+              open={openModalHuy}
+              onOk={hideModalHuy}
+              onCancel={hideModalHuy}
+              okText="Xác Nhận Thao Tác"
+              cancelText="Hủy"
+              footer={() => (
+                <>
+                  <Button className="me-1" color="blue" onClick={hideModalHuy}>
+                    Hủy
+                  </Button>
+                  <Button color="red" onClick={onHandleCancelHD}>
+                    Xác Nhận
+                  </Button>
+                </>
+              )}
+            >
+              <Input.TextArea
+                rows={4}
+                placeholder="Lý do hủy hóa đơn ...."
+                value={note}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
+                // maxLength={}
+              />
+            </Modal>
           </div>
           <div className="row grid justify-items-end">
             <Button className="me-4 " onClick={handleOpen} variant="gradient">
@@ -1260,7 +1410,27 @@ function DetailHoadon() {
       </Dialog>
 
       {/* confirm hủy hóa đơn */}
-
+      <Dialog open={cancleHDConfirmationOpen} handler={cancelCancelHD}>
+        <DialogHeader>
+          <CiWarning style={{ color: "yellow", fontSize: 40 }} />
+          <span>Thông báo</span>
+        </DialogHeader>
+        <DialogBody>
+          <div className="grid justify-items-center">
+            <span style={{ fontSize: 20 }}>
+              Bạn có muốn hủy hóa đơn này không ?
+            </span>
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button color="black" className="me-3" onClick={cancelCancelHD}>
+            Hủy
+          </Button>
+          <Button color="red" onClick={confirmCancelHD}>
+            Vẫn Hủy
+          </Button>
+        </DialogFooter>
+      </Dialog>
       {/* confirm update sl */}
       <Dialog open={updateConfirmationOpen} handler={cancelUpdate}>
         <DialogHeader>
@@ -1431,4 +1601,36 @@ const columnsLSHD = [
   //   key: "nguoiXacNhan",
   //   label: "Người xác nhận",
   // },
+];
+
+const columns = [
+  {
+    title: "Name",
+    dataIndex: "name",
+    key: "name",
+    render: (_, record) => (
+      <span>
+        {record.name}
+        {" ( "}
+        {record.mausac}
+        {" , "}
+        {record.kichco}
+        {" ) "}
+      </span>
+    ),
+  },
+  {
+    title: "Số lượng",
+    dataIndex: "quantity",
+    key: "quantity",
+    render: (text) => <span>{text} sản phẩm</span>,
+  },
+  {
+    title: "Đơn Giá",
+    dataIndex: "price",
+    key: "price",
+    render: (text) => (
+      <span className="text-red-300">{Intl.NumberFormat().format(text)} ₫</span>
+    ),
+  },
 ];

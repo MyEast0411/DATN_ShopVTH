@@ -20,49 +20,93 @@ export default function QuanLyHoaDon() {
   const [size, setSize] = useState("large");
   const [key1, setKey] = useState(-1);
 
-  const [dataInput, setDataInput] = useState("");
+  const [dataInput, setFilterValue] = useState("");
+  const [dataSelect, setDataSelect] = useState(-1);
+  const [ngayBatDau, setNgayBatDau] = useState("");
+  const [ngayKetThuc, setNgayKetThuc] = useState("");
+  const onChangeDatePicker = (value, dateString) => {
+    console.log("Data: " + dateString);
+    // console.log("Ngay bat dau: " + typeof dateString[0]);
+    if (dateString[0] !== "" || dateString[1] !== "") {
+      let nbd = moment(dateString[0], "DD-MM-YYYY HH:mm").valueOf();
+      let nkt = moment(dateString[1], "DD-MM-YYYY HH:mm").valueOf();
+      console.log(nbd);
+      console.log(nkt);
+      setNgayBatDau(nbd);
+      setNgayKetThuc(nkt);
+    } else {
+      setNgayBatDau("");
+      setNgayKetThuc("");
+    }
+  };
+
+  const handleChange = (value) => {
+    setDataSelect(value);
+  };
+
+  const reset = () => {
+    setFilterValue("");
+    setDataSelect(-1);
+    setNgayBatDau("");
+    setNgayKetThuc("");
+  };
+
+  const changeValueInput = (value) => {
+    if (value.trim() == "") setFilterValue("");
+    else setFilterValue(value);
+  };
   useEffect(() => {
     getData(key1);
   }, [key1, list]);
 
   const filterOptions = (data) => {
-    return data.filter((hd) => {
-      if (dataInput === "") return hd;
-      if (
-        hd.ma.toLowerCase().includes(dataInput.trim().toLowerCase()) ||
-        hd.tenKhachHang
-          ?.toLowerCase()
-          .includes(dataInput.trim().toLowerCase()) ||
-        hd.id_nhan_vien?.ten
-          .toLowerCase()
-          .includes(dataInput.trim().toLowerCase())
-      )
-        return hd;
-    });
-    // .filter((hd) => {
-    //   if (dataSelect === -1) return hd;
-    //   if (hd.loaiHd === dataSelect) return hd;
-    // })
-    // .filter((hd) => {
-    //   var ndata = Date.parse(new Date(hd.ngayTao));
-    //   if (ngayBatDau === "" || ngayKetThuc === "") return hd;
-    //   if (ngayBatDau <= ndata && ngayKetThuc >= ndata) return hd;
-    // });
+    return data
+      .filter((hd) => {
+        if (dataInput === "") return hd;
+        if (
+          hd.ma.toLowerCase().includes(dataInput.trim().toLowerCase()) ||
+          hd.tenKhachHang
+            ?.toLowerCase()
+            .includes(dataInput.trim().toLowerCase()) ||
+          hd.id_nhan_vien?.ten
+            .toLowerCase()
+            .includes(dataInput.trim().toLowerCase())
+        )
+          return hd;
+      })
+      .filter((hd) => {
+        if (dataSelect === -1) return hd;
+        if (hd.loaiHd === dataSelect) return hd;
+      })
+      .filter((hd) => {
+        var ndata = Date.parse(new Date(hd.ngayTao));
+        if (ngayBatDau === "" || ngayKetThuc === "") return hd;
+        if (ngayBatDau <= ndata && ngayKetThuc >= ndata) return hd;
+      });
   };
 
   const getData = async (key) => {
     const res = await axios.get(url + `getHoaDons/${key}`);
     const data = await res.data;
+    console.log(
+      data.sort(function soSanhNgayTao(a, b) {
+        return b.ngayTao - a.ngayTao;
+      })
+    );
 
     setList(
-      filterOptions(data).map((item, index) => {
-        return {
-          ...item,
-          id: index + 1,
-          ids: item.id,
-          nhanVien: item?.id_nhan_vien?.ten,
-        };
-      })
+      filterOptions(data)
+        .sort(function soSanhNgayTao(a, b) {
+          return b.ngayTao - a.ngayTao;
+        })
+        .map((item, index) => {
+          return {
+            ...item,
+            stt: index + 1,
+            ids: item.id,
+            nhanVien: item?.id_nhan_vien?.ten,
+          };
+        })
     );
   };
 
@@ -151,7 +195,8 @@ export default function QuanLyHoaDon() {
                   className="w-full "
                   placeholder="Tìm kiếm bất kỳ..."
                   startContent={<SearchIcon />}
-                  // value={dataInput}
+                  value={dataInput}
+                  onChange={(e) => changeValueInput(e.target.value)}
                 />
               </div>
               <label
@@ -167,8 +212,8 @@ export default function QuanLyHoaDon() {
                 <Select
                   defaultValue="--Chọn loại HD--"
                   style={{ width: "100%" }}
-                  // onChange={handleChange}
-                  allowClear
+                  onChange={handleChange}
+                  // allowClear
                   options={options}
                 />
               </div>
@@ -194,7 +239,7 @@ export default function QuanLyHoaDon() {
                 showTime={{ format: "HH:mm" }}
                 format="DD-MM-YYYY HH:mm"
                 style={{ height: "40px", width: "30%" }}
-                //onChange={onChangeDatePicker}
+                onChange={onChangeDatePicker}
               />
             </div>
 
@@ -206,7 +251,7 @@ export default function QuanLyHoaDon() {
                     backgroundColor: "#1976d2",
                     marginBottom: "2px",
                   }}
-                  // onClick={reset}
+                  onClick={reset}
                 >
                   Làm Mới
                 </Button>
@@ -255,7 +300,7 @@ export default function QuanLyHoaDon() {
 }
 
 const options = [
-  { value: -1, label: "--Chọn loại HD--" },
+  { value: -1, label: "Tất cả" },
   { value: 0, label: "Online" },
   { value: 1, label: "Tại quầy" },
 ];
