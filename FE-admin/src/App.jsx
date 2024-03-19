@@ -102,7 +102,6 @@ const App = () => {
               <Route path="kich-co" />
               <Route path="thuong-hieu" />
               <Route path="chat-lieu" />
-              <Route path="nhan-hieu" />
             </Route>
           </Route>
 

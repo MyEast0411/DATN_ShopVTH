@@ -34,10 +34,10 @@ public class MauSacController {
     @PostMapping("/addMauSac")
     public ResponseEntity addMauSac(@RequestBody MauSac request) {
         try {
-            if(repo.existsByMaMau(request.getMaMau())) {
+            if(repo.existsByMaMauAndDeleted(request.getMaMau(), 1)) {
                 return ResponseEntity.badRequest().body("Đã tồn tại mã màu này");
             }
-            if(repo.existsByTen(request.getTen())) {
+            if(repo.existsByTenAndDeleted(request.getTen(),1)) {
                 return ResponseEntity.badRequest().body("Đã tồn tại màu sắc này");
             }
             MauSac mauSac = MauSac.builder()
@@ -55,10 +55,10 @@ public class MauSacController {
         }
     }
 
-    @PutMapping("deleteTheLoai/{maMauSac}")
-    public ResponseEntity deleteMauSac(@PathVariable String maMauSac) {
+    @PutMapping("deleteMauSac/{id}")
+    public ResponseEntity deleteMauSac(@PathVariable String id) {
         try {
-            MauSac mauSac = repo.findByMaMau(maMauSac);
+            MauSac mauSac = repo.findById(id).get();
             mauSac.setDeleted(0);
             repo.save(mauSac);
             return ResponseEntity.ok("Thành công");
@@ -71,10 +71,10 @@ public class MauSacController {
     @PutMapping("updateMauSac")
     public ResponseEntity updateMauSac(@RequestBody UpdateDeGiayRequest request) {
         try {
-            if(repo.existsByMaMau(request.getMa())) {
+            if(repo.existsByMaMauAndDeleted(request.getMa(),1)) {
                 return ResponseEntity.badRequest().body("Đã tồn tại mã màu này");
             }
-            if(repo.existsByTen(request.getTen())) {
+            if(repo.existsByTenAndDeleted(request.getTen(),1)) {
                 return ResponseEntity.badRequest().body("Đã tồn tại màu sắc này");
             }
             MauSac cl = repo.findById(request.getId()).get();

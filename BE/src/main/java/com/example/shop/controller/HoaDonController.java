@@ -293,9 +293,6 @@ public class HoaDonController {
                             .build();
                     lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
                 }
-
-
-
                 return new ResponseEntity<>(updateHoaDon, HttpStatus.CREATED);
             } else {
                 throw new Exception("khong co id" + id);

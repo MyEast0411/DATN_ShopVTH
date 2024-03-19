@@ -23,7 +23,7 @@ public interface MauSacRepository extends JpaRepository<MauSac, String> {
             "WHERE ten = :tenMau",nativeQuery = true)
     String findIdByMauSac(@Param("tenMau")String tenMau);
 
-    Boolean existsByTen(String ten);
+    Boolean existsByTenAndDeleted(String ten,Integer deleted);
 
-    Boolean existsByMaMau(String ma);
+    Boolean existsByMaMauAndDeleted(String ma,Integer deleted);
 }

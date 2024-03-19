@@ -21,6 +21,7 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
     const [kichCo, setKichCo] = useState([]);
     const [nhanHieu, setNhanHieu] = useState([]);
     const [theLoai, setTheLoai] = useState([]);
+    const [listHinhAnh, setListHinhAnh] = useState({});
 
     useEffect(() => {
         getAllNH();
@@ -92,27 +93,30 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
         id_mau_sac: "",
         id_the_loai: "",
         id_thuong_hieu: "",
-        QRCode: "",
+        qrcode: "",
         id_kich_co: "",
     });
 
     const getDetailProductById = async () => {
         console.log(idDetailProduct);
         const result = await axios.get(`http://localhost:8080/detailSP/${idDetailProduct}`);
-        console.log(result.data);
+        const danhSachHinhAnh = await axios.get(`http://localhost:8080/getHinhAnhByIdSPCT/${idDetailProduct}`);
+        console.log(danhSachHinhAnh.data);
         setInitialValues({
             id: result.data.id,
             productName: result.data.ten,
-            description : result.data.moTa,
-            id_mau_sac : result.data.id_mau_sac.ten,
+            description: result.data.moTa,
+            id_mau_sac: result.data.id_mau_sac.ten,
             id_kich_co: result.data.id_kich_co.id,
             id_thuong_hieu: result.data.id_thuong_hieu.id,
             id_the_loai: result.data.id_the_loai.id,
             id_chat_lieu: result.data.id_chat_lieu.id,
             id_de_giay: result.data.id_de_giay.id,
-            quantity : result.data.soLuongTon,
-            price : result.data.giaBan
+            quantity: result.data.soLuongTon,
+            price: result.data.giaBan,
+            qrcode: result.data.maQR
         })
+        setListHinhAnh(danhSachHinhAnh.data);
     }
     useEffect(() => {
         if (idDetailProduct != null && idDetailProduct !== "") {
@@ -163,10 +167,10 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                                                 width: "100%",
                                                 height: "100%",
                                                 borderRadius: "5px",
-                                                border : "1px solid #CCC"
+                                                border: "1px solid #CCC"
                                             }}
                                         >{color.maMau}</div>
-                                        
+
                                     </Option>
                                 ))}
                             </Select>
@@ -310,15 +314,41 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                     <Col span={8}>
                         <Form.Item
                             label="QR Code : "
-                            name="QRCode"
+                            name="qrcode"
                             style={{ fontWeight: "bold" }}
                             rules={[{ required: true, message: "Ảnh Qr sản phẩm" }]}
                         >
                             <img
-                                src=""
+                                src={initialValues.qrcode}
                                 alt="QR Code"
-                                style={{ width: "50%", height: "auto" }}
+                                style={{ width: "70%", height: "auto" }}
                             />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row gutter={7} justify="start">
+                    <Col span={8}>
+                        <Form.Item
+                            label="Hình ảnh : "
+                            name="hinhAnh"
+                            style={{ fontWeight: "bold" }}
+                            rules={[{ required: true, message: "Ảnh Sản phẩm" }]}
+                        >
+                            <div className="text-center" style={{ maxWidth: "200px", whiteSpace: "nowrap" }}>
+                                {listHinhAnh.map((hinhAnh, index) => (
+                                    <div className="mb-4 relative inline-block" key={hinhAnh.id} style={{ marginRight: "5px", border: "1px solid #D3D3D3" }}>
+                                        <img
+                                            src={hinhAnh.ten}
+                                            alt="Hình ảnh sản phẩm"
+                                            className="w-full"
+                                        />
+                                        <Button className="absolute w-8 h-5 top-0 right-0 mt-2 mr-2 bg-red-500 text-white px-2 py-1 rounded-full flex items-center justify-center">
+                                            -
+                                        </Button>
+
+                                    </div>
+                                ))}
+                            </div>
                         </Form.Item>
                     </Col>
                 </Row>

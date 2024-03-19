@@ -16,12 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-
-public class GenderCode
-{
+public class GenderCode {
     //static function that creates QR Code
-    public static void generateQRcode(String data, String path, String charset, Map map, int h, int w) throws WriterException, IOException
-    {
+    public static void generateQRcode(String data, String path, String charset, Map map, int h, int w) throws WriterException, IOException {
 //the BitMatrix class represents the 2D matrix of bits
 //MultiFormatWriter is a factory class that finds the appropriate Writer subclass for the BarcodeFormat requested and encodes the barcode with the supplied contents.
 
@@ -29,14 +26,15 @@ public class GenderCode
         BitMatrix matrix = new MultiFormatWriter().encode(new String(data.getBytes(charset), charset), BarcodeFormat.QR_CODE, w, h);
         MatrixToImageWriter.writeToFile(matrix, path.substring(path.lastIndexOf('.') + 1), new File(path));
     }
+
     //main() method
-    public static void main(String args[]) throws WriterException, IOException, NotFoundException
-    {
+    public static void main(String args[]) throws WriterException, IOException, NotFoundException {
 //data that we want to store in the QR code
-        String str= "84fd9490-6cc8-11ee-a443-b445062d2f34";
+        String str = "09925937-2aff-4545-9c06-cdf1615f8e67";
 //path where we want to get QR Code
 //        String path = "C:\\Users\\Anubhav\\Desktop\\QRDemo\\Quote.png";
-        String path = "D:\\QRCODE\\img" + new Date(System.currentTimeMillis()).getTime()+".png";
+        String path = "C:\\Users\\Admin\\Pictures\\Saved Pictures\\qrcode.png";
+//        String path = "D:\\QRCODE\\img" + new Date(System.currentTimeMillis()).getTime() + ".png";
 //Encoding charset to be used
         String charset = "UTF-8";
         Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();

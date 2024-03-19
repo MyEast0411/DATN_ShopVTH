@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { InputNumber } from "antd";
+import { Form, InputNumber } from "antd";
 import { TableCell } from "@mui/material";
-import ReactLoading from "react-loading";
+import { TbInfoTriangle } from "react-icons/tb";
 import {
   Button as ButtonMaterial,
   Dialog,
@@ -13,6 +13,10 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+//loading
+import TailSpinLoading from "../loading/TailSpinLoading";
+import ThreeDotsLoading from "../loading/ThreeDotsLoading";
+
 //icon
 const { Option } = Select;
 import { AiOutlinePlus } from "react-icons/ai";
@@ -44,8 +48,9 @@ export default function ThemSanPham() {
   const [selectMau, setSelectMau] = useState("");
   const [checkboxStates, setCheckboxStates] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  const [loading, setLoading] = useState(false);
+  const [loadingImg, setLoadingImg] = useState(false);
+  const [form] = Form.useForm();
   const customText = {
     emptyText: "Không có hình ảnh",
   };
@@ -107,6 +112,7 @@ export default function ThemSanPham() {
 
 
   const handleImageChange = async (event) => {
+    setLoadingImg(true);
     const file = event.target.files[0];
     if (file) {
       const fileName = file.name;
@@ -124,11 +130,13 @@ export default function ThemSanPham() {
             //   </Article>
             // </Section>
           }
-          toast.success(`Thêm thành công`);
+          toast.success(`Thêm hình ảnh thành công`);
           getAllHA();
+          setLoadingImg(false);
         })
         .catch((error) => {
           toast.error(`Thêm thất bại`);
+          setLoadingImg(false);
         });
     }
   };
@@ -209,13 +217,18 @@ export default function ThemSanPham() {
       sortOrder:
         sortedInfo.columnKey === "soLuongTon" ? sortedInfo.order : null,
       ellipsis: true,
-      render: (text, record, index) => (
-        <InputNumber
-          min={1}
-          value={record.soLuongTon}
-          onChange={(value) => handleSoLuongChange(record.id, value, record.id_mau_sac)}
-        />
-      ),
+      render: (text, record, index) => {
+        const isSelected = selectedRows.some(row => row.id === record.id);
+        return isSelected ? (
+          <InputNumber
+            min={1}
+            value={record.soLuongTon}
+            onChange={(value) => handleSoLuongChange(record.id, value, record.id_mau_sac)}
+          />
+        ) : (
+          <span>{record.soLuongTon}</span>
+        )
+      },
     },
     {
       title: "Giá bán",
@@ -223,14 +236,18 @@ export default function ThemSanPham() {
       sorter: (a, b) => a.giaBan - b.giaBan,
       sortOrder: sortedInfo.columnKey === "giaBan" ? sortedInfo.order : null,
       ellipsis: true,
-      render: (text, record) => (
-        <InputNumber
-          value={record.giaBan}
-          onChange={(value) =>
-            handleGiaBanChange(record.id, value, record.id_mau_sac)
-          }
-        />
-      ),
+      render: (text, record) => {
+        const isSelected = selectedRows.some(row => row.id === record.id);
+        return isSelected ? (
+          <InputNumber
+            min={1}
+            value={record.giaBan}
+            onChange={(value) => handleGiaBanChange(record.id, value, record.id_mau_sac)}
+          />
+        ) : (
+          <span>{record.giaBan}</span>
+        )
+      },
     },
     {
       dataIndex: "hanhDong",
@@ -301,84 +318,77 @@ export default function ThemSanPham() {
                   >
                     Tất cả hình ảnh theo : {selectMau}
                   </label>
-                  <div className="flex flex-wrap">
-                    {
-                      img.map((x, index) => (
-                        <div key={index} className="w-1/3 p-2 cursor-pointer">
-                          <div className="relative w-60 h-56 bg-gray-300 mt-10">
-                            <input
-                              type="checkbox"
-                              id={x.id}
-                              checked={selectedImages.includes(x.id)}
-                              onChange={(e) => handleCheckboxChange(e, x.id)}
-                              className="absolute top-2 right-2 z-10"
-                            />
-                            <img
-                              src={x.ten}
-                              alt="Load Image"
-                              style={{ objectFit: "contain" }}
-                              className="w-full h-full object-cover"
-                              onClick={() => {
-                                // if (
-                                //   selectedImages.length >= 3 &&
-                                //   !selectedImages.includes(x.id)
-                                // ) {
-
-                                //   toast.error("😢 Chỉ được chọn 3 ảnh !");
-                                // } else {
-                                const checkbox = document.getElementById(
-                                  x.id
-                                );
-                                if (checkbox) {
-                                  checkbox.click();
-                                }
-                                if (selectedImages.includes(x.id)) {
-                                  setSelectedImages(
-                                    selectedImages.filter((id) => id != x.id)
+                  {loadingImg ? (
+                    <ThreeDotsLoading />
+                  ) : (
+                    <div className="flex flex-wrap">
+                      {
+                        img.map((x, index) => (
+                          <div key={index} className="w-1/3 p-2 cursor-pointer">
+                            <div className="relative w-60 h-56 bg-gray-300 mt-10">
+                              <input
+                                type="checkbox"
+                                id={x.id}
+                                checked={selectedImages.includes(x.id)}
+                                onChange={(e) => handleCheckboxChange(e, x.id)}
+                                className="absolute top-2 right-2 z-10"
+                              />
+                              <img
+                                src={x.ten}
+                                alt="Load Image"
+                                style={{ objectFit: "contain" }}
+                                className="w-full h-full object-cover"
+                                onClick={() => {
+                                  const checkbox = document.getElementById(
+                                    x.id
                                   );
-                                } else {
-                                  // if (selectedImages.length < 3) {
-                                  setSelectedImages([
-                                    ...selectedImages,
-                                    x.id,
-                                  ]);
-                                  // }
-                                }
-                                // }
-                              }}
-                            />
+                                  if (checkbox) {
+                                    checkbox.click();
+                                  }
+                                  if (selectedImages.includes(x.id)) {
+                                    setSelectedImages(
+                                      selectedImages.filter((id) => id != x.id)
+                                    );
+                                  } else {
+                                    setSelectedImages([
+                                      ...selectedImages,
+                                      x.id,
+                                    ]);
+                                  }
+                                }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      ))
-                    }
+                        ))
+                      }
 
-                    <Button
-                      className="flex drop-shadow-lg"
-                      type="primary"
-                      style={{
-                        backgroundColor: "white",
-                        alignItems: "center",
-                        position: "absolute",
-                        right: 5,
-                        top: 50,
-                        color: "black",
-                        border: "0.5px solid #ccc",
-                        marginRight: "3.5%",
-                        marginTop: "20px",
-                      }}
-                      onClick={handleAddImageClick}
-                    >
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        style={{ display: "none" }}
-                        id="imageInput"
-                      />
-                      <AiOutlinePlus className="mr-2" />
-                      Thêm hình ảnh
-                    </Button>
-                  </div>
+                      <Button
+                        className="flex drop-shadow-lg"
+                        type="primary"
+                        style={{
+                          backgroundColor: "white",
+                          alignItems: "center",
+                          position: "absolute",
+                          right: 5,
+                          top: 50,
+                          color: "black",
+                          border: "0.5px solid #ccc",
+                          marginRight: "3.5%",
+                          marginTop: "1px",
+                        }}
+                        onClick={handleAddImageClick}
+                      >
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          style={{ display: "none" }}
+                          id="imageInput"
+                        />
+                        <AiOutlinePlus className="mr-2" />
+                        Thêm hình ảnh
+                      </Button>
+                    </div>)}
                 </div>
               </Modal>
             </>
@@ -395,7 +405,7 @@ export default function ThemSanPham() {
       onCell: (record, index) => {
         if (index === 3) {
           return {
-            rowSpan: 2,
+            rowSpan: 1,
           };
         }
 
@@ -444,7 +454,7 @@ export default function ThemSanPham() {
     for (const color in updatedTables) {
       updatedTables[color] = updatedTables[color].map((item) => {
         if (selectedRowKeys.includes(item.id) && item.id_mau_sac === mau) {
-          
+
           return { ...item, soLuongTon: value };
         }
         return item;
@@ -615,6 +625,7 @@ export default function ThemSanPham() {
           position: "top-right",
           autoClose: 2000,
         });
+        getAllKC();
       })
       .catch((error) => {
         toast.error(error.response.data, {
@@ -644,6 +655,7 @@ export default function ThemSanPham() {
           position: "top-right",
           autoClose: 2000,
         });
+        getAllDG();
       })
       .catch((error) => {
         toast.error(`Thêm thất bại`, {
@@ -739,11 +751,11 @@ export default function ThemSanPham() {
 
   useEffect(() => {
     getAllDG();
-  }, [deGiay]);
+  }, []);
 
   useEffect(() => {
     getAllKC();
-  }, [kichCo]);
+  }, []);
 
   useEffect(() => {
     getAllTL();
@@ -797,40 +809,65 @@ export default function ThemSanPham() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const data = tableData.map((sp) => [
-      sp.id,
-      sp.id_san_pham,
-      sp.tenSanPham,
-      sp.soLuongTon,
-      sp.khoiLuong,
-      sp.moTa,
-      sp.giaNhap,
-      sp.giaBan,
-      sp.id_mau_sac,
-      sp.id_kich_co,
-      sp.id_thuong_hieu,
-      sp.id_the_loai,
-      sp.id_chat_lieu,
-      sp.id_de_giay,
-      tableImg,
-    ]);
-    console.log(data);
-    if (isConfirmed) {
-      await axios
-        .post("http://localhost:8080/san-pham/add", data)
-        .then((response) => {
-          toast.success(`Thêm thành công`, {
-            position: "top-right",
-            autoClose: 2000,
+    if(selectedKichCo.length == 0) {
+      toast.error("Vui lòng chọn kích cỡ!");
+      handleCloseAddConfirmation();
+      return;
+    }
+    if(selectedColors.length == 0) {
+      toast.error("Vui lòng chọn màu sắc!");
+      handleCloseAddConfirmation();
+      return;
+    }
+    setLoading(true);
+    handleCloseAddConfirmation();
+    try {
+      await form.validateFields();
+
+      const data = tableData.map((sp) => [
+        sp.id,
+        sp.id_san_pham,
+        sp.tenSanPham,
+        sp.soLuongTon,
+        sp.khoiLuong,
+        sp.moTa,
+        sp.giaNhap,
+        sp.giaBan,
+        sp.id_mau_sac,
+        sp.id_kich_co,
+        sp.id_thuong_hieu,
+        sp.id_the_loai,
+        sp.id_chat_lieu,
+        sp.id_de_giay,
+        tableImg,
+      ]);
+      console.log(data);
+      if (isConfirmed) {
+        await axios
+          .post("http://localhost:8080/san-pham/add", data)
+          .then((response) => {
+            if (response.status == 200) {
+              toast.success(`Thêm thành công`, {
+                position: "top-right",
+                autoClose: 2000,
+              });
+              setLoading(false);
+              navigate("/quan-ly-san-pham/san-pham");
+            }
+          })
+          .catch((error) => {
+            toast.error(`${error.response.data}`, {
+              position: "top-right",
+              autoClose: 2000,
+            });
+            setLoading(false);
+            handleCloseAddConfirmation();
           });
-          navigate("/quan-ly-san-pham/san-pham");
-        })
-        .catch((error) => {
-          toast.error(`Thêm thất bại`, {
-            position: "top-right",
-            autoClose: 2000,
-          });
-        });
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      handleCloseAddConfirmation();
     }
   };
 
@@ -848,7 +885,8 @@ export default function ThemSanPham() {
   return (
     <>
       <div className="mx-5 md:mx-12">
-        <form onSubmit={(e) => onSubmit(e)}>
+        {loading && <TailSpinLoading />}
+        <Form form={form} >
           <div className="space-y-12">
             <div className="border-b border-gray-900/10 pb-5">
               <h2 className="text-base font-semibold leading-7 text-gray-900">
@@ -881,15 +919,15 @@ export default function ThemSanPham() {
                     </label>
 
                     <div className="mt-2 flex">
-                      <div className="rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset sm:max-w-md">
-                        {/* <input
-                          type="text"
-                          name="ten"
-                          value={ten}
-                          className="block p-2 flex-1 border-0 w-96 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                          placeholder="Nhập tên sản phẩm"
-                          onChange={(e) => onChange(e)}
-                        /> */}
+                      <Form.Item
+                        name="id_san_pham"
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Vui lòng chọn sản phẩm!',
+                          },
+                        ]}
+                      >
                         <Select
                           placeholder="Sản phẩm"
                           value={id_san_pham}
@@ -901,6 +939,22 @@ export default function ThemSanPham() {
                         >
                           {options}
                         </Select>
+                      </Form.Item>
+                      <div
+                        className="p-2"
+                        style={{
+                          backgroundColor: "#00C5CD",
+                          borderRadius: "5px",
+                          color: "white",
+                          cursor: "pointer",
+                          marginLeft: "10px",
+                          height: "33px"
+                        }}
+                        onClick={showModalSP}
+                      >
+                        <AiOutlinePlus />
+                      </div>
+                      <div className="rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset sm:max-w-md">
                         <Modal
                           title="Thêm sản phẩm"
                           open={isModalOpenSP}
@@ -929,19 +983,7 @@ export default function ThemSanPham() {
                           </div>
                         </Modal>
                       </div>
-                      <div
-                        className="p-2"
-                        style={{
-                          backgroundColor: "#00C5CD",
-                          borderRadius: "5px",
-                          color: "white",
-                          cursor: "pointer",
-                          marginLeft: "10px",
-                        }}
-                        onClick={showModalSP}
-                      >
-                        <AiOutlinePlus />
-                      </div>
+
                     </div>
                   </div>
 
@@ -953,14 +995,24 @@ export default function ThemSanPham() {
                       Mô tả
                     </label>
                     <div className="mt-2">
-                      <textarea
-                        id="moTa"
+                      <Form.Item
                         name="moTa"
-                        placeholder=" Nhập mô tả sản phẩm"
-                        rows={4}
-                        className="block w-11/12 p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        onChange={(e) => onChange(e)}
-                      />
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Vui lòng nhập mô tả!',
+                          },
+                        ]}
+                      >
+                        <textarea
+                          id="moTa"
+                          name="moTa"
+                          placeholder=" Nhập mô tả sản phẩm"
+                          rows={4}
+                          className="block w-11/12 p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400"
+                          onChange={(e) => onChange(e)}
+                        />
+                      </Form.Item>
                     </div>
 
                     <p className="mt-3 text-sm leading-6 text-gray-600"></p>
@@ -994,37 +1046,47 @@ export default function ThemSanPham() {
                     >
                       Thương hiệu
                     </label>
-                    <div className="mt-2 space-x-2 flex">
-                      <select
-                        id="thuongHieu"
-                        name="id_thuong_hieu"
-                        autoComplete="country-name"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                        onChange={(e) => onChange(e)}
-                      >
-                        <option selected>--Chọn Thương Hiệu--</option>
-                        {thuongHieu.map((x) => (
-                          <option
-                            key={x.id}
-                            value={x.id}
-                          //style={{ backgroundColor: x.maMau, color: "white" }}
-                          >
-                            {x.ten}
-                          </option>
-                        ))}
-                      </select>
-                      <div
-                        className="p-2"
-                        style={{
-                          backgroundColor: "#00C5CD",
-                          borderRadius: "5px",
-                          color: "white",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <AiOutlinePlus />
+                    <Form.Item
+                      name="id_thuong_hieu"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng chọn thương hiệu!',
+                        },
+                      ]}
+                    >
+                      <div className="mt-2 space-x-2 flex">
+                        <select
+                          id="thuongHieu"
+                          name="id_thuong_hieu"
+                          autoComplete="country-name"
+                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                          onChange={(e) => onChange(e)}
+                        >
+                          <option selected>--Chọn Thương Hiệu--</option>
+                          {thuongHieu.map((x) => (
+                            <option
+                              key={x.id}
+                              value={x.id}
+                            //style={{ backgroundColor: x.maMau, color: "white" }}
+                            >
+                              {x.ten}
+                            </option>
+                          ))}
+                        </select>
+                        <div
+                          className="p-2"
+                          style={{
+                            backgroundColor: "#00C5CD",
+                            borderRadius: "5px",
+                            color: "white",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <AiOutlinePlus />
+                        </div>
                       </div>
-                    </div>
+                    </Form.Item>
                   </div>
 
                   <div className="sm:col-span-3 ml-6">
@@ -1034,6 +1096,15 @@ export default function ThemSanPham() {
                     >
                       Thể loại
                     </label>
+                    <Form.Item
+                      name="id_the_loai"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng chọn thể loại!',
+                        },
+                      ]}
+                    >
                     <div className="mt-2 space-x-2 flex">
                       <select
                         id="nhanHieu"
@@ -1088,6 +1159,7 @@ export default function ThemSanPham() {
                         <AiOutlinePlus />
                       </div>
                     </div>
+                    </Form.Item>
                   </div>
 
                   <div className="sm:col-span-3 ml-6">
@@ -1097,6 +1169,15 @@ export default function ThemSanPham() {
                     >
                       Chất Liệu
                     </label>
+                    <Form.Item
+                      name="id_chat_lieu"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng chọn chất liệu!',
+                        },
+                      ]}
+                    >
                     <div className="mt-2 space-x-2 flex">
                       <select
                         id="chatLieu"
@@ -1126,6 +1207,7 @@ export default function ThemSanPham() {
                         <AiOutlinePlus />
                       </div>
                     </div>
+                    </Form.Item>
                   </div>
                   <div className="sm:col-span-3 ml-6">
                     <label
@@ -1134,6 +1216,15 @@ export default function ThemSanPham() {
                     >
                       Đế giày
                     </label>
+                    <Form.Item
+                      name="id_de_giay"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng chọn đế giày!',
+                        },
+                      ]}
+                    >
                     <div className="mt-2 space-x-2 flex">
                       <select
                         id="deGiay"
@@ -1189,6 +1280,7 @@ export default function ThemSanPham() {
                         </div>
                       </Modal>
                     </div>
+                    </Form.Item>
                   </div>
                   <div className="sm:col-span-3 ml-6">
                     <label
@@ -1197,6 +1289,15 @@ export default function ThemSanPham() {
                     >
                       Màu sắc
                     </label>
+                    {/* <Form.Item
+                      name="id_mau_sac"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng chọn màu sắc!',
+                        },
+                      ]}
+                    > */}
                     <div className="mt-2 space-x-3 flex">
                       {selectedColors.map((item, index) => (
                         <Badge
@@ -1260,8 +1361,8 @@ export default function ThemSanPham() {
                                 width: "20%",
                                 height: "25px",
                                 backgroundColor: item.maMau,
-                                // color : item.maMau,
-                                // border : "1px solid #CCC",
+                                color: "#7A8B8B",
+                                border: "1px solid #CCC",
                                 borderRadius: "5px",
                                 alignItems: "center",
                                 marginTop: "35px",
@@ -1310,6 +1411,7 @@ export default function ThemSanPham() {
                         </div>
                       </Modal>
                     </div>
+                    {/* </Form.Item> */}
                   </div>
 
                   <div className="sm:col-span-3 ml-6">
@@ -1319,6 +1421,15 @@ export default function ThemSanPham() {
                     >
                       Kích cỡ
                     </label>
+                    {/* <Form.Item
+                      name="id_kich_co"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng chọn kích cỡ!',
+                        },
+                      ]}
+                    > */}
                     <div className="mt-2 space-x-3 flex">
                       {selectedKichCo.map((item, index) => (
                         <Badge
@@ -1459,6 +1570,7 @@ export default function ThemSanPham() {
                         </div>
                       </Modal>
                     </div>
+                    {/* </Form.Item> */}
                   </div>
                 </div>
               </div>
@@ -1471,7 +1583,7 @@ export default function ThemSanPham() {
                 backgroundColor: "#1976d2",
                 marginBottom: "2px",
               }}
-              onClick={groupProductsByColor}
+              onClick={handleOpenAddConfirmation}
             >
               Hoàn tất
             </Button>
@@ -1531,35 +1643,37 @@ export default function ThemSanPham() {
               Thêm sản phẩm
             </Button>
           </div>
-        </form>
+        </Form>
         <div>
-          <Dialog
-            open={addConfirmationOpen}
-            onClose={handleCloseAddConfirmation}
-          >
-            <DialogTitle>Xác nhận thêm</DialogTitle>
+          <Dialog open={addConfirmationOpen} onClose={handleCloseAddConfirmation} fullWidth>
+            <DialogTitle>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: "15px",
+                }}
+              >
+                <TbInfoTriangle
+                  className="mr-2"
+                  style={{
+                    color: "red",
+                    fontSize: "25px",
+                  }}
+                />
+                <span>Xác nhận thêm</span>
+              </div>
+            </DialogTitle>
             <DialogContent>
-              <DialogContentText>
-                Bạn có chắc muốn thêm sản phẩm này?
-              </DialogContentText>
+              <DialogContentText>Bạn có chắc muốn thêm sản phẩm này?</DialogContentText>
             </DialogContent>
             <DialogActions>
-              <ButtonMaterial
-                onClick={handleCloseAddConfirmation}
-                color="primary"
-              >
+              <Button onClick={handleCloseAddConfirmation} color="warning">
                 Hủy
-              </ButtonMaterial>
-              <ButtonMaterial
-                onClick={(e) => {
-                  setIsConfirmed(true);
-                  onSubmit(e);
-                  handleCloseAddConfirmation();
-                }}
-                color="primary"
-              >
+              </Button>
+              <Button onClick={onSubmit}>
                 Vẫn thêm
-              </ButtonMaterial>
+              </Button>
             </DialogActions>
           </Dialog>
         </div>

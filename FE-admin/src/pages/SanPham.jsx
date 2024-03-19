@@ -6,7 +6,7 @@ import FilterMa from "../common/filter/sanPham/FilterMa";
 import Slider from "../common/filter/sanPham/Slider";
 import axios from "axios";
 
-import { Button as ButtonAntd } from "antd";
+import { Button as ButtonAntd, Select } from "antd";
 import { Link } from "react-router-dom";
 
 //table
@@ -126,26 +126,25 @@ export default function SanPham() {
   });
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
-
-  React.useEffect(() => {
-    async function fetchChiTietSanPham() {
-      try {
-        const response = await axios.get(url);
-        const updatedRows = response.data.map((item, index) => ({
-          id: index + 1,
-          stt: index + 1,
-          ma: item.ma,
-          ten: item.ten_san_pham,
-          soLuongTon: item.so_luong_ton,
-          trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
-        }));
-        setSanPhams(updatedRows);
-      } catch (error) {
-        console.error("Lỗi khi gọi API: ", error);
-      }
+  async function fetchChiTietSanPham() {
+    try {
+      const response = await axios.get(url);
+      const updatedRows = response.data.map((item, index) => ({
+        id: index + 1,
+        stt: index + 1,
+        ma: item.ma,
+        ten: item.ten_san_pham,
+        soLuongTon: item.so_luong_ton,
+        trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
+      }));
+      setSanPhams(updatedRows);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
     }
+  }
+  React.useEffect(() => {
     fetchChiTietSanPham();
-  }, [sanPhams]);
+  }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -287,30 +286,7 @@ export default function SanPham() {
             onValueChange={onSearchChange}
           /> */}
           <div className="flex gap-3 items-end">
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDownIcon className="text-small" />}
-                  variant="flat"
-                >
-                  Trạng thái
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
+            
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
@@ -356,29 +332,12 @@ export default function SanPham() {
         <span className="w-[30%] text-small text-default-400">
           Tổng {sanPhams.length} sản phẩm
         </span>
-        {/* <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "Đã chọn tất cả"
-            : `${selectedKeys.size} khyến mại đã được chọn`}
-        </span> */}
-        {/* <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={totalPages}
-          initialPage={1}
-          style={{paddingLeft : "730px"}}
-          onChange={setPage}
-        /> */}
         <div className="flex flex-wrap gap-4 items-center">
           {sizes.map((size) => (
             <Pagination
               isCompact
               showControls
               key={size}
-              // style={{ paddingLeft: "710px" }}
               total={pages}
               initialPage={1}
               size={size}
@@ -408,6 +367,18 @@ export default function SanPham() {
       </div>
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  const [data, setData] = React.useState([]);
+  const handleChange = async (selectedValue) => {
+    if (selectedValue == -1) {
+      fetchChiTietSanPham();
+    } else {
+      const result = await axios.post(`http://localhost:8080/nhan_vien/filterNhanVien`, {
+        selectedStatus: selectedValue,
+        textInput: search
+      })
+      setData(result.data);
+    }
+  };
   return (
     <>
       <div>
@@ -445,8 +416,17 @@ export default function SanPham() {
             </div>
             <div className="p-5">
               <div className="flex items-center">
-                <span className="pr-2">Trạng thái:</span>
-                <FilterTrangThai style={{ width: "100%" }} />
+                <span className="pr-2">Trạng thái :</span>
+                  <Select
+                    defaultValue={-1}
+                    className="w-48"
+                    onChange={handleChange}
+                    options={[
+                      { value: -1, label: " Tất cả" },
+                      { value: 1, label: " Đang bán" },
+                      { value: 0, label: " Dừng bán" },
+                    ]}
+                  />
               </div>
             </div>
             <div className="p-5">

@@ -24,6 +24,9 @@ public class SanPhamChiTiet implements Serializable {
     @Column(name = "ma")
     private String ma;
 
+    @Column(name = "maQR")
+    private String maQR;
+
     @Column(name = "ten")
     private String ten;
 

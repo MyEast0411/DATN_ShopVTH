@@ -271,7 +271,7 @@ export default function ChatLieu() {
             <div className="group relative" style={{ position: "relative" }}>
               <Tooltip color="danger" content="Xóa" showArrow={true}>
                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <DeleteIcon onClick={() => handleDelete(sanPham.ma)} />
+                  <DeleteIcon onClick={() => handleDelete(sanPham.id)} />
                 </span>
               </Tooltip>
             </div>
@@ -780,7 +780,7 @@ export default function ChatLieu() {
                             maMau : maMau,
                             ten : tenMau
                           })
-                          form.setFieldsValue({ name: tenMau }); // Cập nhật giá trị cho trường "Tên màu sắc"
+                          form.setFieldsValue({ name: 'Màu ' + tenMau }); // Cập nhật giá trị cho trường "Tên màu sắc"
                         }}
                       />
                     </Form.Item>
@@ -801,7 +801,7 @@ export default function ChatLieu() {
                             maMau : maMau,
                             ten : tenMau
                           })
-                          form.setFieldsValue({ name: tenMau });
+                          form.setFieldsValue({ name: 'Màu ' + tenMau });
                         }}/>
                     </Form.Item>
                     <Form.Item

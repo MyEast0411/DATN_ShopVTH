@@ -6,16 +6,21 @@ import com.example.shop.repositories.*;
 import com.example.shop.requests.DeGiayRequest;
 import com.example.shop.requests.KichCoRequest;
 import com.example.shop.requests.SanPhamRequest;
+import com.example.shop.util.GenderCode;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.ChiTietSanPhamVM;
 import com.example.shop.viewmodel.HinhAnhVM;
 import com.example.shop.viewmodel.SanPhamVM;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.*;
 
 import java.math.BigDecimal;
@@ -49,6 +54,8 @@ public class SanPhamController {
     @Autowired
     HinhAnhRepository hinhAnhRepository;
 
+    private String path = "C:\\Users\\Admin\\Pictures\\Saved Pictures\\";
+    private String charset = "UTF-8";
     @Autowired
 
     @GetMapping("/getAllSP")
@@ -58,7 +65,7 @@ public class SanPhamController {
 
     @GetMapping("/getAllMS")
     List<MauSac> getAllMS() {
-        return mauSacRepository.findAll();
+        return mauSacRepository.getAll();
     }
 
     @GetMapping("/getAllTH")
@@ -106,7 +113,7 @@ public class SanPhamController {
         return repo.findAll();
     }
 
-    @GetMapping("getHinhAnhByMau/{mauSac}")
+    @GetMapping("/getHinhAnhByMau/{mauSac}")
     public List<HinhAnh> getHinhAnhByMau(@PathVariable String mauSac) {
         return hinhAnhRepository.getHinhAnhByMau(mauSac);
     }
@@ -163,8 +170,9 @@ public class SanPhamController {
     }
 
     @PostMapping("/san-pham/add")
-    ResponseEntity add(@RequestBody List<Object[]> sanPham) {
-
+    ResponseEntity add(@RequestBody List<Object[]> sanPham) throws IOException, WriterException {
+        Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
+        hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
         String hinhAnh = "";
         List<HinhAnh> listHinhAnh = new ArrayList<>();
         for (Object[] item : sanPham) {
@@ -198,7 +206,10 @@ public class SanPhamController {
             SanPhamChiTiet spct = new SanPhamChiTiet();
             spct.setMa("SPCT" + threeNumbers);
             String uuid = UUID.randomUUID().toString();
+            GenderCode.generateQRcode(uuid,path+""+x.getTen()+".png",charset,hashMap,200,200);
+            String linkImg = UploadAnh.upload(x.getTen()+".png");
             spct.setId(uuid);
+            spct.setMaQR(linkImg);
             spct.setTen(x.getTen());
             spct.setId_san_pham(sanPhamRepository.findById(x.getId_san_pham()).get());
             spct.setId_mau_sac(mauSacRepository.findByMaMau(x.getId_mau_sac()));

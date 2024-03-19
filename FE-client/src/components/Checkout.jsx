@@ -268,16 +268,27 @@ export default function Checkout() {
   }, []);
 
   useEffect(() => {
-    // console.log(provinces);
     const names = provinces.map((item) => item.province_name);
     setValueTP(names);
+    const thanhPho = listDiaChi.find((x) => x.id_khach_hang.id == khachHang.id)?.thanhPho;
+    const provinceCode = provinces.find((x) => x.province_name === thanhPho)?.province_id;
 
-    // const valueH = district.map((item) => item.DistrictName);
-    // setValueHuyen(valueH);
+    getDistricts(provinceCode).then((data) => {
+      setDistrict(data.results);
+    });
 
-    // const valueX = ward.map((item) => item.WardName);
-    // setValueXa(valueX);
-  }, [district, ward]);
+    const valueH = district.map((item) => item.district_name);
+    setValueHuyen(valueH);
+
+    const huyen = listDiaChi.find((x) => x.id_khach_hang.id == khachHang.id)?.huyen;
+    const districtCode = district.find((x) => x.district_name === huyen)?.district_id;
+
+    getWards(districtCode).then((data) => {
+      setWard(data.results);
+    });
+    const valueXa = ward.map((item) => item.ward_name);
+    setValueXa(valueXa);
+  }, [provinces, district]);
 
   const [sanPhams, setSanPhams] = useState([]);
   const [dataLocal, setDataLocal] = useState([]);
