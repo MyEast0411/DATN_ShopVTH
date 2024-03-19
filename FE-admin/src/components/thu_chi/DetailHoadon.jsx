@@ -36,6 +36,7 @@ import { faMoneyBillTransfer } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import { CiWarning } from "react-icons/ci";
 import { Table as TableAntd } from "antd";
+import ComponentToPrint from "./InHoaDon";
 
 function DetailHoadon() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
@@ -70,6 +71,39 @@ function DetailHoadon() {
   const [tienThua, setTienThua] = useState("0 ₫");
   const [loading, setLoading] = useState(false);
   const [openFixHD, setOpenFixHD] = useState(false);
+  const [isModalOpenHD, setIsModalOpenHD] = useState(false);
+  const componentRef = useRef();
+  //in hoa đơn
+  const showModalHD = () => {
+    setIsModalOpenHD(true);
+  };
+  const handleCancelHD = () => {
+    setIsModalOpenHD(false);
+  };
+  const downloadPDF = () => {
+    const input = componentRef.current;
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4", true);
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 20;
+      pdf.addImage(
+        imgData,
+        "PNG",
+        imgX,
+        imgY,
+        imgWidth * ratio,
+        imgHeight * ratio
+      );
+      pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
+    });
+    setIsModalOpenHD(false);
+  };
 
   const showModalFixHD = () => {
     setOpenFixHD(true);
@@ -661,9 +695,46 @@ function DetailHoadon() {
               ""
             )}
 
-            <Button className="me-4" style={{ marginRight: 10 }}>
+            <Button
+              className="me-4"
+              style={{ marginRight: 10 }}
+              onClick={showModalHD}
+            >
               Xuất hoá đơn
             </Button>
+            <Modal
+              title="Xuất Hóa Đơn"
+              open={isModalOpenHD}
+              // onOk={handleOkHD}
+              onCancel={handleCancelHD}
+              width={700}
+              style={{ top: 10 }}
+              footer={[
+                <Button
+                  key="back"
+                  onClick={handleCancelHD}
+                  className="me-3 "
+                  style={{ backgroundColor: "blue" }}
+                >
+                  Cancel
+                </Button>,
+                <Button
+                  key="submit"
+                  type="primary"
+                  onClick={downloadPDF}
+                  style={{ backgroundColor: "red" }}
+                >
+                  In Hóa Đơn
+                </Button>,
+              ]}
+            >
+              <ComponentToPrint
+                ref={componentRef}
+                data={rowsSPCT}
+                columns={columns}
+                inforKH={info}
+              />
+            </Modal>
 
             <Button className="me-4">Hủy Hóa Đơn</Button>
           </div>
@@ -1431,4 +1502,36 @@ const columnsLSHD = [
   //   key: "nguoiXacNhan",
   //   label: "Người xác nhận",
   // },
+];
+
+const columns = [
+  {
+    title: "Name",
+    dataIndex: "name",
+    key: "name",
+    render: (_, record) => (
+      <span>
+        {record.name}
+        {" ( "}
+        {record.mausac}
+        {" , "}
+        {record.kichco}
+        {" ) "}
+      </span>
+    ),
+  },
+  {
+    title: "Số lượng",
+    dataIndex: "quantity",
+    key: "quantity",
+    render: (text) => <span>{text} sản phẩm</span>,
+  },
+  {
+    title: "Đơn Giá",
+    dataIndex: "price",
+    key: "price",
+    render: (text) => (
+      <span className="text-red-300">{Intl.NumberFormat().format(text)} ₫</span>
+    ),
+  },
 ];
