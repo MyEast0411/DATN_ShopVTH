@@ -42,6 +42,8 @@ function DetailHoadon() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
   const [addLSHDConfirmationOpen, setAddLSHDConfirmationOpen] = useState(false);
+  const [cancleHDConfirmationOpen, setCancleHDConfirmationOpen] =
+    useState(false);
   const [luiHDConfirmationOpen, setLuiHDConfirmationOpen] = useState(false);
   const [thanhToanConfirmationOpen, setThanhToanConfirmationOpen] =
     useState(false);
@@ -62,6 +64,7 @@ function DetailHoadon() {
   const [isModalOpenTT, setIsModalOpenTT] = useState(false);
   const [openTimeLine, setOpenTimeLine] = useState(false);
   const [openModalLui, setOpenModalLui] = useState(false);
+  const [openModalHuy, setOpenModalHuy] = useState(false);
   const [inputValue, setInputValue] = useState(null);
   const [maGiaoDich, setMaGiaoDich] = useState("");
   const [khachCanTra, setKhachCanTra] = useState("");
@@ -127,7 +130,7 @@ function DetailHoadon() {
     setNote("");
     setOpenTimeLine(false);
   };
-
+  // Lùi Trạng Thái Hóa Đơn
   const showModalLui = () => {
     setOpenModalLui(true);
   };
@@ -136,7 +139,7 @@ function DetailHoadon() {
     setNote("");
     setOpenModalLui(false);
   };
-  // Lùi Trạng Thái Hóa Đơn
+
   const onHandleLuiHD = () => {
     if (note) {
       setLuiHDConfirmationOpen(true);
@@ -479,6 +482,46 @@ function DetailHoadon() {
     getDataLichSu();
   };
 
+  // hủy hóa đơn
+  const showModalHuy = () => {
+    setOpenModalHuy(true);
+  };
+
+  const hideModalHuy = () => {
+    setNote("");
+    setOpenModalHuy(false);
+  };
+  const onHandleCancelHD = () => {
+    hideModalHuy();
+    setCancleHDConfirmationOpen(true);
+  };
+
+  const cancelCancelHD = () => {
+    setCancleHDConfirmationOpen(false);
+  };
+  const confirmCancelHD = async () => {
+    await axios
+      .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
+        moTaHoaDon: "Hủy Hóa Đơn",
+        deleted: 1,
+        nguoiTao: "Cam",
+        ghiChu: note,
+      })
+      .then((response) => {
+        toast("🎉 Xóa thành công");
+        fetchKMSPCT();
+        getDataLichSuThanhToan();
+        getInfoHD();
+        getDataChiTietSanPham();
+        getDataLichSu();
+      })
+
+      .catch((error) => {
+        toast("😢 Xóa thất bại");
+      });
+    cancelDelete();
+  };
+  // xóa sp
   const onHandleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
     setDeleteConfirmationOpen(true);
@@ -736,7 +779,43 @@ function DetailHoadon() {
               />
             </Modal>
 
-            <Button className="me-4">Hủy Hóa Đơn</Button>
+            {info.loaiHd == !1 && info.trangThai < 4 && (
+              <Button className="me-4" onClick={showModalHuy}>
+                Hủy Hóa Đơn
+              </Button>
+            )}
+
+            <Modal
+              title="Ghi Chú"
+              style={{
+                top: 20,
+              }}
+              open={openModalHuy}
+              onOk={hideModalHuy}
+              onCancel={hideModalHuy}
+              okText="Xác Nhận Thao Tác"
+              cancelText="Hủy"
+              footer={() => (
+                <>
+                  <Button className="me-1" color="blue" onClick={hideModalHuy}>
+                    Hủy
+                  </Button>
+                  <Button color="red" onClick={onHandleCancelHD}>
+                    Xác Nhận
+                  </Button>
+                </>
+              )}
+            >
+              <Input.TextArea
+                rows={4}
+                placeholder="Lý do hủy hóa đơn ...."
+                value={note}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
+                // maxLength={}
+              />
+            </Modal>
           </div>
           <div className="row grid justify-items-end">
             <Button className="me-4 " onClick={handleOpen} variant="gradient">
@@ -1331,7 +1410,27 @@ function DetailHoadon() {
       </Dialog>
 
       {/* confirm hủy hóa đơn */}
-
+      <Dialog open={cancleHDConfirmationOpen} handler={cancelCancelHD}>
+        <DialogHeader>
+          <CiWarning style={{ color: "yellow", fontSize: 40 }} />
+          <span>Thông báo</span>
+        </DialogHeader>
+        <DialogBody>
+          <div className="grid justify-items-center">
+            <span style={{ fontSize: 20 }}>
+              Bạn có muốn hủy hóa đơn này không ?
+            </span>
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button color="black" className="me-3" onClick={cancelCancelHD}>
+            Hủy
+          </Button>
+          <Button color="red" onClick={confirmCancelHD}>
+            Vẫn Hủy
+          </Button>
+        </DialogFooter>
+      </Dialog>
       {/* confirm update sl */}
       <Dialog open={updateConfirmationOpen} handler={cancelUpdate}>
         <DialogHeader>
