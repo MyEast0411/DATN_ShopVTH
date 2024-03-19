@@ -53,16 +53,25 @@ export default function QuanLyHoaDon() {
   const getData = async (key) => {
     const res = await axios.get(url + `getHoaDons/${key}`);
     const data = await res.data;
+    console.log(
+      data.sort(function soSanhNgayTao(a, b) {
+        return b.ngayTao - a.ngayTao;
+      })
+    );
 
     setList(
-      filterOptions(data).map((item, index) => {
-        return {
-          ...item,
-          id: index + 1,
-          ids: item.id,
-          nhanVien: item?.id_nhan_vien?.ten,
-        };
-      })
+      filterOptions(data)
+        .sort(function soSanhNgayTao(a, b) {
+          return b.ngayTao - a.ngayTao;
+        })
+        .map((item, index) => {
+          return {
+            ...item,
+            stt: index + 1,
+            ids: item.id,
+            nhanVien: item?.id_nhan_vien?.ten,
+          };
+        })
     );
   };
 

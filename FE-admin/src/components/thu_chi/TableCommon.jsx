@@ -26,10 +26,10 @@ export default function TableCommon({ data }) {
   const [filterValue, setFilterValue] = React.useState("");
 
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [sortDescriptor, setSortDescriptor] = React.useState({
-    column: "ngayTao",
-    direction: "ascending",
-  });
+  // const [sortDescriptor, setSortDescriptor] = React.useState({
+  //   column: "ngayTao",
+  //   direction: "ascending",
+  // });
   const [page, setPage] = React.useState(1);
 
   const hasSearchFilter = Boolean(filterValue);
@@ -43,15 +43,15 @@ export default function TableCommon({ data }) {
     return data.slice(start, end);
   }, [page, data, rowsPerPage]);
 
-  const sortedItems = React.useMemo(() => {
-    return [...items].sort((a, b) => {
-      const first = a[sortDescriptor.column];
-      const second = b[sortDescriptor.column];
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
+  // const sortedItems = React.useMemo(() => {
+  //   return [...items].sort((a, b) => {
+  //     const first = a[sortDescriptor.column];
+  //     const second = b[sortDescriptor.column];
+  //     const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
-    });
-  }, [sortDescriptor, items]);
+  //     return sortDescriptor.direction === "descending" ? -cmp : cmp;
+  //   });
+  // }, [sortDescriptor, items]);
 
   const renderCell = React.useCallback((hoaDon, columnKey) => {
     const cellValue = hoaDon[columnKey];
@@ -174,24 +174,24 @@ export default function TableCommon({ data }) {
       }}
       //   selectedKeys={selectedKeys}
       //   selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
+      // sortDescriptor={sortDescriptor}
       //   topContent={topContent}
       //   topContentPlacement="outside"
       //   onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
+      // onSortChange={setSortDescriptor}
     >
       <TableHeader columns={columns}>
         {(column) => (
           <TableColumn
             key={column.uid}
             align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
+            // allowsSorting={column.sortable}
           >
             {column.name}
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"Không tìm thấy hóa đơn 😞"} items={sortedItems}>
+      <TableBody emptyContent={"Không tìm thấy hóa đơn 😞"} items={items}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
@@ -204,7 +204,7 @@ export default function TableCommon({ data }) {
   );
 }
 const columns = [
-  { uid: "id", name: "STT" },
+  { uid: "stt", name: "STT" },
   { uid: "ma", name: "Mã" },
   { uid: "tenKhachHang", name: "Tên Khách Hàng" },
   { uid: "nhanVien", name: "Tên Nhân Viên" },
