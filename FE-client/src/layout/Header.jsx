@@ -35,16 +35,16 @@ export default function Header() {
               <a href="/">Mới & Nổi bật</a>
             </li>
             <li>
-              <a href="/">Sản phẩm</a>
+              <a href="/shop">Sản phẩm</a>
             </li>
             <li>
-              <a href="/">Đàn ông</a>
+              <a href="/shop">Đàn ông</a>
             </li>
             <li>
-              <a href="/">Phụ nữ</a>
+              <a href="/shop">Phụ nữ</a>
             </li>
             <li>
-              <a href="/tracuu">Tra cứu hóa đơn</a>
+              <a href="/tracuu">Tra cứu</a>
             </li>
           </ul>
         </div>
