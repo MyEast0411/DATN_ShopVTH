@@ -4,8 +4,10 @@ package com.example.shop.controller;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.requests.DeGiayRequest;
+import com.example.shop.requests.FilterSanPhamRequest;
 import com.example.shop.requests.KichCoRequest;
 import com.example.shop.requests.SanPhamRequest;
+import com.example.shop.response.FilterSanPhamResponse;
 import com.example.shop.util.GenderCode;
 import com.example.shop.util.UploadAnh;
 import com.example.shop.viewmodel.ChiTietSanPhamVM;
@@ -169,6 +171,12 @@ public class SanPhamController {
         return sanPhamVMList;
     }
 
+    @PostMapping("/filterSanPham")
+    List<FilterSanPhamResponse> filterSanPham(@RequestBody FilterSanPhamRequest request) {
+        List<FilterSanPhamResponse> list = repo.filterSanPham(request.getText(),request.getText(),request.getStatus());
+        return list;
+    }
+
     @PostMapping("/san-pham/add")
     ResponseEntity add(@RequestBody List<Object[]> sanPham) throws IOException, WriterException {
         Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
@@ -258,7 +266,9 @@ public class SanPhamController {
 
     @DeleteMapping("/delete/{ma}")
     Boolean delete(@PathVariable String ma) {
-        sanPhamRepository.delete(sanPhamRepository.findByMa(ma));
+        SanPham sanPham = sanPhamRepository.findByMa(ma);
+        sanPham.setDeleted(0);
+        sanPhamRepository.save(sanPham);
         return true;
     }
 
@@ -316,7 +326,9 @@ public class SanPhamController {
     @DeleteMapping("/deleteSPCT/{ma}")
     ResponseEntity deleteSPCT(@PathVariable String ma) {
         try {
-            repo.delete(repo.findByMa(ma));
+            SanPham sanPham = sanPhamRepository.findByMa(ma);
+            sanPham.setDeleted(0);
+            sanPhamRepository.save(sanPham);
             return ResponseEntity.ok("Xóa thành công");
         } catch (Exception e) {
             e.printStackTrace();

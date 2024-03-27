@@ -56,7 +56,6 @@ export default function DetailKhachHang() {
   const handleSwitchChange = (index) => {
     handleSwitch();
     setIndexDiaChi(index);
-
   };
 
   const handleDelete = () => {

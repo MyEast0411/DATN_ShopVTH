@@ -314,8 +314,13 @@ public class HoaDonChiTietController {
             }
             KhachHang khachHang = ssKH.findByMa(cartNotLoginDTO.getMaKH());
             Voucher voucher = ssVC.getVoucherByCode(cartNotLoginDTO.getVoucher());
-            voucher.setSoLuong(voucher.getSoLuong() - 1);
-            ssVC.save(voucher);
+            Double tienGiam = 0.0;
+            if(voucher != null) {
+                voucher.setSoLuong(voucher.getSoLuong() - 1);
+                tienGiam = voucher.getGiaTriMax();
+                ssVC.save(voucher);
+            }
+
             HoaDon hoaDon = HoaDon.builder()
                     .ma("HD" + (maxMa + 1))
                     .trangThai(0)
@@ -327,7 +332,7 @@ public class HoaDonChiTietController {
                     .tenKhachHang(khachHang == null ? null : khachHang.getTen())
                     .id_voucher(voucher)
                     .id_nhan_vien(ssNV.findById(idNhanVien).get())
-                    .tienGiam(BigDecimal.valueOf(voucher.getGiaTriMax()))
+                    .tienGiam(BigDecimal.valueOf(tienGiam))
                     .tienShip(BigDecimal.valueOf(Double.valueOf(cartNotLoginDTO.getPhiVanChuyen())))
                     .ngayNhan(new Date(cartNotLoginDTO.getDeliveryTime()))
                     .diaChi(cartNotLoginDTO.getDuong() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())

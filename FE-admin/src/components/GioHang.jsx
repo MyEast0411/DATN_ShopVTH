@@ -185,7 +185,7 @@ const GioHang = ({
 
         setThanhToan(updatedRows);
         const totalSoTien = updatedRows.reduce(
-          (sum, row) => sum + parseFloat(row.soTien.replace(".", "")),
+          (sum, row) => sum + parseFloat(row.soTien.replace(",", "")),
           0
         );
 
@@ -545,8 +545,11 @@ const GioHang = ({
         if (tienHang == 0) {
           setMuaThem("");
           setDuocGiam("");
-          setTienShip("");
+          // setTienShip("");
         }
+        // if(khachHang?.ten == '' || khachHang?.ten == undefined) {
+        //   setTienShip("");
+        // }
         setCodeVC(codeVoucher);
         setVoucher(vc);
         setTienHang(tongTien);
@@ -770,7 +773,7 @@ const GioHang = ({
             footer={[]}
           >
             <div className="mt-5">
-              <TableKhachHang hoaDon={activeKey} setKhachHang={setKhachHang} />
+              <TableKhachHang hoaDon={activeKey} setKhachHang={setKhachHang} setIsModalOpenTK={setIsModalOpenTK} />
             </div>
           </Modal>
 

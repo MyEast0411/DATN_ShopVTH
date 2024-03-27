@@ -3,6 +3,7 @@ import { AiOutlineCamera } from "react-icons/ai";
 // import { Avatar } from "flowbite-react";
 
 const Profile = () => {
+  
   return (
     <>
       <section className="pt-20 pb-44 bg-blueGray-50">

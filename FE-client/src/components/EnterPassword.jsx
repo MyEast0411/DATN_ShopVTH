@@ -22,16 +22,28 @@ export default function EnterPassword() {
       const response = await axios.post("http://localhost:8080/user/login", {
         email: email,
         pass: pass,
+      }, {
+        headers: {
+          'Content-Type': 'application/json', 
+          'Authorization': 'Bearer your_access.token.here'
+        }
       });
 
       if (response.data === "FAILED") {
         setError("Mật khẩu không chính xác");
       } else {
-        localStorage.setItem("user", JSON.stringify(response.data));
-        navigate("/");
+        console.log(response.data);
+        // if(response.data.ma.includes("NV")) {
+        //   console.log("ê");
+        //   localStorage.setItem("user", JSON.stringify(response.data));
+        //   window.location.href = "http://localhost:5174/";
+        // } else {
+          localStorage.setItem("user", JSON.stringify(response.data));
+          navigate("/");
+        // }
       }
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Error login:", error);
     }
   }, [pass, email, navigate]);
 

@@ -207,7 +207,7 @@ export default function SanPham() {
             size="sm"
             variant="flat"
           >
-            {cellValue}
+            {sanPham.trangThai}
           </Chip>
         );
       case "hanhDong":
@@ -372,11 +372,22 @@ export default function SanPham() {
     if (selectedValue == -1) {
       fetchChiTietSanPham();
     } else {
-      const result = await axios.post(`http://localhost:8080/nhan_vien/filterNhanVien`, {
-        selectedStatus: selectedValue,
-        textInput: search
+      const response = await axios.post("http://localhost:8080/filterSanPham" , {
+        text : filterValue,
+        status : selectedValue,
       })
-      setData(result.data);
+      console.log(response);
+      const updatedRows = response.data.map((item, index) => ({
+        id: index + 1,
+        stt: index + 1,
+        ma: item.maSanPham,
+        ten: item.tenSanPham,
+        soLuongTon: item.soLuongTon,
+        trangThai: item.status == 1 ? "Đang bán" : "Ngừng bán",
+      }));
+      console.log(updatedRows);
+      setSanPhams(updatedRows);
+      setData(response.data);
     }
   };
   return (

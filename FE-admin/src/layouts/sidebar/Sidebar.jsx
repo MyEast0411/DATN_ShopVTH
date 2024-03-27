@@ -23,7 +23,13 @@ const Sidebar = () => {
   const [open, setOpen] = useState(isTabletMid ? false : true);
   const sidebarRef = useRef();
   const { pathname } = useLocation();
+  const [user, setUser] = useState({});
 
+  useEffect(() => {
+    if (localStorage?.getItem("user") != "")
+      setUser(JSON.parse(localStorage.getItem("user")));
+    else setUser(null);
+  }, []);
   //switch mode
   useEffect(() => {
     if (isTabletMid) {
@@ -169,9 +175,9 @@ const Sidebar = () => {
               {/* image profile */}
               <img
                 className="rounded-full"
-                src="https://i.imgur.com/SCctiNJ.jpg"
+                src={"https://genshin.global/wp-content/uploads/2021/09/raiden-shogun-electro-character-genshin-impact-1.webp"}
                 alt="avatar"
-                width={40}
+                width={100}
               />
               <div className="flex justify-start flex-col items-start">
                 <p className="w-40 leading-7 cursor-pointer text-s text-sm truncate text-gray-600">

@@ -1,6 +1,7 @@
 package com.example.shop.repositories;
 
 import com.example.shop.entity.SanPhamChiTiet;
+import com.example.shop.response.FilterSanPhamResponse;
 import com.example.shop.viewmodel.SanPhamVM;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,14 +12,23 @@ import java.util.UUID;
 
 
 public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, String> {
-    @Query(value = "SELECT b.ma, b.ten AS ten_san_pham, SUM(a.so_luong_ton) AS so_luong_ton, a.trang_thai\n" +
+    @Query(value = "SELECT b.ma, b.ten AS ten_san_pham, SUM(a.so_luong_ton) AS so_luong_ton, b.deleted\n" +
             "FROM san_pham_chi_tiet a\n" +
             "JOIN san_pham b ON a.id_san_pham = b.id\n" +
-            "WHERE b.deleted = 1 and a.deleted = 1\n" +
-            "GROUP BY b.ma, b.ten, a.trang_thai\n" +
+//            "WHERE b.deleted = 1 and a.deleted = 1\n" +
+            "GROUP BY b.ma, b.ten, b.deleted\n" +
             "ORDER BY MAX(b.ngay_tao) DESC\n" +
             "LIMIT 0, 1000", nativeQuery = true)
     List<Object[]> loadTable();
+
+    @Query(value = "SELECT b.ma AS maSanPham, b.ten AS tenSanPham, SUM(a.so_luong_ton) AS soLuongTon, b.deleted AS status\n" +
+            "FROM san_pham_chi_tiet a\n" +
+            "JOIN san_pham b ON a.id_san_pham = b.id\n" +
+            "WHERE b.deleted = :status OR b.ma = :ma OR b.ten = :ten\n" +
+            "GROUP BY b.ma, b.ten, b.deleted\n" +
+            "ORDER BY MAX(b.ngay_tao) DESC\n" +
+            "LIMIT 0, 1000", nativeQuery = true)
+    List<FilterSanPhamResponse> filterSanPham(@Param("ma") String ma, @Param("ten")String ten,@Param("status")Integer status);
 
     @Query(value = "select a.*\n" +
             "FROM san_pham_chi_tiet a\n" +

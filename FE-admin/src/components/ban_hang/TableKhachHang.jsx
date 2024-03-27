@@ -70,7 +70,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App({ hoaDon, setKhachHang }) {
+export default function App({ hoaDon, setKhachHang, setIsModalOpenTK }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -237,6 +237,7 @@ export default function App({ hoaDon, setKhachHang }) {
                         .then((response) => {
                             setKhachHang(sanPham);
                             toast(`Chọn khách hàng thành công`);
+                            setIsModalOpenTK(false);
                         })
                     }}
                   >

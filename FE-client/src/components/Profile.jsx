@@ -7,9 +7,20 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DatePicker } from "antd";
 import Footer from "../layout/Footer";
-import { getProvinces, getDistricts, getWards } from "../apis/Location";
+import { getProvinces, getDistricts, getWards } from "../apis/Location_2";
 import { Checkbox, Select, Switch } from "antd";
-import { Accordion, AccordionItem, Avatar,Button } from "@nextui-org/react";
+import { notification } from "antd";
+import successIcon from "../assets/successIcon.png";
+import errorIcon from "../assets/errorIcon.png";
+import { Accordion, AccordionItem, Avatar, Button } from "@nextui-org/react";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
+import { TbInfoTriangle } from "react-icons/tb";
 
 const { Option } = Select;
 dayjs.extend(customParseFormat);
@@ -18,6 +29,10 @@ export default function Profile() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  const [api, contextHolder] = notification.useNotification();
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [openComfirm, setOpenComfirm] = useState(false);
+  const [idToDelete, setIdToDelete] = useState("");
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -26,7 +41,7 @@ export default function Profile() {
   const [addressModalOpoen, setAddressModalOpoen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
-  const [user,setUser] = useState({});
+  const [user, setUser] = useState({});
   const [listDiaChi, setListDiaChi] = useState([]);
   const [valueTP, setValueTP] = useState([]);
   const [valueHuyen, setValueHuyen] = useState([]);
@@ -34,7 +49,16 @@ export default function Profile() {
   const [district, setDistrict] = useState([]);
   const [ward, setWard] = useState([]);
   const [isOn, setIsOn] = useState(false);
-
+  const [diaChiAdd, setDiaChiAdd] = useState({});
+  const [updateSdt, setUpdateSdt] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showcurrentPassword, setShowcurrentPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [updatePass, setUpdatePass] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: ""
+  })
   const [khachHang, setKhachHang] = useState({
     id: "",
     ma: "",
@@ -77,26 +101,33 @@ export default function Profile() {
       id: khachHangData.id,
     }));
   };
+  const [indexDiaChi, setIndexDiaChi] = useState("");
   const handleSwitchChange = (index) => {
-    const updatedListDiaChi = [...listDiaChi];
+    setOpenComfirm(true);
+    setIndexDiaChi(index);
 
-    updatedListDiaChi[index].trangThai = 1;
+    // const updatedListDiaChi = [...listDiaChi];
 
-    updatedListDiaChi.forEach((item, i) => {
-      if (i !== index) {
-        item.trangThai = 0;
-      }
-    });
-    setListDiaChi(updatedListDiaChi);
+    // updatedListDiaChi[index].trangThai = 1;
+
+    // updatedListDiaChi.forEach((item, i) => {
+    //   if (i !== index) {
+    //     item.trangThai = 0;
+    //   }
+    // });
+    // setListDiaChi(updatedListDiaChi);
   };
-
+  
+  const cancelComfirm = () => {
+    setOpenComfirm(false);
+  }
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
-  },[]);
+  }, []);
 
   const date = new Date(JSON.parse(localStorage.getItem("user")).ngaySinh);
   const formatter = new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
-  const output =  formatter.format(date);
+  const output = formatter.format(date);
 
   // get dia chi khach hang 
 
@@ -109,7 +140,7 @@ export default function Profile() {
   useEffect(() => {
     getDiaChi();
     getKhachHang();
-  },[]);
+  }, []);
 
 
   useEffect(() => {
@@ -123,67 +154,73 @@ export default function Profile() {
     setValueTP(names);
     const provinceCode = provinces.find((x) => x.name === khachHang.thanhPho)?.code || 1;
     getDistricts(provinceCode).then((data) => {
-      setDistrict(data);
+      setDistrict(data.results);
     });
     const valueH = district.map((item) => item.name);
     setValueHuyen(valueH);
 
     const districtCode = district.find((x) => x.name === khachHang.huyen)?.code || 1;
     getWards(districtCode).then((data) => {
-      setWard(data);
+      setWard(data.results);
     });
     const valueXa = ward.map((item) => item.name);
     setValueXa(valueXa);
   }, [provinces, district]);
 
+  const openNotificationWithIcon = (type, message, icon) => {
+    api[type]({
+      message,
+      duration: 1,
+      icon: (
+        <img
+          src={icon}
+          alt=""
+          style={{
+            width: "7%",
+          }}
+        />
+      ),
+    });
+  };
+  const handleDelete = () => {
+    setDeleteConfirmationOpen(true);
+  };
+  const cancelDelete = () => {
+    setDeleteConfirmationOpen(false);
+  };
+
   const handleProvinceChange = (provinceCode) => {
     provinces.map((item) => {
-      if (item.code == provinceCode) {
-        // setKhachHang((prevKhachHang) => ({
-        //   ...prevKhachHang,
-        //   thanhPho: selectedProvince.name,
-        // }));
-        setDiaChi((prevDiaChi) => ({
+      if (item.province_id == provinceCode) {
+        setDiaChiAdd((prevDiaChi) => ({
           ...prevDiaChi,
-          thanhPho: item.name,
+          thanhPho: item.province_name,
         }));
       }
     });
-
     getDistricts(provinceCode).then((data) => {
-      setDistricts(data);
+      setDistricts(data.results);
     });
   };
-
   const handleDistrictChange = (districtCode) => {
-    console.log(districtCode);
     districts.map((item) => {
-      if (item.code == districtCode) {
-        // setKhachHang((prevKhachHang) => ({
-        //   ...prevKhachHang,
-        //   huyen: item.name,
-        // }));
-        setDiaChi((prevDiaChi) => ({
+      if (item.district_id == districtCode) {
+        setDiaChiAdd((prevDiaChi) => ({
           ...prevDiaChi,
-          huyen: item.name,
+          huyen: item.district_name,
         }));
       }
     });
     getWards(districtCode).then((data) => {
-      setWards(data);
+      setWards(data.results);
     });
   };
-
   const handleWardsChange = (wardsCode) => {
     wards.map((item) => {
-      if (item.code == wardsCode) {
-        // setKhachHang((prevKhachHang) => ({
-        //   ...prevKhachHang,
-        //   xa: item.name,
-        // }));
-        setDiaChi((prevDiaChi) => ({
+      if (item.ward_id == wardsCode) {
+        setDiaChiAdd((prevDiaChi) => ({
           ...prevDiaChi,
-          xa: item.name,
+          xa: item.ward_name,
         }));
       }
     });
@@ -219,25 +256,88 @@ export default function Profile() {
     setAddressModalOpoen(true);
   };
 
-  const handlePasswordModalOk = () => {
+  const handlePasswordModalOk = async () => {
+
     setConfirmLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
+      console.log(user.matKhau === updatePass.currentPassword);
+      if (updatePass.currentPassword != user.matKhau) {
+        openNotificationWithIcon("error", "Mật khẩu cũ không đúng", errorIcon);
+        setConfirmLoading(false);
+        return;
+      }
+      if (updatePass.newPassword != updatePass.confirmNewPassword) {
+        openNotificationWithIcon("error", "Xác nhận mật khẩu không khớp", errorIcon);
+        setConfirmLoading(false);
+        return;
+      }
+      await axios.put("http://localhost:8080/updateMatKhau", {
+        idKhachHang: user?.id,
+        newPassword: updatePass.newPassword
+      }).then((response) => {
+        if (response.status == 200) {
+          openNotificationWithIcon("success", "Cập nhật mật khẩu thành công", successIcon);
+          localStorage.removeItem("user");
+          localStorage.setItem("user", JSON.stringify(response.data));
+          setUser(response.data);
+          getKhachHang();
+        }
+      }).catch((error) => {
+        console.log(error);
+        openNotificationWithIcon("error", error.response.data, errorIcon);
+      })
       setPasswordModalOpen(false);
       setConfirmLoading(false);
     }, 2000);
   };
 
-  const handlePhoneModalOk = () => {
+  const handlePhoneModalOk = async () => {
+    const regexPhoneNumber = /^0[0-9]{9}$/;
     setConfirmLoading(true);
-    setTimeout(() => {
+    if (!regexPhoneNumber.test(updateSdt.sdt)) {
+      openNotificationWithIcon("error", "Số điện thoại không hợp lệ", errorIcon);
+      setConfirmLoading(false);
+      return;
+    }
+    setTimeout(async () => {
+      await axios.put("http://localhost:8080/updateSdt", {
+        idKhachHang: user?.id,
+        sdt: updateSdt.sdt
+      }).then((response) => {
+        if (response.status == 200) {
+          openNotificationWithIcon("success", "Cập nhật số điện thoại thành công", successIcon);
+          localStorage.removeItem("user");
+          localStorage.setItem("user", JSON.stringify(response.data));
+          setUser(response.data);
+          getKhachHang();
+        }
+      }).catch((error) => {
+        console.log(error);
+        openNotificationWithIcon("error", error.response.data, errorIcon);
+      })
       setPhoneModalOpen(false);
       setConfirmLoading(false);
     }, 2000);
   };
 
-  const handleAddressModalOk = () => {
+  const handleAddressModalOk = async () => {
     setConfirmLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
+      await axios.post("http://localhost:8080/khachHangAddDiaChi", {
+        idKhachHang: user?.id,
+        thanhPho: diaChiAdd.thanhPho,
+        huyen: diaChiAdd.huyen,
+        xa: diaChiAdd.xa,
+        soNha: diaChiAdd.soNha
+      }).then((response) => {
+        if (response.status == 200) {
+          openNotificationWithIcon("success", "Thêm địa chỉ thành công", successIcon);
+          getDiaChi();
+        }
+      }).catch((error) => {
+        console.log(error);
+        openNotificationWithIcon("error", error.response.data, errorIcon);
+      })
       setAddressModalOpoen(false);
       setConfirmLoading(false);
     }, 2000);
@@ -246,6 +346,7 @@ export default function Profile() {
   const handleModalCancel = () => {
     console.log("Clicked cancel button");
     setPasswordModalOpen(false);
+    setConfirmLoading(false);
     setPhoneModalOpen(false);
     setAddressModalOpoen(false);
   };
@@ -284,17 +385,42 @@ export default function Profile() {
     updatedListDiaChi[index] = { ...updatedListDiaChi[index], duong: value };
     setListDiaChi(updatedListDiaChi);
   };
+
+  const handleChangeSdt = (e) => {
+    setUpdateSdt({ sdt: e.target.value });
+  }
+
+  const handleDiaChiAdd = (e) => {
+    setDiaChiAdd({ [e.target.name]: e.target.value })
+  }
+
+  const handlePasswordUpdate = (e) => {
+    console.log(e.target.name);
+    setUpdatePass({ ...updatePass, [e.target.name]: e.target.value })
+  }
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleShowcurrentPassword = () => {
+    setShowcurrentPassword(!showcurrentPassword);
+  };
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
   return (
     <>
       <InfoTop />
+      {contextHolder}
       <Header />
       <div className="container p-10 flex justify-center">
         <div className="left w-full pr-[60px] border-r-[1px]">
           <div className="font-medium text-[20px]">Thông tin tài khoản</div>
           <div className="flex flex-col gap-3">
             <div className="inputGroupEmail">
-              <input type="email" required autoComplete="off" />
-              <label htmlFor="email">{user.email}</label>
+              <input type="email" required autoComplete="on" value={user.email} />
+              <label htmlFor="email">Email</label>
             </div>
 
             <div>
@@ -320,34 +446,60 @@ export default function Profile() {
                   }}
                 >
                   {/* Password change form inputs */}
-                  <div className="inputGroupEmail">
+                  <div className="relative inputGroupEmail">
                     <input
+                      type={showcurrentPassword ? 'text' : 'password'}
                       name="currentPassword"
-                      type="password"
                       required
                       autoComplete="off"
+                      onChange={handlePasswordUpdate}
                     />
                     <label htmlFor="currentPassword">Mật khẩu hiện tại*</label>
+                    <span className="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer" onClick={toggleShowcurrentPassword}>
+                      {showcurrentPassword ? (
+                        <i className="fas fa-eye-slash"></i>
+                      ) : (
+                        <i className="fas fa-eye"></i>
+                      )}
+                    </span>
                   </div>
-                  <div className="inputGroupEmail">
+                  <div className="relative inputGroupEmail">
                     <input
+                      type={showPassword ? 'text' : 'password'}
                       name="newPassword"
-                      type="password"
-                      required
+                      onChange={handlePasswordUpdate}
                       autoComplete="off"
+                      required
                     />
-                    <label htmlFor="newPassword">Mật khẩu mới*</label>
+                    <label htmlFor="newPassword" >
+                      Mật khẩu mới*
+                    </label>
+                    <span className="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer" onClick={toggleShowPassword}>
+                      {showPassword ? (
+                        <i className="fas fa-eye-slash"></i>
+                      ) : (
+                        <i className="fas fa-eye"></i>
+                      )}
+                    </span>
                   </div>
-                  <div className="inputGroupEmail">
+                  <div className="relative inputGroupEmail">
                     <input
                       name="confirmNewPassword"
-                      type="password"
+                      type={showConfirmPassword ? 'text' : 'password'}
                       required
                       autoComplete="off"
+                      onChange={handlePasswordUpdate}
                     />
                     <label htmlFor="confirmNewPassword">
                       Xác nhận mật khẩu mới*
                     </label>
+                    <span className="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer" onClick={toggleShowConfirmPassword}>
+                      {showConfirmPassword ? (
+                        <i className="fas fa-eye-slash"></i>
+                      ) : (
+                        <i className="fas fa-eye"></i>
+                      )}
+                    </span>
                   </div>
                 </Modal>
               </div>
@@ -379,10 +531,11 @@ export default function Profile() {
                 >
                   <div className="inputGroupCodeSignUp">
                     <input
-                      name="diaChi"
+                      name="sdt"
                       type="text"
                       required
                       autoComplete="off"
+                      onChange={handleChangeSdt}
                     />
                     <label htmlFor="diaChi">Số điện thoại</label>
                   </div>
@@ -393,18 +546,19 @@ export default function Profile() {
             <div className="pb-10 border-b-[2px]">
               <div className="font-medium py-2">Ngày sinh</div>
               <DatePicker
-                className="w-1/2"
+                className="w-1/2 text-black"
                 defaultValue={dayjs(output, dateFormatList[0])}
                 format={dateFormatList}
-              />
+                disabled
+              /> 
             </div>
 
-            <div className="flex justify-between items-center">
+            {/* <div className="flex justify-between items-center">
               <div className="font-medium py-2">Xóa tài khoản</div>
               <button className="main-sign-in-button px-3 text-sm py-1 bg-black text-white rounded-[20px]">
                 Xóa
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="right w-full pl-[50px]">
@@ -428,85 +582,88 @@ export default function Profile() {
             <div>
               {/* load address data here */}
               <Accordion selectionMode="multiple">
-            {listDiaChi.map((item, index) => (
-              <AccordionItem
-                key={index}
-                aria-label="Địa chỉ 1"
-                startContent={
-                  <Avatar
-                    isBordered
-                    color="success"
-                    radius="lg"
-                    // src="https://img.freepik.com/premium-vector/pin-point-icon-with-red-map-location-pointer-symbol-isolated-white-background_120819-234.jpg"
-                  />
-                }
-                subtitle="Xem chi tiết"
-                title={"Địa chỉ " + (index + 1)}
-              >
-                <div>
-                  <Select
-                    placeholder="Thành phố"
-                    onChange={(selectedValue) => handleChangeTP(selectedValue, index)}
-                    value={item.thanhPho}
-                    style={{ width: "30%", marginRight: "10px" }}
+                {listDiaChi.map((item, index) => (
+                  <AccordionItem
+                    key={index}
+                    aria-label="Địa chỉ 1"
+                    startContent={
+                      <Avatar
+                        isBordered
+                        color="success"
+                        radius="lg"
+                      // src="https://img.freepik.com/premium-vector/pin-point-icon-with-red-map-location-pointer-symbol-isolated-white-background_120819-234.jpg"
+                      />
+                    }
+                    subtitle="Xem chi tiết"
+                    title={"Địa chỉ " + (index + 1)}
                   >
-                    {options}
-                  </Select>
+                    <div>
+                      <Select
+                        placeholder="Thành phố"
+                        onChange={(selectedValue) => handleChangeTP(selectedValue, index)}
+                        value={item.thanhPho}
+                        style={{ width: "30%", marginRight: "10px", pointerEvents: "none" }}
+                        dropdownStyle={{ pointerEvents: "auto" }}
+                      >
+                        {options}
+                      </Select>
 
-                  <Select
-                    placeholder="Huyện"
-                    onChange={(selectedValue) => handleChangeHuyen(selectedValue, index)}
-                    value={item.huyen}
-                    style={{ width: "30%", marginRight: "15px" }}
-                  >
-                    {optionHuyen}
-                  </Select>
+                      <Select
+                        placeholder="Huyện"
+                        onChange={(selectedValue) => handleChangeHuyen(selectedValue, index)}
+                        value={item.huyen}
+                        style={{ width: "33%", marginRight: "15px", pointerEvents: "none" }}
+                        dropdownStyle={{ pointerEvents: "auto" }}
+                      >
+                        {optionHuyen}
+                      </Select>
 
-                  <Select
-                    placeholder="Xã"
-                    onChange={(selectedValue) => handleChangeXa(selectedValue, index)}
-                    value={item.xa}
-                    style={{ width: "30%", marginRight: "10px" }}
-                  >
-                    {optionXa}
-                  </Select>
+                      <Select
+                        placeholder="Xã"
+                        onChange={(selectedValue) => handleChangeXa(selectedValue, index)}
+                        value={item.xa}
+                        style={{ width: "30%", marginRight: "10px", pointerEvents: "none" }}
+                        dropdownStyle={{ pointerEvents: "auto" }}
+                      >
+                        {optionXa}
+                      </Select>
 
-                  <input
-                    type="text"
-                    name={`duong-${index}`}
-                    value={item.duong}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
+                      <input
+                        type="text"
+                        name={`duong-${index}`}
+                        value={item.duong}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                 rounded-lg focus:ring-blue-500 focus:border-blue-500 block
                                     w-2/3 p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                                     dark:focus:ring-blue-500 mt-4 dark:focus:border-blue-500"
-                    placeholder="Số nhà/Ngõ/Đường"
-                    required
-                    onChange={(e) => handleDuongChange(e, index)}
-                  />
-                  <div className="flex mt-10">
-                    <p className="mr-5">Địa chỉ mặc định</p>
-                    <Switch checked={item.trangThai === 1} onChange={() => handleSwitchChange(index)} className={`${isOn ? "bg-gray-800" : "bg-gray-800"}`} />
-                    <div className="flex-grow" />
-                    <Button
-                      className="justify-end"
-                      style={{
-                        backgroundColor: "#1976d2",
-                        color: "#fff",
-                        marginBottom: "2px",
-                        marginLeft: "auto",
-                      }}
-                      onClick={() => {
-                        setIdToDelete(item.id);
-                        handleDelete();
-                      }}
-                    >
-                      Xóa địa chỉ
-                    </Button>
-                  </div>
-                </div>
-              </AccordionItem>
-            ))}
-          </Accordion>
+                        placeholder="Số nhà/Ngõ/Đường"
+                        required
+                        onChange={(e) => handleDuongChange(e, index)}
+                      />
+                      <div className="flex mt-10">
+                        <p className="mr-5">Địa chỉ mặc định</p>
+                        <Switch checked={item.trangThai === 1} onChange={() => handleSwitchChange(index)} className={`${isOn ? "bg-gray-800" : "bg-gray-800"}`} />
+                        <div className="flex-grow" />
+                        <Button
+                          className="justify-end"
+                          style={{
+                            backgroundColor: "#1976d2",
+                            color: "#fff",
+                            marginBottom: "2px",
+                            marginLeft: "auto",
+                          }}
+                          onClick={() => {
+                            setIdToDelete(item.id);
+                            handleDelete();
+                          }}
+                        >
+                          Xóa địa chỉ
+                        </Button>
+                      </div>
+                    </div>
+                  </AccordionItem>
+                ))}
+              </Accordion>
               <button
                 onClick={showAddressModal}
                 className="main-sign-in-button px-3 text-sm py-1 bg-black text-white rounded-[20px]"
@@ -517,7 +674,7 @@ export default function Profile() {
           )}
           <Modal
             title="Thêm địa chỉ"
-            visible={addressModalOpoen}
+            open={addressModalOpoen}
             onOk={handleAddressModalOk}
             confirmLoading={confirmLoading}
             onCancel={handleModalCancel}
@@ -531,12 +688,12 @@ export default function Profile() {
               },
             }}
           >
-            <div className="inputGroupCodeSignUp">
+            {/* <div className="inputGroupCodeSignUp">
               <input name="hoTen" type="text" required autoComplete="off" />
               <label htmlFor="hoTen">Họ và tên</label>
-            </div>
+            </div> */}
 
-            <div className="inputGroupCodeSignUp">
+            {/* <div className="inputGroupCodeSignUp">
               <input
                 name="soDienThoai"
                 type="number"
@@ -544,11 +701,11 @@ export default function Profile() {
                 autoComplete="off"
               />
               <label htmlFor="soDienThoai">Số điện thoại</label>
-            </div>
+            </div> */}
 
             <div className="inputGroupCodeSignUp">
-              <input name="diaChi" type="text" required autoComplete="off" />
-              <label htmlFor="diaChi">Địa chỉ</label>
+              <input name="soNha" type="text" required autoComplete="off" onChange={handleDiaChiAdd} />
+              <label htmlFor="soNha">Địa chỉ</label>
             </div>
 
             <div className="flex gap-1 justify-between">
@@ -562,8 +719,8 @@ export default function Profile() {
                 >
                   <option value="">Chọn thành phố</option>
                   {provinces.map((province) => (
-                    <option key={province.code} value={province.code}>
-                      {province.name}
+                    <option key={province.province_id} value={province.province_id}>
+                      {province.province_name}
                     </option>
                   ))}
                 </select>
@@ -578,8 +735,8 @@ export default function Profile() {
                 >
                   <option value="">Chọn huyện</option>
                   {districts.map((district) => (
-                    <option key={district.code} value={district.code}>
-                      {district.name}
+                    <option key={district.district_id} value={district.district_id}>
+                      {district.district_name}
                     </option>
                   ))}
                 </select>
@@ -594,26 +751,124 @@ export default function Profile() {
                 >
                   <option value="">Chọn xã phường</option>
                   {wards.map((ward) => (
-                    <option key={ward.code} value={ward.code}>
-                      {ward.name}
+                    <option key={ward.ward_id} value={ward.ward_id}>
+                      {ward.ward_name}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
 
-            <Checkbox onChange={onChangeDefaultAddress}>
+            {/* <Checkbox onChange={onChangeDefaultAddress}>
               Đặt làm địa chỉ mặc định
-            </Checkbox>
+            </Checkbox> */}
           </Modal>
         </div>
       </div>
-      <div className="flex justify-center pb-10 items-center">
+      {/* <div className="flex justify-center pb-10 items-center">
         <button className="main-sign-in-button px-10 py-2 bg-black text-white rounded-[20px]">
           Lưu thay đổi
         </button>
-      </div>
-
+      </div> */}
+      <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận xóa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn xóa địa chỉ này?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="warning">
+            Hủy
+          </Button>
+          <Button
+            color="primary"
+            onClick={async () => {
+              await axios
+                .delete(`http://localhost:8080/dia-chi/delete/${idToDelete}`)
+                .then((response) => {
+                  if (response.status == 200) {
+                    openNotificationWithIcon("success", "Xóa địa chỉ thành công", successIcon);
+                    getKhachHang();
+                    getDiaChi();
+                    cancelDelete();
+                  }
+                })
+                .catch((error) => {
+                  toast("😿 " + error.response.data);
+                });
+              cancelDelete();
+            }}
+          >
+            Vẫn xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openComfirm} onClose={cancelComfirm} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Xác nhận sửa</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn sửa địa chỉ này thành mặc định không?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelComfirm} color="warning">
+            Hủy
+          </Button>
+          <Button color="primary" onClick={() => {
+            const updatedListDiaChi = [...listDiaChi];
+            updatedListDiaChi[indexDiaChi].trangThai = 1;
+            updatedListDiaChi.forEach((item, i) => {
+              if (i !== indexDiaChi) {
+                item.trangThai = 2;
+              }
+            });
+            
+            axios.post('http://localhost:8080/dia-chi/switchTrangThai', updatedListDiaChi).then((res) => {
+              getDiaChi();
+              cancelComfirm();
+              openNotificationWithIcon("success", "Đặt địa chỉ mặc định thành công",successIcon);
+            })
+          }}
+          >
+            Vẫn sửa
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Footer />
     </>
   );

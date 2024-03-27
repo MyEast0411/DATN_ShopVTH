@@ -119,10 +119,8 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
         setListHinhAnh(danhSachHinhAnh.data);
     }
     useEffect(() => {
-        if (idDetailProduct != null && idDetailProduct !== "") {
-            getDetailProductById();
-        }
-    }, [idDetailProduct])
+        getDetailProductById();
+    }, [idDetailProduct, initialValues])
     useEffect(() => {
         form.resetFields();
     }, [initialValues]);
@@ -335,7 +333,7 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                             rules={[{ required: true, message: "Ảnh Sản phẩm" }]}
                         >
                             <div className="text-center" style={{ maxWidth: "200px", whiteSpace: "nowrap" }}>
-                                {listHinhAnh.map((hinhAnh, index) => (
+                                {listHinhAnh.length > 1 && listHinhAnh.map((hinhAnh, index) => (
                                     <div className="mb-4 relative inline-block" key={hinhAnh.id} style={{ marginRight: "5px", border: "1px solid #D3D3D3" }}>
                                         <img
                                             src={hinhAnh.ten}
@@ -345,7 +343,6 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                                         <Button className="absolute w-8 h-5 top-0 right-0 mt-2 mr-2 bg-red-500 text-white px-2 py-1 rounded-full flex items-center justify-center">
                                             -
                                         </Button>
-
                                     </div>
                                 ))}
                             </div>

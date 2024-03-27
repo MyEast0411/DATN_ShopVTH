@@ -7,7 +7,10 @@ import com.example.shop.entity.KhachHang;
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.repositories.DiaChiRepository;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.requests.KhachHangAddDiaChiRequest;
 import com.example.shop.requests.SearchKhachHangRequest;
+import com.example.shop.requests.UpdateMatKhauRequest;
+import com.example.shop.requests.UpdateSdtRequest;
 import com.example.shop.response.LichSuMuaHangResponse;
 import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
@@ -237,4 +240,73 @@ public class KhachHangController {
         }
           return ResponseEntity.ok(lichSuMuaHangResponses);
     }
+
+    //khach hang add dia chi client
+    @PostMapping("/khachHangAddDiaChi")
+    public ResponseEntity addDiaChiByKhachHang(@RequestBody KhachHangAddDiaChiRequest khachHang) {
+
+        try {
+            KhachHang kh = khachHangRepository.findById(khachHang.getIdKhachHang()).get();
+            if(diaChiRepository.findDiaChiByMa(kh.getMa()).size() >= 3 ) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Khách hàng chỉ có thể có 3 địa chỉ !");
+            }
+            DiaChi diaChi = new DiaChi();
+            diaChi.setDuong(khachHang.getSoNha());
+            diaChi.setThanhPho(khachHang.getThanhPho());
+            diaChi.setHuyen(khachHang.getHuyen());
+            diaChi.setXa(khachHang.getXa());
+            diaChi.setTrangThai(2);
+            diaChi.setDeleted(1);
+            diaChi.setQuocGia("Việt Nam");
+            diaChi.setId_khach_hang(khachHangRepository.findById(khachHang.getIdKhachHang()).get());
+            diaChiRepository.save(diaChi);
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Thêm thất bại");
+        }
+    }
+    @PutMapping("/updateDiaChiMacDinh")
+    public ResponseEntity updateDiaChiMacDinh(@RequestBody DiaChi diaChi) {
+
+        try {
+            DiaChi dc = diaChiRepository.findById(diaChi.getId()).get();
+            dc.setTrangThai(1);
+            for (DiaChi item:
+                 diaChiRepository.findAll()) {
+                if(item.getId() != dc.getId()) {
+                    item.setTrangThai(2);
+                    diaChiRepository.save(item);
+                }
+            }
+            diaChiRepository.save(dc);
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Thêm thất bại");
+        }
+    }
+
+    @PutMapping("/updateMatKhau")
+    public ResponseEntity updateMatKhau(@RequestBody UpdateMatKhauRequest request) {
+        try {
+            KhachHang khachHang = khachHangRepository.findById(request.getIdKhachHang()).get();
+            khachHang.setMatKhau(request.getNewPassword());
+            KhachHang khachHangResponse =khachHangRepository.save(khachHang);
+            return ResponseEntity.ok(khachHangResponse);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Thêm thất bại");
+        }
+    }
+
+    @PutMapping("/updateSdt")
+    public ResponseEntity updateSdt(@RequestBody UpdateSdtRequest request) {
+        try {
+            KhachHang khachHang = khachHangRepository.findById(request.getIdKhachHang()).get();
+            khachHang.setSdt(request.getSdt());
+            KhachHang khachHangResponse =khachHangRepository.save(khachHang);
+            return ResponseEntity.ok(khachHangResponse);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Thêm thất bại");
+        }
+    }
+
 }

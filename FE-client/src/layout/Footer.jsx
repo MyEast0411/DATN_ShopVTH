@@ -15,12 +15,12 @@ export default function Footer() {
           </div>
 
           <p className="mx-auto mt-6 text-center leading-relaxed text-gray-500">
-            Bản quyền © 2023 Mọi quyền được bảo lưu bởi Jordan VTH.
+            Bản quyền © 2024. Mọi quyền được bảo lưu bởi Jordan VTH. <br></br> Nếu gặp vấn đề về xin liên hệ với chúng tôi qua những nền tảng xã hội ở dưới.
           </p>
           <ul className="mt-12 flex align-center justify-center gap-6 md:gap-8">
             <li>
               <a
-                href="/"
+                href="https://www.facebook.com/i.am.east02"
                 rel="noreferrer"
                 target="_blank"
                 className="text-gray-700 transition hover:text-gray-700/75"
@@ -32,7 +32,7 @@ export default function Footer() {
 
             <li>
               <a
-                href="/"
+                href="https://www.instagram.com/i.am.east0123/"
                 rel="noreferrer"
                 target="_blank"
                 className="text-gray-700 transition hover:text-gray-700/75"
@@ -44,7 +44,7 @@ export default function Footer() {
 
             <li>
               <a
-                href="/"
+                href="https://twitter.com/"
                 rel="noreferrer"
                 target="_blank"
                 className="text-gray-700 transition hover:text-gray-700/75"
@@ -56,7 +56,7 @@ export default function Footer() {
 
             <li>
               <a
-                href="/"
+                href="https://github.com/MyEast0411"
                 rel="noreferrer"
                 target="_blank"
                 className="text-gray-700 transition hover:text-gray-700/75"

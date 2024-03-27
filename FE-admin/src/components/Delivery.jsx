@@ -57,14 +57,15 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
   },[khachHang])
   useEffect(() => {
     getProvinces().then((data) => {
-      setProvinces(data);
+      setProvinces(data.results);
     });
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
 
-      const provinceNames = provinces.map(item => item.ProvinceName);
+      const provinceNames = provinces.map(item => item.province_name);
+      console.log(provinceNames);
       setValueTP(provinceNames);
 
       const provinceCode = provinces.find(x => x.DistrictName === diaChi.thanhPho)?.code;
@@ -163,9 +164,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
       }
     })
       .then(response => {
-        console.log(response.data);
-        const id_tp = response.data.data.find(item => diaChi.thanhPho.includes(item.ProvinceName))?.ProvinceID;
-        console.log(id_tp);
+        const id_tp = response.data.data.find(item => diaChi.thanhPho.includes(item.province_name))?.province_id;
         setIdTP(id_tp);
       })
       .catch(error => {
@@ -254,11 +253,12 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
         console.log("tien hang : ",tienHang);
         if(tienHang > 1000) setTienShip(0)
         else setTienShip(response.data.data.total);
+      // console.log(tienShip);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [idTP, idHuyen, idXa,tienHang]);
+  }, [idTP, idHuyen, idXa, tienHang]);
   const options = valueTP.map(name => (
     <Option key={name} value={name}>
       {name}
@@ -266,7 +266,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
   ));
   const [optionHuyen, setOptionHuyen] = useState([]);
   useEffect(() => {
-    const valueH = district.map(item => item.name);
+    const valueH = district.map(item => item.district_name);
     const newOptionHuyen = valueH.map(name => (
       <Select.Option key={name} value={name}>
         {`${name}`}
@@ -276,7 +276,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
   }, [diaChi,optionHuyen]);
   const [optionXa, setOptionXa] = useState([]);
   useEffect(() => {
-    const valueX = ward.map(item => item.name);
+    const valueX = ward.map(item => item.ward_name);
     const newOptionXa = valueX.map(name => (
       <Select.Option key={name} value={name}>
         {`${name}`}
@@ -375,18 +375,22 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
                   ...prevState,
                   thanhPho: value
                 }));
-                const provinceCode = provinces.find((x) => x.name === value)?.code;
+                const provinceCode = provinces.find((x) => x.province_name === value)?.province_id;
                 console.log(value);
                 getDistricts(provinceCode).then((data) => {
-                  console.log(data);
-                  setDistrict(data);
+                  console.log(data.results);
+                  setDistrict(data.results);
                 });
-
               }}
-              value={diaChi.thanhPho}
+              // onChange={(selectedValue) => handleChangeTP(selectedValue)}
+              value={diaChi?.thanhPho || "Chọn thành phố"}
               style={{width : "100%", height : "40px", marginRight : "10px"}}
             >
-              {options}
+              {provinces.map((province) => (
+                <Option key={province.province_id} value={province.province_name}>
+                  {province.province_name}
+                </Option>
+              ))}
             </Select>
           </div>
           <div className="mb-6">
@@ -403,12 +407,12 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
                   ...prevState,
                   huyen: value
                 }));
-                const districtCode = district.find((x) => x.name === value)?.code;
+                const districtCode = district.find((x) => x.district_name === value)?.district_id;
                 getWards(districtCode).then((data) => {
-                  setWard(data);
+                  setWard(data.results);
                 });
               }}
-              value={diaChi.huyen}
+              value={diaChi?.huyen || "Chọn huyện"}
               style={{width : "100%", height : "40px", marginRight : "10px"}}
             >
               {optionHuyen}
@@ -429,7 +433,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
                   xa: value
                 }));
               }}
-              value={diaChi.xa}
+              value={diaChi?.xa || "Chọn xã"}
               style={{width : "100%", height : "40px", marginRight : "10px"}}
             >
               {optionXa}

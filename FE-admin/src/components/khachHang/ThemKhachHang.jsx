@@ -53,7 +53,6 @@ export default function ThemKhachHang() {
     });
     getDistricts(provinceCode).then((data) => {
       setDistricts(data.results);
-      console.log(data.results);
     });
   };
 
