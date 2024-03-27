@@ -22,7 +22,7 @@ import SuccessOrder from "./components/SuccessOrder";
 
 import EditHoaDon from "./components/findHD/EditHoaDon";
 import PayMentSuccess from "./components/PaymentSuccess";
-import Test from "./test/Test";
+import Voucher from "./components/Voucher/Voucher";
 
 function App() {
   return (
@@ -41,6 +41,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/tracuu" element={<FindHD />} />
+        <Route path="/voucher" element={<Voucher />} />
         <Route path="/lich-su-mua-hang/:idkh" element={<PurchaseHistory />} />
 
         <Route path="/client/edit-hoa-don/:id" element={<EditHoaDon />} />

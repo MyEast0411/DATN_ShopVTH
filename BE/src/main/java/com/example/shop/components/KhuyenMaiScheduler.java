@@ -128,7 +128,6 @@ public class KhuyenMaiScheduler {
                     // Áp dụng giảm giá
                     BigDecimal originalPrice = spct.getGiaBan();
                     BigDecimal discountedPrice = originalPrice.multiply(BigDecimal.valueOf(1 - (discountPercentage / 100)));
-                    discountedPrice = discountedPrice.setScale(0, RoundingMode.DOWN); //format định dạng
                     spct.setGiaBan(discountedPrice);
                     spct.setNgaySua(currentDate);
                     sanPhamChiTietService.save(spct);

@@ -48,7 +48,7 @@ export default function InfoTop() {
       label: (
         <p
           onClick={() => {
-            navigate(`/donHang/`); //nếu có
+            navigate(`/voucher/`); //nếu có
           }}
         >
           Phiếu giảm giá

@@ -73,14 +73,14 @@ export default function EnterPassword() {
             <div className="flex justify-center">Jordan VTH</div>
           </Link>
 
-          <div className="sign-in-title mb-10">What's your password?</div>
+          <div className="sign-in-title mb-10">Nhập mật khẩu của bạn!</div>
           <div className="send-code">
             <span className="email-sended-code"> {email}</span>
             <a
               href="#"
               className="underline ml-2 inline-block font-normal sign-up-edit link-underline"
             >
-              Edit
+              Thay đổi
             </a>
           </div>
           <div className="inputGroupCodeSignUp">
@@ -94,14 +94,14 @@ export default function EnterPassword() {
                 setError("");
               }}
             />
-            <label htmlFor="Password">Password</label>
+            <label htmlFor="Password">Mật khẩu</label>
             <p className="text-red-400">{error}</p>
           </div>
           <a
             href="#"
             className="forgot-password underline link-underline text-small"
           >
-            Forgot password?
+            Quên mật khẩu?
           </a>
           <div className="flex justify-end">
             <button

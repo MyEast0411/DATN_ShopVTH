@@ -1,0 +1,48 @@
+.coupon-container {
+  position: relative;
+  width: 300px;
+  height: 150px;
+  color: #fff;
+  background-color: #02868e;
+  border-radius: 3px;
+  -webkit-mask-image: radial-gradient(
+      circle at 42px 9px,
+      transparent 9px,
+      red 9.5px
+    ),
+    linear-gradient(transparent 25%, red 0, red 75%, transparent 0);
+  -webkit-mask-size: 100%, 2px 14px;
+  -webkit-mask-repeat: repeat, repeat-y;
+  -webkit-mask-position: 0 -9px, 41px;
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+}
+
+.coupon-container__brand {
+  position: absolute;
+  left: -8%;
+  top: 40%;
+  transform: rotate(-90deg);
+}
+
+.coupon-value {
+  padding-left: 8%;
+}
+
+.coupon__code-check {
+  color: #ffaf72;
+  text-decoration: underline;
+  text-decoration-color: #ffa967;
+}
+
+.coupon__code-check:hover {
+  transition: 0.2s;
+  color: #423d3d;
+  text-decoration-color: #423d3d;
+}
+
+.coupon-item {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 200px;
+}
