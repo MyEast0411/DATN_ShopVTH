@@ -6,17 +6,28 @@ import { Link } from "react-router-dom";
 import {
   Accordion,
   AccordionItem,
-  Checkbox,
   Breadcrumbs,
   BreadcrumbItem,
 } from "@nextui-org/react";
 import ProductList from "../components/ProductList";
 import { CiSliderHorizontal } from "react-icons/ci";
 import { DownOutlined } from "@ant-design/icons";
-import { Dropdown, Space } from "antd";
+import { Dropdown, Space, Checkbox } from "antd";
 import { countAllSanPham } from "../apis/SanPham";
 
 export default function Shop() {
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  console.log("selectedOptions:", selectedOptions);
+
+  const onChangeCheckBox = (option) => {
+    const index = selectedOptions.indexOf(option);
+    if (index === -1) {
+      setSelectedOptions([...selectedOptions, option]);
+    } else {
+      setSelectedOptions(selectedOptions.filter((item) => item !== option));
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -50,6 +61,7 @@ export default function Shop() {
       key: "4",
     },
   ];
+
   return (
     <>
       <InfoTop />
@@ -131,12 +143,7 @@ export default function Shop() {
                   title="Giảm giá & Ưu đãi"
                   className="font-medium"
                 >
-                  <Checkbox
-                    defaultSelected={false}
-                    radius="md"
-                    className="font-normal"
-                    color="default"
-                  >
+                  <Checkbox onChange={() => onChangeCheckBox("Ưu đãi")}>
                     Ưu đãi nổi bật - Giảm tối đa tới 60%
                   </Checkbox>
                 </AccordionItem>
@@ -147,28 +154,13 @@ export default function Shop() {
                   className="font-medium"
                 >
                   <div className="flex flex-col">
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Nam")}>
                       Nam
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Nữ")}>
                       Nữ
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Unisex")}>
                       Unisex
                     </Checkbox>
                   </div>
@@ -180,22 +172,8 @@ export default function Shop() {
                   className="font-medium"
                 >
                   <div className="flex flex-col">
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal"
-                      color="default"
-                    >
-                      Trai
-                    </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal"
-                      color="default"
-                    >
-                      Gái
-                    </Checkbox>
+                    <Checkbox>Trai</Checkbox>
+                    <Checkbox>Gái</Checkbox>
                   </div>
                 </AccordionItem>
                 <AccordionItem
@@ -206,35 +184,17 @@ export default function Shop() {
                 >
                   <div className="flex flex-col">
                     <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal"
-                      color="default"
+                      onChange={() => onChangeCheckBox("200.000-500.000")}
                     >
                       200.000-500.000
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("500.000-1Tr")}>
                       500.000-1Tr
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("1Tr-1.5Tr")}>
                       1Tr-1.5Tr
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Trên 1.5Tr")}>
                       Trên 1.5Tr
                     </Checkbox>
                   </div>
@@ -245,42 +205,114 @@ export default function Shop() {
                   title="Màu sắc"
                   className="font-medium"
                 >
-                  <div className="grid grid-cols-3 gap-4 pb-5">
-                    <div className="main-color black flex flex-col justify-center">
+                  <div className="grid grid-cols-3 gap-4 pb-2">
+                    <div
+                      className="main-color relative black flex flex-col justify-center"
+                      onClick={() => onChangeCheckBox("Đen")}
+                    >
                       <div className="black-circle"></div>
                       <p className="color-text">Đen</p>
+                      {selectedOptions.includes("Đen") && (
+                        <div className="tick-icon absolute text-white bottom-[22px]">
+                          &#10003;
+                        </div>
+                      )}
                     </div>
-                    <div className="main-color black flex flex-col justify-center">
+                    <div
+                      className="main-color relative black flex flex-col justify-center"
+                      onClick={() => onChangeCheckBox("Lam")}
+                    >
                       <div className="blue-circle"></div>
                       <p className="color-text">Lam</p>
+                      {selectedOptions.includes("Lam") && (
+                        <div className="tick-icon absolute text-white bottom-[22px]">
+                          &#10003;
+                        </div>
+                      )}
                     </div>
-                    <div className="main-color black flex flex-col justify-center">
+                    <div
+                      className="main-color relative black flex flex-col justify-center"
+                      onClick={() => onChangeCheckBox("Nâu")}
+                    >
                       <div className="brown-circle"></div>
                       <p className="color-text">Nâu</p>
+                      {selectedOptions.includes("Nâu") && (
+                        <div className="tick-icon absolute text-white bottom-[22px]">
+                          &#10003;
+                        </div>
+                      )}
                     </div>
-                    <div className="main-color black flex flex-col justify-center">
+                    <div
+                      className="main-color relative black flex flex-col justify-center"
+                      onClick={() => onChangeCheckBox("Lục")}
+                    >
                       <div className="green-circle"></div>
                       <p className="color-text">Lục</p>
+                      {selectedOptions.includes("Lục") && (
+                        <div className="tick-icon absolute text-white bottom-[22px]">
+                          &#10003;
+                        </div>
+                      )}
                     </div>
-                    <div className="main-color black flex flex-col justify-center">
+                    <div
+                      className="main-color relative black flex flex-col justify-center"
+                      onClick={() => onChangeCheckBox("Xám")}
+                    >
                       <div className="grey-circle"></div>
                       <p className="color-text">Xám</p>
+                      {selectedOptions.includes("Xám") && (
+                        <div className="tick-icon absolute text-white bottom-[22px]">
+                          &#10003;
+                        </div>
+                      )}
                     </div>
-                    <div className="main-color black flex flex-col justify-center">
+                    <div
+                      className="main-color relative black flex flex-col justify-center"
+                      onClick={() => onChangeCheckBox("Cam")}
+                    >
                       <div className="orange-circle"></div>
                       <p className="color-text">Cam</p>
+                      {selectedOptions.includes("Cam") && (
+                        <div className="tick-icon absolute text-white bottom-[22px]">
+                          &#10003;
+                        </div>
+                      )}
                     </div>
-                    <div className="main-color black flex flex-col justify-center">
+                    <div
+                      className="main-color relative black flex flex-col justify-center"
+                      onClick={() => onChangeCheckBox("Đỏ")}
+                    >
                       <div className="red-circle"></div>
                       <p className="color-text">Đỏ</p>
+                      {selectedOptions.includes("Đỏ") && (
+                        <div className="tick-icon absolute text-white bottom-[22px]">
+                          &#10003;
+                        </div>
+                      )}
                     </div>
-                    <div className="main-color black flex flex-col justify-center">
+                    <div
+                      className="main-color relative black flex flex-col justify-center"
+                      onClick={() => onChangeCheckBox("Tím")}
+                    >
                       <div className="purple-circle"></div>
                       <p className="color-text">Tím</p>
+                      {selectedOptions.includes("Tím") && (
+                        <div className="tick-icon absolute text-white bottom-[22px]">
+                          &#10003;
+                        </div>
+                      )}
                     </div>
-                    <div className="main-color black flex justify-center flex-col">
+                    <div
+                      className="main-color relative black flex justify-center flex-col"
+                      onClick={() => onChangeCheckBox("Trắng")}
+                    >
                       <div className="white-circle"></div>
                       <p className="color-text">Trắng</p>
+                      {selectedOptions.includes("Trắng") && (
+                        <div className="tick-icon absolute text-black bottom-[22px]">
+                          &#10003;
+                        </div>
+                      )}
                     </div>
                   </div>
                 </AccordionItem>
@@ -291,60 +323,25 @@ export default function Shop() {
                   className="font-medium"
                 >
                   <div className="flex flex-col">
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal mb-0.5"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Jordan 1")}>
                       Jordan 1
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal mb-0.5"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Jordan 3")}>
                       Jordan 3
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal mb-0.5"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Jordan 4")}>
                       Jordan 4
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal mb-0.5"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Jordan 5")}>
                       Jordan 5
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal mb-0.5"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Jordan 6")}>
                       Jordan 6
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal mb-0.5"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Jordan 11")}>
                       Jordan 11
                     </Checkbox>
-                    <Checkbox
-                      defaultSelected={false}
-                      radius="md"
-                      className="font-normal mb-0.5"
-                      color="default"
-                    >
+                    <Checkbox onChange={() => onChangeCheckBox("Jordan 13")}>
                       Jordan 13
                     </Checkbox>
                   </div>
