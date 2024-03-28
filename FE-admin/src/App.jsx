@@ -27,6 +27,7 @@ import ThongKe from "./pages/ThongKe";
 
 import KhuyenMaiUpdate from "./components/khuyenMai/KhuyenMaiUpdate";
 import DetailHoadon from "./components/thu_chi/DetailHoadon";
+import DoiTraHang from "./pages/DoiTraHang";
 
 const App = () => {
   return (
@@ -119,7 +120,7 @@ const App = () => {
             </Route>
           </Route>
 
-          <Route path="/settings" element={<Build />}>
+          <Route path="/doi-tra-hang" element={<DoiTraHang />}>
             <Route path=":bID">
               <Route path="dang-nhap" />
               <Route path="dang-ky" />
