@@ -16,7 +16,12 @@ import { Dropdown, Space, Checkbox } from "antd";
 import { countAllSanPham } from "../apis/SanPham";
 
 export default function Shop() {
+  const [hideFilter, setHideFilter] = useState(false);
+  const [countSanPham, setCountSanPham] = useState(0);
+  const [selectedFilterTop, setSelectedFilterTop] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState([]);
+
+  console.log("SselectedFilterTop:", selectedFilterTop);
   console.log("selectedOptions:", selectedOptions);
 
   const onChangeCheckBox = (option) => {
@@ -31,7 +36,7 @@ export default function Shop() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  const [countSanPham, setCountSanPham] = useState(0);
+
   const fetchCountSanPham = async () => {
     try {
       const data = await countAllSanPham();
@@ -40,27 +45,33 @@ export default function Shop() {
       console.error("Error fetchSanPham():", error);
     }
   };
+
   useEffect(() => {
     fetchCountSanPham();
   }, [countSanPham]);
+
   const items = [
     {
-      label: <a href="http://localhost:5173/shop">Nổi bật</a>,
+      label: "Nổi bật",
       key: "0",
     },
     {
-      label: <a href="http://localhost:5173/shop">Mới nhất</a>,
+      label: "Mới nhất",
       key: "1",
     },
     {
-      label: <a href="http://localhost:5173/shop">Giá: Cao-Thấp</a>,
-      key: "3",
+      label: "Giá: Cao-Thấp",
+      key: "2",
     },
     {
-      label: <a href="http://localhost:5173/shop">Giá: Thấp-Cao</a>,
-      key: "4",
+      label: "Giá: Thấp-Cao",
+      key: "3",
     },
   ];
+
+  const handleItemClick = (item) => {
+    setSelectedFilterTop(item);
+  };
 
   return (
     <>
@@ -92,8 +103,9 @@ export default function Shop() {
               style={{
                 fontSize: "18px",
               }}
+              onClick={() => setHideFilter(!hideFilter)}
             >
-              Ẩn bộ lọc
+              {hideFilter ? "Hiện bộ lọc" : "Ẩn bộ lọc"}
             </p>
             <CiSliderHorizontal
               className="mt-0.5"
@@ -103,19 +115,32 @@ export default function Shop() {
             />
             <div className="cursor-pointer ml-10">
               <Dropdown
-                menu={{
-                  items,
-                }}
+                overlay={
+                  <Space direction="vertical">
+                    {items.map((item) => (
+                      <a
+                        key={item.key}
+                        onClick={() => handleItemClick(item)}
+                        style={{ display: "block", padding: "8px 12px" }}
+                      >
+                        {item.label}
+                        {selectedFilterTop &&
+                          selectedFilterTop.key === item.key && (
+                            <span
+                              style={{ marginLeft: "auto", color: "green" }}
+                            >
+                              ✓
+                            </span>
+                          )}
+                      </a>
+                    ))}
+                  </Space>
+                }
                 trigger={["click"]}
               >
                 <a onClick={(e) => e.preventDefault()}>
-                  <Space
-                    style={{
-                      fontSize: "18px",
-                    }}
-                  >
-                    Lọc theo
-                    <DownOutlined />
+                  <Space style={{ fontSize: "18px" }}>
+                    Lọc theo <DownOutlined />
                   </Space>
                 </a>
               </Dropdown>
@@ -126,7 +151,7 @@ export default function Shop() {
           className="grid grid-cols-6 gap-4"
           style={{ position: "relative" }}
         >
-          <div className="filter-side">
+          <div className={`filter-side ${hideFilter ? "hidden" : "show"}`}>
             <div
               className="filter-accordion pr-5"
               style={{
