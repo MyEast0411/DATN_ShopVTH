@@ -385,7 +385,6 @@ export default function SanPham() {
         soLuongTon: item.soLuongTon,
         trangThai: item.status == 1 ? "Đang bán" : "Ngừng bán",
       }));
-      console.log(updatedRows);
       setSanPhams(updatedRows);
       setData(response.data);
     }
