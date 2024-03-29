@@ -7,6 +7,7 @@ import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import CouponPrivate from "./CouponPrivate";
 import CouponPublic from "./CouponPublic";
+import axios from "axios";
 
 export default function Voucher() {
   const [coupons, setCoupons] = useState([]);
@@ -28,8 +29,23 @@ export default function Voucher() {
     },
   ];
 
+  const getVoucherByIdKhachHang = async () => {
+    await axios.get(`http://localhost:8080/voucher/getVoucherByIdKhachHang/${JSON.parse(localStorage.getItem("user"))?.id}`).then((response) => {
+      response.data.map((item) => {
+        setCoupons({
+          id: item.idVoucher,
+          percentOff: item.tenVoucher,
+          maxValue: item.giaTriMax,
+          minValue: item.giaTriMin,
+          expirationDate: item.ngayKetThuc
+        });
+      })
+      console.log(coupons);
+    })
+  }
   useEffect(() => {
-    setCoupons(initialCoupons);
+    getVoucherByIdKhachHang();
+    // setCoupons(initialCoupons);
   }, []);
 
   return (
@@ -60,7 +76,7 @@ export default function Voucher() {
                 <CardBody>
                   {" "}
                   <div className="coupon-item  min-h-[400px]">
-                    {coupons.map((coupon, index) => (
+                    {coupons.length > 1 && coupons.map((coupon, index) => (
                       <CouponPublic key={index} {...coupon} />
                     ))}
                   </div>
@@ -71,7 +87,7 @@ export default function Voucher() {
               <Card>
                 <CardBody>
                   <div className="coupon-item min-h-[400px]">
-                    {coupons.map((coupon, index) => (
+                    {coupons.length > 1 && coupons.map((coupon, index) => (
                       <CouponPrivate key={index} {...coupon} />
                     ))}
                   </div>

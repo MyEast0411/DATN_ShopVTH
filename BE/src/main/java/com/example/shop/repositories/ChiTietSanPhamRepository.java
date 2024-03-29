@@ -65,7 +65,6 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("id_san_pham") String id_san_pham
     );
 
-
     //---------------Hội----------------//
     @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList and c.deleted = 1")
     List<SanPhamChiTiet> getSanPhamChiTietByMaList(@Param("maList") List<String> maList);
@@ -83,11 +82,9 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
     @Query(value = "SELECT s FROM SanPhamChiTiet s WHERE s.id IN :idList and s.deleted = 1")
     List<SanPhamChiTiet> getAllSanPhamChiTietByIdList(@Param("idList") List<String> idList);
 
-
     @Query(value = "select * from san_pham_chi_tiet where default_img = :urlImg and deleted = 1",nativeQuery = true)
     List<SanPhamChiTiet> getSanPhamChiTietByDefaultImg(@Param("urlImg") String urlImg);
     //---------------Hội----------------//
-
 
     @Query(value = "select * from  san_pham_chi_tiet where so_luong_ton <= 10" , nativeQuery = true)
     List<SanPhamChiTiet> getAllSPCTMin();

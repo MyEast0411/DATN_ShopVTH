@@ -72,6 +72,16 @@ public class VoucherController {
         return ResponseEntity.ok(voucher);
     }
 
+    @GetMapping("getVoucherByIdKhachHang/{idKhachHang}")
+    public ResponseEntity getVoucherByIdKhachHang(@PathVariable("idKhachHang") String id_khach_hang) {
+        try {
+            return ResponseEntity.ok(voucherRepository.getVoucherByIdKhachHang(id_khach_hang));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @GetMapping("/getVocherByPrice")
     public ResponseEntity getVoucherByPrice(@RequestBody Integer price) {
         try {
