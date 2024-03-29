@@ -4,8 +4,8 @@ import SubMenu from "./SubMenu";
 import { motion } from "framer-motion";
 
 // * React icons
-import { AiFillPieChart, AiOutlineSetting } from "react-icons/ai";
-import { CiDiscount1 } from "react-icons/ci";
+import { VscAccount } from "react-icons/vsc";
+import { BsArrowReturnLeft } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { AiOutlineAppstore } from "react-icons/ai";
 import { BsPerson } from "react-icons/bs";
@@ -80,8 +80,24 @@ const Sidebar = () => {
     {
       name: "quan-ly-san-pham",
       icon: RiBuilding3Line,
-      menus: ["san-pham", "the-loai", "de-giay", "mau-sac","kich-co","thuong-hieu","chat-lieu"],
-      subTitles: ["Sản phẩm", "Thể loại", "Đế giày", "Màu sắc","Kích cỡ","Thương hiệu","Chất liệu"],
+      menus: [
+        "san-pham",
+        "the-loai",
+        "de-giay",
+        "mau-sac",
+        "kich-co",
+        "thuong-hieu",
+        "chat-lieu",
+      ],
+      subTitles: [
+        "Sản phẩm",
+        "Thể loại",
+        "Đế giày",
+        "Màu sắc",
+        "Kích cỡ",
+        "Thương hiệu",
+        "Chất liệu",
+      ],
       mainTitle: "Quản lý sản phẩm",
     },
     {
@@ -153,7 +169,7 @@ const Sidebar = () => {
             </li>
 
             {(open || isTabletMid) && (
-              <div className="border-y py-5 border-slate-300 ">
+              <div className="border-y py-5 border-[#b9b9b9]">
                 {subMenusList?.map((menu) => (
                   <div key={menu.name} className="flex flex-col gap-1">
                     <SubMenu data={menu} />
@@ -163,6 +179,12 @@ const Sidebar = () => {
             )}
 
             <li>
+              <NavLink to={"/doi-tra-hang"} className="link">
+                <BsArrowReturnLeft size={23} className="min-w-max" />
+                Đổi trả hàng
+              </NavLink>
+            </li>
+            <li>
               <NavLink to={"/thong-ke"} className="link">
                 <TbChartHistogram size={23} className="min-w-max" />
                 Thống kê
@@ -171,8 +193,9 @@ const Sidebar = () => {
           </ul>
 
           <li className="link">
-            <NavLink to={"/profile"} className="link w-full bg-slate-200">
+            <NavLink to={"/profile"} className="link w-full profile-bar border border-[#ccc]">
               {/* image profile */}
+             <VscAccount size={23}/>
               <img
                 className="rounded-full"
                 src={"https://genshin.global/wp-content/uploads/2021/09/raiden-shogun-electro-character-genshin-impact-1.webp"}
@@ -215,7 +238,6 @@ const Sidebar = () => {
       <div className="m-3 md:hidden  " onClick={() => setOpen(true)}>
         <MdMenu size={25} />
       </div>
-      
     </div>
   );
 };
