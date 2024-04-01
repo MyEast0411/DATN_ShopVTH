@@ -57,7 +57,7 @@ public interface VoucherRepository extends JpaRepository<Voucher , String> {
     List<Voucher> filterByTrangThai(@Param("ten") String ten, @Param("code") String code,@Param("gia")Integer gia);
 
 
-    @Query(value = "    select c.id AS idVoucher, c.ten AS tenVoucher, c.gia_tri_min as giaTriMin, c.gia_tri_max as giaTriMax, c.ngay_ket_thuc as ngayKetThuc\n" +
+    @Query(value = "    select c.id AS idVoucher, c.code AS tenVoucher, c.gia_tri_min as giaTriMin, c.gia_tri_max as giaTriMax, c.ngay_ket_thuc as ngayKetThuc\n" +
             "    from khach_hang_voucher a join khach_hang b on a.id_khach_hang = b.id join voucher c on a.id_voucher = c.id\n" +
             "    where b.id = :id_khach_hang",nativeQuery = true)
     List<VoucherOfKhachHang> getVoucherByIdKhachHang(@Param("id_khach_hang")String id_khach_hang);
