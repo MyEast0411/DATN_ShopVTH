@@ -15,6 +15,7 @@ import { RiBuilding3Line } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 import { MdMenu } from "react-icons/md";
 import { NavLink, Link, useLocation, useRoutes } from "react-router-dom";
+import { AiOutlineSetting } from "react-icons/ai";
 //logo
 import logo from "../../assets/logo.png";
 
@@ -193,12 +194,17 @@ const Sidebar = () => {
           </ul>
 
           <li className="link">
-            <NavLink to={"/profile"} className="link w-full profile-bar border border-[#ccc]">
+            <NavLink
+              to={"/profile"}
+              className="link w-full profile-bar border border-[#ccc]"
+            >
               {/* image profile */}
-             <VscAccount size={23}/>
+              <VscAccount size={23} />
               <img
                 className="rounded-full"
-                src={"https://genshin.global/wp-content/uploads/2021/09/raiden-shogun-electro-character-genshin-impact-1.webp"}
+                src={
+                  "https://genshin.global/wp-content/uploads/2021/09/raiden-shogun-electro-character-genshin-impact-1.webp"
+                }
                 alt="avatar"
                 width={100}
               />
