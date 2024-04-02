@@ -261,6 +261,11 @@ export default function Profile() {
     setConfirmLoading(true);
     setTimeout(async () => {
       console.log(user.matKhau === updatePass.currentPassword);
+      if (updatePass.newPassword.trim() == '') {
+        openNotificationWithIcon("error", "Mật khẩu mới không được để trống!", errorIcon);
+        setConfirmLoading(false);
+        return;
+      }
       if (updatePass.currentPassword != user.matKhau) {
         openNotificationWithIcon("error", "Mật khẩu cũ không đúng", errorIcon);
         setConfirmLoading(false);
