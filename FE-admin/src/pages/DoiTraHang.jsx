@@ -1,5 +1,5 @@
 import { Button, Input } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { FaShippingFast } from "react-icons/fa";
 import { FaClipboardList } from "react-icons/fa6";
 import { MdOutlineQrCodeScanner } from "react-icons/md";
@@ -8,6 +8,7 @@ import { Result } from "antd";
 import InforBill from "../components/tra_hang/InforBill";
 
 export default function DoiTraHang() {
+  const [maHD, setMaHD] = useState("");
   return (
     <div
       className="font-normal border-gray-500 text-lg mb-5 gap-4"
@@ -40,6 +41,8 @@ export default function DoiTraHang() {
             placeholder="Mời nhập mã hóa đơn"
             size="large"
             style={{ width: 300 }}
+            value={maHD}
+            onChange={(e) => setMaHD(e.target.value)}
           />
           <Button size="large">Tìm kiếm</Button>
         </div>
@@ -52,7 +55,7 @@ export default function DoiTraHang() {
         </div>
       </div>
       <div className="infor mt-5">
-        <InforBill />
+        <InforBill maHD={maHD} />
       </div>
     </div>
   );
