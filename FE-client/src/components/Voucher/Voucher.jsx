@@ -54,8 +54,8 @@ export default function Voucher() {
           id: item.id,
           percentOff: item.code,
           maxValue: Intl.NumberFormat().format(item.giaTriMax),
-          minValue: Intl.NumberFormat().format( item.giaTriMin),
-          expirationDate:  format(item.ngayKetThuc, 'dd-MM-yyyy') 
+          minValue: Intl.NumberFormat().format(item.giaTriMin),
+          expirationDate:  format(item.ngayKetThuc, 'dd-MM-yyyy')
         };
         setCoupons((prevCoupons) => [...prevCoupons, newCoupon]);
       });
@@ -64,8 +64,6 @@ export default function Voucher() {
     });
   };
   useEffect(() => {
-    // getVoucherByIdKhachHang();
-    // setCoupons(initialCoupons);
     getVocherDuocDung();
   }, []);
   const toggleTab = (tab) => {

@@ -41,6 +41,9 @@ export default function Checkout() {
   const [valueTP, setValueTP] = useState([]);
   const [valueHuyen, setValueHuyen] = useState([]);
   const [valueXa, setValueXa] = useState([]);
+  const [errorSdt, setErrorSdt] = useState('');
+  const [errorTen, setErrorTen] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
   const [diaChi, setDiaChi] = useState({
     thanhPho: "",
     huyen: "",
@@ -67,10 +70,10 @@ export default function Checkout() {
   const [listVoucher, setListVoucher] = useState([]);
   const [user, setUser] = useState({});
   const [diaChiAdd, setDiaChiAdd] = useState({
-    thanhPho : "",
-    huyen : "",
-    xa : "",
-    soNha : ""
+    thanhPho: "",
+    huyen: "",
+    xa: "",
+    soNha: ""
   });
   const showAddressModal = () => {
     setAddressModalOpen(true);
@@ -78,13 +81,13 @@ export default function Checkout() {
   const handleAddressModalOk = async () => {
     console.log(user?.id);
     await axios.post("http://localhost:8080/khachHangAddDiaChi", {
-      idKhachHang : user?.id,
-      thanhPho : diaChiAdd.thanhPho,
-      huyen : diaChiAdd.huyen,
-      xa : diaChiAdd.xa,
-      soNha : diaChiAdd.soNha
+      idKhachHang: user?.id,
+      thanhPho: diaChiAdd.thanhPho,
+      huyen: diaChiAdd.huyen,
+      xa: diaChiAdd.xa,
+      soNha: diaChiAdd.soNha
     }).then((response) => {
-      if(response.status == 200) {
+      if (response.status == 200) {
         openNotificationWithIcon("success", "Thêm địa chỉ thành công", successIcon);
         getDiaChi();
       }
@@ -381,22 +384,22 @@ export default function Checkout() {
     setSpinning(true);
     callback();
   };
-  
+
 
   // khach hang thay doi dia chi
   const handleChangeTP = (selectedValue) => {
     setDiaChiChuaLogin({ ...diaChiChuaLogin, thanhPho: selectedValue });
-    setDiaChi({...diaChi, thanhPho : selectedValue});
+    setDiaChi({ ...diaChi, thanhPho: selectedValue });
   };
 
   const handleChangeHuyen = (selectedValue) => {
     setDiaChiChuaLogin({ ...diaChiChuaLogin, huyen: selectedValue });
-    setDiaChi({...diaChi, huyen : selectedValue});
+    setDiaChi({ ...diaChi, huyen: selectedValue });
   };
 
   const handleChangeXa = (selectedValue) => {
     setDiaChiChuaLogin({ ...diaChiChuaLogin, xa: selectedValue });
-    setDiaChi({...diaChi, xa : selectedValue});
+    setDiaChi({ ...diaChi, xa: selectedValue });
   };
 
   const handleDuongChange = (e) => {
@@ -630,8 +633,8 @@ export default function Checkout() {
       updatedShippingCost = localShippingCost;
     }
     let duocGiam = listVoucher.filter((item) => item.code == codeVC)[0]?.giaTriMax == undefined
-    ? 0 : listVoucher.filter((item) => item.code == codeVC)[0]?.giaTriMax;
-    
+      ? 0 : listVoucher.filter((item) => item.code == codeVC)[0]?.giaTriMax;
+
     const total =
       parseFloat(subtotal) +
       localShippingCost - duocGiam;
@@ -647,6 +650,10 @@ export default function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(errorTen != '' || errorSdt != '' || errorEmail != '') {
+      openNotificationWithIcon("error", "Bạn chưa nhập đầy đủ thông tin", errorIcon);
+      return;
+    }
     showLoader(() => {
       const email = e.target.elements.email.value;
       const hoTen = e.target.elements.hoTen.value;
@@ -734,18 +741,18 @@ export default function Checkout() {
   function handleChangeDiaChi(event, index) {
     const updatedListDiaChi = listDiaChi.map((item, idx) => {
       if (idx === index) {
-          return {
-              ...item,
-              selectDiaChi: event.target.checked ? 1 : 2
-          };
+        return {
+          ...item,
+          selectDiaChi: event.target.checked ? 1 : 2
+        };
       } else {
-          return {
-              ...item,
-              selectDiaChi: 2
-          };
+        return {
+          ...item,
+          selectDiaChi: 2
+        };
       }
-  });
-  setListDiaChi(updatedListDiaChi);
+    });
+    setListDiaChi(updatedListDiaChi);
   }
   return (
     <>
@@ -777,178 +784,234 @@ export default function Checkout() {
           <div className="checkout-left sticky-grid">
             {!user && (
               <div>
-              <div className="flex">
-                <span>Bạn đã có tài khoản?</span>
-                <Link
-                  to="/sign-in"
-                  className="link-underline ml-2 underline cursor-pointer"
-                >
-                  {" "}
-                  Đăng nhập
-                </Link>
-                
-              </div>
-              <form onSubmit={handleSubmit}>
-              <div className="inputGroupCodeSignUp">
-                <input
-                  name="email"
-                  id="email"
-                  type="text"
-                  value={user?.email}
-                  required
-                  autoComplete="off"
-                />
-                <label htmlFor="email">Email</label>
-              </div>
-              <div className="inputGroupCodeSignUp">
-                <input
-                  name="hoTen"
-                  id="hoTen"
-                  type="text"
-                  value={user?.ten}
-                  required
-                  autoComplete="off"
-                />
-                <label htmlFor="hoTen">Họ và tên</label>
-              </div>
-              <div className="inputGroupCodeSignUp">
-                <input
-                  name="soDienThoai"
-                  id="soDienThoai"
-                  type="number"
-                  required
-                  autoComplete="off"
-                  value={user?.sdt}
-                />
-                <label htmlFor="soDienThoai">Số điện thoại</label>
-              </div>
-              <div className="inputGroupCodeSignUp">
-                <input
-                  name="diaChi"
-                  id="diaChi"
-                  type="text"
-                  required
-                  autoComplete="off"
-                  value={diaChi?.duong}
-                />
-                <label htmlFor="diaChi">Địa chỉ</label>
-              </div>
+                <div className="flex">
+                  <span>Bạn đã có tài khoản?</span>
+                  <Link
+                    to="/sign-in"
+                    className="link-underline ml-2 underline cursor-pointer"
+                  >
+                    {" "}
+                    Đăng nhập
+                  </Link>
 
-              <div className="flex mb-5">
-                <Select
-                  label="Chọn thành phố"
-                  placeholder="Thành phố"
-                  onChange={(selectedValue) => handleChangeTP(selectedValue)}
-                  value={diaChiChuaLogin?.thanhPho || 'Chọn thành phố'}
-                  style={{ marginRight: "10px", width: "100%", height: "44px" }}
-                >
-                  {provinces.map((province) => (
-                    <Option key={province.province_id} value={province.province_name}>
-                      {province.province_name}
-                    </Option>
-                  ))}
-                </Select>
-                <Select
-                  placeholder="Huyện"
-                  onChange={(selectedValue) => handleChangeHuyen(selectedValue)}
-                  value={diaChiChuaLogin?.huyen || 'Chọn huyện'}
-                  style={{ marginRight: "15px", width: "100%", height: "44px" }}
-                >
-                  {optionHuyen}
-                </Select>
-                <Select
-                  placeholder="Xã"
-                  onChange={(selectedValue) => handleChangeXa(selectedValue)}
-                  value={diaChiChuaLogin?.xa || 'Chọn xã'}
-                  style={{ marginRight: "10px", width: "100%", height: "44px" }}
-                >
-                  {optionXa}
-                </Select>
-              </div>
+                </div>
+                <form onSubmit={handleSubmit}>
+                  <div className="inputGroupCodeSignUp">
+                    <input
+                      name="email"
+                      id="email"
+                      type="text"
+                      value={user?.email}
+                      required
+                      autoComplete="off"
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setUser(prevUser => ({
+                          ...prevUser,
+                          email: newValue
+                        }));
 
-              <h2 className="text-[16px] pb-2">Phương thức thanh toán</h2>
-              <div className="main-choose-payment-method">
+                        if (!newValue.trim()) {
+                          setErrorEmail('Email không được để trống');
+                        } else {
+                          const checkEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                          if (!newValue.match(checkEmail)) {
+                            setErrorEmail('Email không hợp lệ');
+                          } else {
+                            setErrorEmail('');
+                          }
+                        }
+                      }}
+                    />
+                    <label htmlFor="email">Email</label>
+                    {errorEmail && <p style={{ color: 'red' }}>{errorEmail}</p>}
+                  </div>
+                  <div className="inputGroupCodeSignUp">
+                    <input
+                      name="hoTen"
+                      id="hoTen"
+                      type="text"
+                      value={user?.ten}
+                      required
+                      autoComplete="off"
+                      onChange={(e) => {
+                        const newTen = e.target.value;
+                        setUser(prevUser => ({
+                          ...prevUser,
+                          ten: newTen
+                        }));
 
-                <Radio.Group value={value} onChange={onChange}>
-                  <Space direction="vertical">
-                    <Radio value={1} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan1">
-                      <div className="flex items-center pt-1">
-                        <img
-                          src="https://dienthoaigiasoc.vn/wp-content/uploads/2018/12/capitech_hinhthucthanhtoan.png"
-                          alt=""
-                          className="mr-3"
-                        />
-                        <p>Thanh toán khi nhận hàng</p>
-                      </div>
-                    </Radio>
-                    <Radio value={2} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan2">
-                      <div className="flex items-center pt-1">
-                        <img
-                          src="https://static.thenounproject.com/png/407799-200.png"
-                          alt=""
-                          className="mr-3"
-                        />
-                        <p>Chuyển khoản qua ngân hàng</p>
-                      </div>
-                      {value === 2 ? (
-                        <div className="sub-rdo">
-                          <p className="font-medium">*Lưu ý:</p>
-                          <div className="ml-5 text-[13px]">
-                            •Nhân viên sẽ gọi xác nhận và thông báo số tiền cần
-                            chuyển khoản của quý khách, quý khách vui lòng không
-                            chuyển khoản trước.
-                            <p>•ACB: 21148947 - NGUYỄN VĂN HỘI </p>
+                        if (!newTen.trim()) {
+                          setErrorTen('Họ tên không được để trống');
+                        } else {
+                          if (/\d/.test(newTen)) {
+                            setErrorTen('Họ tên không được chứa chữ số');
+                          } else {
+                            setErrorTen('');
+                          }
+                        }
+                      }}
+                    />
+                    <label htmlFor="hoTen">Họ và tên</label>
+                    {errorTen && <p style={{ color: 'red' }}>{errorTen}</p>}
+                  </div>
+                  <div className="inputGroupCodeSignUp">
+                    <input
+                      name="soDienThoai"
+                      id="soDienThoai"
+                      type="number"
+                      required
+                      autoComplete="off"
+                      value={user?.sdt}
+                    />
+                    <label htmlFor="soDienThoai">Số điện thoại</label>
+                  </div>
+                  <div className="inputGroupCodeSignUp">
+                    <input
+                      name="diaChi"
+                      id="diaChi"
+                      type="text"
+                      required
+                      autoComplete="off"
+                      value={diaChi?.duong}
+                      onChange={(e) => {
+                        const newPhoneNumber = e.target.value;
+                        setUser(prevUser => ({
+                          ...prevUser,
+                          sdt: newPhoneNumber
+                        }));
+
+                        if (!newPhoneNumber.trim()) {
+                          setErrorSdt('Số điện thoại không được để trống');
+                        } else {
+                          const phoneNumberRegex = /^0[0-9]{9}$/;
+                          if (!newPhoneNumber.match(phoneNumberRegex)) {
+                            setErrorSdt('Số điện thoại không hợp lệ');
+                          } else {
+                            setErrorSdt('');
+                          }
+                        }
+                      }}
+                    />
+                    <label htmlFor="soDienThoai">Số điện thoại</label>
+                    {errorSdt && <p style={{ color: 'red' }}>{errorSdt}</p>}
+                  </div>
+
+                  <div className="flex mb-5">
+                    <Select
+                      label="Chọn thành phố"
+                      placeholder="Thành phố"
+                      onChange={(selectedValue) => handleChangeTP(selectedValue)}
+                      value={diaChiChuaLogin?.thanhPho || 'Chọn thành phố'}
+                      style={{ marginRight: "10px", width: "100%", height: "44px" }}
+                    >
+                      {provinces.map((province) => (
+                        <Option key={province.province_id} value={province.province_name}>
+                          {province.province_name}
+                        </Option>
+                      ))}
+                    </Select>
+                    <Select
+                      placeholder="Huyện"
+                      onChange={(selectedValue) => handleChangeHuyen(selectedValue)}
+                      value={diaChiChuaLogin?.huyen || 'Chọn huyện'}
+                      style={{ marginRight: "15px", width: "100%", height: "44px" }}
+                    >
+                      {optionHuyen}
+                    </Select>
+                    <Select
+                      placeholder="Xã"
+                      onChange={(selectedValue) => handleChangeXa(selectedValue)}
+                      value={diaChiChuaLogin?.xa || 'Chọn xã'}
+                      style={{ marginRight: "10px", width: "100%", height: "44px" }}
+                    >
+                      {optionXa}
+                    </Select>
+                  </div>
+
+                  <h2 className="text-[16px] pb-2">Phương thức thanh toán</h2>
+                  <div className="main-choose-payment-method">
+
+                    <Radio.Group value={value} onChange={onChange}>
+                      <Space direction="vertical">
+                        <Radio value={1} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan1">
+                          <div className="flex items-center pt-1">
+                            <img
+                              src="https://dienthoaigiasoc.vn/wp-content/uploads/2018/12/capitech_hinhthucthanhtoan.png"
+                              alt=""
+                              className="mr-3"
+                            />
+                            <p>Thanh toán khi nhận hàng</p>
+                          </div>
+                        </Radio>
+                        <Radio value={2} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan2">
+                          <div className="flex items-center pt-1">
+                            <img
+                              src="https://static.thenounproject.com/png/407799-200.png"
+                              alt=""
+                              className="mr-3"
+                            />
+                            <p>Chuyển khoản qua ngân hàng</p>
+                          </div>
+                          {value === 2 ? (
+                            <div className="sub-rdo">
+                              <p className="font-medium">*Lưu ý:</p>
+                              <div className="ml-5 text-[13px]">
+                                •Nhân viên sẽ gọi xác nhận và thông báo số tiền cần
+                                chuyển khoản của quý khách, quý khách vui lòng không
+                                chuyển khoản trước.
+                                <p>•ACB: 21148947 - NGUYỄN VĂN HỘI </p>
+                                <p>
+                                  •Khi chuyển khoản quý khách ghi nội dung CK là:
+                                  TÊN FB CÁ NHÂN + MÃ ĐƠN HÀNG + SĐT
+                                </p>
+                              </div>
+                            </div>
+                          ) : null}
+                        </Radio>
+                        <Radio value={3} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan3">
+                          <div className="flex items-center pt-1">
+                            <img
+                              src="data:image/png;base64,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"
+                              alt=""
+                              className="mr-3"
+                            />
                             <p>
-                              •Khi chuyển khoản quý khách ghi nội dung CK là:
-                              TÊN FB CÁ NHÂN + MÃ ĐƠN HÀNG + SĐT
+                              Thanh toán qua{" "}
+                              <span className="text-red-700">VN</span>
+                              <span className="text-blue-700">PAY</span>
                             </p>
                           </div>
-                        </div>
-                      ) : null}
-                    </Radio>
-                    <Radio value={3} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan3">
-                      <div className="flex items-center pt-1">
-                        <img
-                          src="data:image/png;base64,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"
-                          alt=""
-                          className="mr-3"
-                        />
-                        <p>
-                          Thanh toán qua{" "}
-                          <span className="text-red-700">VN</span>
-                          <span className="text-blue-700">PAY</span>
-                        </p>
-                      </div>
-                    </Radio>
-                  </Space>
-                </Radio.Group>
-              </div>
-              <div className="giao-hang-nhanh flex items-center">
-                <img width={140} src={IconGiaoHangNhanh} alt="" />
-                <span>Thời gian dự kiến: &nbsp;</span>
-                <span className="font-medium">{deliveryTime}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <Link
-                  to={"/cart"}
-                  className="flex items-center link-underline underline"
-                >
-                  <IoIosArrowBack /> Giỏ hàng
-                </Link>
-                <button
-                  type="submit"
-                  className="inline-block main-sign-up-button"
-                >
-                  Hoàn tất đơn hàng
-                </button>
-              </div>
-            </form>
+                        </Radio>
+                      </Space>
+                    </Radio.Group>
+                  </div>
+                  <div className="giao-hang-nhanh flex items-center">
+                    <img width={140} src={IconGiaoHangNhanh} alt="" />
+                    <span>Thời gian dự kiến: &nbsp;</span>
+                    <span className="font-medium">{deliveryTime}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <Link
+                      to={"/cart"}
+                      className="flex items-center link-underline underline"
+                    >
+                      <IoIosArrowBack /> Giỏ hàng
+                    </Link>
+                    <button
+                      type="submit"
+                      className="inline-block main-sign-up-button"
+                    >
+                      Hoàn tất đơn hàng
+                    </button>
+                  </div>
+                </form>
               </div>
             )}
             {user && (
               <div
                 className="content-end cursor-pointer"
-                
+
               >
                 <Button className="bg-black text-white float-right mb-2 h-12 cursor-pointer" onClick={showModalChonDiaChi}>
                   Chọn địa chỉ
@@ -962,8 +1025,27 @@ export default function Checkout() {
                       value={user?.email}
                       required
                       autoComplete="off"
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setUser(prevUser => ({
+                          ...prevUser,
+                          email: newValue
+                        }));
+
+                        if (!newValue.trim()) {
+                          setErrorEmail('Email không được để trống');
+                        } else {
+                          const checkEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                          if (!newValue.match(checkEmail)) {
+                            setErrorEmail('Email không hợp lệ');
+                          } else {
+                            setErrorEmail('');
+                          }
+                        }
+                      }}
                     />
                     <label htmlFor="email">Email</label>
+                    {errorEmail && <p style={{ color: 'red' }}>{errorEmail}</p>}
                   </div>
                   <div className="inputGroupCodeSignUp">
                     <input
@@ -971,10 +1053,28 @@ export default function Checkout() {
                       id="hoTen"
                       type="text"
                       value={user?.ten}
-                      required
+                      // required
                       autoComplete="off"
+                      onChange={(e) => {
+                        const newTen = e.target.value;
+                        setUser(prevUser => ({
+                          ...prevUser,
+                          ten: newTen
+                        }));
+
+                        if (!newTen.trim()) {
+                          setErrorTen('Họ tên không được để trống');
+                        } else {
+                          if (/\d/.test(newTen)) {
+                            setErrorTen('Họ tên không được chứa chữ số');
+                          } else {
+                            setErrorTen('');
+                          }
+                        }
+                      }}
                     />
                     <label htmlFor="hoTen">Họ và tên</label>
+                    {errorTen && <p style={{ color: 'red' }}>{errorTen}</p>}
                   </div>
                   <div className="inputGroupCodeSignUp">
                     <input
@@ -984,136 +1084,155 @@ export default function Checkout() {
                       required
                       autoComplete="off"
                       value={user?.sdt}
+                      onChange={(e) => {
+                        const newPhoneNumber = e.target.value;
+                        setUser(prevUser => ({
+                          ...prevUser,
+                          sdt: newPhoneNumber
+                        }));
+
+                        if (!newPhoneNumber.trim()) {
+                          setErrorSdt('Số điện thoại không được để trống');
+                        } else {
+                          const phoneNumberRegex = /^0[0-9]{9}$/;
+                          if (!newPhoneNumber.match(phoneNumberRegex)) {
+                            setErrorSdt('Số điện thoại không hợp lệ');
+                          } else {
+                            setErrorSdt('');
+                          }
+                        }
+                      }}
                     />
                     <label htmlFor="soDienThoai">Số điện thoại</label>
+                    {errorSdt && <p style={{ color: 'red' }}>{errorSdt}</p>}
                   </div>
-              <div className="inputGroupCodeSignUp">
-                <input
-                  name="diaChi"
-                  id="diaChi"
-                  type="text"
-                  required
-                  autoComplete="off"
-                  value={diaChi?.duong}
-                />
-                <label htmlFor="diaChi">Địa chỉ</label>
-              </div>
+                  <div className="inputGroupCodeSignUp">
+                    <input
+                      name="diaChi"
+                      id="diaChi"
+                      type="text"
+                      required
+                      autoComplete="off"
+                      value={diaChi?.duong}
+                    />
+                    <label htmlFor="diaChi">Địa chỉ</label>
+                  </div>
 
-              <div className="flex mb-5">
-                <Select
-                  label="Chọn thành phố"
-                  placeholder="Thành phố"
-                  dropdownStyle={{ pointerEvents: "auto" }}
-                  onChange={(selectedValue) => handleChangeTP(selectedValue)}
-                  value={diaChi?.thanhPho || 'Chọn thành phố'}
-                  style={{ marginRight: "10px", width: "100%", height: "44px", pointerEvents: "none" }}
-                >
-                  {provinces.map((province) => (
-                    <Option key={province.province_id} value={province.province_id}>
-                      {province.province_name}
-                    </Option>
-                  ))}
-                </Select>
-                <Select
-                  placeholder="Huyện"
-                  dropdownStyle={{ pointerEvents: "auto" }}
-                  onChange={(selectedValue) => handleChangeHuyen(selectedValue)}
-                  value={diaChi?.huyen || 'Chọn huyện'}
-                  style={{ marginRight: "15px", width: "100%", height: "44px", pointerEvents: "none"  }}
-                >
-                  {optionHuyen}
-                </Select>
-                <Select
-                  placeholder="Xã"
-                  onChange={(selectedValue) => handleChangeXa(selectedValue)}
-                  value={diaChi?.xa || 'Chọn xã'}
-                  dropdownStyle={{ pointerEvents: "auto" }}
-                  style={{ marginRight: "10px", width: "100%", height: "44px", pointerEvents: "none"  }}
-                >
-                  {optionXa}
-                </Select>
-              </div>
+                  <div className="flex mb-5">
+                    <Select
+                      label="Chọn thành phố"
+                      placeholder="Thành phố"
+                      dropdownStyle={{ pointerEvents: "auto" }}
+                      onChange={(selectedValue) => handleChangeTP(selectedValue)}
+                      value={diaChi?.thanhPho || 'Chọn thành phố'}
+                      style={{ marginRight: "10px", width: "100%", height: "44px", pointerEvents: "none" }}
+                    >
+                      {provinces.map((province) => (
+                        <Option key={province.province_id} value={province.province_id}>
+                          {province.province_name}
+                        </Option>
+                      ))}
+                    </Select>
+                    <Select
+                      placeholder="Huyện"
+                      dropdownStyle={{ pointerEvents: "auto" }}
+                      onChange={(selectedValue) => handleChangeHuyen(selectedValue)}
+                      value={diaChi?.huyen || 'Chọn huyện'}
+                      style={{ marginRight: "15px", width: "100%", height: "44px", pointerEvents: "none" }}
+                    >
+                      {optionHuyen}
+                    </Select>
+                    <Select
+                      placeholder="Xã"
+                      onChange={(selectedValue) => handleChangeXa(selectedValue)}
+                      value={diaChi?.xa || 'Chọn xã'}
+                      dropdownStyle={{ pointerEvents: "auto" }}
+                      style={{ marginRight: "10px", width: "100%", height: "44px", pointerEvents: "none" }}
+                    >
+                      {optionXa}
+                    </Select>
+                  </div>
 
-              <h2 className="text-[16px] pb-2">Phương thức thanh toán</h2>
-              <div className="main-choose-payment-method">
+                  <h2 className="text-[16px] pb-2">Phương thức thanh toán</h2>
+                  <div className="main-choose-payment-method">
 
-                <Radio.Group value={value} onChange={onChange}>
-                  <Space direction="vertical">
-                    <Radio value={1} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan1">
-                      <div className="flex items-center pt-1">
-                        <img
-                          src="https://dienthoaigiasoc.vn/wp-content/uploads/2018/12/capitech_hinhthucthanhtoan.png"
-                          alt=""
-                          className="mr-3"
-                        />
-                        <p>Thanh toán khi nhận hàng</p>
-                      </div>
-                    </Radio>
-                    <Radio value={2} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan2">
-                      <div className="flex items-center pt-1">
-                        <img
-                          src="https://static.thenounproject.com/png/407799-200.png"
-                          alt=""
-                          className="mr-3"
-                        />
-                        <p>Chuyển khoản qua ngân hàng</p>
-                      </div>
-                      {value === 2 ? (
-                        <div className="sub-rdo">
-                          <p className="font-medium">*Lưu ý:</p>
-                          <div className="ml-5 text-[13px]">
-                            •Nhân viên sẽ gọi xác nhận và thông báo số tiền cần
-                            chuyển khoản của quý khách, quý khách vui lòng không
-                            chuyển khoản trước.
-                            <p>•ACB: 21148947 - NGUYỄN VĂN HỘI </p>
+                    <Radio.Group value={value} onChange={onChange}>
+                      <Space direction="vertical">
+                        <Radio value={1} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan1">
+                          <div className="flex items-center pt-1">
+                            <img
+                              src="https://dienthoaigiasoc.vn/wp-content/uploads/2018/12/capitech_hinhthucthanhtoan.png"
+                              alt=""
+                              className="mr-3"
+                            />
+                            <p>Thanh toán khi nhận hàng</p>
+                          </div>
+                        </Radio>
+                        <Radio value={2} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan2">
+                          <div className="flex items-center pt-1">
+                            <img
+                              src="https://static.thenounproject.com/png/407799-200.png"
+                              alt=""
+                              className="mr-3"
+                            />
+                            <p>Chuyển khoản qua ngân hàng</p>
+                          </div>
+                          {value === 2 ? (
+                            <div className="sub-rdo">
+                              <p className="font-medium">*Lưu ý:</p>
+                              <div className="ml-5 text-[13px]">
+                                •Nhân viên sẽ gọi xác nhận và thông báo số tiền cần
+                                chuyển khoản của quý khách, quý khách vui lòng không
+                                chuyển khoản trước.
+                                <p>•ACB: 21148947 - NGUYỄN VĂN HỘI </p>
+                                <p>
+                                  •Khi chuyển khoản quý khách ghi nội dung CK là:
+                                  TÊN FB CÁ NHÂN + MÃ ĐƠN HÀNG + SĐT
+                                </p>
+                              </div>
+                            </div>
+                          ) : null}
+                        </Radio>
+                        <Radio value={3} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan3">
+                          <div className="flex items-center pt-1">
+                            <img
+                              src="data:image/png;base64,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"
+                              alt=""
+                              className="mr-3"
+                            />
                             <p>
-                              •Khi chuyển khoản quý khách ghi nội dung CK là:
-                              TÊN FB CÁ NHÂN + MÃ ĐƠN HÀNG + SĐT
+                              Thanh toán qua{" "}
+                              <span className="text-red-700">VN</span>
+                              <span className="text-blue-700">PAY</span>
                             </p>
                           </div>
-                        </div>
-                      ) : null}
-                    </Radio>
-                    <Radio value={3} className="rdo" name="rdoPhuongThucThanhToan" id="rdoPhuongThucThanhToan3">
-                      <div className="flex items-center pt-1">
-                        <img
-                          src="data:image/png;base64,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"
-                          alt=""
-                          className="mr-3"
-                        />
-                        <p>
-                          Thanh toán qua{" "}
-                          <span className="text-red-700">VN</span>
-                          <span className="text-blue-700">PAY</span>
-                        </p>
-                      </div>
-                    </Radio>
-                  </Space>
-                </Radio.Group>
+                        </Radio>
+                      </Space>
+                    </Radio.Group>
+                  </div>
+                  <div className="giao-hang-nhanh flex items-center">
+                    <img width={140} src={IconGiaoHangNhanh} alt="" />
+                    <span>Thời gian dự kiến: &nbsp;</span>
+                    <span className="font-medium">{deliveryTime}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <Link
+                      to={"/cart"}
+                      className="flex items-center link-underline underline"
+                    >
+                      <IoIosArrowBack /> Giỏ hàng
+                    </Link>
+                    <button
+                      type="submit"
+                      className="inline-block main-sign-up-button"
+                    >
+                      Hoàn tất đơn hàng
+                    </button>
+                  </div>
+                </form>
               </div>
-              <div className="giao-hang-nhanh flex items-center">
-                <img width={140} src={IconGiaoHangNhanh} alt="" />
-                <span>Thời gian dự kiến: &nbsp;</span>
-                <span className="font-medium">{deliveryTime}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <Link
-                  to={"/cart"}
-                  className="flex items-center link-underline underline"
-                >
-                  <IoIosArrowBack /> Giỏ hàng
-                </Link>
-                <button
-                  type="submit"
-                  className="inline-block main-sign-up-button"
-                >
-                  Hoàn tất đơn hàng
-                </button>
-              </div>
-            </form>
-            </div>
             )}
-            
+
           </div>
           <div className="checkout-right">
             {sanPhams.map((sanPham) => (
@@ -1226,78 +1345,78 @@ export default function Checkout() {
           <div className="w-full">
             <div className="flex justify-end">
               <Button onClick={showAddressModal}>Thêm địa chỉ</Button>
-                <Modal
-                  title="Thêm địa chỉ"
-                  open={addressModalOpen}
-                  onOk={handleAddressModalOk}
-                  onCancel={handleAddressModalCancel}
-                  width={"600px"}
-                  okText="Hoàn tất"
-                  cancelText="Hủy"
-                  okButtonProps={{
-                    style: {
-                      background: "#000",
-                      borderColor: "transparent",
-                    },
-                  }}
-                >
+              <Modal
+                title="Thêm địa chỉ"
+                open={addressModalOpen}
+                onOk={handleAddressModalOk}
+                onCancel={handleAddressModalCancel}
+                width={"600px"}
+                okText="Hoàn tất"
+                cancelText="Hủy"
+                okButtonProps={{
+                  style: {
+                    background: "#000",
+                    borderColor: "transparent",
+                  },
+                }}
+              >
 
-                  <div className="inputGroupCodeSignUp">
-                    <input name="soNha" type="text" required autoComplete="off" onChange={handleChangeDiaChiAdd}/>
-                    <label htmlFor="soNha">Địa chỉ</label>
-                  </div>
+                <div className="inputGroupCodeSignUp">
+                  <input name="soNha" type="text" required autoComplete="off" onChange={handleChangeDiaChiAdd} />
+                  <label htmlFor="soNha">Địa chỉ</label>
+                </div>
 
-                  <div className="flex gap-1 justify-between">
-                    <div className="mb-6">
-                      <select
-                        name="thanhPho"
-                        id="city"
-                        className="bg-gray-50 border border-gray-300 text-gray-900  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        onChange={(e) => handleProvinceChange(e.target.value)}
-                        required
-                      >
-                        <option value="">Chọn thành phố</option>
-                        {provinces.map((province) => (
-                          <option key={province.province_id} value={province.province_id}>
-                            {province.province_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="mb-6">
-                      <select
-                        id="District"
-                        name="huyen"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        onChange={(e) => handleDistrictChange(e.target.value)}
-                        required
-                      >
-                        <option value="">Chọn huyện</option>
-                        {districts.map((district) => (
-                          <option key={district.district_id} value={district.district_id}>
-                            {district.district_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="mb-6">
-                      <select
-                        name="xaPhuong"
-                        id="wards"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        required
-                        onChange={(e) => handleWardsChange(e.target.value)}
-                      >
-                        <option value="">Chọn xã phường</option>
-                        {wards.map((ward) => (
-                          <option key={ward.ward_id} value={ward.ward_id}>
-                            {ward.ward_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                <div className="flex gap-1 justify-between">
+                  <div className="mb-6">
+                    <select
+                      name="thanhPho"
+                      id="city"
+                      className="bg-gray-50 border border-gray-300 text-gray-900  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      onChange={(e) => handleProvinceChange(e.target.value)}
+                      required
+                    >
+                      <option value="">Chọn thành phố</option>
+                      {provinces.map((province) => (
+                        <option key={province.province_id} value={province.province_id}>
+                          {province.province_name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                </Modal>
+                  <div className="mb-6">
+                    <select
+                      id="District"
+                      name="huyen"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      onChange={(e) => handleDistrictChange(e.target.value)}
+                      required
+                    >
+                      <option value="">Chọn huyện</option>
+                      {districts.map((district) => (
+                        <option key={district.district_id} value={district.district_id}>
+                          {district.district_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mb-6">
+                    <select
+                      name="xaPhuong"
+                      id="wards"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      required
+                      onChange={(e) => handleWardsChange(e.target.value)}
+                    >
+                      <option value="">Chọn xã phường</option>
+                      {wards.map((ward) => (
+                        <option key={ward.ward_id} value={ward.ward_id}>
+                          {ward.ward_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </Modal>
             </div>
           </div>
           {listDiaChi.map((item, index) => (
@@ -1328,18 +1447,18 @@ export default function Checkout() {
                 <div className="flex items-center">
                   <Button onClick={async () => {
                     console.log(item);
-                    if(item.trangThai == 1) {
+                    if (item.trangThai == 1) {
                       openNotificationWithIcon("error", "Đây đã là địa chỉ mặc định", errorIcon);
                     } else {
                       await axios.put("http://localhost:8080/updateDiaChiMacDinh", item)
-                      .then((response) => {
-                        if(response.status == 200) {
-                          getDiaChi();
-                          openNotificationWithIcon("success", "Đặt địa chỉ mặc định thành công", successIcon);
-                        }
-                      }).catch((error) => {
-                        openNotificationWithIcon("error", error.response.data, errorIcon);
-                      })
+                        .then((response) => {
+                          if (response.status == 200) {
+                            getDiaChi();
+                            openNotificationWithIcon("success", "Đặt địa chỉ mặc định thành công", successIcon);
+                          }
+                        }).catch((error) => {
+                          openNotificationWithIcon("error", error.response.data, errorIcon);
+                        })
                     }
                   }}>Đặt địa chỉ mặc định</Button>
                 </div>
