@@ -256,5 +256,13 @@ public class HoaDonServiceImpl implements HoaDonService {
         return paymentUrl;
     }
 
+    @Override
+    public HoaDon findHDDoiTra(String maHD) {
+       return hoaDonRepository.findHDDoiTra(maHD);
+    }
+
+
+
+
 
 }
