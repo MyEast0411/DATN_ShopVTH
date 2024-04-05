@@ -12,6 +12,7 @@ import axios from "axios";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import IconGiaoHangNhanh from "../assets/iconGiaoHangNhanh.webp";
 import { getSanPhamChiTietByMaListSPCT } from "../apis/SanPham";
+import TableVoucher from "../components/Voucher/TableVoucher";
 import Header from "../layout/Header";
 import InfoTop from "../layout/InfoTop";
 import { addToHoaDon } from "../apis/HoaDon";
@@ -44,6 +45,8 @@ export default function Checkout() {
   const [errorSdt, setErrorSdt] = useState('');
   const [errorTen, setErrorTen] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
+  const [errorSoNha, setErrorSoNha] = useState('');
+
   const [diaChi, setDiaChi] = useState({
     thanhPho: "",
     huyen: "",
@@ -69,12 +72,22 @@ export default function Checkout() {
   const [duocGiam, setDuocGiam] = useState("100");
   const [listVoucher, setListVoucher] = useState([]);
   const [user, setUser] = useState({});
+  const [isModalVoucher, setIsModalVoucher] = useState(false);
   const [diaChiAdd, setDiaChiAdd] = useState({
     thanhPho: "",
     huyen: "",
     xa: "",
     soNha: ""
   });
+  const showModalVoucher = () =>{
+    setIsModalVoucher(true);
+  }
+  const handleOKModalVoucher = () => {
+    setIsModalVoucher(false);
+  }
+  const handleCancelModalVoucher = () => {
+    setIsModalVoucher(false);
+  }
   const showAddressModal = () => {
     setAddressModalOpen(true);
   };
@@ -184,54 +197,61 @@ export default function Checkout() {
   }, [tongTien, listVoucher])
   // get thong tin khach hang
   const getKhachHang = async () => {
-    const result = await axios.get(
-      `http://localhost:8080/khach-hang/findByMa/${JSON.parse(localStorage.getItem("user"))?.ma}`
-    );
-    const khachHangData = result.data;
+    if (localStorage?.getItem("user") != "") {
+      setUser(JSON.parse(localStorage.getItem("user")));
+      const result = await axios.get(
+        `http://localhost:8080/khach-hang/findByMa/${JSON.parse(localStorage.getItem("user"))?.ma}`
+      );
+      const khachHangData = result.data;
 
-    setKhachHang({
-      id: khachHangData.id,
-      ma: khachHangData.ma,
-      ten: khachHangData.ten,
-      anhNguoiDung: khachHangData.anhNguoiDung,
-      gioi_tinh: khachHangData.gioiTinh,
-      sdt: khachHangData.sdt,
-      ngay_sinh: khachHangData.ngaySinh,
-      email: khachHangData.email,
-      cccd: khachHangData.cccd,
-    });
-    setDiaChi((prevDiaChi) => ({
-      ...prevDiaChi,
-      id: khachHangData.id,
-    }));
+      setKhachHang({
+        id: khachHangData.id,
+        ma: khachHangData.ma,
+        ten: khachHangData.ten,
+        anhNguoiDung: khachHangData.anhNguoiDung,
+        gioi_tinh: khachHangData.gioiTinh,
+        sdt: khachHangData.sdt,
+        ngay_sinh: khachHangData.ngaySinh,
+        email: khachHangData.email,
+        cccd: khachHangData.cccd,
+      });
+      setDiaChi((prevDiaChi) => ({
+        ...prevDiaChi,
+        id: khachHangData.id,
+      }));
+    }
+
   };
   // get dia chi khach hang
   const [listDiaChi, setListDiaChi] = useState([]);
 
   const getDiaChi = async () => {
-    if (user != null && user != undefined) {
-      console.log(user?.ma);
-      const result = await axios.get(
-        `http://localhost:8080/dia-chi/findByMa/${JSON.parse(localStorage.getItem("user"))?.ma}`
-      );
-      console.log(result.data);
-      // setListDiaChi(result.data);
-      const listDiaChi = result.data.map(item => ({
-        ...item,
-        selectDiaChi: item.trangThai // Thêm thuộc tính mới vào mỗi phần tử
-      }));
-      setListDiaChi(listDiaChi);
-      result.data.map((item) => {
-        if (item.trangThai == 1) {
-          setDiaChi(item);
-        }
-      });
+    if (localStorage?.getItem("user") != "") {
+      console.log("get khach hang");
+      setUser(JSON.parse(localStorage.getItem("user")));
+      if (user != null || user?.ma != undefined) {
+        const result = await axios.get(
+          `http://localhost:8080/dia-chi/findByMa/${JSON.parse(localStorage.getItem("user"))?.ma}`
+        );
+        // setListDiaChi(result.data);
+        const listDiaChi = result.data.map(item => ({
+          ...item,
+          selectDiaChi: item.trangThai
+        }));
+        setListDiaChi(listDiaChi);
+        result.data.map((item) => {
+          if (item.trangThai == 1) {
+            setDiaChi(item);
+          }
+        });
+      }
     }
   };
 
 
   // lay id thanh pho
   const getIdThanhPho = () => {
+    console.log("get id tp");
     const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
     const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -248,13 +268,17 @@ export default function Checkout() {
           item.NameExtension.some((extension) => diaChi?.thanhPho?.includes(extension))
         )?.ProvinceID;
         setIdTP(id_tp);
+        console.log(id_tp);
       })
       .catch((error) => {
       });
   }
   const getIdHuyen = () => {
     // lay id huyen theo api theo id tp
+    console.log("get id huyen");
+    console.log(idTP);
     if (idTP != undefined && idTP != '') {
+      
       const apiUrl =
         "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
       const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -276,6 +300,7 @@ export default function Checkout() {
             item.NameExtension.some((extension) => diaChi?.huyen?.includes(extension))
           )?.DistrictID;
           setIdHuyen(id_huyen);
+          console.log(id_huyen);
         })
         .catch((error) => {
         });
@@ -304,6 +329,7 @@ export default function Checkout() {
             item.NameExtension.some((extension) => diaChi.xa.includes(extension))
           )?.WardCode;
           setIdXa(id_xa);
+          console.log(id_xa);
         })
         .catch((error) => {
         });
@@ -320,7 +346,7 @@ export default function Checkout() {
   useEffect(() => {
     getIdHuyen();
     getIdXa();
-  }, [idTP, idHuyen, idXa]);
+  }, [diaChi, idTP, idHuyen]);
   useEffect(() => {
     getProvinces().then((data) => {
       setProvinces(data.results);
@@ -429,6 +455,7 @@ export default function Checkout() {
   // Tính thời gian dự kiến
   useEffect(() => {
     if (idTP != undefined && idTP != '' && idHuyen != undefined && idHuyen != '' && idXa != undefined && idXa != '') {
+      console.log(diaChi);
       const apiUrl =
         "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime";
       const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -463,9 +490,11 @@ export default function Checkout() {
           console.log(formattedLeadtime);
           setDeliveryTime(formattedLeadtime);
         })
-        .catch((error) => { });
+        .catch((error) => { 
+          console.log("err khi lay thoi gian du kien : ",error);
+        });
     }
-  }, [idTP, idHuyen, idXa]);
+  }, [idTP, idHuyen, idXa, diaChi]);
 
   // Tính phí vận chuyển
   useEffect(() => {
@@ -505,7 +534,7 @@ export default function Checkout() {
           setPhiVanChuyen(response.data.data.total);
         });
     }
-  }, [idTP, idHuyen, idXa]);
+  }, [diaChi]);
 
   const openNotificationWithIcon = (type, message, icon) => {
     api[type]({
@@ -649,8 +678,9 @@ export default function Checkout() {
   };
 
   const handleSubmit = async (e) => {
+    console.log(123);
     e.preventDefault();
-    if(errorTen != '' || errorSdt != '' || errorEmail != '') {
+    if (errorTen != '' || errorSdt != '' || errorEmail != '') {
       openNotificationWithIcon("error", "Bạn chưa nhập đầy đủ thông tin", errorIcon);
       return;
     }
@@ -659,9 +689,30 @@ export default function Checkout() {
       const hoTen = e.target.elements.hoTen.value;
       const soDienThoai = e.target.elements.soDienThoai.value;
       const duong = e.target.elements.diaChi.value;
+      console.log(duong);
+      if (duong == '') {
+        openNotificationWithIcon("error", "Bạn chưa nhập địa chỉ", errorIcon);
+        setSpinning(false);
+        return;
+      }
       const thanhPho = diaChi.thanhPho;
+      if (thanhPho == '') {
+        openNotificationWithIcon("error", "Bạn chưa chọn thành phố", errorIcon);
+        setSpinning(false);
+        return;
+      }
       const quanHuyen = diaChi.huyen;
+      if (quanHuyen == '') {
+        openNotificationWithIcon("error", "Bạn chưa chọn huyện", errorIcon);
+        setSpinning(false);
+        return;
+      }
       const xaPhuong = diaChi.xa;
+      if (xaPhuong == '') {
+        openNotificationWithIcon("error", "Bạn chưa chọn xã phường", errorIcon);
+        setSpinning(false);
+        return;
+      }
       const maKH = user?.ma;
       const voucher = codeVC;
       const phuongThucThanhToan =
@@ -723,6 +774,7 @@ export default function Checkout() {
             console.log(error.response.data);
             // console.error("Error adding to HoaDon:", error);
           } finally {
+            console.log(123);
             setSpinning(false);
           }
         };
@@ -802,14 +854,11 @@ export default function Checkout() {
                       id="email"
                       type="text"
                       value={user?.email}
-                      required
+                      placeholder="Nhập email của bạn"
+                      // required
                       autoComplete="off"
                       onChange={(e) => {
                         const newValue = e.target.value;
-                        setUser(prevUser => ({
-                          ...prevUser,
-                          email: newValue
-                        }));
 
                         if (!newValue.trim()) {
                           setErrorEmail('Email không được để trống');
@@ -832,14 +881,12 @@ export default function Checkout() {
                       id="hoTen"
                       type="text"
                       value={user?.ten}
-                      required
+                      placeholder="Nhập họ và tên "
+                      // required
                       autoComplete="off"
                       onChange={(e) => {
                         const newTen = e.target.value;
-                        setUser(prevUser => ({
-                          ...prevUser,
-                          ten: newTen
-                        }));
+
 
                         if (!newTen.trim()) {
                           setErrorTen('Họ tên không được để trống');
@@ -860,26 +907,12 @@ export default function Checkout() {
                       name="soDienThoai"
                       id="soDienThoai"
                       type="number"
-                      required
+                      placeholder="Nhập số điện thoại"
+                      // required
                       autoComplete="off"
                       value={user?.sdt}
-                    />
-                    <label htmlFor="soDienThoai">Số điện thoại</label>
-                  </div>
-                  <div className="inputGroupCodeSignUp">
-                    <input
-                      name="diaChi"
-                      id="diaChi"
-                      type="text"
-                      required
-                      autoComplete="off"
-                      value={diaChi?.duong}
                       onChange={(e) => {
                         const newPhoneNumber = e.target.value;
-                        setUser(prevUser => ({
-                          ...prevUser,
-                          sdt: newPhoneNumber
-                        }));
 
                         if (!newPhoneNumber.trim()) {
                           setErrorSdt('Số điện thoại không được để trống');
@@ -895,6 +928,28 @@ export default function Checkout() {
                     />
                     <label htmlFor="soDienThoai">Số điện thoại</label>
                     {errorSdt && <p style={{ color: 'red' }}>{errorSdt}</p>}
+                  </div>
+                  <div className="inputGroupCodeSignUp">
+                    <input
+                      name="diaChi"
+                      id="diaChi"
+                      type="text"
+                      placeholder="Nhập địa chỉ của bạn"
+                      // required
+                      autoComplete="off"
+                      value={diaChi?.duong}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+
+                        if (!newValue.trim()) {
+                          setErrorSoNha('Địa chỉ không được để trống');
+                        } else {
+                          setErrorSoNha('');
+                        }
+                      }}
+                    />
+                    <label htmlFor="soDienThoai">Địa chỉ</label>
+                    {errorSoNha && <p style={{ color: 'red' }}>{errorSoNha}</p>}
                   </div>
 
                   <div className="flex mb-5">
@@ -1023,7 +1078,8 @@ export default function Checkout() {
                       id="email"
                       type="text"
                       value={user?.email}
-                      required
+                      placeholder="Nhập email của bạn"
+                      // required
                       autoComplete="off"
                       onChange={(e) => {
                         const newValue = e.target.value;
@@ -1053,6 +1109,7 @@ export default function Checkout() {
                       id="hoTen"
                       type="text"
                       value={user?.ten}
+                      placeholder="Nhập họ và tên của bạn"
                       // required
                       autoComplete="off"
                       onChange={(e) => {
@@ -1081,7 +1138,8 @@ export default function Checkout() {
                       name="soDienThoai"
                       id="soDienThoai"
                       type="number"
-                      required
+                      placeholder="Nhập số điện thoại của bạn"
+                      // required
                       autoComplete="off"
                       value={user?.sdt}
                       onChange={(e) => {
@@ -1282,7 +1340,7 @@ export default function Checkout() {
                 value={codeVC}
               />
               <Tooltip arrow={true} title={"Chọn phiếu giảm giá"}>
-                <button className="btn-apply-giamGia">🔖</button>
+                <button className="btn-apply-giamGia" onClick={showModalVoucher}>🔖</button>
               </Tooltip>
               <span
                 style={{ color: "red", fontSize: "16px", display: "block" }}
@@ -1465,6 +1523,19 @@ export default function Checkout() {
               </div>
             </div>
           ))}
+        </Modal>
+        <Modal
+          open={isModalVoucher}
+          onOk={handleOKModalVoucher}
+          onCancel={handleCancelModalVoucher}
+          // okText="Xác nhận"
+          // cancelText="Hủy"
+          title="Chọn phiếu giảm giá"
+          className="mt-24"
+          width={1200}
+          footer={[]}
+        >
+          <TableVoucher />
         </Modal>
       </div>
     </>

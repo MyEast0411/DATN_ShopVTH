@@ -3,6 +3,7 @@ import GioHang from "../GioHang";
 export default function Children({
   columns,
   users,
+  setItems,
   activeKey,
   changeData,
   updateSoLuong,
@@ -14,6 +15,7 @@ export default function Children({
       <GioHang
         columns={columns}
         users={users}
+        setItems={setItems}
         activeKey={activeKey}
         changeData={changeData}
         updateSoLuong={updateSoLuong}

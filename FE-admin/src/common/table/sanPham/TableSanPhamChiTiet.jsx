@@ -86,7 +86,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App({ gioHang, setIsModalOpenThem }) {
+export default function App({ gioHang, setIsModalOpenThem, setItems }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -151,7 +151,12 @@ export default function App({ gioHang, setIsModalOpenThem }) {
     // // // console.log(gioHang);
     // // // console.log(soLuongSP.id);
     // // // console.log(soLuongDat);
-
+    if(soLuongDat > 100) {
+      toast.error("Không được nhập số lượng quá lớn");
+      setIsModalOpenThem(false);
+      handleCancelThemSL();
+      return;
+    }
     await axios
       .post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
         id_hoa_don: gioHang,
@@ -162,10 +167,23 @@ export default function App({ gioHang, setIsModalOpenThem }) {
         toast("🎉 Thêm thành công");
         setIsModalOpenThem(false);
         handleCancelThemSL();
+        setItems(prevItems => {
+          return prevItems.map(item => {
+            if (item.key === gioHang) {
+              return {
+                ...item,
+                soLuong: soLuongDat
+              };
+            }
+            return item;
+          });
+        });
         // cancelDelete();
       })
       .catch((error) => {
-        toast(error);
+        toast.error(error.response.data);
+        setIsModalOpenThem(false);
+        handleCancelThemSL();
       });
     cancelDelete();
     setIsModalOpenThemSL(false);
@@ -917,7 +935,7 @@ export default function App({ gioHang, setIsModalOpenThem }) {
             onChange={(value) => {
               setSoLuongDat(value);
             }}
-            max={soLuongSP.soLuongTon}
+            //max={soLuongSP.soLuongTon}
           />
         </div>
       </Modal>

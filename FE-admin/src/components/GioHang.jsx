@@ -45,6 +45,7 @@ import { toast } from "react-toastify";
 const GioHang = ({
   columns,
   users,
+  setItems,
   activeKey,
   changeData,
   updateSoLuong,
@@ -448,7 +449,7 @@ const GioHang = ({
 
   const handleOkQR = async (id_sp) => {
     setIsModalOpen(false);
-
+    
     await axios
       .post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
         id_hoa_don: activeKey,
@@ -459,9 +460,20 @@ const GioHang = ({
         toast("🎉 Thêm thành công");
         handleCancelQR();
         textRef.current = "";
+        setItems(prevItems => {
+          return prevItems.map(item => {
+            if (item.key === activeKey) {
+              return {
+                ...item,
+                soLuong: 1
+              };
+            }
+            return item;
+          });
+        });
       })
       .catch((error) => {
-        toast("404" + error.response.data);
+        toast.error("Mã qr không đúng");
       });
   };
 
@@ -592,6 +604,7 @@ const GioHang = ({
               <TableSanPhamChiTiet
                 gioHang={activeKey}
                 setIsModalOpenThem={setIsModalOpenThem}
+                setItems={setItems}
               />
             </div>
           </Modal>
@@ -644,9 +657,9 @@ const GioHang = ({
                     />
                   </div>
                 </Modal>
-                <button className="w-48 px-4 py-2 bg-pink-300 hover:bg-pink-500 text-white font-semibold rounded-full">
+                {/* <button className="w-48 px-4 py-2 bg-pink-300 hover:bg-pink-500 text-white font-semibold rounded-full">
                   Thẻ
-                </button>
+                </button> */}
               </div>
               <div className="flex justify-between mt-5">
                 <span className="poppins-font normal-case h-10 font-bold">
@@ -756,8 +769,10 @@ const GioHang = ({
         <div className="pt-4">
           <CartItem
             users={list}
+            setItems={setItems}
             columns={columns}
             updateSoLuong={updateSoLuong}
+            gioHang={activeKey}
           />
         </div>
 

@@ -116,7 +116,7 @@ const Sidebar = () => {
     },
     {
       name: "settings",
-      icon: AiOutlineSetting,
+      icon: AiOutlineAppstore,
       menus: ["dang-ky", "dang-nhap", "dang-xuat"],
       subTitles: ["Đăng ký", "Đăng nhập", "Đăng xuất"],
       mainTitle: "Settings",

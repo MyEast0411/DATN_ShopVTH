@@ -29,7 +29,7 @@ const statusColorMap = {
   vacation: "warning",
 };
 
-export default function CartItem({ users, columns, updateSoLuong }) {
+export default function CartItem({ users, columns, updateSoLuong, setItems, gioHang }) {
   const [idToDelete, setIdToDelete] = useState({
     id_hoa_don : "",
     id_san_pham : ""
@@ -72,6 +72,18 @@ export default function CartItem({ users, columns, updateSoLuong }) {
       await axios.delete(`http://localhost:8080/hoa_don_chi_tiet/deleteHDCT/${idToDelete.id_hoa_don}/${idToDelete.id_san_pham}`)
         .then((response) => {
           toast("🎉 Xóa thành công");
+          console.log(gioHang);
+          setItems(prevItems => {
+            return prevItems.map(item => {
+              if (item.key === gioHang) {
+                return {
+                  ...item,
+                  soLuong: response.data
+                };
+              }
+              return item;
+            });
+          });
           cancelDelete();
         })
         .catch((error) => {

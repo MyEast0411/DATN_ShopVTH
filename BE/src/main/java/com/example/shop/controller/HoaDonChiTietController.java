@@ -105,6 +105,7 @@ public class HoaDonChiTietController {
             HoaDon don = ssHD.findById(id_hoa_don).get();
             SanPhamChiTiet sanPhamChiTiet = ssSP.findById(id_san_pham).get();
             double tongTien = 0;
+            int soLuong = 0;
             HoaDonChiTiet hdct = HoaDonChiTiet.builder()
                     .id_hoa_don(don)
                     .id_chi_tiet_san_pham(sanPhamChiTiet)
@@ -113,10 +114,11 @@ public class HoaDonChiTietController {
             List<HoaDonChiTiet> list = ssHDCT.getHDCT(id_hoa_don);
             for (HoaDonChiTiet donChiTiet : list) {
                 tongTien += donChiTiet.getSoLuong() * donChiTiet.getGiaTien().doubleValue();
+                soLuong += donChiTiet.getSoLuong();
             }
             don.setTongTien(new BigDecimal(tongTien + ""));
             ssHD.save(don);
-            return ResponseEntity.ok("OK");
+            return ResponseEntity.ok(soLuong);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("ERROR");
@@ -204,7 +206,12 @@ public class HoaDonChiTietController {
             HoaDon hoaDon = ssHD.getHoaDonByMa(hoaDonChiTiet.getId_hoa_don());
             HoaDonChiTiet hoaDonChiTietExist = ssHDCT.getHDCT(hoaDon.getId(), hoaDonChiTiet.getId_san_pham());
             SanPhamChiTiet sp = ssSP.findById(hoaDonChiTiet.getId_san_pham()).get();
+            System.out.println(sp.getSoLuongTon() <= 0);
             BigDecimal tongTien = sp.getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSo_luong()));
+            if(sp.getSoLuongTon() <= 0 || sp.getSoLuongTon() - hoaDonChiTiet.getSo_luong() < 0) {
+                System.out.println("khong du so luong");
+                return ResponseEntity.badRequest().body("Sản phẩm không " + sp.getTen() +" đủ số lượng tồn !!!");
+            }
             boolean check = true;
 //            if (hoaDonChiTietExist == null) {
             for (HoaDonChiTiet hdct:
