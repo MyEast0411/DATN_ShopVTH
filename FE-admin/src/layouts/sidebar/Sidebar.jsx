@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { VscAccount } from "react-icons/vsc";
 import { BsArrowReturnLeft } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
-import { AiOutlineAppstore } from "react-icons/ai";
+import { AiOutlineAppstore, AiOutlineSetting } from "react-icons/ai";
 import { BsPerson } from "react-icons/bs";
 import { HiOutlineDatabase } from "react-icons/hi";
 import { TbChartHistogram, TbReportAnalytics } from "react-icons/tb";

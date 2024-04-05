@@ -23,6 +23,8 @@ import SuccessOrder from "./components/SuccessOrder";
 import EditHoaDon from "./components/findHD/EditHoaDon";
 import PayMentSuccess from "./components/PaymentSuccess";
 import Voucher from "./components/Voucher/Voucher";
+import FindStore from "./components/FindStore";
+import ContactUs from "./components/ContactUs";
 
 function App() {
   return (
@@ -48,6 +50,9 @@ function App() {
 
         <Route path="/payment/payment-success" element={<PayMentSuccess />} />
         <Route path="/thanh-toan-thanh-cong" element={<SuccessOrder />} />
+
+        <Route path="/find-store" element={<FindStore />} />
+        <Route path="/contact-us" element={<ContactUs />} />
       </Routes>
       <BackToTopButton />
     </>
