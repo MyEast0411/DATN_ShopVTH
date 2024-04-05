@@ -5,10 +5,12 @@ import com.example.shop.dto.*;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.requests.HoaDonChiTietUpdateRequest;
+import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
 import com.example.shop.util.SendMail;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +47,8 @@ public class HoaDonChiTietController {
     LichSuHoaDonRepository ssLSHD;
     @Autowired
     private LichSuHoaDonService lichSuHoaDonService;
+    @Autowired
+     HoaDonService hoaDonService;
     private String idNhanVien = "8fc123b4-c457-4447-99d3-f39faaec2c5b";
 
     @GetMapping("/getHDCT/{maHD}")
@@ -383,6 +387,30 @@ public class HoaDonChiTietController {
     @GetMapping("getHDCTByID/{idHD}")
     public ResponseEntity<List<HoaDonChiTiet>> getHDCTByIDHD(@PathVariable("idHD") String idHD) {
         return ResponseEntity.ok(ssHDCT.getHDCT(idHD));
+    }
+
+
+
+
+
+    @GetMapping("/getHDDoiTra/{maHD}")
+    public ResponseEntity getHDDoiTra(@PathVariable String maHD){
+        try {
+            HoaDonDoiTraDTO hoaDonDoiTraDTO = new HoaDonDoiTraDTO();
+        HoaDon hoaDon = hoaDonService.findHDDoiTra(maHD);
+          List<HoaDonChiTiet> list = ssHDCT.getHDCT(hoaDon.getId());
+          List<SanPhamChiTiet> sanPhamChiTiets = new ArrayList<>();
+//          for (HoaDonChiTiet donChiTiet : list){
+//              SanPhamChiTiet sp = ssSP.findById(donChiTiet.getId_chi_tiet_san_pham().getId()).get();
+//              sanPhamChiTiets.add(sp);
+//          }
+            hoaDonDoiTraDTO.setHoaDon(hoaDon);
+           hoaDonDoiTraDTO.setListHDCT(list);
+
+            return ResponseEntity.ok(hoaDonDoiTraDTO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
     }
 
 
