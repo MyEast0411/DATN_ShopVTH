@@ -252,7 +252,7 @@ public class HoaDonController {
                 }else{
                     hoaDon1.setTienGiam(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTienGiam())));
                 }
-                 hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
+                hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
                 hoaDon1.setId_nhan_vien(ssNV.findById(idNhanVien).orElse(null));
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
                 for (HoaDonChiTiet hdct : hoaDonChiTietList) {

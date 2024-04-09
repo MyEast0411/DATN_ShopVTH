@@ -213,6 +213,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
 
     return () => clearInterval(interval);
   }, []);
+  
   useEffect(() => {
     fetchKhuyenMais();
     setFilterValue(search);

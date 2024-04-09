@@ -499,7 +499,7 @@ export default function ChatLieu() {
     setLoading(true);
     try {
       await form.validateFields();
-
+      console.log(kichCoDetail);
       await axios
         .put("http://localhost:8080/the-loai/updateTheLoai", {
           id : kichCoDetail.id,
@@ -521,14 +521,14 @@ export default function ChatLieu() {
           }
         })
         .catch((error) => {
-          toast.error(error.data, {
+          toast.error(error.response.data, {
             position: "top-right",
             autoClose: 2000,
           });
           setLoading(false);
         });
     } catch (error) {
-      console.log(error);
+      console.log("err form" +error);
       setLoading(false);
     }
 

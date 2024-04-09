@@ -27,6 +27,9 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             "    group by a.ma",nativeQuery = true)
     Double getTongTien(@Param("ma")String ma);
 
+    @Query(value = "select tong_tien from hoa_don where ma = :ma", nativeQuery = true)
+    Double getTotalPriceInBill(@Param("ma")String ma);
+
     @Query(value = "select id_chi_tiet_san_pham,so_luong from hoa_don_chi_tiet hdct\n" +
             "where hdct.id_hoa_don = :idHD",nativeQuery = true)
     List<Object[]> getHDCTByMaHD(@Param("idHD")String idHD);

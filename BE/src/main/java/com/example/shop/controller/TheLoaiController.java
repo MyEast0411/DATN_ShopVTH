@@ -70,10 +70,12 @@ public class TheLoaiController {
     @PutMapping("updateTheLoai")
     public ResponseEntity updateTheLoai(@RequestBody UpdateDeGiayRequest request) {
         try {
-            if(repo.existsByMa(request.getMa())) {
+            System.out.println(request);
+
+            if(repo.existsByMa(request.getMa()) && repo.existsByTen(request.getTen())) {
                 return ResponseEntity.badRequest().body("Đã tồn tại mã thể loại này");
             }
-            if(repo.existsByTen(request.getTen())) {
+            if(repo.existsByTen(request.getTen()) && repo.existsByMa(request.getMa())){
                 return ResponseEntity.badRequest().body("Đã tồn tại thể loại này");
             }
             TheLoai cl = repo.findById(request.getId()).get();

@@ -189,7 +189,7 @@ export default function ChiTietSanPham() {
 
   useEffect(() => {
     fetchKMSPCT();
-  }, [kmspcts]);
+  }, []);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));

@@ -194,7 +194,8 @@ export default function Checkout() {
         }
       }
     });
-  }, [tongTien, listVoucher])
+  }, [tongTien, listVoucher]);
+
   // get thong tin khach hang
   const getKhachHang = async () => {
     if (localStorage?.getItem("user") != "") {
@@ -222,6 +223,7 @@ export default function Checkout() {
     }
 
   };
+
   // get dia chi khach hang
   const [listDiaChi, setListDiaChi] = useState([]);
 
@@ -530,11 +532,12 @@ export default function Checkout() {
           },
         })
         .then((response) => {
+          console.log(response.data.data.total);
           setShippingCost(response.data.data.total);
           setPhiVanChuyen(response.data.data.total);
         });
     }
-  }, [diaChi]);
+  }, [idTP, idHuyen, idXa, diaChi]);
 
   const openNotificationWithIcon = (type, message, icon) => {
     api[type]({
@@ -657,7 +660,7 @@ export default function Checkout() {
     let updatedShippingCost;
 
     if (value === 2) {
-      updatedShippingCost = "Miễn phí";
+      updatedShippingCost = 0;
     } else {
       updatedShippingCost = localShippingCost;
     }
@@ -728,6 +731,7 @@ export default function Checkout() {
         index++;
       });
       const cartNotLoginDTO = {
+        value,
         email,
         hoTen,
         soDienThoai,
@@ -758,6 +762,34 @@ export default function Checkout() {
             console.log(err);
           }
         );
+      } else if(value == 2){
+        const confirmSubmission = async () => {
+          try {
+            const result = await addToHoaDon(cartNotLoginDTO);
+            console.log("result:", result);
+            localStorage.removeItem("maList");
+            setSpinning(true);
+            openNotificationWithIcon("success", "Hoàn tất thanh toán", successIcon);
+            setTimeout(() => {
+              navigate("/thanh-toan-thanh-cong");
+            }, 2000);
+          } catch (error) {
+            openNotificationWithIcon("error", error.response.data, errorIcon);
+            console.log(error.response.data);
+            // console.error("Error adding to HoaDon:", error);
+          } finally {
+            console.log(123);
+            setSpinning(false);
+          }
+        };
+
+        confirmDialog({
+          message: "Bạn có chắc muốn hoàn tất đơn hàng?",
+          header: "Xác nhận đơn hàng",
+          icon: "pi pi-info-circle",
+          acceptClassName: "p-button-success",
+          accept: confirmSubmission,
+        });
       } else {
         const confirmSubmission = async () => {
           try {
@@ -1006,20 +1038,18 @@ export default function Checkout() {
                               alt=""
                               className="mr-3"
                             />
-                            <p>Chuyển khoản qua ngân hàng</p>
+                            <p>Giao hàng hỏa tốc</p>
                           </div>
                           {value === 2 ? (
                             <div className="sub-rdo">
                               <p className="font-medium">*Lưu ý:</p>
                               <div className="ml-5 text-[13px]">
-                                •Nhân viên sẽ gọi xác nhận và thông báo số tiền cần
-                                chuyển khoản của quý khách, quý khách vui lòng không
-                                chuyển khoản trước.
-                                <p>•ACB: 21148947 - NGUYỄN VĂN HỘI </p>
-                                <p>
+                                •Đơn hàng của bạn sẽ được giao hàng hỏa tốc (khoảng 12 - 24 giờ).
+                                <p>•Khi bạn đặt hàng nhân viên sẽ gọi điện xác nhận và thông báo phí ship cho bạn.</p>
+                                {/* <p>
                                   •Khi chuyển khoản quý khách ghi nội dung CK là:
                                   TÊN FB CÁ NHÂN + MÃ ĐƠN HÀNG + SĐT
-                                </p>
+                                </p> */}
                               </div>
                             </div>
                           ) : null}
@@ -1233,20 +1263,18 @@ export default function Checkout() {
                               alt=""
                               className="mr-3"
                             />
-                            <p>Chuyển khoản qua ngân hàng</p>
+                            <p>Giao hàng hỏa tốc</p>
                           </div>
                           {value === 2 ? (
                             <div className="sub-rdo">
                               <p className="font-medium">*Lưu ý:</p>
                               <div className="ml-5 text-[13px]">
-                                •Nhân viên sẽ gọi xác nhận và thông báo số tiền cần
-                                chuyển khoản của quý khách, quý khách vui lòng không
-                                chuyển khoản trước.
-                                <p>•ACB: 21148947 - NGUYỄN VĂN HỘI </p>
-                                <p>
+                                •Đơn hàng của bạn sẽ được giao hàng hỏa tốc (khoảng 12 - 24 giờ).
+                                <p>•Khi bạn đặt hàng nhân viên sẽ gọi điện xác nhận và thông báo phí ship cho bạn.</p>
+                                {/* <p>
                                   •Khi chuyển khoản quý khách ghi nội dung CK là:
                                   TÊN FB CÁ NHÂN + MÃ ĐƠN HÀNG + SĐT
-                                </p>
+                                </p> */}
                               </div>
                             </div>
                           ) : null}
@@ -1535,7 +1563,8 @@ export default function Checkout() {
           width={1200}
           footer={[]}
         >
-          <TableVoucher />
+          <TableVoucher codeVC={codeVC} setCodeVC={setCodeVC} setIsModalVoucher={setIsModalVoucher} idKhachHang={user.id}
+          tongTien={calculateTotal()}/>
         </Modal>
       </div>
     </>

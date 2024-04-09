@@ -112,7 +112,7 @@ public class SanPhamController {
 
     @GetMapping("/getAllSPCT")
     List<SanPhamChiTiet> getAllSPCT() {
-        return repo.findAll();
+        return repo.getAllSPCTDangBan();
     }
 
     @GetMapping("/getHinhAnhByMau/{mauSac}")

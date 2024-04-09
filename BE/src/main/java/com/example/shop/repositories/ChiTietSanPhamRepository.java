@@ -20,7 +20,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             "ORDER BY MAX(b.ngay_tao) DESC\n" +
             "LIMIT 0, 1000", nativeQuery = true)
     List<Object[]> loadTable();
-
+    @Query(value = "SELECT * FROM san_pham_chi_tiet where deleted = 1", nativeQuery = true)
+    List<SanPhamChiTiet> getAllSPCTDangBan();
     @Query(value = "SELECT b.ma AS maSanPham, b.ten AS tenSanPham, SUM(a.so_luong_ton) AS soLuongTon, b.deleted AS status\n" +
             "FROM san_pham_chi_tiet a\n" +
             "JOIN san_pham b ON a.id_san_pham = b.id\n" +
