@@ -115,15 +115,15 @@ export default function InfoTop() {
 
         <div className="user-menu flex">
           <div className="flex">
-            <div className="cursor-pointer">Tìm cửa hàng</div>
+            <Link to="/find-store" className="cursor-pointer">
+              Tìm cửa hàng
+            </Link>
             <span>|</span>
           </div>
           <div className="flex">
-            <div className="cursor-pointer">Giúp đỡ</div>
-            <span>|</span>
-          </div>
-          <div className="flex">
-            <div className="cursor-pointer">Cộng tác</div>
+            <Link to="/contact-us" className="cursor-pointer">
+              Liên hệ
+            </Link>
             <span>|</span>
           </div>
           <div className="flex login-wrapper">
@@ -139,7 +139,7 @@ export default function InfoTop() {
               >
                 <a onClick={(e) => e.preventDefault()}>
                   <Space>
-                    Hi , {user.ten}
+                    Xin chào , {user.ten}
                     <FontAwesomeIcon icon={faUser} />
                   </Space>
                 </a>

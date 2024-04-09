@@ -32,4 +32,6 @@ public interface HoaDonService  {
     List<HoaDon> getHDbyVoucher(String id);
 
     String payWithVNPAYOnline(CreatePayMentVNPAYRequest payModel, HttpServletRequest request) throws UnsupportedEncodingException;
+
+    HoaDon findHDDoiTra(String maHD);
 }

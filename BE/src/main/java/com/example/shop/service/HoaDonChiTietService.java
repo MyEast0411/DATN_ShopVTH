@@ -2,6 +2,7 @@ package com.example.shop.service;
 
 import com.example.shop.dto.SanPhamChiTietDTO;
 import com.example.shop.entity.HinhThucThanhToan;
+import com.example.shop.entity.HoaDon;
 import com.example.shop.entity.HoaDonChiTiet;
 import com.example.shop.entity.SanPhamChiTiet;
 
@@ -16,6 +17,8 @@ public interface HoaDonChiTietService {
 
     Integer getSLSP(String idHD);
     HoaDonChiTiet getHD(String idHD , String idSPCT);
+
+
 
 
 }
