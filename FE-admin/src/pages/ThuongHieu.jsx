@@ -521,7 +521,7 @@ export default function ChatLieu() {
           }
         })
         .catch((error) => {
-          toast.error(error.data, {
+          toast.error(error.response.data, {
             position: "top-right",
             autoClose: 2000,
           });

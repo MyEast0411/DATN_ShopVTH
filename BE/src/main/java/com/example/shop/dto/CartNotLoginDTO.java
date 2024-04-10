@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 
 public class CartNotLoginDTO {
+    private Integer value;
     private String email;
     private String hoTen;
     private String soDienThoai;

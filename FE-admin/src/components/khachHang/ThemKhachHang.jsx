@@ -162,6 +162,12 @@ export default function ThemKhachHang() {
   };
 
   const [form] = Form.useForm();
+  useEffect(() => {
+    console.log(khachHang);
+    console.log("đã reset form");
+    console.log(ten);
+    form.resetFields();
+  }, [khachHang]);
 
   const onSubmit = async () => {
     setLoading(true);
@@ -251,9 +257,7 @@ export default function ThemKhachHang() {
         <div className="col-span-2 m-10">
           <Form
             form={form}
-            initialValues={{
-              remember: true,
-            }}
+            initialValues={khachHang}
             // onFinish={onSubmit}
           >
             <div className="grid grid-cols-2 gap-4">
@@ -434,9 +438,13 @@ export default function ThemKhachHang() {
                             }
                             const result = splitString(data.text);
                             console.log(result);
+                            const vi_tri_khoang_cach_thu_hai = result[2].indexOf(' ', result[2].indexOf(' ') + 1);
+                            const ho = result[2].slice(0, result[2].indexOf(' '));
+                            const ten = result[2].slice(vi_tri_khoang_cach_thu_hai + 1);
                             setKhachHang({
                               ...khachHang,
-                              ten: result[2],
+                              ho: ho,
+                              ten : ten,
                               cccd: result[0],
                               ngay_sinh: result[3],
                               gioi_tinh: result[4],

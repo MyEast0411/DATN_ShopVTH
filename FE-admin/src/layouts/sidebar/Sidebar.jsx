@@ -15,7 +15,7 @@ import { RiBuilding3Line } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 import { MdMenu } from "react-icons/md";
 import { NavLink, Link, useLocation, useRoutes } from "react-router-dom";
-
+// import { AiOutlineSetting } from "react-icons/ai";
 //logo
 import logo from "../../assets/logo.png";
 
@@ -117,7 +117,7 @@ const Sidebar = () => {
     },
     {
       name: "settings",
-      icon: AiOutlineSetting,
+      icon: AiOutlineAppstore,
       menus: ["dang-ky", "dang-nhap", "dang-xuat"],
       subTitles: ["Đăng ký", "Đăng nhập", "Đăng xuất"],
       mainTitle: "Settings",

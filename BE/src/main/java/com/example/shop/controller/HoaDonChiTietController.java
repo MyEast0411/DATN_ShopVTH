@@ -272,7 +272,7 @@ public class HoaDonChiTietController {
                 hd.setId_voucher(ssVC.findById(x.getId_khach_hang()).get());
             }
             ssHD.save(hd);
-            return ResponseEntity.ok("Thành công");
+            return ResponseEntity.ok(hd.getId_voucher().getMa());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("ERROR");
         }
@@ -323,25 +323,46 @@ public class HoaDonChiTietController {
                 tienGiam = voucher.getGiaTriMax();
                 ssVC.save(voucher);
             }
-
-            HoaDon hoaDon = HoaDon.builder()
-                    .ma("HD" + (maxMa + 1))
-                    .trangThai(0)
-                    .deleted(1)
-                    .loaiHd(0)
-                    .ngayTao(new Date())
-                    .id_khach_hang(khachHang)
-                    .sdt(khachHang == null ? null : khachHang.getSdt())
-                    .tenKhachHang(khachHang == null ? null : khachHang.getTen())
-                    .id_voucher(voucher)
-                    .id_nhan_vien(ssNV.findById(idNhanVien).get())
-                    .tienGiam(BigDecimal.valueOf(tienGiam))
-                    .tienShip(BigDecimal.valueOf(Double.valueOf(cartNotLoginDTO.getPhiVanChuyen())))
-                    .ngayNhan(new Date(cartNotLoginDTO.getDeliveryTime()))
-                    .diaChi(cartNotLoginDTO.getDuong() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
-                    .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
-                    .build();
-            HoaDon hd1 = ssHD.save(hoaDon);
+            HoaDon hd1 = new HoaDon();
+            if(cartNotLoginDTO.getValue() == 1) {
+                HoaDon hoaDon = HoaDon.builder()
+                        .ma("HD" + (maxMa + 1))
+                        .trangThai(0)
+                        .deleted(1)
+                        .loaiHd(0)
+                        .ngayTao(new Date())
+                        .id_khach_hang(khachHang)
+                        .sdt(khachHang == null ? null : khachHang.getSdt())
+                        .tenKhachHang(khachHang == null ? null : khachHang.getTen())
+                        .id_voucher(voucher)
+                        .id_nhan_vien(ssNV.findById(idNhanVien).get())
+                        .tienGiam(BigDecimal.valueOf(tienGiam))
+                        .tienShip(BigDecimal.valueOf(Double.valueOf(cartNotLoginDTO.getPhiVanChuyen())))
+                        .ngayNhan(new Date(cartNotLoginDTO.getDeliveryTime()))
+                        .diaChi(cartNotLoginDTO.getDuong() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
+                        .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
+                        .build();
+                hd1 = ssHD.save(hoaDon);
+            }else if(cartNotLoginDTO.getValue() == 2) {
+                HoaDon hoaDon = HoaDon.builder()
+                        .ma("HDHoaToc" + (maxMa + 1))
+                        .trangThai(0)
+                        .deleted(1)
+                        .loaiHd(0)
+                        .ngayTao(new Date())
+                        .id_khach_hang(khachHang)
+                        .sdt(khachHang == null ? null : khachHang.getSdt())
+                        .tenKhachHang(khachHang == null ? null : khachHang.getTen())
+                        .id_voucher(voucher)
+                        .id_nhan_vien(ssNV.findById(idNhanVien).get())
+                        .tienGiam(BigDecimal.valueOf(tienGiam))
+                        .tienShip(BigDecimal.valueOf(Double.valueOf(cartNotLoginDTO.getPhiVanChuyen())))
+                        .ngayNhan(new Date(cartNotLoginDTO.getDeliveryTime()))
+                        .diaChi(cartNotLoginDTO.getDuong() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
+                        .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
+                        .build();
+                hd1 = ssHD.save(hoaDon);
+            }
 
             LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
                     .id_hoa_don(hd1)

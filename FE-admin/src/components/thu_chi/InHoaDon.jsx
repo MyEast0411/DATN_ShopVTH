@@ -72,13 +72,13 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
             <p>
               Khách Hàng :&nbsp;&nbsp;
               <span className="italic font-medium">
-                {props.inforKH.id_khach_hang?.ten}
+                {props.inforKH?.id_khach_hang?.ten || "Khách lẻ"}
               </span>
             </p>
             <p>
               Số Điện thoại :&nbsp;&nbsp;
               <span className="italic font-medium ">
-                {props.inforKH.id_khach_hang?.sdt}
+                {props.inforKH?.id_khach_hang?.sdt || "Khách lẻ"}
               </span>
             </p>
             <p>
@@ -97,7 +97,7 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
               Thời gian :&nbsp;&nbsp;
               <span className="italic font-medium">
                 &nbsp;&nbsp;
-                {format(
+{format(
                   new Date(props.inforKH.ngayTao),
                   " hh:mm ,   dd-MM-yyyy"
                 )}
@@ -182,7 +182,7 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
               }}
             />
           </div>
-          <div className="space-y-3">
+<div className="space-y-3">
             <p className="text-end " style={{ fontSize: 17 }}>
               Tổng cộng :&nbsp;&nbsp;
               <span className="italic">

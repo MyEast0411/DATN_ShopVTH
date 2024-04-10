@@ -120,7 +120,7 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
     }
     useEffect(() => {
         getDetailProductById();
-    }, [idDetailProduct, initialValues])
+    }, [idDetailProduct])
     useEffect(() => {
         form.resetFields();
     }, [initialValues]);

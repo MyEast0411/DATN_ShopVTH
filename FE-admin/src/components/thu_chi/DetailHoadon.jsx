@@ -27,6 +27,8 @@ import {
   TableCell,
   getKeyValue,
 } from "@nextui-org/react";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { MdAddCircle, MdCancel } from "react-icons/md";
 import { Modal, Tag, Tooltip, Input, Radio, Divider } from "antd";
 import { DeleteIcon } from "./icon/DeleteIcon";
@@ -45,11 +47,9 @@ function DetailHoadon() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
   const [addLSHDConfirmationOpen, setAddLSHDConfirmationOpen] = useState(false);
-  const [cancleHDConfirmationOpen, setCancleHDConfirmationOpen] =
-    useState(false);
+  const [cancleHDConfirmationOpen, setCancleHDConfirmationOpen] = useState(false);
   const [luiHDConfirmationOpen, setLuiHDConfirmationOpen] = useState(false);
-  const [thanhToanConfirmationOpen, setThanhToanConfirmationOpen] =
-    useState(false);
+  const [thanhToanConfirmationOpen, setThanhToanConfirmationOpen] = useState(false);
   const [isModalOpenCK, setIsModalOpenCK] = useState(false);
   const [open, setOpen] = useState(false);
   const [kmspcts, setKmspcts] = useState([]);
@@ -115,43 +115,66 @@ function DetailHoadon() {
   const downloadPDF = () => {
     const input = componentRef.current;
     html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4", true);
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 20;
-      pdf.addImage(
-        imgData,
-        "PNG",
-        imgX,
-        imgY,
-        imgWidth * ratio,
-        imgHeight * ratio
-      );
-
-      // Tạo mã QR
-      const qrCodeDataUrl = document.createElement("canvas");
-      QRCode.toCanvas(qrCodeDataUrl, "https://example.com", function (error) {
-        if (error) console.error(error);
-        const qrImageData = qrCodeDataUrl.toDataURL("image/png");
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4", true);
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+        const imgX = (pdfWidth - imgWidth * ratio) / 2;
+        const imgY = 20;
         pdf.addImage(
-          qrImageData,
-          "PNG",
-          10, // Điều chỉnh vị trí của mã QR tùy thuộc vào nhu cầu của bạn
-          imgHeight * ratio + 30, // Điều chỉnh vị trí của mã QR tùy thuộc vào nhu cầu của bạn
-          50, // Điều chỉnh kích thước của mã QR tùy thuộc vào nhu cầu của bạn
-          50 // Điều chỉnh kích thước của mã QR tùy thuộc vào nhu cầu của bạn
+            imgData,
+            "PNG",
+            imgX,
+            imgY,
+            imgWidth * ratio,
+            imgHeight * ratio
         );
 
-        pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
-      });
+        // Convert PDF to Blob
+        const pdfBlob = pdf.output('blob');
+
+        // Create object URL for the Blob
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+
+        // Calculate position for centering the print window
+        const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        const popupWidth = 1200; // Width of the print window
+        const popupHeight = 950; // Height of the print window
+        const left = (windowWidth - popupWidth) / 2;
+        const top = (windowHeight - popupHeight) / 2;
+
+        // Open print dialog with the PDF
+        window.open(pdfUrl, '_blank', `location=yes,height=${popupHeight},width=${popupWidth},scrollbars=yes,status=yes,top=${top},left=${left}`);
     });
     setIsModalOpenHD(false);
+    // const input = componentRef.current;
+    // html2canvas(input).then((canvas) => {
+    //   const imgData = canvas.toDataURL("image/png");
+    //   const pdf = new jsPDF("p", "mm", "a4", true);
+    //   const pdfHeight = pdf.internal.pageSize.getHeight();
+    //   const pdfWidth = pdf.internal.pageSize.getWidth();
+    //   const imgWidth = canvas.width;
+    //   const imgHeight = canvas.height;
+    //   const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+    //   const imgX = (pdfWidth - imgWidth * ratio) / 2;
+    //   const imgY = 20;
+    //   pdf.addImage(
+    //     imgData,
+    //     "PNG",
+    //     imgX,
+    //     imgY,
+    //     imgWidth * ratio,
+    //     imgHeight * ratio
+    //   );
+    //   pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
+    // });
+    // setIsModalOpenHD(false);
   };
+
   const showModalFixHD = () => {
     setOpenFixHD(true);
   };

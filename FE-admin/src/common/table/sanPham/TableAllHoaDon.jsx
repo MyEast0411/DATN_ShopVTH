@@ -126,12 +126,13 @@ export default function App({ onDataSelected }) {
     async function fetchChiTietSanPham() {
       try {
         const response = await axios.get(url);
+        console.log(response);
         const updatedRows = response.data.map((item, index) => ({
           id: index + 1,
           stt: index + 1,
           maHD : item.ma,
-          tenKhachHang : item?.id_khach_hang?.ten,
-          tenNhanVien : item?.id_nhan_vien?.ten,
+          tenKhachHang : item?.idKhachHang?.ten || "Khách lẻ",
+          tenNhanVien : item?.idNhanVien?.ten || "donglun`",
           soLuong : item.soLuong,
           loaiHoaDon : item.loaiHd == 0 ? "Online" : "Tại quầy",
           trangThai : "Chờ thanh toán"
@@ -142,7 +143,7 @@ export default function App({ onDataSelected }) {
       }
     }
     fetchChiTietSanPham();
-  }, [sanPhams]);
+  }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -175,7 +176,7 @@ export default function App({ onDataSelected }) {
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
+  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -397,7 +398,7 @@ export default function App({ onDataSelected }) {
           showShadow
           color="primary"
           page={page}
-          total={totalPages}
+          total={pages}
           onChange={setPage}
         //   style={{ paddingLeft: "730px" }}
         />

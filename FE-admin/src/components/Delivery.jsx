@@ -3,13 +3,13 @@ import { getProvinces, getDistricts, getWards } from "../api/Location";
 import axios from "axios";
 import { Select } from "antd";
 const { Option } = Select;
-export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, setTienShip }) {
+export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang, setTienShip, phiVanChuyen, tienShip, setDiaChi, diaChi }) {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
   const [district, setDistrict] = useState([]);
   const [ward, setWard] = useState([]);
-  const [diaChi, setDiaChi] = useState([]);
+  // const [diaChi, setDiaChi] = useState([]);
   const [valueTP, setValueTP] = useState([]);
   const [valueHuyen, setValueHuyen] = useState([]);
   const [valueXa, setValueXa] = useState([]);
@@ -30,15 +30,15 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
   }
   useEffect(() => {
     fetchKhachHang();
-  }, [listKhachHang]);
+  }, []);
   const getKhachHang = async () => {
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
       .then((response) => {
         listKhachHang.map((kh) => {
-          if(kh.id == response.data[0]?.id_hoa_don.id_khach_hang.id) {
+          if (kh.id == response.data[0]?.id_hoa_don?.id_khach_hang?.id) {
             setKhachHang1(kh);
-          }else {
+          } else {
             setKhachHang1("");
           }
         })
@@ -54,7 +54,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
 
   useEffect(() => {
     getDiaChi();
-  },[khachHang])
+  }, [khachHang])
   useEffect(() => {
     getProvinces().then((data) => {
       setProvinces(data.results);
@@ -69,7 +69,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
       setValueTP(provinceNames);
 
       const provinceCode = provinces.find(x => x.DistrictName === diaChi.thanhPho)?.code;
-  
+
       if (provinceCode) {
         try {
           const districtData = await getDistricts(provinceCode);
@@ -78,12 +78,12 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
           console.error('Error fetching districts:', error);
         }
       }
-  
+
       const districtNames = district.map(item => item.name);
       setValueHuyen(districtNames);
-  
+
       const districtCode = district.find(x => x.name === diaChi.huyen)?.code;
-  
+
       if (districtCode) {
         try {
           const wardData = await getWards(districtCode);
@@ -92,14 +92,14 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
           console.error('Error fetching wards:', error);
         }
       }
-  
+
       const wardNames = ward.map(item => item.name);
       setValueXa(wardNames);
     };
-  
+
     fetchData();
   }, [diaChi, provinces, district]);
-  
+
   const handleProvinceChange = (provinceCode) => {
     getDistricts(provinceCode).then((data) => {
       setDistricts(data);
@@ -116,8 +116,8 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
 
   useEffect(() => {
     const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; 
-    const shopId = '190374 - 0964457125'; 
+    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48';
+    const shopId = '190374 - 0964457125';
     const requestData = {
       from_district_id: 1804,
       from_ward_code: "1B2211",
@@ -139,7 +139,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
         const leadtimeDate = new Date(leadtimeTimestamp * 1000);
 
         const day = leadtimeDate.getDate();
-        const month = leadtimeDate.getMonth() + 1; 
+        const month = leadtimeDate.getMonth() + 1;
         const year = leadtimeDate.getFullYear();
 
         const formattedLeadtime = `${day}/${month}/${year}`;
@@ -150,115 +150,149 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
       .catch(error => {
         console.error(error);
       });
-  }, [idTP,idHuyen,idXa]);
+  }, [idTP, idHuyen, idXa]);
   //{ProvinceID: 201, ProvinceName: 'Hà Nội', CountryID: 1
   // lay id tp
-  useEffect(() => {
-    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
-
-    axios.get(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Token': token,
-      }
-    })
-      .then(response => {
-        const id_tp = response.data.data.find(item => diaChi.thanhPho.includes(item.province_name))?.province_id;
-        setIdTP(id_tp);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }, [diaChi]);
-
-  // lay id huyen theo api theo id tp
-  useEffect(() => {
-    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; // Thay YOUR_TOKEN bằng token của bạn
-
-    const requestData = {
-      province_id : idTP
-    };
-
-    axios.get(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Token': token,
-      },
-      params: requestData,
-    })
-      .then(response => {
-        const id_huyen = response.data.data.find(item => item.DistrictName === diaChi.huyen)?.DistrictID;
-        setIdHuyen(id_huyen);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }, [diaChi]);
-  
-  // lay id xa theo api theo id huyen
-  useEffect(() => {
-    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48'; 
-
-    const requestData = {
-      district_id : idHuyen
-    };
-
-    axios.post(apiUrl, requestData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Token': token,
-      },
-    })
-      .then(response => {
-        const id_xa = response.data.data.find(item => item.WardName === diaChi.xa)?.WardCode;
-        setIdXa(id_xa);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }, [diaChi,idHuyen]);
-  // Tính phí vận chuyển
-  useEffect(() => {
+  const getIdThanhPho = () => {
+    console.log("get id tp");
     const apiUrl =
-      "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province";
     const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
-    const shopId = "190374 - 0964457125";
-
-    const requestData = {
-      service_type_id: 2,
-      from_district_id: 1804,
-      to_district_id: idHuyen,
-      to_ward_code: idXa,
-      height: 20,
-      length: 30,
-      weight: 1000,
-      width: 40,
-      insurance_value: 0,
-      coupon: null,
-    };
 
     axios
-      .post(apiUrl, requestData, {
+      .get(apiUrl, {
         headers: {
           "Content-Type": "application/json",
-          ShopId: shopId,
           Token: token,
         },
       })
       .then((response) => {
-        console.log("tien ship : ", response.data);
-        console.log("tien hang : ",tienHang);
-        if(tienHang > 1000) setTienShip(0)
-        else setTienShip(response.data.data.total);
-      // console.log(tienShip);
+        const id_tp = response.data.data.find((item) =>
+          item.NameExtension.some((extension) => diaChi?.thanhPho?.includes(extension))
+        )?.ProvinceID;
+        setIdTP(id_tp);
+        console.log(id_tp);
       })
       .catch((error) => {
-        console.error("Error:", error);
       });
-  }, [idTP, idHuyen, idXa, tienHang]);
+  }
+
+  // lay id huyen theo api theo id tp
+  const getIdHuyen = () => {
+    console.log("get id huyen");
+    console.log(idTP);
+    if (idTP != undefined && idTP != '') {
+      
+      const apiUrl =
+        "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
+      const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+
+      const requestData = {
+        province_id: idTP,
+      };
+
+      axios
+        .get(apiUrl, {
+          headers: {
+            "Content-Type": "application/json",
+            Token: token,
+          },
+          params: requestData,
+        })
+        .then((response) => {
+          const id_huyen = response.data.data.find((item) =>
+            item.NameExtension.some((extension) => diaChi?.huyen?.includes(extension))
+          )?.DistrictID;
+          setIdHuyen(id_huyen);
+          console.log(id_huyen);
+        })
+        .catch((error) => {
+        });
+    }
+  }
+
+  // lay id xa theo api theo id huyen
+  const getIdXa = () => {
+    if (idHuyen != undefined && idHuyen != '') {
+      const apiUrl =
+        "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
+      const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+
+      const requestData = {
+        district_id: idHuyen,
+      };
+
+      axios
+        .post(apiUrl, requestData, {
+          headers: {
+            "Content-Type": "application/json",
+            Token: token,
+          },
+        })
+        .then((response) => {
+          const id_xa = response.data.data.find((item) =>
+            item.NameExtension.some((extension) => diaChi.xa.includes(extension))
+          )?.WardCode;
+          setIdXa(id_xa);
+          console.log(id_xa);
+        })
+        .catch((error) => {
+        });
+    }
+  }
+
+  useEffect(() => {
+    getIdThanhPho();
+  }, [diaChi]);
+  useEffect(() => {
+    console.log("line234");
+    getIdHuyen();
+    getIdXa();
+    console.log(idHuyen);
+  }, [diaChi, phiVanChuyen, tienShip, idTP, idHuyen, idXa]);
+  // Tính phí vận chuyển
+  useEffect(() => {
+    console.log(phiVanChuyen);
+    if (phiVanChuyen == "" && idTP != undefined && idTP != '' && idHuyen != undefined && idHuyen != '' && idXa != undefined && idXa != '') {
+      console.log("da call api tinh phi van chuyen");
+      const apiUrl =
+        "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
+      const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+      const shopId = "190374 - 0964457125";
+
+      const requestData = {
+        service_type_id: 2,
+        from_district_id: 1804,
+        to_district_id: idHuyen,
+        to_ward_code: idXa,
+        height: 20,
+        length: 30,
+        weight: 1000,
+        width: 40,
+        insurance_value: 0,
+        coupon: null,
+      };
+
+      axios
+        .post(apiUrl, requestData, {
+          headers: {
+            "Content-Type": "application/json",
+            ShopId: shopId,
+            Token: token,
+          },
+        })
+        .then((response) => {
+          console.log("tien ship : ", response.data);
+          console.log("tien hang : ", tienHang);
+          if (tienHang > 1000000) setTienShip(0)
+          else setTienShip(response.data.data.total);
+          // console.log(tienShip);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  }, [idTP, idHuyen, idXa, tienHang, phiVanChuyen, tienShip]);
   const options = valueTP.map(name => (
     <Option key={name} value={name}>
       {name}
@@ -273,7 +307,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
       </Select.Option>
     ));
     setOptionHuyen(newOptionHuyen);
-  }, [diaChi,optionHuyen]);
+  }, [diaChi, optionHuyen]);
   const [optionXa, setOptionXa] = useState([]);
   useEffect(() => {
     const valueX = ward.map(item => item.ward_name);
@@ -283,7 +317,7 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
       </Select.Option>
     ));
     setOptionXa(newOptionXa);
-  }, [diaChi,optionXa]);
+  }, [diaChi, optionXa]);
   // const optionXa = valueXa.map(name => (
   //   <Option key={name} value={name}>
   //     {name}
@@ -296,148 +330,156 @@ export default function Delivery({ activeKey, khachHang,setKhachHang, tienHang, 
           <h2 className="text-center text-2xl font-bold text-gray-800">
             Địa chỉ nhận hàng
           </h2>
-          <div className="grid gap-6 mb-6 md:grid-cols-2">
-            <div>
+          <div>
+            <div className="grid gap-6 mb-6 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="full_name"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Họ tên
+                </label>
+                <input
+                  type="text"
+                  id="full_name"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Ten"
+                  value={khachHang?.ten || ""}
+                  onChange={(e) => {
+                    setKhachHang(prevState => ({
+                      ...prevState,
+                      ten: e.target.value
+                    }));
+                  }}
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+
+                >
+                  Số điện thoại
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  value={khachHang?.sdt || ""}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="012 345 6789"
+                  pattern="/^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/"
+                  required
+                  onChange={(e) => {
+                    setKhachHang(prevState => ({
+                      ...prevState,
+                      sdt: e.target.value
+                    }));
+                  }}
+                />
+              </div>
+            </div>
+            <div className="mb-6">
               <label
-                htmlFor="full_name"
+                htmlFor="so_nha"
                 className="block mb-2 text-sm font-medium text-gray-900"
               >
-                Họ tên
+                Số nhà | Thôn
               </label>
               <input
                 type="text"
-                id="full_name"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Ten"
-                value={khachHang?.ten || ""}
-                required
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="phone"
-                className="block mb-2 text-sm font-medium text-gray-900"
-                
-              >
-                Số điện thoại
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                value={khachHang?.sdt || ""}
+                id="so_nha"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="012 345 6789"
-                pattern="/^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/"
+                placeholder="Địa chỉ cụ thể"
+                value={diaChi?.duong || ""}
                 required
                 onChange={(e) => {
-                  setKhachHang(prevState => ({
+                  setDiaChi(prevState => ({
                     ...prevState,
-                    sdt: e.target.value
+                    duong: e.target.value
                   }));
                 }}
               />
             </div>
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="so_nha"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Số nhà | Thôn
-            </label>
-            <input
-              type="text"
-              id="so_nha"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark-bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Địa chỉ cụ thể"
-              value={diaChi?.duong || ""}
-              required
-              onChange={(e) => {
-                setDiaChi(prevState => ({
-                  ...prevState,
-                  duong: e.target.value
-                }));
-              }}
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="city"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Chọn thành phố
-            </label>
-            <Select
-              placeholder="Thành phố"
-              onChange={(value) => {
-                setDiaChi(prevState => ({
-                  ...prevState,
-                  thanhPho: value
-                }));
-                const provinceCode = provinces.find((x) => x.province_name === value)?.province_id;
-                console.log(value);
-                getDistricts(provinceCode).then((data) => {
-                  console.log(data.results);
-                  setDistrict(data.results);
-                });
-              }}
-              // onChange={(selectedValue) => handleChangeTP(selectedValue)}
-              value={diaChi?.thanhPho || "Chọn thành phố"}
-              style={{width : "100%", height : "40px", marginRight : "10px"}}
-            >
-              {provinces.map((province) => (
-                <Option key={province.province_id} value={province.province_name}>
-                  {province.province_name}
-                </Option>
-              ))}
-            </Select>
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="District"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Chọn huyện
-            </label>
-            <Select
-              placeholder="Huyện"
-              onChange={(value) => {
-                setDiaChi(prevState => ({
-                  ...prevState,
-                  huyen: value
-                }));
-                const districtCode = district.find((x) => x.district_name === value)?.district_id;
-                getWards(districtCode).then((data) => {
-                  setWard(data.results);
-                });
-              }}
-              value={diaChi?.huyen || "Chọn huyện"}
-              style={{width : "100%", height : "40px", marginRight : "10px"}}
-            >
-              {optionHuyen}
-            </Select>
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="wards"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Chọn xã phường
-            </label>
-            <Select
-              placeholder="Xã phường"
-              onChange={(value) => {
-                setDiaChi(prevState => ({
-                  ...prevState,
-                  xa: value
-                }));
-              }}
-              value={diaChi?.xa || "Chọn xã"}
-              style={{width : "100%", height : "40px", marginRight : "10px"}}
-            >
-              {optionXa}
-            </Select>
+            <div className="mb-6">
+              <label
+                htmlFor="city"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Chọn thành phố
+              </label>
+              <Select
+                placeholder="Thành phố"
+                onChange={(value) => {
+                  setDiaChi(prevState => ({
+                    ...prevState,
+                    thanhPho: value
+                  }));
+                  const provinceCode = provinces.find((x) => x.province_name === value)?.province_id;
+                  console.log(value);
+                  getDistricts(provinceCode).then((data) => {
+                    console.log(data.results);
+                    setDistrict(data.results);
+                  });
+                }}
+                // onChange={(selectedValue) => handleChangeTP(selectedValue)}
+                value={diaChi?.thanhPho || "Chọn thành phố"}
+                style={{ width: "100%", height: "40px", marginRight: "10px" }}
+              >
+                {provinces.map((province) => (
+                  <Option key={province.province_id} value={province.province_name}>
+                    {province.province_name}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="District"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Chọn huyện
+              </label>
+              <Select
+                placeholder="Huyện"
+                onChange={(value) => {
+                  setDiaChi(prevState => ({
+                    ...prevState,
+                    huyen: value
+                  }));
+                  const districtCode = district.find((x) => x.district_name === value)?.district_id;
+                  getWards(districtCode).then((data) => {
+                    setWard(data.results);
+                  });
+                }}
+                value={diaChi?.huyen || "Chọn huyện"}
+                style={{ width: "100%", height: "40px", marginRight: "10px" }}
+              >
+                {optionHuyen}
+              </Select>
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="wards"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Chọn xã phường
+              </label>
+              <Select
+                placeholder="Xã phường"
+                onChange={(value) => {
+                  setDiaChi(prevState => ({
+                    ...prevState,
+                    xa: value
+                  }));
+                }}
+                value={diaChi?.xa || "Chọn xã"}
+                style={{ width: "100%", height: "40px", marginRight: "10px" }}
+              >
+                {optionXa}
+              </Select>
+            </div>
           </div>
           <div>
             <img src="https://api.ghn.vn/themes/angulr/img/logo-ghn-new.png" width={"30%"} />

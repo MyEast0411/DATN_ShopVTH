@@ -19,4 +19,8 @@ public interface KichCoRepository extends JpaRepository<KichCo, String> {
     KichCo findByTen(String ten);
 
     KichCo findByMa(String ma);
+
+    Boolean existsByTen(String ten);
+
+    Boolean existsByMa(String ma);
 }
