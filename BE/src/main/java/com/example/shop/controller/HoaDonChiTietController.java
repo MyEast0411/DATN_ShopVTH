@@ -5,12 +5,11 @@ import com.example.shop.dto.*;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.requests.HoaDonChiTietUpdateRequest;
+import com.example.shop.response.TraHangRes;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
 import com.example.shop.util.SendMail;
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -399,11 +398,7 @@ public class HoaDonChiTietController {
             HoaDonDoiTraDTO hoaDonDoiTraDTO = new HoaDonDoiTraDTO();
         HoaDon hoaDon = hoaDonService.findHDDoiTra(maHD);
           List<HoaDonChiTiet> list = ssHDCT.getHDCT(hoaDon.getId());
-          List<SanPhamChiTiet> sanPhamChiTiets = new ArrayList<>();
-//          for (HoaDonChiTiet donChiTiet : list){
-//              SanPhamChiTiet sp = ssSP.findById(donChiTiet.getId_chi_tiet_san_pham().getId()).get();
-//              sanPhamChiTiets.add(sp);
-//          }
+
             hoaDonDoiTraDTO.setHoaDon(hoaDon);
            hoaDonDoiTraDTO.setListHDCT(list);
 
@@ -412,6 +407,119 @@ public class HoaDonChiTietController {
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
+
+    @PostMapping("/updateHDVoucher/{maHD}")
+    public ResponseEntity updateHDVoucher(@PathVariable String maHD , @RequestBody DoiTraDTO doiTraDTO) {
+        try {
+//            System.out.println(doiTraDTO);
+            HoaDon hoaDon = ssHD.getHoaDonByMa(maHD);
+            Double tongTienSauTra = doiTraDTO.getTongTienSauTra();
+            List<Voucher> voucherList = ssVC.getVoucherByGiaTriMin(tongTienSauTra);
+            Optional<Double> maxGiaTri = voucherList.stream()
+                    .map(Voucher::getGiaTriMax)
+                    .max(Comparator.naturalOrder());
+            voucherList.sort(Comparator.comparingDouble(Voucher::getGiaTriMax));
+            HoaDonDoiTraDTO hoaDonDoiTraDTO = new HoaDonDoiTraDTO();
+            if (voucherList.isEmpty()) {
+                hoaDon.setId_voucher(null);
+                HoaDon hoaDonSaved = ssHD.save(hoaDon);
+                List<HoaDonChiTiet> list = ssHDCT.getHDCT(hoaDonSaved.getId());
+                hoaDonDoiTraDTO.setHoaDon(hoaDonSaved);
+                hoaDonDoiTraDTO.setListHDCT(list);
+                return ResponseEntity.ok(hoaDonDoiTraDTO);
+            }
+            for (Voucher x :
+                    voucherList) {
+                if (tongTienSauTra >= x.getGiaTriMin() && x.getGiaTriMax() >= maxGiaTri.get()) {
+                    hoaDon.setId_voucher(x);
+                   HoaDon hoaDonSaved =  ssHD.save(hoaDon);
+                    hoaDonDoiTraDTO.setHoaDon(hoaDonSaved);
+                } else {
+                    hoaDon.setId_voucher(null);
+                }
+            }
+            List<HoaDonChiTiet> list = ssHDCT.getHDCT(hoaDonDoiTraDTO.getHoaDon().getId());
+            hoaDonDoiTraDTO.setListHDCT(list);
+            return ResponseEntity.ok(hoaDonDoiTraDTO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
+
+    @PostMapping("/updateHDDoiTra/{maHD}")
+    public ResponseEntity updateHDDoiTra(@PathVariable String maHD , @RequestBody TraHangRes traHangRes) {
+        try {
+            List<HoaDonChiTietCustomer> list = traHangRes.getListSPST();
+            List<HoaDonChiTietCustomer> listTra = traHangRes.getListSPCTDoiTra();
+            Double tienSauGiam = traHangRes.getTongTienSauTra();
+            HoaDon hoaDon = ssHD.getHoaDonByMa(maHD);
+            StringBuilder stringBuilder = new StringBuilder("Khách hàng vừa đổi tra sản phẩm ");
+            double tongTien = 0;
+            // upadte lại sản phẩm trong hóa đơn
+            for (HoaDonChiTietCustomer hdct: list) {
+                if (hdct.getQuantity() == 0){
+
+                    HoaDonChiTiet hdctXoa = HoaDonChiTiet.builder()
+                            .id_hoa_don(hdct.getId_hoa_don())
+                            .id_chi_tiet_san_pham(hdct.getId_chi_tiet_san_pham())
+                            .build();
+                    ssHDCT.delete(hdctXoa);
+                }else{
+                    //  set soLuong = quantity
+                    HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(hdct.getId_hoa_don().getId(),
+                            hdct.getId_chi_tiet_san_pham().getId());
+                    hoaDonChiTiet.setSoLuong(hdct.getQuantity());
+                    ssHDCT.save(hoaDonChiTiet);
+                }
+            }
+
+            // thêm 1 bản ghi mới vào hdct vs deleted = 0
+            for (HoaDonChiTietCustomer hdct: listTra) {
+                stringBuilder.append(" mã " + hdct.getId_chi_tiet_san_pham().getMa() + " , ");
+
+                HoaDonChiTiet hdctNew = HoaDonChiTiet.
+                        builder()
+                        .id_hoa_don(hdct.getId_hoa_don())
+                        .id_chi_tiet_san_pham(hdct.getId_chi_tiet_san_pham())
+                        .soLuong(hdct.getQuantity())
+                        .giaTien(hdct.getGiaTien())
+//                       .giaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
+                        .deleted(0)
+                        .ghiChu(hdct.getGhiChu())
+                        .build();
+                ssHDCT.save(hdctNew);
+            }
+
+            // thêm lich su hoa đơn
+
+            LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                    .id_hoa_don(hoaDon)
+                    .moTaHoaDon(stringBuilder.toString())
+                    .deleted(1)
+                    .nguoiTao("Đông")
+                    .ngayTao(new Date(System.currentTimeMillis()))
+                    .build();
+            lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
+
+            // upadte hoa dơn
+            List<HoaDonChiTiet> listHD = ssHDCT.getHDCT(hoaDon.getId());
+            for (HoaDonChiTiet donChiTiet : listHD) {
+                if (donChiTiet.getDeleted() == 1){
+                    tongTien += donChiTiet.getSoLuong() * donChiTiet.getGiaTien().doubleValue();
+                }
+            }
+            hoaDon.setTongTien(new BigDecimal(tongTien + ""));
+
+            ssHD.save(hoaDon);
+
+
+
+            return ResponseEntity.ok("hi");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
+
 
 
 }

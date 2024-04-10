@@ -47,4 +47,7 @@ public class HoaDonChiTiet {
 
     @Column(name = "deleted")
     private Integer deleted;
+
+    private String ghiChu;
+
 }
