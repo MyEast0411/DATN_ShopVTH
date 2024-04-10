@@ -14,6 +14,9 @@ import {
 import moment from "moment";
 import { format } from "date-fns";
 import TableSanPham from "./TableSanPham";
+import QRCode from "qrcode.react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 import {
   Table,
@@ -25,7 +28,7 @@ import {
   getKeyValue,
 } from "@nextui-org/react";
 import { MdAddCircle, MdCancel } from "react-icons/md";
-import { Modal, Tag, Tooltip, Input, Radio } from "antd";
+import { Modal, Tag, Tooltip, Input, Radio, Divider } from "antd";
 import { DeleteIcon } from "./icon/DeleteIcon";
 import { EditIcon } from "./icon/EditIcon";
 import { FaFileInvoice } from "react-icons/fa";
@@ -51,6 +54,7 @@ function DetailHoadon() {
   const [open, setOpen] = useState(false);
   const [kmspcts, setKmspcts] = useState([]);
   const [rowsSPCT, setRowsSPCT] = useState([]);
+  const [rowsSPCTTra, setRowsSPCTTra] = useState([]);
   const [rowsLichSu, setRowsLichSu] = useState([]);
   const [rowsLichSuThanhToan, setRowsLichSuThanhToan] = useState([]);
   const { id } = useParams();
@@ -83,6 +87,31 @@ function DetailHoadon() {
   const handleCancelHD = () => {
     setIsModalOpenHD(false);
   };
+  // const downloadPDF = () => {
+  //   const input = componentRef.current;
+  //   html2canvas(input).then((canvas) => {
+  //     const imgData = canvas.toDataURL("image/png");
+  //     const pdf = new jsPDF("p", "mm", "a4", true);
+  //     const pdfHeight = pdf.internal.pageSize.getHeight();
+  //     const pdfWidth = pdf.internal.pageSize.getWidth();
+  //     const imgWidth = canvas.width;
+  //     const imgHeight = canvas.height;
+  //     const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+  //     const imgX = (pdfWidth - imgWidth * ratio) / 2;
+  //     const imgY = 20;
+  //     pdf.addImage(
+  //       imgData,
+  //       "PNG",
+  //       imgX,
+  //       imgY,
+  //       imgWidth * ratio,
+  //       imgHeight * ratio
+  //     );
+  //     pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
+  //   });
+  //   setIsModalOpenHD(false);
+  // };
+
   const downloadPDF = () => {
     const input = componentRef.current;
     html2canvas(input).then((canvas) => {
@@ -103,11 +132,26 @@ function DetailHoadon() {
         imgWidth * ratio,
         imgHeight * ratio
       );
-      pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
+
+      // Tạo mã QR
+      const qrCodeDataUrl = document.createElement("canvas");
+      QRCode.toCanvas(qrCodeDataUrl, "https://example.com", function (error) {
+        if (error) console.error(error);
+        const qrImageData = qrCodeDataUrl.toDataURL("image/png");
+        pdf.addImage(
+          qrImageData,
+          "PNG",
+          10, // Điều chỉnh vị trí của mã QR tùy thuộc vào nhu cầu của bạn
+          imgHeight * ratio + 30, // Điều chỉnh vị trí của mã QR tùy thuộc vào nhu cầu của bạn
+          50, // Điều chỉnh kích thước của mã QR tùy thuộc vào nhu cầu của bạn
+          50 // Điều chỉnh kích thước của mã QR tùy thuộc vào nhu cầu của bạn
+        );
+
+        pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
+      });
     });
     setIsModalOpenHD(false);
   };
-
   const showModalFixHD = () => {
     setOpenFixHD(true);
   };
@@ -453,9 +497,24 @@ function DetailHoadon() {
       "http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id
     );
     const data = await res.data;
-
+    // console.log(data);
+    const checkData = data.filter((item) => item.deleted == 1);
     setRowsSPCT(
-      data.map((item, index) => {
+      checkData.map((item, index) => {
+        return {
+          id: item.id_chi_tiet_san_pham.id,
+          imageUrl: item.id_chi_tiet_san_pham.defaultImg,
+          name: item.id_chi_tiet_san_pham.ten,
+          kichco: item.id_chi_tiet_san_pham.id_kich_co.ten,
+          mausac: item.id_chi_tiet_san_pham.id_mau_sac.ten,
+          quantity: item.soLuong,
+          price: item.id_chi_tiet_san_pham.giaBan,
+        };
+      })
+    );
+    const checkDataTra = data.filter((item) => item.deleted == 0);
+    setRowsSPCTTra(
+      checkDataTra.map((item, index) => {
         return {
           id: item.id_chi_tiet_san_pham.id,
           imageUrl: item.id_chi_tiet_san_pham.defaultImg,
@@ -774,7 +833,7 @@ function DetailHoadon() {
               <ComponentToPrint
                 ref={componentRef}
                 data={rowsSPCT}
-                columns={columns}
+                //columns={columns}
                 inforKH={info}
               />
             </Modal>
@@ -1099,6 +1158,8 @@ function DetailHoadon() {
 
             <div className="row divide-y-4 divide-slate-400/25">
               <div className="row table-san-pham ">
+                <h1 className="m-3">Danh sách sản phẩm</h1>
+                <Divider />
                 {rowsSPCT.map((item, index) => (
                   <div
                     className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
@@ -1108,7 +1169,10 @@ function DetailHoadon() {
                       <img
                         src={item.imageUrl}
                         alt="product-image"
-                        className="w-full rounded-lg sm:w-40 me-10 object-contain"
+                        className="w-full rounded-lg sm:w-20 me-10 object-contain"
+                        style={{
+                          width: "7rem",
+                        }}
                       />
                       <div
                         style={{
@@ -1184,6 +1248,108 @@ function DetailHoadon() {
                             </Button>
                           </Tooltip>
                         )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="row table-san-pham ">
+                <h1 className="m-3">Danh sách sản phẩm trả</h1>
+                <Divider />
+                {rowsSPCTTra.map((item, index) => (
+                  <div
+                    className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
+                    key={index}
+                  >
+                    <div style={{ position: "relative" }}>
+                      <img
+                        src={item.imageUrl}
+                        alt="product-image"
+                        className="w-full rounded-lg sm:w-20 me-10 object-contain"
+                        style={{
+                          width: "7rem",
+                        }}
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          right: 16,
+                          left: -10,
+                          zIndex: 1,
+                        }}
+                      >
+                        <DiscountTag
+                          discount={
+                            kmspcts.find(
+                              (x) => x.id_chi_tiet_san_pham.id == item.id
+                            )?.id_khuyen_mai.giaTriPhanTram
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between w-full">
+                      <div>
+                        <div className=" sm:mt-0">
+                          <h2 className="text-lg font-medium text-gray-900 mb-3">
+                            {item.name}
+                          </h2>
+                          <p className="mb-3  font-medium text-gray-900">
+                            Size: {item.kichco}
+                          </p>
+                          <p className="font-medium text-gray-900 mb-3">
+                            Số lượng :
+                            <span className="font-medium text-red-500 mb-3">
+                              {item.quantity}&nbsp;
+                            </span>
+                            sản phẩm
+                          </p>
+                          <p className="font-medium text-gray-900 mb-3">
+                            Đơn giá :{" "}
+                            <span className="font-medium text-red-500 mb-3">
+                              {Intl.NumberFormat().format(item.price)} &nbsp;₫
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="inline-flex items-center gap-10">
+                        <p className="font-medium text-red-500">
+                          {Intl.NumberFormat().format(
+                            item.price * item.quantity
+                          )}
+                          &nbsp;₫
+                        </p>
+
+                        {info.trangThai < 4 && (
+                          <Tooltip title="Xóa sản phẩm" arrow={true}>
+                            <Button
+                              color="red"
+                              onClick={() => onHandleDelete(item.id)}
+                            >
+                              <DeleteIcon />
+                            </Button>
+                          </Tooltip>
+                        )}
+                        {info.trangThai < 4 && (
+                          <Tooltip title="Chỉnh sửa số lượng" arrow={true}>
+                            <Button
+                              color="yellow"
+                              onClick={() => {
+                                showModalLichSuSP();
+                                getSPCT(item.id);
+                              }}
+                            >
+                              <EditIcon />
+                            </Button>
+                          </Tooltip>
+                        )}
+                      </div>
+                      <div>
+                        <h2 className="text-sm font-medium text-gray-900 mb-3">
+                          Lý do đỏi trả : {item.ghiChu}
+                        </h2>
                       </div>
                     </div>
                   </div>
@@ -1603,34 +1769,34 @@ const columnsLSHD = [
   // },
 ];
 
-const columns = [
-  {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
-    render: (_, record) => (
-      <span>
-        {record.name}
-        {" ( "}
-        {record.mausac}
-        {" , "}
-        {record.kichco}
-        {" ) "}
-      </span>
-    ),
-  },
-  {
-    title: "Số lượng",
-    dataIndex: "quantity",
-    key: "quantity",
-    render: (text) => <span>{text} sản phẩm</span>,
-  },
-  {
-    title: "Đơn Giá",
-    dataIndex: "price",
-    key: "price",
-    render: (text) => (
-      <span className="text-red-300">{Intl.NumberFormat().format(text)} ₫</span>
-    ),
-  },
-];
+// const columns = [
+//   {
+//     title: "Name",
+//     dataIndex: "name",
+//     key: "name",
+//     render: (_, record) => (
+//       <span>
+//         {record.name}
+//         {" ( "}
+//         {record.mausac}
+//         {" , "}
+//         {record.kichco}
+//         {" ) "}
+//       </span>
+//     ),
+//   },
+//   {
+//     title: "Số lượng",
+//     dataIndex: "quantity",
+//     key: "quantity",
+//     render: (text) => <span>{text} sản phẩm</span>,
+//   },
+//   {
+//     title: "Đơn Giá",
+//     dataIndex: "price",
+//     key: "price",
+//     render: (text) => (
+//       <span className="text-red-300">{Intl.NumberFormat().format(text)} ₫</span>
+//     ),
+//   },
+// ];

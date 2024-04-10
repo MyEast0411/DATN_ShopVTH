@@ -5,18 +5,19 @@ import { format } from "date-fns";
 import QRCode from "qrcode.react";
 
 // xuất ảnh
-const ComponentToPrint = React.forwardRef((props, ref) => {
-  const [tong, setTong] = React.useState(0);
-  const handleTong = () => {
-    const sum = props.data.reduce(
-      (accumulator, currentValue) =>
-        accumulator + currentValue.price * currentValue.quantity,
-      0
-    );
-    setTong(sum);
-  };
+const InHoaDonTra = React.forwardRef((props, ref) => {
+  console.log(props);
+  //   const [tong, setTong] = React.useState(0);
+  //   const handleTong = () => {
+  //     const sum = props.data.reduce(
+  //       (accumulator, currentValue) =>
+  //         accumulator + currentValue.price * currentValue.quantity,
+  //       0
+  //     );
+  //     setTong(sum);
+  //   };
 
-  React.useEffect(handleTong, []);
+  //   React.useEffect(handleTong, []);
   return (
     <div
       ref={ref}
@@ -37,13 +38,6 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
       >
         <div className="flex justify-around">
           <div>
-            {/* <img
-              src={logo}
-              width={50}
-              alt="Ảnh logo"
-              style={{ display: "inline-block" }}
-            /> */}
-
             <div className="content grid justify-items-center">
               <p
                 className=" whitespace-pre font-semibold mb-6"
@@ -109,8 +103,67 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
 
       <div className="sp  p-5">
         <div className="hoa-don-chi-tiet">
+          <p>Sản Phẩm Mua</p>
           <div>
-            {/* Bảng sản phẩm */}
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                textAlign: "center",
+              }}
+            >
+              <thead>
+                <tr>
+                  <th style={{ border: "1px solid black", padding: "8px" }}>
+                    STT
+                  </th>
+                  <th style={{ border: "1px solid black", padding: "8px" }}>
+                    Tên sản phẩm
+                  </th>
+                  <th style={{ border: "1px solid black", padding: "8px" }}>
+                    Giá
+                  </th>
+                  <th style={{ border: "1px solid black", padding: "8px" }}>
+                    Số lượng
+                  </th>
+                  <th style={{ border: "1px solid black", padding: "8px" }}>
+                    Thành tiền
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {props.dataHD.map((product, index) => (
+                  <tr key={index}>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>
+                      {index + 1}
+                    </td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>
+                      {product.id_chi_tiet_san_pham.ten} "
+                      {product.id_chi_tiet_san_pham.id_mau_sac.ten}" [
+                      {product.id_chi_tiet_san_pham.id_kich_co.ten}]
+                    </td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>
+                      {Intl.NumberFormat().format(product.giaTien)} ₫
+                    </td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>
+                      {product.soLuong}
+                    </td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>
+                      {Intl.NumberFormat().format(
+                        product.giaTien * product.soLuong
+                      )}
+                      &nbsp;&nbsp; ₫
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* <div className="hoa-don-chi-tiet">
+          <p>Sản Phẩm Trả</p>
+          <div>
             <table
               style={{
                 width: "100%",
@@ -169,7 +222,7 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
               </tbody>
             </table>
           </div>
-        </div>
+        </div> */}
         <div className="mt-4  space-y-5 flex  justify-between">
           <div style={{ textAlign: "center", margin: "20px" }}>
             <QRCode
@@ -185,9 +238,7 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
           <div className="space-y-3">
             <p className="text-end " style={{ fontSize: 17 }}>
               Tổng cộng :&nbsp;&nbsp;
-              <span className="italic">
-                {Intl.NumberFormat().format(tong)} ₫
-              </span>
+              <span className="italic">{Intl.NumberFormat().format(0)} ₫</span>
             </p>
             <p style={{ fontSize: 17 }}>
               <span className="me-5"> Thuế(%) :&nbsp;&nbsp;</span>
@@ -202,7 +253,7 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
               <span className=" ">
                 &nbsp;&nbsp;
                 <span className="italic">
-                  {Intl.NumberFormat().format(tong)} ₫
+                  {Intl.NumberFormat().format(0)} ₫
                 </span>
               </span>
             </p>
@@ -213,4 +264,4 @@ const ComponentToPrint = React.forwardRef((props, ref) => {
   );
 });
 
-export default ComponentToPrint;
+export default InHoaDonTra;
