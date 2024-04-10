@@ -71,12 +71,10 @@ public class MauSacController {
     @PutMapping("updateMauSac")
     public ResponseEntity updateMauSac(@RequestBody UpdateDeGiayRequest request) {
         try {
-            if(repo.existsByMaMauAndDeleted(request.getMa(),1)) {
-                return ResponseEntity.badRequest().body("Đã tồn tại mã màu này");
-            }
-            if(repo.existsByTenAndDeleted(request.getTen(),1)) {
+            if(repo.existsByMaMauAndDeleted(request.getMa(),1) && repo.existsByTenAndDeleted(request.getTen(),1)) {
                 return ResponseEntity.badRequest().body("Đã tồn tại màu sắc này");
             }
+
             MauSac cl = repo.findById(request.getId()).get();
             cl.setMaMau(request.getMa());
             cl.setTen(request.getTen());

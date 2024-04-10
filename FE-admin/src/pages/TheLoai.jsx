@@ -5,7 +5,7 @@ import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
 import axios from "axios";
 
 import { Button as ButtonAntd, Modal, Form } from "antd";
-import { Link } from "react-router-dom";
+import { Select  } from "antd";
 
 //loading
 import TailSpinLoading from "../components/loading/TailSpinLoading";
@@ -62,7 +62,7 @@ const columns = [
 
 const statusOptions = [
   { name: "Hoạt động", uid: "Hoạt động" },
-  { name: "Không hoạt động", uid: "Hoạt động" },
+  { name: "Ngừng hoạt động", uid: "Ngừng hoạt động" },
 ];
 
 const statusColorMap = {
@@ -71,7 +71,7 @@ const statusColorMap = {
   incoming: "warning",
 };
 statusColorMap["Hoạt động"] = "success";
-statusColorMap["Không hoạt động"] = "danger";
+statusColorMap["Ngừng hoạt động"] = "danger";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
@@ -133,19 +133,20 @@ export default function ChatLieu() {
   async function fetchChiTietSanPham() {
     try {
       const response = await axios.get(url);
+      console.log(response);
       const updatedRows = response.data.map((item, index) => ({
         id: item.id,
         stt: index + 1,
         ma: item.ma,
         ten: item.ten,
-        trangThai: item.deleted == 1 ? "Hoạt động" : "Không hoạt động",
+        trangThai: item.deleted == 1 ? "Hoạt động" : "Ngừng hoạt động",
       }));
       setSanPhams(updatedRows);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
   }
-  React.useEffect(() => {
+  useEffect(() => {
     fetchChiTietSanPham();
   }, []);
 
@@ -516,7 +517,7 @@ export default function ChatLieu() {
             setTimeout(() => {
               setLoading(false);
             }, 1000);
-            
+            setIsModalDetailKichCo(false);
             fetchChiTietSanPham();
           }
         })
@@ -526,18 +527,38 @@ export default function ChatLieu() {
             autoClose: 2000,
           });
           setLoading(false);
+          setIsModalDetailKichCo(false);
         });
     } catch (error) {
       console.log("err form" +error);
       setLoading(false);
     }
 
-    setIsModalDetailKichCo(false);
   };
-
+  const handleChange = async (value) => {
+    console.log(value);
+    if (value == -1) {
+      fetchChiTietSanPham();
+    } else {
+      const result = await axios.post(`http://localhost:8080/the-loai/filterTheLoai`, {
+        selectedStatus: value,
+        textInput: filterValue
+      })
+      const updatedRows = result.data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        ma: item.ma,
+        ten: item.ten,
+        trangThai: item.deleted == 1 ? "Hoạt động" : "Ngừng hoạt động",
+      }));
+      setSanPhams(updatedRows);
+    }
+  }
   useEffect(() => {
     form.resetFields();
   }, [initValue]);
+
+  
   return (
     <>
       {/* {loading ? ( <TailSpinLoading/> ) :  */}
@@ -577,8 +598,17 @@ export default function ChatLieu() {
             </div>
             <div className="p-5">
               <div className="flex items-center">
-                <span className="pr-2">Trạng thái:</span>
-                <FilterTrangThai style={{ width: "100%" }} />
+              <span className="pr-2">Trạng thái:</span>
+                <Select
+                  defaultValue={-1}
+                  className="w-48"
+                  onChange={handleChange}
+                  options={[
+                    { value: -1, label: " Tất cả" },
+                    { value: 1, label: " Hoạt động" },
+                    { value: 0, label: " Ngừng hoạt động" },
+                  ]}
+                />
               </div>
             </div>
             <div className="p-5">

@@ -71,6 +71,9 @@ public class DeGiayController {
     @PutMapping("updateDeGiay")
     public ResponseEntity updateDeGiay(@RequestBody UpdateDeGiayRequest request) {
         try {
+            if(repo.existsByMa(request.getMa()) && repo.existsByTen(request.getTen())) {
+                return ResponseEntity.badRequest().body("Đã tồn tại đế giày này");
+            }
             DeGiay cl = repo.findById(request.getId()).get();
             cl.setMa(request.getMa());
             cl.setTen(request.getTen());

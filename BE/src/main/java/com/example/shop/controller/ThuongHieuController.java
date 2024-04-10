@@ -69,6 +69,9 @@ public class ThuongHieuController {
     @PutMapping("updateThuongHieu")
     public ResponseEntity updateThuongHieu(@RequestBody UpdateThuongHieuRequest request) {
         try {
+            if(repo.existsByMa(request.getMa()) && repo.existsByTen(request.getTen())) {
+                return ResponseEntity.badRequest().body("Đã tồn tại thương hiệu này");
+            }
             ThuongHieu cl = repo.findById(request.getId()).get();
             cl.setMa(request.getMa());
             cl.setTen(request.getTen());

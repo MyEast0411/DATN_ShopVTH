@@ -63,6 +63,9 @@ public class KichCoController {
     @PutMapping("updateKichCo")
     public ResponseEntity updateKichCo(@RequestBody UpdateKichCoRequest kichCo) {
         try {
+            if(repo.existsByMa(kichCo.getMa()) && repo.existsByTen(kichCo.getTen())) {
+                return ResponseEntity.badRequest().body("Đã tồn tại kích cỡ này");
+            }
             KichCo kc = repo.findById(kichCo.getId()).get();
             kc.setMa(kichCo.getMa());
             kc.setTen(kichCo.getTen());
