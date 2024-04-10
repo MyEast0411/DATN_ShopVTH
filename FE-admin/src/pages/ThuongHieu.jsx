@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
 import axios from "axios";
 
-import { Button as ButtonAntd, Modal, Form } from "antd";
+import { Button as ButtonAntd, Modal, Form, Select } from "antd";
 import { Link } from "react-router-dom";
 
 //loading
@@ -62,7 +62,7 @@ const columns = [
 
 const statusOptions = [
   { name: "Hoạt động", uid: "Hoạt động" },
-  { name: "Không hoạt động", uid: "Hoạt động" },
+  { name: "Ngừng hoạt động", uid: "Ngừng hoạt động" },
 ];
 
 const statusColorMap = {
@@ -138,7 +138,7 @@ export default function ChatLieu() {
         stt: index + 1,
         ma: item.ma,
         ten: item.ten,
-        trangThai: item.deleted == 1 ? "Hoạt động" : "Không hoạt động",
+        trangThai: item.deleted == 1 ? "Hoạt động" : "Ngừng hoạt động",
       }));
       setSanPhams(updatedRows);
     } catch (error) {
@@ -534,7 +534,24 @@ export default function ChatLieu() {
 
     setIsModalDetailKichCo(false);
   };
-
+  const handleChange = async (value) => {
+    if (value == -1) {
+      fetchChiTietSanPham();
+    } else {
+      const result = await axios.post(`http://localhost:8080/thuong-hieu/filterThuongHieu`, {
+        selectedStatus: value,
+        textInput: filterValue
+      })
+      const updatedRows = result.data.map((item, index) => ({
+        id: item.id,
+        stt: index + 1,
+        ma: item.ma,
+        ten: item.ten,
+        trangThai: item.deleted == 1 ? "Hoạt động" : "Ngừng hoạt động",
+      }));
+      setSanPhams(updatedRows);
+    }
+  }
   useEffect(() => {
     form.resetFields();
   }, [initValue]);
@@ -577,8 +594,17 @@ export default function ChatLieu() {
             </div>
             <div className="p-5">
               <div className="flex items-center">
-                <span className="pr-2">Trạng thái:</span>
-                <FilterTrangThai style={{ width: "100%" }} />
+              <span className="pr-2">Trạng thái:</span>
+                <Select
+                  defaultValue={-1}
+                  className="w-48"
+                  onChange={handleChange}
+                  options={[
+                    { value: -1, label: " Tất cả" },
+                    { value: 1, label: " Hoạt động" },
+                    { value: 0, label: " Ngừng hoạt động" },
+                  ]}
+                />
               </div>
             </div>
             <div className="p-5">
@@ -722,8 +748,12 @@ export default function ChatLieu() {
                     name="ma"
                     rules={[
                       {
-                        required: true,
-                        message: "Mã thương hiệu không được để trống!",
+                        validator: (rule, value) => {
+                          if (!value || value.trim() === '') {
+                            return Promise.reject("Mã thương hiệu không được để trống!");
+                          }
+                          return Promise.resolve();
+                        }
                       }
                     ]}>
                     <Input
@@ -740,8 +770,12 @@ export default function ChatLieu() {
                     name="ten"
                     rules={[
                       {
-                        required: true,
-                        message: "Tên thương hiệu không được để trống!",
+                        validator: (rule, value) => {
+                          if (!value || value.trim() === '') {
+                            return Promise.reject("Tên thương hiệu không được để trống!");
+                          }
+                          return Promise.resolve();
+                        }
                       }
                     ]}
                   >
@@ -774,8 +808,12 @@ export default function ChatLieu() {
                     name="ma"
                     rules={[
                       {
-                        required: true,
-                        message: "Mã thương hiệu không được để trống!",
+                        validator: (rule, value) => {
+                          if (!value || value.trim() === '') {
+                            return Promise.reject("Mã thương hiệu không được để trống!");
+                          }
+                          return Promise.resolve();
+                        }
                       }
                     ]}>
                     <Input
@@ -793,8 +831,12 @@ export default function ChatLieu() {
                     name="ten"
                     rules={[
                       {
-                        required: true,
-                        message: "Tên thương hiệu không được để trống!",
+                        validator: (rule, value) => {
+                          if (!value || value.trim() === '') {
+                            return Promise.reject("Tên thương hiệu không được để trống!");
+                          }
+                          return Promise.resolve();
+                        }
                       }
                     ]}
                   >
