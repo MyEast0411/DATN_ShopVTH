@@ -752,10 +752,15 @@ export default function ChatLieu() {
                     name="ma"
                     rules={[
                       {
-                        required: true,
-                        message: "Mã thể loại không được để trống!",
+                        validator: (rule, value) => {
+                          if (!value || value.trim() === '') {
+                            return Promise.reject("Mã thể loại không được để trống!");
+                          }
+                          return Promise.resolve();
+                        }
                       }
-                    ]}>
+                    ]}
+                    >
                     <Input
                       name="ma"
                       placeholder="Nhập mã thể loại"
@@ -770,8 +775,12 @@ export default function ChatLieu() {
                     name="ten"
                     rules={[
                       {
-                        required: true,
-                        message: "Tên thể loại không được để trống!",
+                        validator: (rule, value) => {
+                          if (!value || value.trim() === '') {
+                            return Promise.reject("Tên thể loại không được để trống!");
+                          }
+                          return Promise.resolve();
+                        }
                       }
                     ]}
                   >
@@ -804,8 +813,12 @@ export default function ChatLieu() {
                     name="ma"
                     rules={[
                       {
-                        required: true,
-                        message: "Mã thể loại không được để trống!",
+                        validator: (rule, value) => {
+                          if (!value || value.trim() === '') {
+                            return Promise.reject("Mã thể loại không được để trống!");
+                          }
+                          return Promise.resolve();
+                        }
                       }
                     ]}>
                     <Input
@@ -823,8 +836,12 @@ export default function ChatLieu() {
                     name="ten"
                     rules={[
                       {
-                        required: true,
-                        message: "Tên thể loại không được để trống!",
+                        validator: (rule, value) => {
+                          if (!value || value.trim() === '') {
+                            return Promise.reject("Tên thể loại không được để trống!");
+                          }
+                          return Promise.resolve();
+                        }
                       }
                     ]}
                   >
@@ -849,7 +866,7 @@ export default function ChatLieu() {
                       style={{ borderRadius: "5px" }}
                     />
                   </Form.Item>
-                  <label htmlFor="ten" className="block text-sm font-medium leading-6 text-gray-900">
+                  <label htmlFor="ngay_tao" className="block text-sm font-medium leading-6 text-gray-900">
                     Ngày tạo
                   </label>
                   <Form.Item

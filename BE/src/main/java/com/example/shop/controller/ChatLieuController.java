@@ -2,15 +2,19 @@ package com.example.shop.controller;
 
 import com.example.shop.entity.ChatLieu;
 import com.example.shop.entity.KichCo;
+import com.example.shop.entity.TheLoai;
 import com.example.shop.repositories.ChatLieuRepository;
+import com.example.shop.requests.SearchThuocTinhSPRequest;
 import com.example.shop.requests.UpdateChatLieuRequest;
 import com.example.shop.requests.UpdateKichCoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Controller
 @RestController
@@ -29,7 +33,15 @@ public class ChatLieuController {
     public ResponseEntity getByMa(@PathVariable String ma) {
         return ResponseEntity.ok(repo.findByMa(ma));
     }
-
+    @PostMapping("/filterChatLieu")
+    public ResponseEntity filterChatLieu(@RequestBody SearchThuocTinhSPRequest request) {
+        try {
+            List<ChatLieu> list = repo.filter(request.getSelectedStatus(),request.getTextInput(),request.getTextInput());
+            return ResponseEntity.ok(list);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
+        }
+    }
     @PostMapping("/addChatLieu")
     public ResponseEntity addChatLieu(@RequestBody ChatLieu chatLieu) {
         try {

@@ -2,13 +2,16 @@ package com.example.shop.controller;
 
 import com.example.shop.entity.KichCo;
 import com.example.shop.repositories.KichCoRepository;
+import com.example.shop.requests.SearchThuocTinhSPRequest;
 import com.example.shop.requests.UpdateKichCoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Controller
 @RestController
@@ -28,7 +31,15 @@ public class KichCoController {
     public ResponseEntity getByMa(@PathVariable String ma) {
         return ResponseEntity.ok(repo.findByMa(ma));
     }
-
+    @PostMapping("/filterKichCo")
+    public ResponseEntity filterKichCo(@RequestBody SearchThuocTinhSPRequest request) {
+        try {
+            List<KichCo> list = repo.filter(request.getSelectedStatus(),request.getTextInput(),request.getTextInput());
+            return ResponseEntity.ok(list);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
+        }
+    }
     @PostMapping("/addKichCo")
     public ResponseEntity addKichCo(@RequestBody KichCo kichCo) {
         try {
