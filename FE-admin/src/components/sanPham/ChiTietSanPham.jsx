@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import { toast } from "react-toastify";
 import { Button as ButtonAntd, notification } from "antd";
 import { Link, useParams } from "react-router-dom";
 import { InputNumber, Modal } from "antd";
@@ -88,6 +88,7 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 export default function ChiTietSanPham() {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCTSP, setSelectedCTSP] = useState([]);
@@ -97,13 +98,29 @@ export default function ChiTietSanPham() {
   const [deGiay, setDeGiay] = useState([]);
   const [kichCo, setKichCo] = useState([]);
   const [nhanHieu, setNhanHieu] = useState([]);
+  const [theLoai, setTheLoai] = useState([]);
   const [idDetailProduct, setIdDetailProduct] = useState([]);
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
   const { ma } = useParams();
   const [kmspcts, setKmspcts] = useState([]);
-
+  const [sanPhamChiTiet, setSanPhamChiTiet] = useState({
+    id: "",
+    description: "",
+    price: "",
+    quantity: "",
+    status: "",
+    id_de_giay: "",
+    productName: "",
+    id_chat_lieu: "",
+    id_mau_sac: "",
+    id_the_loai: "",
+    id_thuong_hieu: "",
+    qrcode: "",
+    id_kich_co: "",
+});
   useEffect(() => {
+    getAllTL();
     getAllNH();
     getAllMS();
     getAllCL();
@@ -134,7 +151,11 @@ export default function ChiTietSanPham() {
       setChatLieu(response.data);
     });
   };
-
+  const getAllTL = async () => {
+    await axios.get("http://localhost:8080/getAllTL").then((response) => {
+      setTheLoai(response.data);
+    });
+  };
   const getAllDG = async () => {
     await axios.get("http://localhost:8080/getAllDG").then((response) => {
       setDeGiay(response.data);
@@ -497,11 +518,41 @@ export default function ChiTietSanPham() {
     setIsModalOpenSP(true);
   };
   const handleOkSP = async () => {
-    setIsModalOpenSP(false);
+    showUpdate();
+    // console.log(sanPhamChiTiet);
+    // await axios.put("http://localhost:8080/updateSanPhamChiTiet", sanPhamChiTiet).then((response) => {
+    //   toast.success("Cập nhật sản phẩm chi tiết thành công!");
+    //   setIsModalOpenSP(false);
+    //   fetchData();
+    // }).catch((err) => {
+    //   console.log(err);
+    // })
   };
+
   const handleCancelSP = () => {
+    console.log("tat modal");
     setIsModalOpenSP(false);
   };
+
+  const showUpdate = () => {
+    setUpdateConfirmationOpen(true);
+  }
+  const handleOKUpdateConfirmation = async () => {
+    await axios.put("http://localhost:8080/updateSanPhamDetail", sanPhamChiTiet).then((response) => {
+      if(response.status == 200) {
+        setIsModalOpenSP(false);
+        handleCloseUpdateConfirmation();
+        toast.success("Cập nhật sản phẩm chi tiết thành công !");
+        fetchData();
+      }
+      
+    }).catch((err) => {
+      console.log(err);
+    })
+  };
+  const handleCloseUpdateConfirmation = () => {
+    setUpdateConfirmationOpen(false);
+  }
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
@@ -900,7 +951,7 @@ export default function ChiTietSanPham() {
                       onChange={(e) => onChange(e)}
                     >
                       <option selected>Tất cả</option>
-                      {chatLieu.map((x) => (
+                      {theLoai.map((x) => (
                         <option
                           key={x.id}
                           value={x.id}
@@ -1043,7 +1094,37 @@ export default function ChiTietSanPham() {
             )}
           </TableBody>
         </Table>
-
+        <Dialog open={updateConfirmationOpen} onClose={handleCloseUpdateConfirmation} fullWidth>
+            <DialogTitle>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: "15px",
+                }}
+              >
+                <TbInfoTriangle
+                  className="mr-2"
+                  style={{
+                    color: "red",
+                    fontSize: "25px",
+                  }}
+                />
+                <span>Xác nhận cập nhật</span>
+              </div>
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>Bạn có chắc muốn cập nhật sản phẩm này?</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseUpdateConfirmation} color="warning">
+                Hủy
+              </Button>
+              <Button onClick={handleOKUpdateConfirmation}>
+                Hoàn tất
+              </Button>
+            </DialogActions>
+          </Dialog>
         <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
           <DialogTitle>
             <div
@@ -1087,7 +1168,7 @@ export default function ChiTietSanPham() {
           style={{ position: "relative" }}
           width={800}
         >
-          <ModalChiTietSanPham idDetailProduct={idDetailProduct} />
+          <ModalChiTietSanPham idDetailProduct={idDetailProduct} sanPhamChiTiet={sanPhamChiTiet} setSanPhamChiTiet={setSanPhamChiTiet}/>
         </Modal>
         <Modal
           title="Xác nhận chỉnh sửa sản phẩm"

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 //filter
 import FilterTrangThai from "../common/filter/sanPham/FilterTrangThai";
 import FilterMa from "../common/filter/sanPham/FilterMa";
-import Slider from "../common/filter/sanPham/Slider";
+// import Slider from "../common/filter/sanPham/Slider";
 import axios from "axios";
 
 import { Button as ButtonAntd, Select } from "antd";
@@ -26,6 +26,7 @@ import {
   Chip,
   Pagination,
   Image,
+  Slider,
   Tooltip,
 } from "@nextui-org/react";
 import {
@@ -126,6 +127,8 @@ export default function SanPham() {
   });
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
+  const [data, setData] = React.useState([]);
+
   async function fetchChiTietSanPham() {
     try {
       const response = await axios.get(url);
@@ -138,6 +141,7 @@ export default function SanPham() {
         trangThai: item.trang_thai == 1 ? "Đang bán" : "Ngừng bán",
       }));
       setSanPhams(updatedRows);
+      setData(updatedRows);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
@@ -367,14 +371,18 @@ export default function SanPham() {
       </div>
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
-  const [data, setData] = React.useState([]);
+  const [maxValue, setMaxValue] = useState(null);
+  const [dataSelect, setDataSelect] = useState("-1");
+  const [dataSlider, setDataSlider] = useState(0);
   const handleChange = async (selectedValue) => {
-    if (selectedValue == -1) {
+    setDataSelect(selectedValue);
+    if (selectedValue == -1 && dataSlider == 0) {
       fetchChiTietSanPham();
     } else {
       const response = await axios.post("http://localhost:8080/filterSanPham" , {
         text : filterValue,
         status : selectedValue,
+        soLuongTon : dataSlider
       })
       console.log(response);
       const updatedRows = response.data.map((item, index) => ({
@@ -386,9 +394,36 @@ export default function SanPham() {
         trangThai: item.status == 1 ? "Đang bán" : "Ngừng bán",
       }));
       setSanPhams(updatedRows);
-      setData(response.data);
+      // setData(updatedRows);
     }
   };
+
+  const onChangeSideBar = async (selectedValue) => {
+    setDataSlider(selectedValue);
+    if (selectedValue == 0 && dataSelect == -1) {
+      fetchChiTietSanPham();
+    } else {
+      console.log(selectedValue);
+      console.log(dataSelect);
+      const res = await axios.post(`http://localhost:8080/filterSanPhamBySoLuongTon`, {
+        selectedStatus: dataSelect,
+        textInput: filterValue == "" ? '' : filterValue,
+        soLuongTon : selectedValue,
+      });
+      console.log(res);
+      const updatedRows = res.data.map((item, index) => ({
+        id: index + 1,
+        stt: index + 1,
+        ma: item.maSanPham,
+        ten: item.tenSanPham,
+        soLuongTon: item.soLuongTon,
+        trangThai: item.status == 1 ? "Đang bán" : "Ngừng bán",
+      }));
+      setSanPhams(updatedRows);
+      // setLoading(false);
+    }
+  };
+
   return (
     <>
       <div>
@@ -434,19 +469,22 @@ export default function SanPham() {
                     options={[
                       { value: -1, label: " Tất cả" },
                       { value: 1, label: " Đang bán" },
-                      { value: 0, label: " Dừng bán" },
+                      { value: 0, label: " Ngừng bán" },
                     ]}
                   />
               </div>
             </div>
             <div className="p-5">
               <Slider
-                style={{ width: "100%" }}
-                searchValue={0}
+                label="Số lượng tồn"
+                style={{ width: "50%" }}
+                defaultValue={0}
+                minValue={0}
+                onChange={onChangeSideBar}
+                step={10}
                 maxValue={Math.max(
-                  ...sanPhams.map((sanPham) => sanPham.soLuongTon)
+                  ...data.map((sanPham) => sanPham.soLuongTon)
                 )}
-                setSanPhams={setSanPhams}
               />
             </div>
             {/* <div className="p-5 text-center mt-4">

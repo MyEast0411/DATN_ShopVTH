@@ -32,8 +32,6 @@ const KhuyenMai = () => {
     const nkt = formatToYYYYMMDDHHMM(dateString[1]);
     setNgayBatDau(nbd);
     setNgayKetThuc(nkt);
-    // console.log("Ngay bat dau: " + nbd);
-    // console.log("Ngay ket thuc: " + nkt);
   };
 
   const onSearchChange = React.useCallback((value) => {
