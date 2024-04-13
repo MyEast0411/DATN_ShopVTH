@@ -29,7 +29,7 @@ const statusColorMap = {
   vacation: "warning",
 };
 
-export default function CartItem({ users, columns, updateSoLuong }) {
+export default function CartItem({ users, columns, updateSoLuong, setItems, gioHang, setTienHang }) {
   const [idToDelete, setIdToDelete] = useState({
     id_hoa_don : "",
     id_san_pham : ""
@@ -72,6 +72,19 @@ export default function CartItem({ users, columns, updateSoLuong }) {
       await axios.delete(`http://localhost:8080/hoa_don_chi_tiet/deleteHDCT/${idToDelete.id_hoa_don}/${idToDelete.id_san_pham}`)
         .then((response) => {
           toast("🎉 Xóa thành công");
+          console.log(gioHang);
+          setItems(prevItems => {
+            return prevItems.map(item => {
+              if (item.key === gioHang) {
+                return {
+                  ...item,
+                  soLuong: response.data
+                };
+              }
+              return item;
+            });
+          });
+          setTienHang(response.data.tongTien);
           cancelDelete();
         })
         .catch((error) => {
@@ -140,10 +153,27 @@ export default function CartItem({ users, columns, updateSoLuong }) {
                     toast(`Chỉ được thêm tối đa 10 sản phẩm`);
                     return;
                   }
+                  setItems(prevItems => {
+                    return prevItems.map(item => {
+                      if (item.key === gioHang) {
+                        return {
+                          ...item,
+                          soLuong: value
+                        };
+                      }
+                      return item;
+                    });
+                  });
                   await axios.post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
                     id_hoa_don : user.id_hoa_don.ma,
                     id_san_pham : user.id_chi_tiet_san_pham.id,
                     so_luong : value
+                  }).then((response) => {
+                    console.log(response.data.tongTien);
+                    setTienHang(response.data.tongTien);
+                  }).catch((err) => {
+                    console.log("err");
+                    toast.error(err.response.data);
                   })
                 }}
               />
@@ -153,7 +183,7 @@ export default function CartItem({ users, columns, updateSoLuong }) {
       case "tongTien":
         return (
           <span style={{ color: "red", fontSize: 20 }}>
-            {Intl.NumberFormat().format(user.giaTien)}&nbsp;₫
+            {Intl.NumberFormat().format(user.giaTien * user.soLuong)}&nbsp;₫
           </span>
         );
       case "actions":

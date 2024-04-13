@@ -18,9 +18,9 @@ public interface NhanVienRepository extends JpaRepository<NhanVien,String> {
     String findMaxMa();
 
     @Query(value = "SELECT *\n" +
-            "            \tFROM nhan_vien\n" +
-            "            \tWHERE deleted = 1 AND trang_thai = :trang_thai\n" +
-            "            \tOR ten like \"%:ten%\" AND ten = ''\n" +
-            "                OR email like \"%:email%\" AND email = '' order by ngay_tao desc", nativeQuery = true)
+            "FROM nhan_vien\n" +
+            "WHERE deleted = 1 AND trang_thai = :trang_thai\n" +
+            "OR ten like \"%:ten%\" AND ten = ''\n" +
+            "OR email like \"%:email%\" AND email = '' order by ngay_tao desc", nativeQuery = true)
     List<NhanVien> filter(@Param("trang_thai") Integer trang_thai, @Param("ten") String ten, @Param("email") String email);
 }

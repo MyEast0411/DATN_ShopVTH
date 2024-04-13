@@ -8,7 +8,7 @@ import {
   TableCell,
   Tooltip,
 } from "@nextui-org/react";
-import { Table as TableAntd } from "antd";
+import { Table as TableAntd, InputNumber } from "antd";
 import {
   Button,
   Input,
@@ -45,6 +45,7 @@ import { toast } from "react-toastify";
 const GioHang = ({
   columns,
   users,
+  setItems,
   activeKey,
   changeData,
   updateSoLuong,
@@ -69,8 +70,8 @@ const GioHang = ({
   const [codeVC, setCodeVC] = useState("");
   const [muaThem, setMuaThem] = useState("");
   const [duocGiam, setDuocGiam] = useState("");
-
-  const [SLSP, setSLSP] = useState("");
+  const [isModalOpenThemPhiShip, setIsModalOpenThemPhiShip] = useState(false);
+  const [phiVanChuyen, setPhiVanChuyen] = useState("");
 
   const [tienMatConfirmationOpen, setTienMatConfirmationOpen] =
     React.useState(false);
@@ -241,15 +242,29 @@ const GioHang = ({
   };
   useEffect(() => {
     getDiaChi();
-  }, [diaChi, khachHang]);
+  }, [khachHang]);
   const confirmThanhToan = async () => {
-    if (tienKhachDua < tongTien) {
+    if (tienKhachDua < tongTien && isBlur == false) {
       toast.error(`Khách chưa trả đủ tiền`);
       cancelThanhToan();
       return;
     }
     try {
       if (isBlur == true) {
+        if(khachHang.sdt == '' && khachHang.sdt == undefined) {
+          toast.error("Bạn chưa nhập số điện thoại khách hàng");
+          return;
+        }
+        if(khachHang.ten == '' && khachHang.ten == undefined) {
+          toast.error("Bạn chưa nhập tên khách hàng");
+          return;
+        }
+        console.log(diaChi);
+        if(diaChi.thanhPho == '' || diaChi.thanhPho == undefined || diaChi.huyen == '' || diaChi.huyen == undefined
+          || diaChi.xa == '' || diaChi.xa == undefined || diaChi.duong == undefined || diaChi.duong == '') {
+          toast.error("Bạn chưa chọn địa chỉ nhận hàng");
+          return;
+        }
         await axios.put(
           `http://localhost:8080/hoa_don/thanhToanHoaDon/${activeKey}`,
           {
@@ -261,7 +276,7 @@ const GioHang = ({
             diaChi:
               diaChi.duong +
               "," +
-              diaChi.xa +
+              diaChi.thanhPho +
               "," +
               diaChi.xa +
               "," +
@@ -269,11 +284,19 @@ const GioHang = ({
             trangThai: 1,
             loaiHd: 0, //1 - tại quầy 0 - online
           }
-        );
+        ).then((response) => {
         toast("🎉 Thanh toán thành công");
         cancelThanhToan();
-        navigate("/quan-ly-hoa-don");
+        navigate(`/quan-ly-hoa-don/detail-hoa-don/${response.data.id}`);
+        });
+        
       } else {
+        console.log(tienHang);
+        if(tienHang == 0 || tienHang == undefined || tienHang == '') {
+          toast.error("Bạn chưa chọn sản phẩm cho hóa đơn");
+          cancelThanhToan();
+          return;
+        }
         await axios.put(
           `http://localhost:8080/hoa_don/thanhToanHoaDon/${activeKey}`,
           {
@@ -286,12 +309,14 @@ const GioHang = ({
             trangThai: 4,
             loaiHd: 1, //1 - tại quầy 0 - online
           }
-        );
-        toast("🎉 Thanh toán thành công");
-        cancelThanhToan();
-        navigate("/quan-ly-hoa-don");
+        ).then((response) => {
+          toast("🎉 Thanh toán thành công");
+          cancelThanhToan();
+          navigate(`/quan-ly-hoa-don/detail-hoa-don/${response.data.id}`);
+        });
       }
     } catch (error) {
+      console.log(error);
       toast.error(error.response.data);
       cancelThanhToan();
     }
@@ -382,6 +407,7 @@ const GioHang = ({
   const [selectedData, setSelectedData] = useState(null);
 
   const handleDataSelected = (data) => {
+    console.log(data);
     setSelectedData(data);
     if (data != null) {
       activeKey = data;
@@ -390,9 +416,10 @@ const GioHang = ({
       } else {
         toast.error(`404 `);
       }
-      // getData();
-      // getThanhToan();
+      getData();
+      getThanhToan();
       handleCancelHD();
+      setTienHang(tongTien);
     }
   };
   const showModalHD = () => {
@@ -448,7 +475,7 @@ const GioHang = ({
 
   const handleOkQR = async (id_sp) => {
     setIsModalOpen(false);
-
+    
     await axios
       .post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
         id_hoa_don: activeKey,
@@ -459,9 +486,20 @@ const GioHang = ({
         toast("🎉 Thêm thành công");
         handleCancelQR();
         textRef.current = "";
+        setItems(prevItems => {
+          return prevItems.map(item => {
+            if (item.key === activeKey) {
+              return {
+                ...item,
+                soLuong: 1
+              };
+            }
+            return item;
+          });
+        });
       })
       .catch((error) => {
-        toast("404" + error.response.data);
+        toast.error("Mã qr không đúng");
       });
   };
 
@@ -499,24 +537,43 @@ const GioHang = ({
 
   const [list, setList] = useState([]);
   const [isBlur, setIsBlur] = useState(false);
-
+  const [isGiaoHangHoaToc, setGiaoHangHoaToc] = useState(false);
   const handleSwitchChange = () => {
     setIsBlur(!isBlur);
+  };
+  const handleSwitchChangeShipHoaToc = () => {
+    if(isBlur != true) {
+      toast.warning("Bạn cần chọn giao hàng trước");
+      return;
+    }
+    setGiaoHangHoaToc(!isGiaoHangHoaToc);
+    if(!isGiaoHangHoaToc == true) {
+      showModalThemPhiShip();
+      setIsBlur(true);
+    }else {
+      setTienShip(0);
+    }
   };
   const getData = async () => {
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
       .then((response) => {
+        console.log("da call api getHDCTByMa");
         setList(response.data);
-
-        const tongTien = tinhTongTien(response.data);
-        const vc = response.data[0]?.id_hoa_don.id_voucher?.giaTriMax || 0;
+        // const tongTien = tinhTongTien(response.data);
+        const tongTien = response.data[0].id_hoa_don.tongTien;
+        console.log(response.data[0]);
+        console.log(tongTien);
+        const vc = response.data[0]?.id_hoa_don?.id_voucher?.giaTriMax == undefined ? 0 : response.data[0]?.id_hoa_don?.id_voucher?.giaTriMax;
+        console.log(vc);
         const codeVoucher =
           response.data[0]?.id_hoa_don.id_voucher?.code == undefined
             ? ""
             : response.data[0]?.id_hoa_don.id_voucher?.code;
         listVoucher.sort((b, a) => b.giaTriMin - a.giaTriMin);
-        if (codeVoucher == "") {
+        if (codeVoucher == "" && tienHang < listVoucher[0]?.giaTriMin) {
+          console.log(tongTien);
+          console.log(listVoucher[0]?.giaTriMin);
           setMuaThem(
             listVoucher[0]?.giaTriMin - tienHang == Number(NaN)
               ? ""
@@ -528,8 +585,12 @@ const GioHang = ({
               : listVoucher[0]?.giaTriMax
           );
         }
+        // else if(codeVoucher == "" && tongTien > listVoucher[0]?.giaTriMin) {
+
+        // }
+        console.log(voucher);
         listVoucher.map((x, index) => {
-          if (x.giaTriMax == voucher) {
+          if (x.giaTriMax == vc) {
             setMuaThem(
               listVoucher[index + 1]?.giaTriMin - tienHang == Number(NaN)
                 ? ""
@@ -552,10 +613,28 @@ const GioHang = ({
         // }
         setCodeVC(codeVoucher);
         setVoucher(vc);
-        setTienHang(tongTien);
-        setTongTien(tongTien - voucher + tienShip);
+        // setTienHang(tongTien);
+        console.log(tienHang);
+        if(tienHang == undefined || tienHang == '') {
+          setTongTien(tongTien);
+          setTienHang(tongTien);
+        }else {
+          setTongTien(tienHang - vc + tienShip);
+        }
+        
       });
   };
+  const showModalThemPhiShip = () => {
+    setIsModalOpenThemPhiShip(true);
+  }
+  const handleOkPhiShip = () => {
+    setTienShip(phiVanChuyen);
+    setIsModalOpenThemPhiShip(false);
+    getData();
+  }
+  const handleCancelPhiShip = () => {
+    setIsModalOpenThemPhiShip(false);
+  }
   const getKhachHang = async () => {
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
@@ -576,7 +655,7 @@ const GioHang = ({
   }, []);
   useEffect(() => {
     getData();
-  }, [list, activeKey]);
+  }, [tienHang, activeKey, tienShip]);
   return (
     <>
       <div className="p-5">
@@ -592,6 +671,8 @@ const GioHang = ({
               <TableSanPhamChiTiet
                 gioHang={activeKey}
                 setIsModalOpenThem={setIsModalOpenThem}
+                setItems={setItems}
+                setTienHang={setTienHang}
               />
             </div>
           </Modal>
@@ -644,9 +725,9 @@ const GioHang = ({
                     />
                   </div>
                 </Modal>
-                <button className="w-48 px-4 py-2 bg-pink-300 hover:bg-pink-500 text-white font-semibold rounded-full">
+                {/* <button className="w-48 px-4 py-2 bg-pink-300 hover:bg-pink-500 text-white font-semibold rounded-full">
                   Thẻ
-                </button>
+                </button> */}
               </div>
               <div className="flex justify-between mt-5">
                 <span className="poppins-font normal-case h-10 font-bold">
@@ -756,14 +837,17 @@ const GioHang = ({
         <div className="pt-4">
           <CartItem
             users={list}
+            setItems={setItems}
             columns={columns}
             updateSoLuong={updateSoLuong}
+            gioHang={activeKey}
+            setTienHang={setTienHang}
           />
         </div>
 
         <div className="flex justify-between mt-5 mb-3">
           <span className="poppins-font h-10 text-lg font-bold uppercase">
-            Tài khoản{" "}
+            Khách hàng{" "}
           </span>
           <Modal
             onOk={handleOkTK}
@@ -782,7 +866,7 @@ const GioHang = ({
             className="inline-block  font-semibold"
             onClick={showModalTK}
           >
-            Chọn tài khoản
+            Chọn khách hàng
           </Button>
         </div>
         <p
@@ -834,11 +918,15 @@ const GioHang = ({
           <div className={`relative ${!isBlur ? "h-0 overflow-hidden" : ""}`}>
             <div className="delivery-content">
               <Delivery
+                diaChi={diaChi}
+                setDiaChi={setDiaChi}
                 activeKey={activeKey}
                 khachHang={khachHang}
                 setKhachHang={setKhachHang}
                 tienHang={tienHang}
+                tienShip={tienShip}
                 setTienShip={setTienShip}
+                phiVanChuyen={phiVanChuyen}
               />
             </div>
           </div>
@@ -950,7 +1038,29 @@ const GioHang = ({
             </span>
             <div class="flex ...">
               <Switch
-                id="custom-switch-component"
+                id="custom-switch-component-1"
+                ripple={false}
+                className="h-full w-full checked:bg-[#2ec946]"
+                containerProps={{
+                  className: "w-11 h-6",
+                }}
+                circleProps={{
+                  className: "before:hidden left-0.5 border-none",
+                }}
+                label={
+                  <span
+                    className="
+                  font-bold checked:text-[#2ec946] mr-5" 
+                  >
+                    Giao hàng
+                  </span>
+                }
+                checked={isBlur}
+                onChange={handleSwitchChange}
+              />
+              
+              <Switch
+                id="custom-switch-component-2"
                 ripple={false}
                 className="h-full w-full checked:bg-[#2ec946]"
                 containerProps={{
@@ -964,13 +1074,33 @@ const GioHang = ({
                     className="
                   font-bold checked:text-[#2ec946]"
                   >
-                    Giao hàng
+                    Giao hàng hỏa tốc
                   </span>
                 }
-                checked={isBlur}
-                onChange={handleSwitchChange}
+                checked={isGiaoHangHoaToc}
+                onChange={handleSwitchChangeShipHoaToc}
               />
+              <Modal
+                onOk={handleOkPhiShip}
+                onCancel={handleCancelPhiShip}
+                open={isModalOpenThemPhiShip}
+                width={350}
+                okText="Nhập vận chuyển"
+              >
+                <div className="mt-5">
+                  <h2>Phí vận chuyển khi giao hàng hỏa tốc</h2>
+                  <br />
+                  <p>Nhập phí vận chuyển</p>
+                  <InputNumber
+                    value={Intl.NumberFormat().format(phiVanChuyen)}
+                    onChange={(value) => {
+                      setPhiVanChuyen(value);
+                    }}
+                  />
+                </div>
+              </Modal>
             </div>
+            
             <div class="flex ... gap-20">
               <div class="w-4/6 ... font-medium text-s">Tiền hàng</div>
               <div class="w-2/6 ...">

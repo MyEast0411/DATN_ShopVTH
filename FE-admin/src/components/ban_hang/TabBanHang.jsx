@@ -114,6 +114,7 @@ const TabBanHang = () => {
               <Children
                 columns={columns}
                 users={[]}
+                setItems={setItems}
                 activeKey={res.data.ma}
                 updateSoLuong={updateSoLuong}
                 setSoLuongSP={setSoLuongSP}

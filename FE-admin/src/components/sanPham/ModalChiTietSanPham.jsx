@@ -120,7 +120,7 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
     }
     useEffect(() => {
         getDetailProductById();
-    }, [idDetailProduct, initialValues])
+    }, [idDetailProduct])
     useEffect(() => {
         form.resetFields();
     }, [initialValues]);
@@ -325,30 +325,31 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                     </Col>
                 </Row>
                 <Row gutter={7} justify="start">
-                    <Col span={8}>
-                        <Form.Item
-                            label="Hình ảnh : "
-                            name="hinhAnh"
-                            style={{ fontWeight: "bold" }}
-                            rules={[{ required: true, message: "Ảnh Sản phẩm" }]}
-                        >
-                            <div className="text-center" style={{ maxWidth: "200px", whiteSpace: "nowrap" }}>
-                                {listHinhAnh.length > 1 && listHinhAnh.map((hinhAnh, index) => (
-                                    <div className="mb-4 relative inline-block" key={hinhAnh.id} style={{ marginRight: "5px", border: "1px solid #D3D3D3" }}>
-                                        <img
-                                            src={hinhAnh.ten}
-                                            alt="Hình ảnh sản phẩm"
-                                            className="w-full"
-                                        />
-                                        <Button className="absolute w-8 h-5 top-0 right-0 mt-2 mr-2 bg-red-500 text-white px-2 py-1 rounded-full flex items-center justify-center">
-                                            -
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        </Form.Item>
-                    </Col>
-                </Row>
+    <Col span={24}>
+        <Form.Item
+            label="Hình ảnh : "
+            name="hinhAnh"
+            style={{ fontWeight: "bold" }}
+            rules={[{ required: true, message: "Ảnh Sản phẩm" }]}
+        >
+            <div className="text-center grid grid-cols-4 gap-4">
+                {listHinhAnh.length > 1 && listHinhAnh.map((hinhAnh, index) => (
+                    <div className="mb-4 relative" key={hinhAnh.id}>
+                        <img
+                            src={hinhAnh.ten}
+                            alt="Hình ảnh sản phẩm"
+                            className="w-full"
+                        />
+                        <Button className="absolute w-8 h-5 top-0 right-0 mt-2 mr-2 bg-red-500 text-white px-2 py-1 rounded-full flex items-center justify-center">
+                            -
+                        </Button>
+                    </div>
+                ))}
+            </div>
+        </Form.Item>
+    </Col>
+</Row>
+
             </Form>
 
         </div>

@@ -58,6 +58,7 @@ public class KhuyenMaiScheduler {
             }
         } catch (Exception e) {
             //
+            e.printStackTrace();
         }
     }
 
@@ -75,6 +76,7 @@ public class KhuyenMaiScheduler {
             }
         } catch (Exception e) {
             // Handle exceptions
+            e.printStackTrace();
         }
     }
 

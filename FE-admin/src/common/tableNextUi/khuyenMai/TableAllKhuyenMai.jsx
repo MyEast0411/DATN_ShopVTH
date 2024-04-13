@@ -205,7 +205,15 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
       console.error("Lỗi khi gọi API: ", error);
     }
   }
+  useEffect(() => {
 
+    const interval = setInterval(() => {
+      fetchKhuyenMais();
+    }, 10000); // Mỗi 10 giây
+
+    return () => clearInterval(interval);
+  }, []);
+  
   useEffect(() => {
     fetchKhuyenMais();
     setFilterValue(search);
