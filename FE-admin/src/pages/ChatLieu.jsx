@@ -87,6 +87,8 @@ export default function ChatLieu() {
   const [totalPages, setTotalPages] = React.useState(1);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const [formAdd] = Form.useForm();
+
 
   const handleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
@@ -423,6 +425,7 @@ export default function ChatLieu() {
               position: "top-right",
               autoClose: 2000,
             });
+            form.resetFields();
             setLoading(false);
             setIsModalAddKichCo(false);
             fetchChiTietSanPham();
@@ -513,6 +516,7 @@ export default function ChatLieu() {
               position: "top-right",
               autoClose: 2000,
             });
+            formAdd.resetFields();
             setTimeout(() => {
               setLoading(false);
             }, 1000);
@@ -521,7 +525,7 @@ export default function ChatLieu() {
           }
         })
         .catch((error) => {
-          toast.error(error.data, {
+          toast.error(error.response.data, {
             position: "top-right",
             autoClose: 2000,
           });
@@ -740,7 +744,7 @@ export default function ChatLieu() {
               okText="Thêm"
               style={{ position: "relative" }}
             >
-              <Form form={form} initialValues={""}>
+              <Form form={formAdd} initialValues={""}>
                 <div>
                   <label htmlFor="ma" className="block text-sm font-medium leading-6 text-gray-900">
                     Mã chất liệu

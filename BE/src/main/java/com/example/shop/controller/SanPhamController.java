@@ -3,10 +3,7 @@ package com.example.shop.controller;
 
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
-import com.example.shop.requests.DeGiayRequest;
-import com.example.shop.requests.FilterSanPhamRequest;
-import com.example.shop.requests.KichCoRequest;
-import com.example.shop.requests.SanPhamRequest;
+import com.example.shop.requests.*;
 import com.example.shop.response.FilterSanPhamResponse;
 import com.example.shop.util.GenderCode;
 import com.example.shop.util.UploadAnh;
@@ -132,7 +129,23 @@ public class SanPhamController {
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
-
+    @PostMapping("/filterSanPhamBySoLuongTon")
+    public ResponseEntity filterSanPham(@RequestBody SearchSanPhamRequest request) {
+        try {
+            if (request.getSelectedStatus() == -1) {
+                List<FilterSanPhamResponse> list = sanPhamRepository.filterBySoLuongTon(request.getTextInput(), request.getTextInput(), request.getSoLuongTon());
+                return ResponseEntity.ok(list);
+            }
+            if(request.getSoLuongTon() == 0 && request.getSelectedStatus() != -1) {
+                List<FilterSanPhamResponse> list = repo.filterSanPham(request.getTextInput(),request.getTextInput(),request.getSelectedStatus());
+                return ResponseEntity.ok(list);
+            }
+            List<FilterSanPhamResponse> list = sanPhamRepository.filterByTrangThai(request.getTextInput(), request.getTextInput(),request.getSelectedStatus(), request.getSoLuongTon());
+            return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
+        }
+    }
     @PostMapping("/addHinhAnh")
     public ResponseEntity addHinhAnh(@RequestBody HinhAnhVM hinhAnhVM) {
         System.out.println(hinhAnhVM.toString());
@@ -151,7 +164,25 @@ public class SanPhamController {
         }
 
     }
-
+    @PutMapping("/updateSanPhamDetail")
+    public ResponseEntity updateSanPhamChiTiet(@RequestBody UpdateSanPhamChiTietRequest request) {
+        System.out.println("line153"+request);
+        try {
+            SanPhamChiTiet sanPhamChiTiet = repo.findById(request.getId()).get();
+            sanPhamChiTiet.setMoTa(request.getDescription());
+            sanPhamChiTiet.setId_chat_lieu(chatLieuRepository.findById(request.getId_chat_lieu()).get());
+            sanPhamChiTiet.setId_de_giay(deGiayRepository.findById(request.getId_de_giay()).get());
+            sanPhamChiTiet.setId_kich_co(kichCoRepository.findById(request.getId_kich_co()).get());
+            sanPhamChiTiet.setId_mau_sac(mauSacRepository.findByTen(request.getId_mau_sac()));
+            sanPhamChiTiet.setId_thuong_hieu(thuongHieuRepository.findById(request.getId_thuong_hieu()).get());
+            sanPhamChiTiet.setGiaBan(BigDecimal.valueOf(request.getPrice()));
+            sanPhamChiTiet.setSoLuongTon(request.getQuantity());
+            repo.save(sanPhamChiTiet);
+            return ResponseEntity.ok("Cập nhật thành công");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
     public SanPhamVM convertToSanPhamVM(Object[] row) {
         SanPhamVM sanPhamVM = new SanPhamVM();
         sanPhamVM.setMa((String) row[0]);
@@ -173,7 +204,11 @@ public class SanPhamController {
 
     @PostMapping("/filterSanPham")
     List<FilterSanPhamResponse> filterSanPham(@RequestBody FilterSanPhamRequest request) {
-        List<FilterSanPhamResponse> list = repo.filterSanPham(request.getText(),request.getText(),request.getStatus());
+        if(request.getSoLuongTon() == 0) {
+            List<FilterSanPhamResponse> list = repo.filterSanPham(request.getText(),request.getText(),request.getStatus());
+            return list;
+        }
+        List<FilterSanPhamResponse> list = repo.filterSanPhamBySoLuongTon(request.getText(),request.getText(),request.getStatus(),request.getSoLuongTon());
         return list;
     }
 
@@ -232,7 +267,7 @@ public class SanPhamController {
             spct.setSoLuongTon(x.getSoLuongTon());
             spct.setKhoiLuong(x.getKhoiLuong());
             spct.setSoLuongTon(x.getSoLuongTon());
-            spct.setTrangThai("1");
+            spct.setTrangThai(1);
             spct.setDeleted(1);
             Pattern pattern = Pattern.compile("(Màu [^=]+)=\\[([^\\]]+)]");
             Matcher matcher = pattern.matcher(hinhAnh);

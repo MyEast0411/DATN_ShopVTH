@@ -13,7 +13,7 @@ import {
 } from "antd";
 import axios from "axios";
 
-export default function ModalChiTietSanPham({ idDetailProduct }) {
+export default function ModalChiTietSanPham({ idDetailProduct, sanPhamChiTiet, setSanPhamChiTiet }) {
     const [mauSac, setMauSac] = useState([]);
     const [thuongHieu, setThuongHieu] = useState([]);
     const [chatLieu, setChatLieu] = useState([]);
@@ -96,6 +96,21 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
         qrcode: "",
         id_kich_co: "",
     });
+    // const [sanPhamChiTiet, setSanPhamChiTiet] = useState({
+    //     id: "",
+    //     description: "",
+    //     price: "",
+    //     quantity: "",
+    //     status: "",
+    //     id_de_giay: "",
+    //     productName: "",
+    //     id_chat_lieu: "",
+    //     id_mau_sac: "",
+    //     id_the_loai: "",
+    //     id_thuong_hieu: "",
+    //     qrcode: "",
+    //     id_kich_co: "",
+    // });
 
     const getDetailProductById = async () => {
         console.log(idDetailProduct);
@@ -113,6 +128,20 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
             id_chat_lieu: result.data.id_chat_lieu.id,
             id_de_giay: result.data.id_de_giay.id,
             quantity: result.data.soLuongTon,
+            price: Intl.NumberFormat().format(result.data.giaBan),
+            qrcode: result.data.maQR
+        })
+        setSanPhamChiTiet({
+            id: result.data.id,
+            productName: result.data.ten,
+            description: result.data.moTa,
+            id_mau_sac: result.data.id_mau_sac.ten,
+            id_kich_co: result.data.id_kich_co.id,
+            id_thuong_hieu: result.data.id_thuong_hieu.id,
+            id_the_loai: result.data.id_the_loai.id,
+            id_chat_lieu: result.data.id_chat_lieu.id,
+            id_de_giay: result.data.id_de_giay.id,
+            quantity: result.data.soLuongTon,
             price: result.data.giaBan,
             qrcode: result.data.maQR
         })
@@ -120,7 +149,11 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
     }
     useEffect(() => {
         getDetailProductById();
-    }, [idDetailProduct])
+    }, [idDetailProduct]);
+    const onChange = (e) => {
+        console.log(e);
+        setSanPhamChiTiet({ ...sanPhamChiTiet ,[e.target.name]: e.target.value });
+    }
     useEffect(() => {
         form.resetFields();
     }, [initialValues]);
@@ -144,7 +177,7 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                         { required: true, message: "Vui lòng nhập mô tả sản phẩm" },
                     ]}
                 >
-                    <Input.TextArea rows={4} placeholder="Nhập mô tả sản phẩm" />
+                    <Input.TextArea rows={4} name="description" placeholder="Nhập mô tả sản phẩm" onChange={onChange}/>
                 </Form.Item>
                 <br />
 
@@ -156,7 +189,9 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                             style={{ fontWeight: "bold" }}
                             rules={[{ required: true, message: "Vui lòng chọn màu sắc" }]}
                         >
-                            <Select placeholder="Chọn màu sắc" className="ml-7">
+                            <Select placeholder="Chọn màu sắc" className="ml-7" name="id_mau_sac" onChange={(e) => {
+                                setSanPhamChiTiet({ ...sanPhamChiTiet ,id_mau_sac : e});
+                            }}>
                                 {mauSac.map((color, index) => (
                                     <Option key={index} value={color.ten}>
                                         <div
@@ -182,7 +217,9 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                             style={{ fontWeight: "bold" }}
                             rules={[{ required: true, message: "Vui lòng chọn kích cỡ" }]}
                         >
-                            <Select placeholder="Chọn kích cỡ">
+                            <Select placeholder="Chọn kích cỡ" name="id_kich_co" onChange={(e) => {
+                                setSanPhamChiTiet({ ...sanPhamChiTiet ,id_kich_co : e});
+                            }}>
                                 {kichCo.map((kichCo, index) => (
                                     <Option key={index} value={kichCo.id}>
                                         {kichCo.ten}
@@ -202,7 +239,9 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                             style={{ fontWeight: "bold", width: "256px" }}
                             rules={[{ required: true, message: "Vui lòng chọn thương hiệu" }]}
                         >
-                            <Select placeholder="Chọn thương hiệu">
+                            <Select placeholder="Chọn thương hiệu" name="id_thuong_hieu" onChange={(e) => {
+                                setSanPhamChiTiet({ ...sanPhamChiTiet ,id_thuong_hieu : e});
+                            }}>
                                 {thuongHieu.map((item, index) => (
                                     <Option key={index} value={item.id}>
                                         {item.ten}
@@ -219,7 +258,9 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                             style={{ fontWeight: "bold" }}
                             rules={[{ required: true, message: "Vui lòng chọn thể loại" }]}
                         >
-                            <Select placeholder="Chọn thể loại">
+                            <Select placeholder="Chọn thể loại" name="id_the_loai" onChange={(e) => {
+                                setSanPhamChiTiet({ ...sanPhamChiTiet ,id_the_loai : e});
+                            }}>
                                 {theLoai.map((item, index) => (
                                     <Option key={index} value={item.id}>
                                         {item.ten}
@@ -239,7 +280,9 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                             style={{ fontWeight: "bold" }}
                             rules={[{ required: true, message: "Vui lòng chọn chất liệu" }]}
                         >
-                            <Select placeholder="Chọn chất liệu" className="ml-7">
+                            <Select placeholder="Chọn chất liệu" className="ml-7" name="id_chat_lieu" onChange={(e) => {
+                                setSanPhamChiTiet({ ...sanPhamChiTiet ,id_chat_lieu : e});
+                            }}>
                                 {chatLieu.map((item, index) => (
                                     <Option key={index} value={item.id}>
                                         {item.ten}
@@ -256,7 +299,9 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                             style={{ fontWeight: "bold" }}
                             rules={[{ required: true, message: "Vui lòng chọn đế giày" }]}
                         >
-                            <Select placeholder="Chọn đế giày">
+                            <Select placeholder="Chọn đế giày" name="id_de_giay" onChange={(e) => {
+                                setSanPhamChiTiet({ ...sanPhamChiTiet ,id_de_giay : e});
+                            }}>
                                 {deGiay.map((item, index) => (
                                     <Option key={index} value={item.id}>
                                         {item.ten}
@@ -284,6 +329,10 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                         >
                             <InputNumber
                                 className="ml-7"
+                                name="quantity"
+                                onChange={(e) => {
+                                    setSanPhamChiTiet({ ...sanPhamChiTiet ,quantity : e});
+                                }}
                                 style={{ fontWeight: "bold", width: "100%", height: "40px" }}
                                 placeholder="Nhập số lượng"
                             />
@@ -293,13 +342,18 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                     <Col span={8}>
                         <Form.Item
                             label="Giá Bán"
-                            name="price"
+                            // name="price"
                             style={{ fontWeight: "bold" }}
                             rules={[
                                 { required: true, message: "Vui lòng nhập giá sản phẩm" },
                             ]}
                         >
                             <InputNumber
+                                name="price"
+                                value={Intl.NumberFormat().format(sanPhamChiTiet?.price)}
+                                onChange={(e) => {
+                                    setSanPhamChiTiet({ ...sanPhamChiTiet ,price : e});
+                                }}
                                 style={{ fontWeight: "bold", width: "100%", height: "40px" }}
                                 placeholder="Nhập giá sản phẩm"
                             />
@@ -325,33 +379,31 @@ export default function ModalChiTietSanPham({ idDetailProduct }) {
                     </Col>
                 </Row>
                 <Row gutter={7} justify="start">
-    <Col span={24}>
-        <Form.Item
-            label="Hình ảnh : "
-            name="hinhAnh"
-            style={{ fontWeight: "bold" }}
-            rules={[{ required: true, message: "Ảnh Sản phẩm" }]}
-        >
-            <div className="text-center grid grid-cols-4 gap-4">
-                {listHinhAnh.length > 1 && listHinhAnh.map((hinhAnh, index) => (
-                    <div className="mb-4 relative" key={hinhAnh.id}>
-                        <img
-                            src={hinhAnh.ten}
-                            alt="Hình ảnh sản phẩm"
-                            className="w-full"
-                        />
-                        <Button className="absolute w-8 h-5 top-0 right-0 mt-2 mr-2 bg-red-500 text-white px-2 py-1 rounded-full flex items-center justify-center">
-                            -
-                        </Button>
-                    </div>
-                ))}
-            </div>
-        </Form.Item>
-    </Col>
-</Row>
-
+                    <Col span={24}>
+                        <Form.Item
+                            label="Hình ảnh : "
+                            name="hinhAnh"
+                            style={{ fontWeight: "bold" }}
+                            rules={[{ required: true, message: "Ảnh Sản phẩm" }]}
+                        >
+                            <div className="text-center grid grid-cols-4 gap-4">
+                                {listHinhAnh.length > 1 && listHinhAnh.map((hinhAnh, index) => (
+                                    <div className="mb-4 relative" key={hinhAnh.id}>
+                                        <img
+                                            src={hinhAnh.ten}
+                                            alt="Hình ảnh sản phẩm"
+                                            className="w-full"
+                                        />
+                                        <Button className="absolute w-8 h-5 top-0 right-0 mt-2 mr-2 bg-red-500 text-white px-2 py-1 rounded-full flex items-center justify-center">
+                                            -
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        </Form.Item>
+                    </Col>
+                </Row>
             </Form>
-
         </div>
     )
 }

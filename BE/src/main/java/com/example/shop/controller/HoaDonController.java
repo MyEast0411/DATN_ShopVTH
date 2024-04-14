@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -146,7 +147,7 @@ public class HoaDonController {
             @RequestBody HoaDon hoaDon
     ) {
 
-        System.out.println(hoaDon);
+        //System.out.println(hoaDon);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             if (hoaDon1 != null) {
@@ -198,6 +199,8 @@ public class HoaDonController {
             @PathVariable("id") String id,
             @RequestBody ThanhToanHoaDonDTO hoaDon
     ) {
+
+        //System.out.println(hoaDon);
         List<HoaDonChiTiet> hoaDonChiTietList = new ArrayList<>();
         for (Object[] row : hoaDonRepository.getHDCTByMaHD(hoaDonRepository.getHoaDonByMa(id).getId())) {
             //coppy san pham chi tiet them vao` hoa don luc thanh toan'
@@ -225,7 +228,7 @@ public class HoaDonController {
                     .id_de_giay(sanPhamChiTiet.getId_de_giay())
                     .id_thuong_hieu(sanPhamChiTiet.getId_thuong_hieu())
                     .build();
-            System.out.println(spct);
+            //System.out.println(spct);
             chiTietSanPhamRepository.save(spct);
             HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
                     .id_chi_tiet_san_pham(spct)
@@ -236,7 +239,7 @@ public class HoaDonController {
 
         try {
             HoaDon hoaDon1 = hoaDonRepository.getHoaDonByMa(id);
-            System.out.println(hoaDon.toString());
+            //System.out.println(hoaDon.toString());
 
 
             if (hoaDon1 != null) {
@@ -263,10 +266,18 @@ public class HoaDonController {
                     sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() - hdct.getSoLuong());
                     chiTietSanPhamRepository.save(sanPhamChiTiet);
                 }
+                if (hoaDon.getTrangThai().equals("1") && hoaDon.getLoaiHd().equals("0")) {
+                    SimpleDateFormat outputDateFormatObj = new SimpleDateFormat("dd/MM/yyyy");
+                    hoaDon1.setNgayNhan(outputDateFormatObj.parse(hoaDon.getNgayNhan()));
+                }
+                else {
+                    hoaDon1.setNgayNhan(new Date());
+                }
                 HoaDon updateHoaDon = hoaDonRepository.save(hoaDon1);
 
 
                 if (hoaDon.getTrangThai().equals("1") && hoaDon.getLoaiHd().equals("0")) {
+
                     LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
                             .id_hoa_don(hoaDon1)
                             .moTaHoaDon("Chờ xác nhận")
@@ -328,11 +339,11 @@ public class HoaDonController {
         // cập nhật lại số lượng hóa đơn
 
         List<HoaDonChiTiet> listHDCT = hoaDonChiTietService.getHDCT(id);
-        System.out.println("SẢN Phẩm " + listHDCT);
+        //System.out.println("SẢN Phẩm " + listHDCT);
         for (HoaDonChiTiet donChiTiet : listHDCT){
             SanPhamChiTiet sanPhamChiTiet = donChiTiet.getId_chi_tiet_san_pham();
             sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() + donChiTiet.getSoLuong());
-            System.out.println(sanPhamChiTiet);
+            //System.out.println(sanPhamChiTiet);
             chiTietSanPhamRepository.save(sanPhamChiTiet);
         }
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Tooltip,
   Tag,
@@ -116,7 +116,7 @@ export default function Voucher() {
       setNgayBatDau("");
       setNgayKetThuc("");
     }
-  };  
+  };
 
   const onChangeSideBar = async (selectedValue) => {
     if (selectedValue == 0) {
@@ -125,7 +125,7 @@ export default function Voucher() {
       const res = await axios.post(`http://localhost:8080/voucher/filterVoucher`, {
         selectedStatus: dataSelect,
         textInput: filterValue == "" ? null : filterValue,
-        gia : selectedValue,
+        gia: selectedValue,
       });
       setList(
         res.data.map((item, index) => {
@@ -227,6 +227,7 @@ export default function Voucher() {
               position: "top-right",
               autoClose: 2000,
             });
+            getData();
           })
           .catch((e) =>
             toast.error(`Xóa  thất bại`, {
@@ -241,6 +242,15 @@ export default function Voucher() {
   React.useEffect(() => {
     getData();
   }, [action]);
+
+  useEffect(() => {
+
+    const interval = setInterval(() => {
+      getData();
+    }, 10000); // Mỗi 10 giây
+
+    return () => clearInterval(interval);
+  }, []);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -396,9 +406,8 @@ export default function Voucher() {
                 checked={user.trangThai === 1 ? true : false}
                 onChange={() => {
                   Modal.confirm({
-                    title: `bạn có muốn ${
-                      user.trangThai == 1 ? "hủy" : " "
-                    } kích hoạt voucher không ?`,
+                    title: `bạn có muốn ${user.trangThai == 1 ? "hủy" : " "
+                      } kích hoạt voucher không ?`,
                     okText: "Yes",
                     okType: "danger",
                     onOk: async () => {

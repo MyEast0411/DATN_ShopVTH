@@ -64,7 +64,7 @@ public class ThuongHieuController {
         }
     }
 
-    @PutMapping("deleteNhanHieu/{maThuongHieu}")
+    @PutMapping("deleteThuongHieu/{maThuongHieu}")
     public ResponseEntity deleteThuongHieu(@PathVariable String maThuongHieu) {
         try {
             ThuongHieu thuongHieu = repo.findByMa(maThuongHieu);

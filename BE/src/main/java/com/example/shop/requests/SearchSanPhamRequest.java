@@ -5,10 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class FilterSanPhamRequest {
-    private String text;
-    private Integer status;
+@NoArgsConstructor
+public class SearchSanPhamRequest {
+    private Integer selectedStatus;
+    private String textInput;
     private Integer soLuongTon;
 }

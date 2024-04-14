@@ -2,7 +2,9 @@ package com.example.shop.controller;
 
 import com.example.shop.dto.UserDTO;
 import com.example.shop.entity.KhachHang;
+import com.example.shop.entity.NhanVien;
 import com.example.shop.repositories.KhachHangRepository;
+import com.example.shop.repositories.NhanVienRepository;
 import com.example.shop.service.KhachHangService;
 import com.example.shop.util.SendMail;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,22 +28,42 @@ public class LoginController {
     private final KhachHangService khachHangService;
     @Autowired
     KhachHangRepository khachHangRepository;
+
+    @Autowired
+    NhanVienRepository nhanVienRepository;
     public static String maConfirm = "KH123";
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody UserDTO dto){
         KhachHang khachHang = khachHangService.login(dto);
         if (khachHang == null){
-            return  ResponseEntity.ok("FAILED");
+            NhanVien nhanVien = nhanVienRepository.login(dto.getEmail(),dto.getPass());
+            if(nhanVien != null) {
+                return ResponseEntity.ok(nhanVien);
+            }
+            return ResponseEntity.badRequest().body("FAILED");
         }
         return ResponseEntity.ok(khachHang);
+    }
+
+    @GetMapping("/findByMa")
+    public ResponseEntity findByMa(@PathVariable String maNV){
+        NhanVien nhanVien = nhanVienRepository.findByMa(maNV);
+        if (nhanVien == null){
+            return  ResponseEntity.ok("FAILED");
+        }
+        return ResponseEntity.ok(nhanVien);
     }
 
     @PostMapping("/check-mail")
     public ResponseEntity check(@RequestBody UserDTO dto){
         KhachHang khachHang = khachHangService.findEmail(dto);
-        if (khachHang== null){
-            SendMail.SendMailOptions(dto.getEmail() , maConfirm);
+        if (khachHang == null){
+            NhanVien nhanVien = nhanVienRepository.findEmail(dto.getEmail());
+            if(nhanVien != null) {
+                return ResponseEntity.ok(nhanVien);
+            }
+            SendMail.SendMailOptions(dto.getEmail(), maConfirm);
             return ResponseEntity.ok(HttpStatus.NOT_FOUND);
         }else{
             return ResponseEntity.ok(HttpStatus.OK);

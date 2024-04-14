@@ -7,6 +7,9 @@ import axios from "axios";
 function InforBill({ maHD }) {
   const [hd, setHD] = useState([]);
   const getHD = async () => {
+    if (maHD == "") {
+      return;
+    }
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDDoiTra/${maHD}`)
       .then((res) => {
@@ -15,6 +18,8 @@ function InforBill({ maHD }) {
             return {
               ...res,
               ma: res.id_chi_tiet_san_pham.ma,
+              key: res.id_chi_tiet_san_pham.ma,
+              quantity: 0,
             };
           })
         );
