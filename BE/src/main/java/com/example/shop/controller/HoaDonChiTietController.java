@@ -225,7 +225,7 @@ public class HoaDonChiTietController {
                  ssHDCT.findAll()) {
                 if(hdct.getId_hoa_don().getId().equals(hoaDon.getId()) && hdct.getId_chi_tiet_san_pham().getId().equals(hoaDonChiTiet.getId_san_pham())) {
                     hdct.setSoLuong(hoaDonChiTiet.getSo_luong());
-                    hdct.setGiaTien(hdct.getId_chi_tiet_san_pham().getGiaBan());
+                    hdct.setGiaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hdct.getSoLuong())));
                     hdct.setDeleted(1);
                     check = false;
                     ssHDCT.save(hdct);
@@ -237,7 +237,7 @@ public class HoaDonChiTietController {
                         .id_hoa_don(hoaDon)
                         .id_chi_tiet_san_pham(sp)
                         .soLuong(hoaDonChiTiet.getSo_luong())
-                        .giaTien(tongTien)
+                        .giaTien( sp.getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSo_luong())))
                         .deleted(1)
                         .build();
                 ssHDCT.save(hdct);
@@ -499,7 +499,10 @@ public class HoaDonChiTietController {
                     //  set soLuong = quantity
                     HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(hdct.getId_hoa_don().getId(),
                             hdct.getId_chi_tiet_san_pham().getId());
+
+                    System.out.println(hoaDonChiTiet);
                     hoaDonChiTiet.setSoLuong(hdct.getQuantity());
+                    hoaDonChiTiet.setGiaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hdct.getQuantity())));
                     ssHDCT.save(hoaDonChiTiet);
                 }
             }
@@ -508,21 +511,100 @@ public class HoaDonChiTietController {
             for (HoaDonChiTietCustomer hdct: listTra) {
                 stringBuilder.append(" mã " + hdct.getId_chi_tiet_san_pham().getMa() + " , ");
 
-                HoaDonChiTiet hdctNew = HoaDonChiTiet.
-                        builder()
-                        .id_hoa_don(hdct.getId_hoa_don())
-                        .id_chi_tiet_san_pham(hdct.getId_chi_tiet_san_pham())
-                        .soLuong(hdct.getQuantity())
-                        .giaTien(hdct.getGiaTien())
-//                       .giaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
-                        .deleted(0)
-                        .ghiChu(hdct.getGhiChu())
-                        .build();
-                ssHDCT.save(hdctNew);
+                // set 2 TH
+                // nếu sản phẩm đã  có thì cộng số lượng
+
+                // nếu k thì thêm mới
+
+                // chưa xong spct
+                // 2 là lỗi
+                SanPhamChiTiet sanPhamLoi = hdct.getId_chi_tiet_san_pham();
+                sanPhamLoi.setId(null);
+                        sanPhamLoi.setTrangThai(2);
+                        sanPhamLoi.setMoTa(hdct.getGhiChu());
+                        sanPhamLoi.setNgayTao(new Date());
+                sanPhamLoi.setSoLuongTon(hdct.getQuantity());
+                        SanPhamChiTiet sanPhamChiTietSave = ssSPCT.save(sanPhamLoi);
+                    HoaDonChiTiet hdctNew = HoaDonChiTiet.
+                            builder()
+                            .id_hoa_don(hdct.getId_hoa_don())
+                            .id_chi_tiet_san_pham(sanPhamChiTietSave)
+                            .soLuong(hdct.getQuantity())
+//                            .giaTien(hdct.getGiaTien())
+                            .giaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(sanPhamChiTietSave.getSoLuongTon())))
+                            .deleted(0)
+                            .ghiChu(hdct.getGhiChu())
+                            .build();
+                    ssHDCT.save(hdctNew);
+
+
+
+//                List<SanPhamChiTiet> sanPhamChiTiets = ssSPCT.getAllSanPhamChiTietByIdSanPham(sanPhamLoi.getId());
+//
+//                for (SanPhamChiTiet sanPhamChiTiet: sanPhamChiTiets) {
+//                    if (sanPhamChiTiet.getTrangThai() == 0 && sanPhamLoi.getMa().equals(sanPhamChiTiet.getMa())){
+//                        sanPhamChiTiet.setSoLuongTon(hdct.getQuantity() + sanPhamChiTiet.getSoLuongTon());
+//                        SanPhamChiTiet sanPhamChiTietSave = ssSPCT.save(sanPhamChiTiet);
+//                    }else{
+//                        sanPhamLoi.setId(null);
+//                        sanPhamLoi.setTrangThai(0);
+//                        sanPhamLoi.setMoTa(hdct.getGhiChu());
+//                        sanPhamLoi.setNgayTao(new Date());
+//                    }
+//
+//                    HoaDonChiTiet hdctNew = HoaDonChiTiet.
+//                            builder()
+//                            .id_hoa_don(hdct.getId_hoa_don())
+//                            .id_chi_tiet_san_pham(sanPhamChiTiet)
+//                            .soLuong(hdct.getQuantity())
+//                            .giaTien(hdct.getGiaTien())
+//                            //.giaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
+//                            .deleted(0)
+//                            .ghiChu(hdct.getGhiChu())
+//                            .build();
+//                    ssHDCT.save(hdctNew);
+//                }
+
+
+
+
+
+
+                // thêm sản phẩm chi tiết 1 bản ghi mới bị lỗi
+
+
+
+
+//                System.out.println("quantity " + hdct.getQuantity());
+//                System.out.println("so luong " + hdct.getSoLuong());
+//
+
+
+//            sanPhamChiTiet.setSoLuongTon(hdct.getQuantity());
+//            sanPhamChiTiet.setDeleted(0);
+//            sanPhamChiTiet.setTrangThai(0);
+//            sanPhamChiTiet.setMa(sanPhamLoi.getMa());
+//            sanPhamChiTiet.setDefaultImg(sanPhamLoi.getDefaultImg());
+//            sanPhamChiTiet.setGiaBan(sanPhamLoi.getGiaBan());
+//            sanPhamChiTiet.setGiaNhap(sanPhamLoi.getGiaNhap());
+//            sanPhamChiTiet.setKhoiLuong(sanPhamLoi.getKhoiLuong());
+//            sanPhamChiTiet.setMoTa(sanPhamLoi.getMoTa());
+//            sanPhamChiTiet.setNgayTao(new Date());
+//
+//            sanPhamChiTiet.setId_chat_lieu(sanPhamLoi.getId_chat_lieu());
+//            sanPhamChiTiet.setId_san_pham(sanPhamLoi.getId_san_pham());
+//            sanPhamChiTiet.setId_de_giay(sanPhamLoi.getId_de_giay());
+//            sanPhamChiTiet.setId_mau_sac(sanPhamLoi.getId_mau_sac());
+//            sanPhamChiTiet.setId_nhan_hieu(sanPhamLoi.getId_nhan_hieu());
+//            sanPhamChiTiet.setId_kich_co(sanPhamLoi.getId_kich_co());
+//            sanPhamChiTiet.setId_the_loai(sanPhamLoi.getId_the_loai());
+//            sanPhamChiTiet.setId_thuong_hieu(sanPhamLoi.getId_thuong_hieu());
+//
+//            ssSPCT.save(sanPhamChiTiet);
+
+
             }
-
             // thêm lich su hoa đơn
-
             LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
                     .id_hoa_don(hoaDon)
                     .moTaHoaDon(stringBuilder.toString())
@@ -530,7 +612,9 @@ public class HoaDonChiTietController {
                     .nguoiTao("Đông")
                     .ngayTao(new Date(System.currentTimeMillis()))
                     .build();
+
             lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
+
 
             // upadte hoa dơn
             List<HoaDonChiTiet> listHD = ssHDCT.getHDCT(hoaDon.getId());
@@ -540,11 +624,7 @@ public class HoaDonChiTietController {
                 }
             }
             hoaDon.setTongTien(new BigDecimal(tongTien + ""));
-
             ssHD.save(hoaDon);
-
-
-
             return ResponseEntity.ok("hi");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("ERROR");
