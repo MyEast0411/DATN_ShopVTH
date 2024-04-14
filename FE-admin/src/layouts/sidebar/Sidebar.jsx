@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import SubMenu from "./SubMenu";
 import { motion } from "framer-motion";
-
 // * React icons
 import { VscAccount } from "react-icons/vsc";
 import { BsArrowReturnLeft } from "react-icons/bs";
@@ -15,9 +14,13 @@ import { RiBuilding3Line } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 import { MdMenu } from "react-icons/md";
 import { NavLink, Link, useLocation, useRoutes } from "react-router-dom";
+<<<<<<< HEAD
+=======
 // import { AiOutlineSetting } from "react-icons/ai";
+>>>>>>> 7e699423fa0e457ee030d5b1abb4932bb5c02dec
 //logo
 import logo from "../../assets/logo.png";
+import axios from "axios";
 
 const Sidebar = () => {
   let isTabletMid = useMediaQuery({ query: "(max-width: 768px)" });
@@ -39,7 +42,19 @@ const Sidebar = () => {
       setOpen(true);
     }
   }, [isTabletMid]);
-
+  const getNhanVien = async () => {
+    if (localStorage?.getItem("user") != "") {
+      setUser(JSON.parse(localStorage.getItem("user")));
+      const result = await axios.get(
+        `http://localhost:8080/user/findByMa/${JSON.parse(localStorage.getItem("user"))?.ma}`
+      );
+      const nhanVienData = result.data;
+      console.log(nhanVienData);
+    }
+  };
+  useEffect(() => {
+    getNhanVien();
+  }, []);
   useEffect(() => {
     isTabletMid && setOpen(false);
   }, [pathname]);

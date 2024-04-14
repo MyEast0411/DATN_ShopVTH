@@ -31,6 +31,16 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             "LIMIT 0, 1000", nativeQuery = true)
     List<FilterSanPhamResponse> filterSanPham(@Param("ma") String ma, @Param("ten")String ten,@Param("status")Integer status);
 
+    @Query(value = "SELECT b.ma AS maSanPham, b.ten AS tenSanPham, SUM(a.so_luong_ton) AS soLuongTon, b.deleted AS status\n" +
+            "FROM san_pham_chi_tiet a\n" +
+            "JOIN san_pham b ON a.id_san_pham = b.id\n" +
+            "WHERE b.deleted = :status OR b.ma = :ma OR b.ten = :ten\n" +
+            "GROUP BY b.ma, b.ten, b.deleted\n" +
+            "HAVING soLuongTon >= :soLuongTon - 10 AND soLuongTon <= :soLuongTon + 10\n" +
+            "ORDER BY MAX(b.ngay_tao) DESC\n" +
+            "LIMIT 0, 1000", nativeQuery = true)
+    List<FilterSanPhamResponse> filterSanPhamBySoLuongTon(@Param("ma") String ma, @Param("ten")String ten,@Param("status")Integer status, @Param("soLuongTon")Integer soLuongTon);
+
     @Query(value = "select a.*\n" +
             "FROM san_pham_chi_tiet a\n" +
             "JOIN san_pham b ON a.id_san_pham = b.id\n" +
