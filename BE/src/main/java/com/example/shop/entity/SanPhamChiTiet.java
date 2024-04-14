@@ -43,7 +43,7 @@ public class SanPhamChiTiet implements Serializable {
     private String moTa;
 
     @Column(name = "trang_thai")
-    private String trangThai;
+    private Integer trangThai;
 
     @Column(name = "gia_nhap")
     private BigDecimal giaNhap;

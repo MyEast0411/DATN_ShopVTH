@@ -76,8 +76,13 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
     @Query(value = " select * from hoa_don where id_voucher = :id_voucher ",nativeQuery = true)
     List<HoaDon> getHoaDonByVoucher(@Param("id_voucher")String id_voucher);
 
-    @Query(value = "select * from hoa_don u where u.ma = :maHD and u.deleted = 1  and  u.trang_thai = 4 ", nativeQuery = true)
+    @Query(value = "SELECT * FROM hoa_don hd \n" +
+            " WHERE hd.trang_thai = 4 AND DATEDIFF(CURDATE(), hd.ngay_nhan) <= 7 \n" +
+             " and hd.ma = :maHD and hd.deleted = 1 ", nativeQuery = true)
     HoaDon findHDDoiTra(@Param("maHD") String ma);
+
+
+
 
 
 

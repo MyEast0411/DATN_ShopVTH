@@ -72,6 +72,7 @@ const GioHang = ({
   const [duocGiam, setDuocGiam] = useState("");
   const [isModalOpenThemPhiShip, setIsModalOpenThemPhiShip] = useState(false);
   const [phiVanChuyen, setPhiVanChuyen] = useState("");
+  const [ngayNhan, setNgayNhan] = useState("");
 
   const [tienMatConfirmationOpen, setTienMatConfirmationOpen] =
     React.useState(false);
@@ -185,12 +186,15 @@ const GioHang = ({
         }));
 
         setThanhToan(updatedRows);
+        console.log(updatedRows);
+
         const totalSoTien = updatedRows.reduce(
-          (sum, row) => sum + parseFloat(row.soTien.replace(",", "")),
+          (sum, row) => sum + parseFloat(row.soTien.replaceAll(".", "")),
           0
         );
 
         console.log(totalSoTien);
+
         setKhachCanTra(totalSoTien);
         setTienKhachDua(totalSoTien);
 
@@ -251,23 +255,30 @@ const GioHang = ({
     }
     try {
       if (isBlur == true) {
-        if(khachHang.sdt == '' && khachHang.sdt == undefined) {
+        if (khachHang.sdt == "" && khachHang.sdt == undefined) {
           toast.error("Bạn chưa nhập số điện thoại khách hàng");
           return;
         }
-        if(khachHang.ten == '' && khachHang.ten == undefined) {
+        if (khachHang.ten == "" && khachHang.ten == undefined) {
           toast.error("Bạn chưa nhập tên khách hàng");
           return;
         }
         console.log(diaChi);
-        if(diaChi.thanhPho == '' || diaChi.thanhPho == undefined || diaChi.huyen == '' || diaChi.huyen == undefined
-          || diaChi.xa == '' || diaChi.xa == undefined || diaChi.duong == undefined || diaChi.duong == '') {
+        if (
+          diaChi.thanhPho == "" ||
+          diaChi.thanhPho == undefined ||
+          diaChi.huyen == "" ||
+          diaChi.huyen == undefined ||
+          diaChi.xa == "" ||
+          diaChi.xa == undefined ||
+          diaChi.duong == undefined ||
+          diaChi.duong == ""
+        ) {
           toast.error("Bạn chưa chọn địa chỉ nhận hàng");
           return;
         }
-        await axios.put(
-          `http://localhost:8080/hoa_don/thanhToanHoaDon/${activeKey}`,
-          {
+        await axios
+          .put(`http://localhost:8080/hoa_don/thanhToanHoaDon/${activeKey}`, {
             sdt: khachHang.sdt,
             tenKhachHang: khachHang.ten,
             maKH: khachHang.maKH,
@@ -282,24 +293,23 @@ const GioHang = ({
               "," +
               diaChi.huyen,
             trangThai: 1,
+            ngayNhan: ngayNhan,
             loaiHd: 0, //1 - tại quầy 0 - online
-          }
-        ).then((response) => {
-        toast("🎉 Thanh toán thành công");
-        cancelThanhToan();
-        navigate(`/quan-ly-hoa-don/detail-hoa-don/${response.data.id}`);
-        });
-        
+          })
+          .then((response) => {
+            toast("🎉 Thanh toán thành công");
+            cancelThanhToan();
+            navigate(`/quan-ly-hoa-don/detail-hoa-don/${response.data.id}`);
+          });
       } else {
         console.log(tienHang);
-        if(tienHang == 0 || tienHang == undefined || tienHang == '') {
+        if (tienHang == 0 || tienHang == undefined || tienHang == "") {
           toast.error("Bạn chưa chọn sản phẩm cho hóa đơn");
           cancelThanhToan();
           return;
         }
-        await axios.put(
-          `http://localhost:8080/hoa_don/thanhToanHoaDon/${activeKey}`,
-          {
+        await axios
+          .put(`http://localhost:8080/hoa_don/thanhToanHoaDon/${activeKey}`, {
             sdt: khachHang.sdt,
             tenKhachHang: khachHang.ten,
             soTien: inputValue,
@@ -308,12 +318,12 @@ const GioHang = ({
             tienGiam: duocGiam,
             trangThai: 4,
             loaiHd: 1, //1 - tại quầy 0 - online
-          }
-        ).then((response) => {
-          toast("🎉 Thanh toán thành công");
-          cancelThanhToan();
-          navigate(`/quan-ly-hoa-don/detail-hoa-don/${response.data.id}`);
-        });
+          })
+          .then((response) => {
+            toast("🎉 Thanh toán thành công");
+            cancelThanhToan();
+            navigate(`/quan-ly-hoa-don/detail-hoa-don/${response.data.id}`);
+          });
       }
     } catch (error) {
       console.log(error);
@@ -475,7 +485,7 @@ const GioHang = ({
 
   const handleOkQR = async (id_sp) => {
     setIsModalOpen(false);
-    
+
     await axios
       .post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
         id_hoa_don: activeKey,
@@ -486,12 +496,12 @@ const GioHang = ({
         toast("🎉 Thêm thành công");
         handleCancelQR();
         textRef.current = "";
-        setItems(prevItems => {
-          return prevItems.map(item => {
+        setItems((prevItems) => {
+          return prevItems.map((item) => {
             if (item.key === activeKey) {
               return {
                 ...item,
-                soLuong: 1
+                soLuong: 1,
               };
             }
             return item;
@@ -542,15 +552,15 @@ const GioHang = ({
     setIsBlur(!isBlur);
   };
   const handleSwitchChangeShipHoaToc = () => {
-    if(isBlur != true) {
+    if (isBlur != true) {
       toast.warning("Bạn cần chọn giao hàng trước");
       return;
     }
     setGiaoHangHoaToc(!isGiaoHangHoaToc);
-    if(!isGiaoHangHoaToc == true) {
+    if (!isGiaoHangHoaToc == true) {
       showModalThemPhiShip();
       setIsBlur(true);
-    }else {
+    } else {
       setTienShip(0);
     }
   };
@@ -564,7 +574,10 @@ const GioHang = ({
         const tongTien = response.data[0].id_hoa_don.tongTien;
         console.log(response.data[0]);
         console.log(tongTien);
-        const vc = response.data[0]?.id_hoa_don?.id_voucher?.giaTriMax == undefined ? 0 : response.data[0]?.id_hoa_don?.id_voucher?.giaTriMax;
+        const vc =
+          response.data[0]?.id_hoa_don?.id_voucher?.giaTriMax == undefined
+            ? 0
+            : response.data[0]?.id_hoa_don?.id_voucher?.giaTriMax;
         console.log(vc);
         const codeVoucher =
           response.data[0]?.id_hoa_don.id_voucher?.code == undefined
@@ -615,26 +628,25 @@ const GioHang = ({
         setVoucher(vc);
         // setTienHang(tongTien);
         console.log(tienHang);
-        if(tienHang == undefined || tienHang == '') {
+        if (tienHang == undefined || tienHang == "") {
           setTongTien(tongTien);
           setTienHang(tongTien);
-        }else {
+        } else {
           setTongTien(tienHang - vc + tienShip);
         }
-        
       });
   };
   const showModalThemPhiShip = () => {
     setIsModalOpenThemPhiShip(true);
-  }
+  };
   const handleOkPhiShip = () => {
     setTienShip(phiVanChuyen);
     setIsModalOpenThemPhiShip(false);
     getData();
-  }
+  };
   const handleCancelPhiShip = () => {
     setIsModalOpenThemPhiShip(false);
-  }
+  };
   const getKhachHang = async () => {
     await axios
       .get(`http://localhost:8080/hoa_don_chi_tiet/getHDCTByMa/${activeKey}`)
@@ -857,7 +869,11 @@ const GioHang = ({
             footer={[]}
           >
             <div className="mt-5">
-              <TableKhachHang hoaDon={activeKey} setKhachHang={setKhachHang} setIsModalOpenTK={setIsModalOpenTK} />
+              <TableKhachHang
+                hoaDon={activeKey}
+                setKhachHang={setKhachHang}
+                setIsModalOpenTK={setIsModalOpenTK}
+              />
             </div>
           </Modal>
 
@@ -926,6 +942,7 @@ const GioHang = ({
                 tienHang={tienHang}
                 tienShip={tienShip}
                 setTienShip={setTienShip}
+                setNgayNhan={setNgayNhan}
                 phiVanChuyen={phiVanChuyen}
               />
             </div>
@@ -1050,7 +1067,7 @@ const GioHang = ({
                 label={
                   <span
                     className="
-                  font-bold checked:text-[#2ec946] mr-5" 
+                  font-bold checked:text-[#2ec946] mr-5"
                   >
                     Giao hàng
                   </span>
@@ -1058,7 +1075,7 @@ const GioHang = ({
                 checked={isBlur}
                 onChange={handleSwitchChange}
               />
-              
+
               <Switch
                 id="custom-switch-component-2"
                 ripple={false}
@@ -1100,7 +1117,7 @@ const GioHang = ({
                 </div>
               </Modal>
             </div>
-            
+
             <div class="flex ... gap-20">
               <div class="w-4/6 ... font-medium text-s">Tiền hàng</div>
               <div class="w-2/6 ...">

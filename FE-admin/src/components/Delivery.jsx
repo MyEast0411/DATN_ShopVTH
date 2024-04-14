@@ -3,7 +3,18 @@ import { getProvinces, getDistricts, getWards } from "../api/Location";
 import axios from "axios";
 import { Select } from "antd";
 const { Option } = Select;
-export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang, setTienShip, phiVanChuyen, tienShip, setDiaChi, diaChi }) {
+export default function Delivery({
+  activeKey,
+  khachHang,
+  setKhachHang,
+  tienHang,
+  setTienShip,
+  phiVanChuyen,
+  tienShip,
+  setDiaChi,
+  diaChi,
+  setNgayNhan,
+}) {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -41,20 +52,22 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
           } else {
             setKhachHang1("");
           }
-        })
+        });
       });
   };
   useEffect(() => {
     getKhachHang();
   }, [khachHang1]);
   const getDiaChi = async () => {
-    const result = await axios.get(`http://localhost:8080/dia-chi/findDiaChiMacDinh/${khachHang.maKH}`);
+    const result = await axios.get(
+      `http://localhost:8080/dia-chi/findDiaChiMacDinh/${khachHang.maKH}`
+    );
     setDiaChi(result.data);
   };
 
   useEffect(() => {
     getDiaChi();
-  }, [khachHang])
+  }, [khachHang]);
   useEffect(() => {
     getProvinces().then((data) => {
       setProvinces(data.results);
@@ -63,37 +76,38 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
 
   useEffect(() => {
     const fetchData = async () => {
-
-      const provinceNames = provinces.map(item => item.province_name);
+      const provinceNames = provinces.map((item) => item.province_name);
       console.log(provinceNames);
       setValueTP(provinceNames);
 
-      const provinceCode = provinces.find(x => x.DistrictName === diaChi.thanhPho)?.code;
+      const provinceCode = provinces.find(
+        (x) => x.DistrictName === diaChi.thanhPho
+      )?.code;
 
       if (provinceCode) {
         try {
           const districtData = await getDistricts(provinceCode);
           setDistrict(districtData);
         } catch (error) {
-          console.error('Error fetching districts:', error);
+          console.error("Error fetching districts:", error);
         }
       }
 
-      const districtNames = district.map(item => item.name);
+      const districtNames = district.map((item) => item.name);
       setValueHuyen(districtNames);
 
-      const districtCode = district.find(x => x.name === diaChi.huyen)?.code;
+      const districtCode = district.find((x) => x.name === diaChi.huyen)?.code;
 
       if (districtCode) {
         try {
           const wardData = await getWards(districtCode);
           setWard(wardData);
         } catch (error) {
-          console.error('Error fetching wards:', error);
+          console.error("Error fetching wards:", error);
         }
       }
 
-      const wardNames = ward.map(item => item.name);
+      const wardNames = ward.map((item) => item.name);
       setValueXa(wardNames);
     };
 
@@ -115,9 +129,10 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime';
-    const token = '83b3ca14-88ad-11ee-a6e6-e60958111f48';
-    const shopId = '190374 - 0964457125';
+    const apiUrl =
+      "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime";
+    const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
+    const shopId = "190374 - 0964457125";
     const requestData = {
       from_district_id: 1804,
       from_ward_code: "1B2211",
@@ -126,14 +141,15 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
       service_id: 53320,
     };
 
-    axios.post(apiUrl, requestData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'ShopId': shopId,
-        'Token': token,
-      },
-    })
-      .then(response => {
+    axios
+      .post(apiUrl, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          ShopId: shopId,
+          Token: token,
+        },
+      })
+      .then((response) => {
         console.log(response.data.data.leadtime);
         const leadtimeTimestamp = response.data.data.leadtime;
         const leadtimeDate = new Date(leadtimeTimestamp * 1000);
@@ -146,8 +162,9 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
 
         console.log(formattedLeadtime);
         setDeliveryTime(formattedLeadtime);
+        setNgayNhan(formattedLeadtime);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   }, [idTP, idHuyen, idXa]);
@@ -168,21 +185,21 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
       })
       .then((response) => {
         const id_tp = response.data.data.find((item) =>
-          item.NameExtension.some((extension) => diaChi?.thanhPho?.includes(extension))
+          item.NameExtension.some((extension) =>
+            diaChi?.thanhPho?.includes(extension)
+          )
         )?.ProvinceID;
         setIdTP(id_tp);
         console.log(id_tp);
       })
-      .catch((error) => {
-      });
-  }
+      .catch((error) => {});
+  };
 
   // lay id huyen theo api theo id tp
   const getIdHuyen = () => {
     console.log("get id huyen");
     console.log(idTP);
-    if (idTP != undefined && idTP != '') {
-      
+    if (idTP != undefined && idTP != "") {
       const apiUrl =
         "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district";
       const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -201,19 +218,20 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
         })
         .then((response) => {
           const id_huyen = response.data.data.find((item) =>
-            item.NameExtension.some((extension) => diaChi?.huyen?.includes(extension))
+            item.NameExtension.some((extension) =>
+              diaChi?.huyen?.includes(extension)
+            )
           )?.DistrictID;
           setIdHuyen(id_huyen);
           console.log(id_huyen);
         })
-        .catch((error) => {
-        });
+        .catch((error) => {});
     }
-  }
+  };
 
   // lay id xa theo api theo id huyen
   const getIdXa = () => {
-    if (idHuyen != undefined && idHuyen != '') {
+    if (idHuyen != undefined && idHuyen != "") {
       const apiUrl =
         "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id";
       const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
@@ -231,15 +249,16 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
         })
         .then((response) => {
           const id_xa = response.data.data.find((item) =>
-            item.NameExtension.some((extension) => diaChi.xa.includes(extension))
+            item.NameExtension.some((extension) =>
+              diaChi.xa.includes(extension)
+            )
           )?.WardCode;
           setIdXa(id_xa);
           console.log(id_xa);
         })
-        .catch((error) => {
-        });
+        .catch((error) => {});
     }
-  }
+  };
 
   useEffect(() => {
     getIdThanhPho();
@@ -253,7 +272,15 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
   // Tính phí vận chuyển
   useEffect(() => {
     console.log(phiVanChuyen);
-    if (phiVanChuyen == "" && idTP != undefined && idTP != '' && idHuyen != undefined && idHuyen != '' && idXa != undefined && idXa != '') {
+    if (
+      phiVanChuyen == "" &&
+      idTP != undefined &&
+      idTP != "" &&
+      idHuyen != undefined &&
+      idHuyen != "" &&
+      idXa != undefined &&
+      idXa != ""
+    ) {
       console.log("da call api tinh phi van chuyen");
       const apiUrl =
         "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
@@ -284,7 +311,7 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
         .then((response) => {
           console.log("tien ship : ", response.data);
           console.log("tien hang : ", tienHang);
-          if (tienHang > 1000000) setTienShip(0)
+          if (tienHang > 1000000) setTienShip(0);
           else setTienShip(response.data.data.total);
           // console.log(tienShip);
         })
@@ -293,15 +320,15 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
         });
     }
   }, [idTP, idHuyen, idXa, tienHang, phiVanChuyen, tienShip]);
-  const options = valueTP.map(name => (
+  const options = valueTP.map((name) => (
     <Option key={name} value={name}>
       {name}
     </Option>
   ));
   const [optionHuyen, setOptionHuyen] = useState([]);
   useEffect(() => {
-    const valueH = district.map(item => item.district_name);
-    const newOptionHuyen = valueH.map(name => (
+    const valueH = district.map((item) => item.district_name);
+    const newOptionHuyen = valueH.map((name) => (
       <Select.Option key={name} value={name}>
         {`${name}`}
       </Select.Option>
@@ -310,8 +337,8 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
   }, [diaChi, optionHuyen]);
   const [optionXa, setOptionXa] = useState([]);
   useEffect(() => {
-    const valueX = ward.map(item => item.ward_name);
-    const newOptionXa = valueX.map(name => (
+    const valueX = ward.map((item) => item.ward_name);
+    const newOptionXa = valueX.map((name) => (
       <Select.Option key={name} value={name}>
         {`${name}`}
       </Select.Option>
@@ -346,9 +373,9 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
                   placeholder="Ten"
                   value={khachHang?.ten || ""}
                   onChange={(e) => {
-                    setKhachHang(prevState => ({
+                    setKhachHang((prevState) => ({
                       ...prevState,
-                      ten: e.target.value
+                      ten: e.target.value,
                     }));
                   }}
                   required
@@ -359,7 +386,6 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
                 <label
                   htmlFor="phone"
                   className="block mb-2 text-sm font-medium text-gray-900"
-
                 >
                   Số điện thoại
                 </label>
@@ -372,9 +398,9 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
                   pattern="/^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/"
                   required
                   onChange={(e) => {
-                    setKhachHang(prevState => ({
+                    setKhachHang((prevState) => ({
                       ...prevState,
-                      sdt: e.target.value
+                      sdt: e.target.value,
                     }));
                   }}
                 />
@@ -395,9 +421,9 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
                 value={diaChi?.duong || ""}
                 required
                 onChange={(e) => {
-                  setDiaChi(prevState => ({
+                  setDiaChi((prevState) => ({
                     ...prevState,
-                    duong: e.target.value
+                    duong: e.target.value,
                   }));
                 }}
               />
@@ -412,11 +438,13 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
               <Select
                 placeholder="Thành phố"
                 onChange={(value) => {
-                  setDiaChi(prevState => ({
+                  setDiaChi((prevState) => ({
                     ...prevState,
-                    thanhPho: value
+                    thanhPho: value,
                   }));
-                  const provinceCode = provinces.find((x) => x.province_name === value)?.province_id;
+                  const provinceCode = provinces.find(
+                    (x) => x.province_name === value
+                  )?.province_id;
                   console.log(value);
                   getDistricts(provinceCode).then((data) => {
                     console.log(data.results);
@@ -428,7 +456,10 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
                 style={{ width: "100%", height: "40px", marginRight: "10px" }}
               >
                 {provinces.map((province) => (
-                  <Option key={province.province_id} value={province.province_name}>
+                  <Option
+                    key={province.province_id}
+                    value={province.province_name}
+                  >
                     {province.province_name}
                   </Option>
                 ))}
@@ -444,11 +475,13 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
               <Select
                 placeholder="Huyện"
                 onChange={(value) => {
-                  setDiaChi(prevState => ({
+                  setDiaChi((prevState) => ({
                     ...prevState,
-                    huyen: value
+                    huyen: value,
                   }));
-                  const districtCode = district.find((x) => x.district_name === value)?.district_id;
+                  const districtCode = district.find(
+                    (x) => x.district_name === value
+                  )?.district_id;
                   getWards(districtCode).then((data) => {
                     setWard(data.results);
                   });
@@ -469,9 +502,9 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
               <Select
                 placeholder="Xã phường"
                 onChange={(value) => {
-                  setDiaChi(prevState => ({
+                  setDiaChi((prevState) => ({
                     ...prevState,
-                    xa: value
+                    xa: value,
                   }));
                 }}
                 value={diaChi?.xa || "Chọn xã"}
@@ -482,7 +515,10 @@ export default function Delivery({ activeKey, khachHang, setKhachHang, tienHang,
             </div>
           </div>
           <div>
-            <img src="https://api.ghn.vn/themes/angulr/img/logo-ghn-new.png" width={"30%"} />
+            <img
+              src="https://api.ghn.vn/themes/angulr/img/logo-ghn-new.png"
+              width={"30%"}
+            />
             <p>Thời gian dự kiến giao hàng : {deliveryTime}</p>
           </div>
         </form>

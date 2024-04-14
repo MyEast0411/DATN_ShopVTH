@@ -267,7 +267,7 @@ public class SanPhamController {
             spct.setSoLuongTon(x.getSoLuongTon());
             spct.setKhoiLuong(x.getKhoiLuong());
             spct.setSoLuongTon(x.getSoLuongTon());
-            spct.setTrangThai("1");
+            spct.setTrangThai(1);
             spct.setDeleted(1);
             Pattern pattern = Pattern.compile("(Màu [^=]+)=\\[([^\\]]+)]");
             Matcher matcher = pattern.matcher(hinhAnh);
