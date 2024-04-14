@@ -15,10 +15,7 @@ import { RiBuilding3Line } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 import { MdMenu } from "react-icons/md";
 import { NavLink, Link, useLocation, useRoutes } from "react-router-dom";
-<<<<<<< HEAD
-=======
 // import { AiOutlineSetting } from "react-icons/ai";
->>>>>>> 7e699423fa0e457ee030d5b1abb4932bb5c02dec
 //logo
 import logo from "../../assets/logo.png";
 
