@@ -34,7 +34,7 @@ const App = () => {
     <NextUIProvider>
       <RootLayout>
         <Routes>
-          <Route path="/" element={<BanHangTaiQuay />} />
+          <Route path="/ban-hang-tai-quay" element={<BanHangTaiQuay />} />
 
           <Route path="/profile" element={<Profile />} />
 
@@ -71,7 +71,6 @@ const App = () => {
             path="/quan-ly-tai-khoan/khach-hang/edit-khach-hang/:maKH"
             element={<DetailKhachHang />}
           />
-          {/* <Route path="/lich-su-mua-hang/:idkh" element={<LichSuMuaHang />} /> */}
 
           <Route
             path="/quan-ly-san-pham/san-pham/them-san-pham"

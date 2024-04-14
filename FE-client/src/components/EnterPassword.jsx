@@ -33,14 +33,12 @@ export default function EnterPassword() {
         setError("Mật khẩu không chính xác");
       } else {
         console.log(response.data);
-        // if(response.data.ma.includes("NV")) {
-        //   console.log("ê");
-        //   localStorage.setItem("user", JSON.stringify(response.data));
-        //   window.location.href = "http://localhost:5174/";
-        // } else {
+        if(response.data.ma.includes("NV")) {
+          window.location.href = "http://localhost:5174/ban-hang-tai-quay";
+        } else {
           localStorage.setItem("user", JSON.stringify(response.data));
           navigate("/");
-        // }
+        }
       }
     } catch (error) {
       console.error("Error login:", error);

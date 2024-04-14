@@ -5,6 +5,7 @@ import com.example.shop.entity.KhachHang;
 import com.example.shop.entity.NhanVien;
 import com.example.shop.repositories.KhachHangRepository;
 import com.example.shop.repositories.NhanVienRepository;
+import com.example.shop.response.UserResponse;
 import com.example.shop.service.KhachHangService;
 import com.example.shop.util.SendMail;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class LoginController {
     private final KhachHangService khachHangService;
+
+    public static UserResponse userResponse = new UserResponse();
     @Autowired
     KhachHangRepository khachHangRepository;
 
@@ -39,6 +42,8 @@ public class LoginController {
         if (khachHang == null){
             NhanVien nhanVien = nhanVienRepository.login(dto.getEmail(),dto.getPass());
             if(nhanVien != null) {
+                userResponse.setId(nhanVien.getId());
+                userResponse.setMa(nhanVien.getMa());
                 return ResponseEntity.ok(nhanVien);
             }
             return ResponseEntity.badRequest().body("FAILED");
@@ -47,12 +52,17 @@ public class LoginController {
     }
 
     @GetMapping("/findByMa")
-    public ResponseEntity findByMa(@PathVariable String maNV){
-        NhanVien nhanVien = nhanVienRepository.findByMa(maNV);
+    public ResponseEntity findByMa() {
+        NhanVien nhanVien = nhanVienRepository.findByMa(userResponse.getMa());
         if (nhanVien == null){
             return  ResponseEntity.ok("FAILED");
         }
         return ResponseEntity.ok(nhanVien);
+    }
+    @GetMapping("/logout")
+    public ResponseEntity logout() {
+        userResponse = new UserResponse();
+        return ResponseEntity.ok("Đăng xuất thành công");
     }
 
     @PostMapping("/check-mail")
@@ -87,8 +97,5 @@ public class LoginController {
       }else {
          return ResponseEntity.ok("FAILD") ;
       }
-
     }
-
-
 }

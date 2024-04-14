@@ -9,18 +9,16 @@ import { IoIosArrowBack } from "react-icons/io";
 import { AiOutlineAppstore, AiOutlineSetting } from "react-icons/ai";
 import { BsPerson } from "react-icons/bs";
 import { HiOutlineDatabase } from "react-icons/hi";
-import { TbChartHistogram, TbReportAnalytics } from "react-icons/tb";
+import { TbChartHistogram, TbReportAnalytics, TbLogout } from "react-icons/tb";
 import { RiBuilding3Line } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 import { MdMenu } from "react-icons/md";
 import { NavLink, Link, useLocation, useRoutes } from "react-router-dom";
-<<<<<<< HEAD
-=======
-// import { AiOutlineSetting } from "react-icons/ai";
->>>>>>> 7e699423fa0e457ee030d5b1abb4932bb5c02dec
 //logo
 import logo from "../../assets/logo.png";
 import axios from "axios";
+import { Button } from "antd";
+import { toast } from "react-toastify";
 
 const Sidebar = () => {
   let isTabletMid = useMediaQuery({ query: "(max-width: 768px)" });
@@ -43,14 +41,11 @@ const Sidebar = () => {
     }
   }, [isTabletMid]);
   const getNhanVien = async () => {
-    if (localStorage?.getItem("user") != "") {
-      setUser(JSON.parse(localStorage.getItem("user")));
-      const result = await axios.get(
-        `http://localhost:8080/user/findByMa/${JSON.parse(localStorage.getItem("user"))?.ma}`
-      );
-      const nhanVienData = result.data;
-      console.log(nhanVienData);
-    }
+    const result = await axios.get('http://localhost:8080/user/findByMa');
+    localStorage.setItem("user", JSON.stringify(result.data));
+    const nhanVienData = result.data;
+    console.log(nhanVienData);
+    setUser(result.data);
   };
   useEffect(() => {
     getNhanVien();
@@ -129,14 +124,14 @@ const Sidebar = () => {
       menus: ["khuyen-mai", "voucher"],
       subTitles: ["Đợt giảm giá", "Phiếu giảm giá"],
       mainTitle: "Giảm giá",
-    },
-    {
-      name: "settings",
-      icon: AiOutlineAppstore,
-      menus: ["dang-ky", "dang-nhap", "dang-xuat"],
-      subTitles: ["Đăng ký", "Đăng nhập", "Đăng xuất"],
-      mainTitle: "Settings",
-    },
+    }
+    // {
+    //   name: "settings",
+    //   icon: AiOutlineAppstore,
+    //   menus: ["dang-ky", "dang-nhap", "dang-xuat"],
+    //   subTitles: ["Đăng ký", "Đăng nhập", "Đăng xuất"],
+    //   mainTitle: "Settings",
+    // },
   ];
 
   return (
@@ -172,7 +167,7 @@ const Sidebar = () => {
         <div className="flex flex-col h-full">
           <ul className="whitespace-pre  px-2.5 text-[0.9rem] py-5 flex flex-col gap-1  font-medium overflow-x-hidden scrollbar-thin scrollbar-track-white scrollbar-thumb-slate-100   md:h-[75%] h-[70%]">
             <li>
-              <NavLink to={"/"} className="link">
+              <NavLink to={"/ban-hang-tai-quay"} className="link">
                 <AiOutlineAppstore size={23} className="min-w-max" />
                 Bán Hàng Tại Quầy
               </NavLink>
@@ -206,6 +201,22 @@ const Sidebar = () => {
                 Thống kê
               </NavLink>
             </li>
+            <li>
+              <p to={"/dang-xuat"} onClick={ async () => {
+                console.log("heloo");
+                await axios.get("http://localhost:8080/user/logout").then((response) => {
+                  if(response.status == 200) {
+                    setUser({});
+                    toast.success("Đăng xuất thành công");
+                    localStorage.removeItem("user");
+                    window.location.href = "http://localhost:5173";
+                  }
+                })
+              }} className="link" classNames="border-none">
+                <TbLogout size={23} className="min-w-max" />
+                Đăng xuất
+              </p>
+            </li>
           </ul>
 
           <li className="link">
@@ -216,16 +227,14 @@ const Sidebar = () => {
               {/* image profile */}
               <VscAccount size={23} />
               <img
-                className="rounded-full"
-                src={
-                  "https://genshin.global/wp-content/uploads/2021/09/raiden-shogun-electro-character-genshin-impact-1.webp"
-                }
+                className="rounded-full w-50"
+                src={user?.anh}
                 alt="avatar"
-                width={100}
+                width={50}
               />
               <div className="flex justify-start flex-col items-start">
                 <p className="w-40 leading-7 cursor-pointer text-s text-sm truncate text-gray-600">
-                  donglun`
+                  {user?.ten}
                 </p>
               </div>
             </NavLink>
@@ -256,7 +265,7 @@ const Sidebar = () => {
         </motion.div>
       </motion.div>
 
-      <div className="m-3 md:hidden  " onClick={() => setOpen(true)}>
+      <div className="m-3 md:hidden" onClick={() => setOpen(true)}>
         <MdMenu size={25} />
       </div>
     </div>
