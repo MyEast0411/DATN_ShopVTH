@@ -66,13 +66,13 @@ const InHoaDonTra = React.forwardRef((props, ref) => {
             <p>
               Khách Hàng :&nbsp;&nbsp;
               <span className="italic font-medium">
-                {props.inforKH.id_khach_hang?.ten}
+                {props.inforKH?.id_khach_hang?.ten}
               </span>
             </p>
             <p>
               Số Điện thoại :&nbsp;&nbsp;
               <span className="italic font-medium ">
-                {props.inforKH.id_khach_hang?.sdt}
+                {props.inforKH?.id_khach_hang?.sdt}
               </span>
             </p>
             <p>
@@ -85,14 +85,14 @@ const InHoaDonTra = React.forwardRef((props, ref) => {
           <div class="w-2/4 ...">
             <p className="text-left">
               Hóa đơn :&nbsp;&nbsp;
-              <span className="italic font-medium"> {props.inforKH.ma}</span>
+              <span className="italic font-medium"> {props.inforKH?.ma}</span>
             </p>
             <p className="text-left">
               Thời gian :&nbsp;&nbsp;
               <span className="italic font-medium">
                 &nbsp;&nbsp;
                 {format(
-                  new Date(props.inforKH.ngayTao),
+                  new Date(props.inforKH?.ngayTao),
                   " hh:mm ,   dd-MM-yyyy"
                 )}
               </span>
@@ -143,15 +143,16 @@ const InHoaDonTra = React.forwardRef((props, ref) => {
                       {product.id_chi_tiet_san_pham.id_kich_co.ten}]
                     </td>
                     <td style={{ border: "1px solid black", padding: "8px" }}>
-                      {Intl.NumberFormat().format(product.giaTien)} ₫
-                    </td>
-                    <td style={{ border: "1px solid black", padding: "8px" }}>
-                      {product.soLuong}
-                    </td>
-                    <td style={{ border: "1px solid black", padding: "8px" }}>
                       {Intl.NumberFormat().format(
-                        product.giaTien * product.soLuong
-                      )}
+                        product.id_chi_tiet_san_pham.giaBan
+                      )}{" "}
+                      ₫
+                    </td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>
+                      {product.quantity}
+                    </td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>
+                      {Intl.NumberFormat().format(product.giaTien)}
                       &nbsp;&nbsp; ₫
                     </td>
                   </tr>
@@ -235,13 +236,13 @@ const InHoaDonTra = React.forwardRef((props, ref) => {
               }}
             />
           </div>
-          <div className="space-y-3">
+          {/* <div className="space-y-3">
             <p className="text-end " style={{ fontSize: 17 }}>
-              Tổng cộng :&nbsp;&nbsp;
+              Tổng tiền hóa đơn sau trả :&nbsp;&nbsp;
               <span className="italic">{Intl.NumberFormat().format(0)} ₫</span>
             </p>
             <p style={{ fontSize: 17 }}>
-              <span className="me-5"> Thuế(%) :&nbsp;&nbsp;</span>
+              <span className="me-5"> Tiền giảm(%) :&nbsp;&nbsp;</span>
 
               <span className=" text-end italic">
                 {Intl.NumberFormat().format(0)} ₫
@@ -249,12 +250,52 @@ const InHoaDonTra = React.forwardRef((props, ref) => {
             </p>
 
             <p className="text-end" style={{ fontSize: 17 }}>
-              <span className=" "> Tổng tiền : </span>&nbsp;&nbsp;
+              <span className=" "> Tổng tiền trả khách : </span>&nbsp;&nbsp;
               <span className=" ">
                 &nbsp;&nbsp;
                 <span className="italic">
                   {Intl.NumberFormat().format(0)} ₫
                 </span>
+              </span>
+            </p>
+          </div> */}
+
+          <div
+            className="tongGia mb-4 p-5
+                space-y-8
+              "
+          >
+            <p class="flex justify-between">
+              <span className="font-medium">Số tiền hóa đơn sau hoàn </span>
+              <span className="italic ">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                {Intl.NumberFormat().format(props.tongTienSauTra)} VND
+              </span>
+            </p>
+
+            <p class="flex justify-between">
+              <span className="font-medium">Tiền giảm giá</span>
+              <span className="italic ">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                {Intl.NumberFormat().format(
+                  props.inforKH == null
+                    ? 0
+                    : props.inforKH?.id_voucher == null
+                    ? 0
+                    : props.inforKH?.id_voucher?.giaTriMax
+                )}{" "}
+                VND
+              </span>
+            </p>
+
+            <p class="flex justify-between">
+              <span className="font-medium">Số tiền hoàn trả</span>
+              <span className="italic ">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                {Intl.NumberFormat().format(
+                  props.tongTien - props.tongTienSauTra + props.tienGiam
+                )}{" "}
+                VND
               </span>
             </p>
           </div>

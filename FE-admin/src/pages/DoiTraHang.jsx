@@ -44,6 +44,8 @@ function AfterSearch({ hdDoiTra }) {
   const [tienTra, setTienTra] = useState(0);
   const [tienTongSauTra, setTienTongSauTra] = useState(0);
   const [tienGiam, setTienGiam] = useState(0);
+  const [soLuongHoanTra, setSoLuongHoanTra] = useState(0);
+
   const navigate = useNavigate();
 
   const [result, setResult] = useState(""); // Lưu trữ kết quả quét
@@ -52,36 +54,63 @@ function AfterSearch({ hdDoiTra }) {
   // comfirm tra hàng
   const [traHangConfirmationOpen, setTraHangConfirmationOpen] = useState(false);
   const [isModalOpenHD, setIsModalOpenHD] = useState(false);
-  const getData = async (value) => {
-    setMaHD(value);
-    await axios
-      .get(`http://localhost:8080/hoa_don_chi_tiet/getHDDoiTra/${value}`)
-      .then((res) => {
-        const dataCheck = res.data.listHDCT.filter((item) => item.deleted == 1);
-        setHdChosed(
-          dataCheck.map((res, i) => {
-            return {
-              ...res,
-              ma: res.id_chi_tiet_san_pham.ma,
-              key: res.id_chi_tiet_san_pham.ma,
-              quantity: res.soLuong,
-            };
-          })
-        );
-        if (dataCheck.length > 0) {
-          setInforKH(res.data.hoaDon);
-          setTongTien(res.data.hoaDon.tongTien);
-          setTienGiam(res.data.hoaDon?.id_voucher?.giaTriMax);
-        }
+  const getData = async () => {
+    if (maHD == "" || maHD == null) {
+      setInforKH(null);
+      setTongTien(0);
+      setTienGiam(0);
+      setHDtra([]);
+      setHdChosed([]);
+      toast("Bạn chưa nhập hóa đơn ✍🏻✍🏻✍🏻✍🏻");
+    } else {
+      await axios
+        .get(`http://localhost:8080/hoa_don_chi_tiet/getHDDoiTra/${maHD}`)
+        .then((res) => {
+          setInforKH(null);
+          setTongTien(0);
+          setTienGiam(0);
+          setHDtra([]);
+          setHdChosed([]);
+          console.log(res.data.listHDCT);
+          const dataCheck = res.data.listHDCT.filter(
+            (item) => item.deleted == 1
+          );
+          console.log(dataCheck);
+          setHdChosed(
+            dataCheck.map((res, i) => {
+              return {
+                ...res,
+                ma: res.id_chi_tiet_san_pham.ma,
+                key: res.id_chi_tiet_san_pham.ma,
+                quantity: res.soLuong,
+              };
+            })
+          );
+          if (dataCheck.length > 0) {
+            console.log(res.data.hoaDon);
+            setInforKH(res.data.hoaDon);
+            setTongTien(res.data.hoaDon.tongTien);
+            setTienGiam(res.data.hoaDon?.id_voucher?.giaTriMax);
+          }
 
-        setHDtra([]);
-      });
+          setHDtra([]);
+        })
+        .catch((err) => {
+          setInforKH(null);
+          setTongTien(0);
+          setTienGiam(0);
+          setHDtra([]);
+          setHdChosed([]);
+          setSoLuongHoanTra(0);
+          toast("Hóa đơn không hợp lệ 😞😞😞😞");
+        });
+    }
   };
 
   const handleChange = (selectedRowKeys, selectedRows) => {
     if (selectedRows.length == 0) {
       const updatedHdChosed = hdChosed.map((hd) => {
-        return { ...hd, quantity: hd.soLuong, ghiChu: "Lý do đổi trả" };
+        return { ...hd, quantity: hd.soLuong, ghiChu: "Sản phẩm lỗi" };
       });
 
       setHdChosed(updatedHdChosed);
@@ -95,7 +124,7 @@ function AfterSearch({ hdDoiTra }) {
     });
 
     const updatedHdTra = selectedRows.map((hd) => {
-      return { ...hd, quantity: hd.soLuong, ghiChu: "Lý do đổi trả" };
+      return { ...hd, quantity: hd.soLuong, ghiChu: "Sản phẩm lỗi" };
     });
     setHDtra(updatedHdTra);
     setSelectedRowKeys(selectedRowKeys);
@@ -103,9 +132,19 @@ function AfterSearch({ hdDoiTra }) {
     console.log(updatedHdChosed);
     console.log(selectedRows);
 
+    // const tongConLai = updatedHdChosed.reduce((total, hd) => {
+    //   return total + hd.giaTien * hd.quantity;
+    // }, 0);
     const tongConLai = updatedHdChosed.reduce((total, hd) => {
-      return total + hd.giaTien * hd.quantity;
+      return total + hd.giaTien;
     }, 0);
+
+    const soLuongHoan = updatedHdTra.reduce((total, hd) => {
+      return total + hd.quantity;
+    }, 0);
+
+    setSoLuongHoanTra(soLuongHoan);
+
     setTienTongSauTra(tongConLai);
     console.log(tongConLai);
     getVoucherWhenSelected(tongConLai);
@@ -144,18 +183,9 @@ function AfterSearch({ hdDoiTra }) {
           listSPCTDoiTra: hdTra,
         })
         .then((res) => {
-          setInforKH(null);
-          setTongTien(0);
-          setTienGiam(0);
-          setHDtra([]);
-          setHdChosed([]);
           toast("Trả hàng thành công 🎉🎉🎉🎉");
           cancelTraHang();
           setIsModalOpenHD(true);
-          setTimeout(() => {
-            setIsModalOpenHD(true);
-            navigate("/quan-ly-hoa-don");
-          }, 2000);
         });
       cancelTraHang();
     }
@@ -251,6 +281,22 @@ function AfterSearch({ hdDoiTra }) {
       render: (_, record) => (
         <div style={{ borderBottom: 2 }}>
           <Space size="middle">
+            <span>
+              {Intl.NumberFormat().format(record.id_chi_tiet_san_pham.giaBan)}{" "}
+              VND
+            </span>
+          </Space>
+        </div>
+      ),
+    },
+
+    {
+      title: "Đơn giá",
+      dataIndex: "giaTien",
+      key: "giaTien",
+      render: (_, record) => (
+        <div style={{ borderBottom: 2 }}>
+          <Space size="middle">
             <span>{Intl.NumberFormat().format(record.giaTien)} VND</span>
           </Space>
         </div>
@@ -326,7 +372,10 @@ function AfterSearch({ hdDoiTra }) {
       render: (_, record) => (
         <div style={{ borderBottom: 2 }}>
           <Space size="middle">
-            <span>{Intl.NumberFormat().format(record.giaTien)} VND</span>
+            <span>
+              {Intl.NumberFormat().format(record.id_chi_tiet_san_pham.giaBan)}{" "}
+              VND
+            </span>
           </Space>
         </div>
       ),
@@ -367,50 +416,68 @@ function AfterSearch({ hdDoiTra }) {
   const handleDecreaseQuantity = (ma) => {
     const updatedHdTra = hdTra.map((hd) => {
       if (hd.ma === ma && hd.quantity > 1) {
+        const updatedHdChosed = hdChosed.map((hd) => {
+          if (hd.ma === ma) {
+            return { ...hd, quantity: hd.quantity + 1 };
+          }
+          return hd;
+        });
+        setHdChosed(updatedHdChosed);
+        // const tongConLai = updatedHdChosed.reduce((total, hd) => {
+        //   return total + hd.giaTien * hd.quantity;
+        // }, 0);
+
+        const tongConLai = updatedHdChosed.reduce((total, hd) => {
+          return total + hd.giaTien;
+        }, 0);
+
+        setTienTongSauTra(tongConLai);
+        console.log(tongConLai);
+
+        getVoucherWhenSelected(tongConLai);
         return { ...hd, quantity: hd.quantity - 1 };
       }
       return hd;
     });
 
-    const updatedHdChosed = hdChosed.map((hd) => {
-      if (hd.ma === ma) {
-        return { ...hd, quantity: hd.quantity + 1 };
-      }
-      return hd;
-    });
     setHDtra(updatedHdTra);
-    setHdChosed(updatedHdChosed);
-    const tongConLai = updatedHdChosed.reduce((total, hd) => {
-      return total + hd.giaTien * hd.quantity;
+    const soLuongHoan = updatedHdTra.reduce((total, hd) => {
+      return total + hd.quantity;
     }, 0);
-    setTienTongSauTra(tongConLai);
-    console.log(tongConLai);
 
-    getVoucherWhenSelected(tongConLai);
+    setSoLuongHoanTra(soLuongHoan);
   };
 
   const handleIncreaseQuantity = (ma) => {
     const updatedHdTra = hdTra.map((hd) => {
       if (hd.ma === ma && hd.quantity < hd.soLuong) {
+        const updatedHdChosed = hdChosed.map((hd) => {
+          if (hd.ma === ma) {
+            return { ...hd, quantity: hd.quantity - 1 };
+          }
+          return hd;
+        });
+        // const tongConLai = updatedHdChosed.reduce((total, hd) => {
+        //   return total + hd.giaTien * hd.quantity;
+        // }, 0);
+        const tongConLai = updatedHdChosed.reduce((total, hd) => {
+          return total + hd.giaTien;
+        }, 0);
+        setTienTongSauTra(tongConLai);
+        console.log(tongConLai);
+        getVoucherWhenSelected(tongConLai);
+        setHdChosed(updatedHdChosed);
         return { ...hd, quantity: hd.quantity + 1 };
       }
       return hd;
     });
 
-    const updatedHdChosed = hdChosed.map((hd) => {
-      if (hd.ma === ma) {
-        return { ...hd, quantity: hd.quantity - 1 };
-      }
-      return hd;
-    });
     setHDtra(updatedHdTra);
-    setHdChosed(updatedHdChosed);
-    const tongConLai = updatedHdChosed.reduce((total, hd) => {
-      return total + hd.giaTien * hd.quantity;
+    const soLuongHoan = updatedHdTra.reduce((total, hd) => {
+      return total + hd.quantity;
     }, 0);
-    setTienTongSauTra(tongConLai);
-    console.log(tongConLai);
-    getVoucherWhenSelected(tongConLai);
+
+    setSoLuongHoanTra(soLuongHoan);
   };
 
   const handleQuantityChange = (ma, value) => {
@@ -443,7 +510,8 @@ function AfterSearch({ hdDoiTra }) {
   };
 
   const handleCancelHD = () => {
-    setIsModalOpenHD(false); // Đóng modal
+    setIsModalOpenHD(false);
+    navigate("/quan-ly-hoa-don");
   };
 
   return (
@@ -479,9 +547,11 @@ function AfterSearch({ hdDoiTra }) {
             size="large"
             style={{ width: 300 }}
             value={maHD}
-            onChange={(e) => getData(e.target.value)}
+            onChange={(e) => setMaHD(e.target.value)}
           />
-          <Button size="large">Tìm kiếm</Button>
+          <Button size="large" onClick={() => getData()}>
+            Tìm kiếm
+          </Button>
         </div>
         <div className="flex items-center">
           <Tooltip title="Quét mã hóa đơn">
@@ -607,28 +677,28 @@ function AfterSearch({ hdDoiTra }) {
                   TRoai
                 </p>
                 <p>
+                  <span className="font-medium">SDT</span> : {inforKH?.sdt}
+                </p>
+                <p>
                   <span className="font-medium">Địa chỉ</span>:{" "}
                   {inforKH?.diaChi}
                 </p>
               </div>
               <div
                 className="tongGia mb-4 p-5
-                space-y-4
+                space-y-8
               "
               >
                 <p class="flex justify-between">
-                  <span className="font-medium">Tổng tiền</span>
-                  <span>
+                  <span className="font-medium">Tổng tiền hóa đơn ban đầu</span>
+                  <span className="italic ">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    {Intl.NumberFormat().format(
-                      hdTra.length > 0 ? tienTongSauTra : tongTien
-                    )}{" "}
-                    VND
+                    {Intl.NumberFormat().format(tongTien)} VND
                   </span>
                 </p>
                 <p class="flex justify-between">
-                  <span className="font-medium">Giảm giá</span>
-                  <span>
+                  <span className="font-medium">Tiền giảm giá</span>
+                  <span className="italic ">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     {Intl.NumberFormat().format(
                       inforKH == null
@@ -641,13 +711,32 @@ function AfterSearch({ hdDoiTra }) {
                   </span>
                 </p>
                 <p class="flex justify-between">
+                  <span className="font-medium">Số lượng hoàn trả</span>
+                  <span className="italic ">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {soLuongHoanTra} sản phẩm
+                  </span>
+                </p>
+
+                <p class="flex justify-between">
                   <span className="font-medium">Số tiền hoàn trả</span>
-                  <span>
+                  <span className="italic ">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     {Intl.NumberFormat().format(
                       hdTra.length > 0
                         ? tongTien - tienTongSauTra + tienGiam
                         : 0
+                    )}{" "}
+                    VND
+                  </span>
+                </p>
+
+                <p class="flex justify-between">
+                  <span className="font-medium">Số tiền hóa đơn sau hoàn </span>
+                  <span className="italic ">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {Intl.NumberFormat().format(
+                      hdTra.length > 0 ? tienTongSauTra : 0
                     )}{" "}
                     VND
                   </span>
@@ -696,7 +785,14 @@ function AfterSearch({ hdDoiTra }) {
               </Button>,
             ]}
           >
-            <InHoaDonTra dataTra={hdTra} dataHD={hdChosed} inforKH={inforKH} />
+            <InHoaDonTra
+              dataTra={hdTra}
+              dataHD={hdChosed}
+              inforKH={inforKH}
+              tongTienSauTra={tienTongSauTra}
+              tongTien={tongTien}
+              tienGiam={tienGiam}
+            />
           </Modal>
 
           <Dialog open={traHangConfirmationOpen} handler={cancelTraHang}>
