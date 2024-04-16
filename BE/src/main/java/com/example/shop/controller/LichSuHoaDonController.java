@@ -107,7 +107,7 @@ public class LichSuHoaDonController {
 
 
         if(lshd.getMoTaHoaDon().equals("Hủy Hóa Đơn")){
-            hoaDon.setTrangThai(5);
+            hoaDon.setTrangThai(6);
             List<HoaDonChiTiet> listHDCT = hoaDonChiTietService.getHDCT(hoaDon.getId());
 
             for (HoaDonChiTiet donChiTiet : listHDCT){
