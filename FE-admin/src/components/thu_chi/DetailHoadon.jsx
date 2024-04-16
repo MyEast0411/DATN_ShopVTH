@@ -1,20 +1,29 @@
 import { useEffect, useState, useRef } from "react";
 import {
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
+  // Dialog,
+  // DialogActions,
+  // DialogContent,
+  // DialogContentText,
+  // DialogTitle,
   TbInfoTriangle,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
+  // DialogHeader,
+  // DialogBody,
+  // DialogFooter,
 } from "@material-tailwind/react";
 import moment from "moment";
 import { format } from "date-fns";
 import TableSanPham from "./TableSanPham";
 import QRCode from "qrcode.react";
+import numeral from "numeral";
+
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 
 import {
   Table,
@@ -73,10 +82,13 @@ function DetailHoadon() {
   const [maGiaoDich, setMaGiaoDich] = useState("");
   const [khachCanTra, setKhachCanTra] = useState("");
   const [thanhToan, setThanhToan] = useState([]);
-  const [value, setValue] = useState("TM");
+  const [httt, setHTTT] = useState("TM");
+
   const [tongTien, setTongTien] = useState(0);
-  const [tienThua, setTienThua] = useState("0 ₫");
+  const [tienThua, setTienThua] = useState(0);
+  const [tienKhachDua, setTienKhachDua] = useState(0);
   const [loading, setLoading] = useState(false);
+
   const [openFixHD, setOpenFixHD] = useState(false);
   const [isModalOpenHD, setIsModalOpenHD] = useState(false);
   const componentRef = useRef();
@@ -196,7 +208,10 @@ function DetailHoadon() {
   };
 
   const onChange = (e) => {
-    setValue(e.target.value);
+    setHTTT(e.target.value);
+    if (e.target.value == "TM") {
+      setMaGiaoDich("");
+    }
   };
 
   const showModal = () => {
@@ -371,20 +386,21 @@ function DetailHoadon() {
     // if (inputValue != null) {
     await axios
       .post("http://localhost:8080/thanh-toan/addThanhToan", {
-        maHD: info.maHD,
-        maGiaoDich: "",
-        soTien: tongTien,
-        phuongThuc: "Tiền mặt",
+        maHD: info.ma,
+        maGiaoDich: maGiaoDich,
+        soTien: tienKhachDua,
+        phuongThuc: httt,
       })
       .then((response) => {
         toast("🎉 Thêm thành công");
-        getThanhToan();
-        cancelTienMat();
+        getDataLichSuThanhToan();
+        setThanhToanConfirmationOpen(false);
       })
       .catch((error) => {
         toast("😢 Thêm thất bại");
       });
-    cancelTienMat();
+    setThanhToanConfirmationOpen(false);
+    // cancelTienMat();
     // }
   };
   //modal chuyen khoan
@@ -502,7 +518,7 @@ function DetailHoadon() {
           id: index + 1,
           maGiaoDich: item.id_thanh_toan.ma_giao_dich,
           soTien: item.id_thanh_toan.soTien,
-          trangThai: item.id_thanh_toan.hinhThuc,
+          trangThai: item.id_thanh_toan.trangThai,
           thoiGian: item.ngayTao,
           // loaiGiaoDich: item.id_thanh_toan.trangThai,
           phuongThucThanhToan: item.id_thanh_toan.hinhThuc,
@@ -530,7 +546,7 @@ function DetailHoadon() {
       "http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id
     );
     const data = await res.data;
-    console.log(data);
+    // console.log(data);
     const checkData = data.filter((item) => item.deleted == 1);
     setRowsSPCT(
       checkData.map((item, index) => {
@@ -542,6 +558,7 @@ function DetailHoadon() {
           mausac: item.id_chi_tiet_san_pham.id_mau_sac.ten,
           quantity: item.soLuong,
           price: item.id_chi_tiet_san_pham.giaBan,
+          giaTien: item.giaTien,
         };
       })
     );
@@ -557,6 +574,7 @@ function DetailHoadon() {
           quantity: item.soLuong,
           price: item.id_chi_tiet_san_pham.giaBan,
           ghiChu: item.ghiChu,
+          giaTien: item.giaTien,
         };
       })
     );
@@ -734,10 +752,11 @@ function DetailHoadon() {
   ];
 
   const handleMoney = (value) => {
+    setTienKhachDua(value);
     if (value >= tongTien) {
-      setTienThua(`${Intl.NumberFormat().format(value - tongTien)} ₫`);
+      setTienThua(value - tongTien);
     } else if (value == 0 || value < tongTien) {
-      setTienThua("0  ₫");
+      setTienThua(0);
     }
   };
 
@@ -773,7 +792,12 @@ function DetailHoadon() {
 
   return (
     <>
-      <div className="conatiner mx-auto space-y-5">
+      <div
+        className="conatiner mx-auto space-y-5"
+        style={{
+          backgroundColor: "white",
+        }}
+      >
         <div className=" bg-white">
           <div
             className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
@@ -941,11 +965,19 @@ function DetailHoadon() {
                 </div>
                 <div className="mb-3">
                   <p>Tiền Khách Đưa</p>
-                  <Input onChange={(e) => handleMoney(e.target.value)} />
+                  <Input
+                    min={1}
+                    value={tienKhachDua}
+                    onChange={(e) => handleMoney(e.target.value)}
+                  />
+                  {/* <Input onChange={(e) => handleMoney(e.target.value)} /> */}
                 </div>
                 <div className="mb-3">
                   <p>Tiền Thừa</p>
-                  <Input value={tienThua} readOnly />
+                  <Input
+                    value={`${Intl.NumberFormat().format(tienThua)} ₫`}
+                    readOnly
+                  />
                 </div>
 
                 <div className="mb-3">
@@ -953,15 +985,20 @@ function DetailHoadon() {
                 </div>
                 <div className="mb-3">
                   <p>Phương thức thanh toán</p>
-                  <Radio.Group onChange={onChange} value={value}>
+                  <Radio.Group onChange={onChange} value={httt}>
                     <Radio value={"TM"}>Tiền Mặt</Radio>
                     <Radio value={"CK"}>Chuyển Khoản</Radio>
                   </Radio.Group>
                 </div>
-                <div className="mb-3">
-                  <p>Mã giao dịch</p>
-                  <Input />
-                </div>
+                {httt == "CK" && (
+                  <div className="mb-3">
+                    <p>Mã giao dịch</p>
+                    <Input
+                      onChange={(e) => setMaGiaoDich(e.target.value)}
+                      value={maGiaoDich}
+                    />
+                  </div>
+                )}
               </div>
             </Modal>
 
@@ -1253,9 +1290,7 @@ function DetailHoadon() {
                       </div>
                       <div className="inline-flex items-center gap-10">
                         <p className="font-medium text-red-500">
-                          {Intl.NumberFormat().format(
-                            item.price * item.quantity
-                          )}
+                          {Intl.NumberFormat().format(item.giaTien)}
                           &nbsp;₫
                         </p>
 
@@ -1287,108 +1322,108 @@ function DetailHoadon() {
                   </div>
                 ))}
               </div>
-
-              <div className="row table-san-pham ">
-                <h1 className="m-3">Danh sách sản phẩm trả</h1>
-                <Divider />
-                {rowsSPCTTra.map((item, index) => (
-                  <div
-                    className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
-                    key={index}
-                  >
-                    <div style={{ position: "relative" }}>
-                      <img
-                        src={item.imageUrl}
-                        alt="product-image"
-                        className="w-full rounded-lg sm:w-20 me-10 object-contain"
-                        style={{
-                          width: "7rem",
-                        }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          right: 16,
-                          left: -10,
-                          zIndex: 1,
-                        }}
-                      >
-                        <DiscountTag
-                          discount={
-                            kmspcts.find(
-                              (x) => x.id_chi_tiet_san_pham.id == item.id
-                            )?.id_khuyen_mai.giaTriPhanTram
-                          }
+              {rowsSPCTTra.length > 0 && (
+                <div className="row table-san-pham ">
+                  <h1 className="m-3">Danh sách sản phẩm trả</h1>
+                  <Divider />
+                  {rowsSPCTTra.map((item, index) => (
+                    <div
+                      className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
+                      key={index}
+                    >
+                      <div style={{ position: "relative" }}>
+                        <img
+                          src={item.imageUrl}
+                          alt="product-image"
+                          className="w-full rounded-lg sm:w-20 me-10 object-contain"
+                          style={{
+                            width: "7rem",
+                          }}
                         />
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between w-full">
-                      <div>
-                        <div className=" sm:mt-0">
-                          <h2 className="text-lg font-medium text-gray-900 mb-3">
-                            {item.name}
-                          </h2>
-                          <p className="mb-3  font-medium text-gray-900">
-                            Size: {item.kichco}
-                          </p>
-                          <p className="font-medium text-gray-900 mb-3">
-                            Số lượng :
-                            <span className="font-medium text-red-500 mb-3">
-                              {item.quantity}&nbsp;
-                            </span>
-                            sản phẩm
-                          </p>
-                          <p className="font-medium text-gray-900 mb-3">
-                            Đơn giá :{" "}
-                            <span className="font-medium text-red-500 mb-3">
-                              {Intl.NumberFormat().format(item.price)} &nbsp;₫
-                            </span>
-                          </p>
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            right: 16,
+                            left: -10,
+                            zIndex: 1,
+                          }}
+                        >
+                          <DiscountTag
+                            discount={
+                              kmspcts.find(
+                                (x) => x.id_chi_tiet_san_pham.id == item.id
+                              )?.id_khuyen_mai.giaTriPhanTram
+                            }
+                          />
                         </div>
                       </div>
-                      <div className="inline-flex items-center gap-10">
-                        <p className="font-medium text-red-500">
-                          {Intl.NumberFormat().format(
-                            item.price * item.quantity
-                          )}
-                          &nbsp;₫
-                        </p>
 
-                        {info.trangThai < 4 && (
-                          <Tooltip title="Xóa sản phẩm" arrow={true}>
-                            <Button
-                              color="red"
-                              onClick={() => onHandleDelete(item.id)}
-                            >
-                              <DeleteIcon />
-                            </Button>
-                          </Tooltip>
-                        )}
-                        {info.trangThai < 4 && (
-                          <Tooltip title="Chỉnh sửa số lượng" arrow={true}>
-                            <Button
-                              color="yellow"
-                              onClick={() => {
-                                showModalLichSuSP();
-                                getSPCT(item.id);
-                              }}
-                            >
-                              <EditIcon />
-                            </Button>
-                          </Tooltip>
-                        )}
-                      </div>
-                      <div>
-                        <h2 className="text-sm font-medium text-gray-900 mb-3">
-                          Lý do đỏi trả : {item.ghiChu}
-                        </h2>
+                      <div className="flex justify-between w-full">
+                        <div>
+                          <div className=" sm:mt-0">
+                            <h2 className="text-lg font-medium text-gray-900 mb-3">
+                              {item.name}
+                            </h2>
+                            <p className="mb-3  font-medium text-gray-900">
+                              Size: {item.kichco}
+                            </p>
+                            <p className="font-medium text-gray-900 mb-3">
+                              Số lượng :
+                              <span className="font-medium text-red-500 mb-3">
+                                {item.quantity}&nbsp;
+                              </span>
+                              sản phẩm
+                            </p>
+                            <p className="font-medium text-gray-900 mb-3">
+                              Đơn giá :{" "}
+                              <span className="font-medium text-red-500 mb-3">
+                                {Intl.NumberFormat().format(item.price)} &nbsp;₫
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="inline-flex items-center gap-10">
+                          <p className="font-medium text-red-500">
+                            {Intl.NumberFormat().format(item.giaTien)}
+                            &nbsp;₫
+                          </p>
+
+                          {info.trangThai < 4 && (
+                            <Tooltip title="Xóa sản phẩm" arrow={true}>
+                              <Button
+                                color="red"
+                                onClick={() => onHandleDelete(item.id)}
+                              >
+                                <DeleteIcon />
+                              </Button>
+                            </Tooltip>
+                          )}
+                          {info.trangThai < 4 && (
+                            <Tooltip title="Chỉnh sửa số lượng" arrow={true}>
+                              <Button
+                                color="yellow"
+                                onClick={() => {
+                                  showModalLichSuSP();
+                                  getSPCT(item.id);
+                                }}
+                              >
+                                <EditIcon />
+                              </Button>
+                            </Tooltip>
+                          )}
+                        </div>
+                        <div>
+                          <h2 className="text-sm font-medium text-gray-900 mb-3">
+                            Lý do đỏi trả : {item.ghiChu}
+                          </h2>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
+
               <Modal
                 open={openSP}
                 title="Cập Nhật Sản Phảm"
@@ -1508,7 +1543,7 @@ function DetailHoadon() {
         </div>
       </div>
       {/* dialog lịch su hoa don */}
-      <Dialog open={open} handler={handleOpen} size="xl">
+      {/* <Dialog open={open} handler={handleOpen} size="xl">
         <DialogHeader>Lịch sử hóa đơn</DialogHeader>
         <DialogBody>
           <Table aria-label="Example table with dynamic content">
@@ -1538,11 +1573,11 @@ function DetailHoadon() {
             <span>Thoát</span>
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
 
       {/* confirm xóa */}
 
-      <Dialog open={deleteConfirmationOpen} handler={cancelDelete}>
+      {/* <Dialog open={deleteConfirmationOpen} handler={cancelDelete}>
         <DialogHeader>
           <CiWarning style={{ color: "red", fontSize: 40 }} />
           <span>Cảnh báo</span>
@@ -1562,10 +1597,10 @@ function DetailHoadon() {
             Vẫn xóa
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
 
       {/* confirm lùi */}
-      <Dialog open={luiHDConfirmationOpen} onClose={cancelLuiHD}>
+      {/* <Dialog open={luiHDConfirmationOpen} onClose={cancelLuiHD}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1585,9 +1620,42 @@ function DetailHoadon() {
             Vẫn cập nhật
           </Button>
         </DialogFooter>
+      </Dialog> */}
+      <Dialog open={luiHDConfirmationOpen} onClose={cancelLuiHD} fullWidth>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingBottom: "15px",
+            }}
+          >
+            <TbInfoTriangle
+              className="mr-2"
+              style={{
+                color: "red",
+                fontSize: "25px",
+              }}
+            />
+            <span>Thông báo</span>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có muốn cập nhật về trạng thái trước của hóa đơn này không ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelLuiHD} color="warning">
+            Hủy
+          </Button>
+          <Button color="primary" onClick={confirmLuiHD}>
+            Xác nhận
+          </Button>
+        </DialogActions>
       </Dialog>
       {/* confirm tiến */}
-      <Dialog open={addLSHDConfirmationOpen} onClose={cancelAddLSHD}>
+      {/* <Dialog open={addLSHDConfirmationOpen} onClose={cancelAddLSHD}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1607,10 +1675,10 @@ function DetailHoadon() {
             Vẫn cập nhật
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
 
       {/* confirm hủy hóa đơn */}
-      <Dialog open={cancleHDConfirmationOpen} handler={cancelCancelHD}>
+      {/* <Dialog open={cancleHDConfirmationOpen} handler={cancelCancelHD}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1630,9 +1698,9 @@ function DetailHoadon() {
             Vẫn Hủy
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
       {/* confirm update sl */}
-      <Dialog open={updateConfirmationOpen} handler={cancelUpdate}>
+      {/* <Dialog open={updateConfirmationOpen} handler={cancelUpdate}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1652,10 +1720,10 @@ function DetailHoadon() {
             Vẫn cập nhật
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
 
       {/* confirm thanh toán */}
-      <Dialog open={thanhToanConfirmationOpen} onClose={cancelThanhToan}>
+      {/* <Dialog open={thanhToanConfirmationOpen} onClose={cancelThanhToan}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1675,7 +1743,7 @@ function DetailHoadon() {
             Tiếp tục
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 }

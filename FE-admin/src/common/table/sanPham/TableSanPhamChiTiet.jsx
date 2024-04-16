@@ -86,7 +86,12 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App({ gioHang, setIsModalOpenThem, setItems, setTienHang }) {
+export default function App({
+  gioHang,
+  setIsModalOpenThem,
+  setItems,
+  setTienHang,
+}) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -151,19 +156,20 @@ export default function App({ gioHang, setIsModalOpenThem, setItems, setTienHang
     // // // console.log(gioHang);
     // // // console.log(soLuongSP.id);
     // // // console.log(soLuongDat);
-    if(soLuongDat <= 0) {
+    if (soLuongDat <= 0) {
       toast.error("Số lượng đặt phải lớn hơn hoặc bằng 1");
       setIsModalOpenThem(false);
       handleCancelThemSL();
       return;
     }
-    if(soLuongDat > 100) {
+    if (soLuongDat > 100) {
       toast.error("Không được nhập số lượng quá lớn");
       setIsModalOpenThem(false);
       handleCancelThemSL();
       return;
     }
-    await axios.post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
+    await axios
+      .post("http://localhost:8080/hoa_don_chi_tiet/addHDCT", {
         id_hoa_don: gioHang,
         id_san_pham: soLuongSP.id,
         so_luong: soLuongDat,
@@ -172,18 +178,18 @@ export default function App({ gioHang, setIsModalOpenThem, setItems, setTienHang
         toast("🎉 Thêm thành công");
         setIsModalOpenThem(false);
         handleCancelThemSL();
-        setItems(prevItems => {
-          return prevItems.map(item => {
+        setItems((prevItems) => {
+          return prevItems.map((item) => {
             if (item.key === gioHang) {
               return {
                 ...item,
-                soLuong: soLuongDat
+                soLuong: soLuongDat,
               };
             }
             return item;
           });
         });
-        setTienHang(response.data.tongTien)
+        setTienHang(response.data.tongTien);
         // cancelDelete();
       })
       .catch((error) => {
@@ -262,7 +268,9 @@ export default function App({ gioHang, setIsModalOpenThem, setItems, setTienHang
       try {
         const response = await axios.get(url);
 
-        const updatedRows = response.data.map((item, index) => ({
+        const locSPLoi = response.data.filter((item) => item.trangThai != 2);
+
+        const updatedRows = locSPLoi.map((item, index) => ({
           id: item.id,
           stt: index + 1,
           hinhAnh: item.defaultImg,
@@ -315,7 +323,11 @@ export default function App({ gioHang, setIsModalOpenThem, setItems, setTienHang
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage == 0 ? 1 : filteredItems.length / rowsPerPage);
+  const pages = Math.ceil(
+    filteredItems.length / rowsPerPage == 0
+      ? 1
+      : filteredItems.length / rowsPerPage
+  );
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;

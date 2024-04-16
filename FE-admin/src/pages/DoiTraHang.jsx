@@ -1,5 +1,5 @@
 import { Button, Input, Table, Space, InputNumber } from "antd";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { FaShippingFast } from "react-icons/fa";
 import { FaClipboardList } from "react-icons/fa6";
 import { MdOutlineQrCodeScanner } from "react-icons/md";
@@ -28,6 +28,8 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import { toast } from "react-toastify";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 // To use Html5Qrcode (more info below)
 import { Html5Qrcode } from "html5-qrcode";
@@ -47,6 +49,7 @@ function AfterSearch({ hdDoiTra }) {
   const [soLuongHoanTra, setSoLuongHoanTra] = useState(0);
 
   const navigate = useNavigate();
+  const componentRef = useRef();
 
   const [result, setResult] = useState(""); // Lưu trữ kết quả quét
   const [modalOpen, setModalOpen] = useState(false); // Trạng thái mở/closed của modal
@@ -107,6 +110,91 @@ function AfterSearch({ hdDoiTra }) {
     }
   };
 
+  //const handleChange = (selectedRowKeys, selectedRows) => {
+  // if (selectedRows.length == 0) {
+  //   const updatedHdChosed = hdChosed.map((hd) => {
+  //     return { ...hd, quantity: hd.soLuong, ghiChu: "Sản phẩm lỗi" };
+  //   });
+
+  //   setHdChosed(updatedHdChosed);
+  // }
+  // const updatedHdChosed = hdChosed.map((hd) => {
+  //   const selected = selectedRows.find((row) => row.ma === hd.ma);
+  //   if (selected) {
+  //     return { ...hd, quantity: 0 };
+  //   }
+  //   return { ...hd, quantity: hd.soLuong };
+  // });
+
+  // if (hdTra.length > 0) {
+  //   const updatedHdTra = selectedRows.map((hd) => {
+  //     const selected = hdTra.find((row) => row.ma === hd.ma);
+  //     if (selected) {
+  //       return {
+  //         ...hd,
+  //         quantity: hd.soLuong - hd.quantity,
+  //         ghiChu: hd.ghiChu,
+  //       };
+  //     }
+  //     return { ...hd, quantity: hd.soLuong, ghiChu: "Sản phẩm lỗi" };
+  //   });
+  //   console.log(updatedHdTra);
+  //   setHDtra(updatedHdTra);
+  //   const soLuongHoan = updatedHdTra.reduce((total, hd) => {
+  //     return total + hd.quantity;
+  //   }, 0);
+
+  //   setSoLuongHoanTra(soLuongHoan);
+  //   const tongConLai = updatedHdTra.reduce((total, hd) => {
+  //     return total + hd.id_chi_tiet_san_pham.giaBan * hd.quantity;
+  //   }, 0);
+
+  //   setTienTongSauTra(tongTien - tongConLai);
+  //   console.log(tongConLai);
+  //   getVoucherWhenSelected(tongConLai);
+  // } else {
+  //   const updatedHdTra = selectedRows.map((hd) => {
+  //     return { ...hd, quantity: hd.soLuong, ghiChu: "Sản phẩm lỗi" };
+  //   });
+  //   setHDtra(updatedHdTra);
+  //   const soLuongHoan = updatedHdTra.reduce((total, hd) => {
+  //     return total + hd.quantity;
+  //   }, 0);
+
+  //   setSoLuongHoanTra(soLuongHoan);
+  //   const tongConLai = updatedHdTra.reduce((total, hd) => {
+  //     return total + hd.id_chi_tiet_san_pham.giaBan * hd.quantity;
+  //   }, 0);
+
+  //   setTienTongSauTra(tongTien - tongConLai);
+  //   console.log(tongConLai);
+  //   getVoucherWhenSelected(tongConLai);
+  // }
+
+  // // const updatedHdTra = selectedRows.map((hd) => {
+  // //   return { ...hd, quantity: hd.soLuong, ghiChu: "Sản phẩm lỗi" };
+
+  // // });
+  // console.log(selectedRows);
+  // console.log(updatedHdTra);
+  // setHDtra(updatedHdTra);
+  // setSelectedRowKeys(selectedRowKeys);
+  // setHdChosed(updatedHdChosed);
+  //console.log(updatedHdChosed);
+
+  // const tongConLai = updatedHdChosed.reduce((total, hd) => {
+  //   return total + hd.giaTien;
+  // }, 0);
+  // console.log(updatedHdChosed);
+
+  // const tongConLai = hdTra.reduce((total, hd) => {
+  //   return total + hd.id_chi_tiet_san_pham.giaBan * hd.quantity;
+  // }, 0);
+
+  // setTienTongSauTra(tongTien - tongConLai);
+  // console.log(tongConLai);
+  // getVoucherWhenSelected(tongConLai);
+  //};
   const handleChange = (selectedRowKeys, selectedRows) => {
     if (selectedRows.length == 0) {
       const updatedHdChosed = hdChosed.map((hd) => {
@@ -132,12 +220,12 @@ function AfterSearch({ hdDoiTra }) {
     console.log(updatedHdChosed);
     console.log(selectedRows);
 
-    // const tongConLai = updatedHdChosed.reduce((total, hd) => {
-    //   return total + hd.giaTien * hd.quantity;
-    // }, 0);
     const tongConLai = updatedHdChosed.reduce((total, hd) => {
-      return total + hd.giaTien;
+      return total + hd.id_chi_tiet_san_pham.giaBan * hd.quantity;
     }, 0);
+    // const tongConLai = updatedHdChosed.reduce((total, hd) => {
+    //   return total + hd.giaTien;
+    // }, 0);
 
     const soLuongHoan = updatedHdTra.reduce((total, hd) => {
       return total + hd.quantity;
@@ -186,12 +274,16 @@ function AfterSearch({ hdDoiTra }) {
           toast("Trả hàng thành công 🎉🎉🎉🎉");
           cancelTraHang();
           setIsModalOpenHD(true);
+          setTimeout(() => {
+            navigate(`/quan-ly-hoa-don/detail-hoa-don/${inforKH.id}`);
+          }, 2000);
         });
       cancelTraHang();
     }
   };
 
   // in hoa đơn
+
   const downloadPDF = () => {
     const input = componentRef.current;
     html2canvas(input).then((canvas) => {
@@ -213,23 +305,55 @@ function AfterSearch({ hdDoiTra }) {
         imgHeight * ratio
       );
 
-      // Tạo mã QR
-      const qrCodeDataUrl = document.createElement("canvas");
-      QRCode.toCanvas(qrCodeDataUrl, "https://example.com", function (error) {
-        if (error) console.error(error);
-        const qrImageData = qrCodeDataUrl.toDataURL("image/png");
-        pdf.addImage(
-          qrImageData,
-          "PNG",
-          10, // Điều chỉnh vị trí của mã QR tùy thuộc vào nhu cầu của bạn
-          imgHeight * ratio + 30, // Điều chỉnh vị trí của mã QR tùy thuộc vào nhu cầu của bạn
-          50, // Điều chỉnh kích thước của mã QR tùy thuộc vào nhu cầu của bạn
-          50 // Điều chỉnh kích thước của mã QR tùy thuộc vào nhu cầu của bạn
-        );
+      // Convert PDF to Blob
+      const pdfBlob = pdf.output("blob");
 
-        pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
-      });
+      // Create object URL for the Blob
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      // Calculate position for centering the print window
+      const windowHeight =
+        window.innerHeight ||
+        document.documentElement.clientHeight ||
+        document.body.clientHeight;
+      const windowWidth =
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth;
+      const popupWidth = 1200; // Width of the print window
+      const popupHeight = 950; // Height of the print window
+      const left = (windowWidth - popupWidth) / 2;
+      const top = (windowHeight - popupHeight) / 2;
+
+      // Open print dialog with the PDF
+      window.open(
+        pdfUrl,
+        "_blank",
+        `location=yes,height=${popupHeight},width=${popupWidth},scrollbars=yes,status=yes,top=${top},left=${left}`
+      );
     });
+    setIsModalOpenHD(false);
+    // const input = componentRef.current;
+    // html2canvas(input).then((canvas) => {
+    //   const imgData = canvas.toDataURL("image/png");
+    //   const pdf = new jsPDF("p", "mm", "a4", true);
+    //   const pdfHeight = pdf.internal.pageSize.getHeight();
+    //   const pdfWidth = pdf.internal.pageSize.getWidth();
+    //   const imgWidth = canvas.width;
+    //   const imgHeight = canvas.height;
+    //   const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+    //   const imgX = (pdfWidth - imgWidth * ratio) / 2;
+    //   const imgY = 20;
+    //   pdf.addImage(
+    //     imgData,
+    //     "PNG",
+    //     imgX,
+    //     imgY,
+    //     imgWidth * ratio,
+    //     imgHeight * ratio
+    //   );
+    //   pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
+    // });
     // setIsModalOpenHD(false);
   };
 
@@ -291,7 +415,7 @@ function AfterSearch({ hdDoiTra }) {
     },
 
     {
-      title: "Đơn giá",
+      title: "Thành tiền",
       dataIndex: "giaTien",
       key: "giaTien",
       render: (_, record) => (
@@ -428,7 +552,7 @@ function AfterSearch({ hdDoiTra }) {
         // }, 0);
 
         const tongConLai = updatedHdChosed.reduce((total, hd) => {
-          return total + hd.giaTien;
+          return total + hd.id_chi_tiet_san_pham.giaBan * hd.quantity;
         }, 0);
 
         setTienTongSauTra(tongConLai);
@@ -461,7 +585,7 @@ function AfterSearch({ hdDoiTra }) {
         //   return total + hd.giaTien * hd.quantity;
         // }, 0);
         const tongConLai = updatedHdChosed.reduce((total, hd) => {
-          return total + hd.giaTien;
+          return total + hd.id_chi_tiet_san_pham.giaBan * hd.quantity;
         }, 0);
         setTienTongSauTra(tongConLai);
         console.log(tongConLai);
@@ -786,6 +910,7 @@ function AfterSearch({ hdDoiTra }) {
             ]}
           >
             <InHoaDonTra
+              ref={componentRef}
               dataTra={hdTra}
               dataHD={hdChosed}
               inforKH={inforKH}

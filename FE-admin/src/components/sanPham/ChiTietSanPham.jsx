@@ -73,6 +73,7 @@ const statusColorMap = {
 };
 statusColorMap["Đang bán"] = "success";
 statusColorMap["Ngừng bán"] = "danger";
+statusColorMap["Sản Phẩm Lỗi"] = "warning";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
@@ -118,7 +119,7 @@ export default function ChiTietSanPham() {
     id_thuong_hieu: "",
     qrcode: "",
     id_kich_co: "",
-});
+  });
   useEffect(() => {
     getAllTL();
     getAllNH();
@@ -251,6 +252,7 @@ export default function ChiTietSanPham() {
         "http://localhost:8080/filterSPCT",
         sanPham
       );
+      console.log(response.data);
       const updatedRows = response.data.map((item, index) => ({
         id: item.id,
         stt: index + 1,
@@ -261,7 +263,12 @@ export default function ChiTietSanPham() {
         soLuongTon: item.soLuongTon,
         deGiay: item.id_de_giay.ten,
         giaBan: item.giaBan,
-        trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+        trangThai:
+          item.trangThai == 1
+            ? "Đang bán"
+            : item.trangThai == 0
+            ? "Ngừng bán"
+            : "Sản Phẩm Lỗi",
         giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
           ?.id_khuyen_mai.giaTriPhanTram,
       }));
@@ -290,15 +297,21 @@ export default function ChiTietSanPham() {
         tenSanPham: item.ten,
         deGiay: item.id_de_giay.ten,
         giaBan: item.giaBan,
-        trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
+        trangThai:
+          item.trangThai == 1
+            ? "Đang bán"
+            : item.trangThai == 0
+            ? "Ngừng bán"
+            : "Sản Phẩm Lỗi",
+        // trangThai: item.trangThai == 1 ? "Đang bán" : "Ngừng bán",
         giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
-          ?.id_khuyen_mai.giaTriPhanTram
+          ?.id_khuyen_mai.giaTriPhanTram,
       }));
       setSanPhams(updatedRows);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchChiTietSanPham();
@@ -335,7 +348,9 @@ export default function ChiTietSanPham() {
     );
   }, [sanPhams, filterValue, statusFilter]);
 
-  const pages = Math.ceil(filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1);
+  const pages = Math.ceil(
+    filteredItems.length != 0 ? filteredItems.length / rowsPerPage : 1
+  );
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -413,7 +428,10 @@ export default function ChiTietSanPham() {
 
       switch (columnKey) {
         case "soLuongTon":
-          return (
+          return sanPham.trangThai == "Sản Phẩm Lỗi" ||
+            sanPham.trangThai == "Ngừng bán" ? (
+            <span>{sanPham.soLuongTon}</span>
+          ) : (
             <InputNumber
               min={1}
               value={sanPham.soLuongTon}
@@ -421,13 +439,17 @@ export default function ChiTietSanPham() {
             />
           );
         case "giaBan":
-          return (
+          return sanPham.trangThai == "Sản Phẩm Lỗi" ||
+            sanPham.trangThai == "Ngừng bán" ? (
+            <span>{numeral(sanPham.giaBan).format("0,0 VND")}</span>
+          ) : (
             <InputNumber
               min={1}
               value={numeral(sanPham.giaBan).format("0,0 VND")}
               onChange={(value) => handleGiaBanChange(sanPham.id, value)}
             />
           );
+
         case "hinhAnh":
           const hinhAnhURL = sanPham.hinhAnh;
           return (
@@ -536,23 +558,25 @@ export default function ChiTietSanPham() {
 
   const showUpdate = () => {
     setUpdateConfirmationOpen(true);
-  }
+  };
   const handleOKUpdateConfirmation = async () => {
-    await axios.put("http://localhost:8080/updateSanPhamDetail", sanPhamChiTiet).then((response) => {
-      if(response.status == 200) {
-        setIsModalOpenSP(false);
-        handleCloseUpdateConfirmation();
-        toast.success("Cập nhật sản phẩm chi tiết thành công !");
-        fetchData();
-      }
-      
-    }).catch((err) => {
-      console.log(err);
-    })
+    await axios
+      .put("http://localhost:8080/updateSanPhamDetail", sanPhamChiTiet)
+      .then((response) => {
+        if (response.status == 200) {
+          setIsModalOpenSP(false);
+          handleCloseUpdateConfirmation();
+          toast.success("Cập nhật sản phẩm chi tiết thành công !");
+          fetchData();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   const handleCloseUpdateConfirmation = () => {
     setUpdateConfirmationOpen(false);
-  }
+  };
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
@@ -1094,37 +1118,41 @@ export default function ChiTietSanPham() {
             )}
           </TableBody>
         </Table>
-        <Dialog open={updateConfirmationOpen} onClose={handleCloseUpdateConfirmation} fullWidth>
-            <DialogTitle>
-              <div
+        <Dialog
+          open={updateConfirmationOpen}
+          onClose={handleCloseUpdateConfirmation}
+          fullWidth
+        >
+          <DialogTitle>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: "15px",
+              }}
+            >
+              <TbInfoTriangle
+                className="mr-2"
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  paddingBottom: "15px",
+                  color: "red",
+                  fontSize: "25px",
                 }}
-              >
-                <TbInfoTriangle
-                  className="mr-2"
-                  style={{
-                    color: "red",
-                    fontSize: "25px",
-                  }}
-                />
-                <span>Xác nhận cập nhật</span>
-              </div>
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText>Bạn có chắc muốn cập nhật sản phẩm này?</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseUpdateConfirmation} color="warning">
-                Hủy
-              </Button>
-              <Button onClick={handleOKUpdateConfirmation}>
-                Hoàn tất
-              </Button>
-            </DialogActions>
-          </Dialog>
+              />
+              <span>Xác nhận cập nhật</span>
+            </div>
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Bạn có chắc muốn cập nhật sản phẩm này?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseUpdateConfirmation} color="warning">
+              Hủy
+            </Button>
+            <Button onClick={handleOKUpdateConfirmation}>Hoàn tất</Button>
+          </DialogActions>
+        </Dialog>
         <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
           <DialogTitle>
             <div
@@ -1168,7 +1196,11 @@ export default function ChiTietSanPham() {
           style={{ position: "relative" }}
           width={800}
         >
-          <ModalChiTietSanPham idDetailProduct={idDetailProduct} sanPhamChiTiet={sanPhamChiTiet} setSanPhamChiTiet={setSanPhamChiTiet}/>
+          <ModalChiTietSanPham
+            idDetailProduct={idDetailProduct}
+            sanPhamChiTiet={sanPhamChiTiet}
+            setSanPhamChiTiet={setSanPhamChiTiet}
+          />
         </Modal>
         <Modal
           title="Xác nhận chỉnh sửa sản phẩm"
