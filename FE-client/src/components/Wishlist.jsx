@@ -9,7 +9,7 @@ export default function Wishlist() {
     <>
       <InfoTop />
       <Header />
-      <div className="container p-10">
+      <div className="container">
         <Breadcrumbs size="lg" className="my-3">
           <BreadcrumbItem>
             <Link to="/">Trang chủ</Link>

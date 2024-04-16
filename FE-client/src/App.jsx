@@ -25,6 +25,8 @@ import PayMentSuccess from "./components/PaymentSuccess";
 import Voucher from "./components/Voucher/Voucher";
 import FindStore from "./components/FindStore";
 import ContactUs from "./components/ContactUs";
+import News from "./components/News";
+import About from "./components/About";
 
 function App() {
   return (
@@ -53,6 +55,8 @@ function App() {
 
         <Route path="/find-store" element={<FindStore />} />
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/news" element={<News />} />
+        <Route path="/about" element={<About />} />
       </Routes>
       <BackToTopButton />
     </>
