@@ -7,6 +7,7 @@ import com.example.shop.repositories.KhachHangRepository;
 import com.example.shop.repositories.NhanVienRepository;
 import com.example.shop.service.KhachHangService;
 import com.example.shop.util.SendMail;
+import com.example.shop.util.UploadAnh;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -75,12 +76,29 @@ public class LoginController {
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
       if (dto.getMa().equals(maConfirm)  ){
           KhachHang kh = new KhachHang();
+          String urlImg = "";
+          if(kh.getAnhNguoiDung() == null || kh.getAnhNguoiDung().equals("")) {
+              urlImg = "https://i.ibb.co/Zfpv5xv/z4990910514033-c5e7b06a688bc0bd64e7d55442f212a6.jpg";
+          }else {
+              urlImg = UploadAnh.upload(kh.getAnhNguoiDung());
+          }
           kh.setMa("KH"+ new Date().getTime());
           kh.setTen(dto.getTen());
+          for (KhachHang item:
+                  khachHangRepository.getAllKh()) {
+              if(item.getEmail().equals(dto.getEmail().trim())) {
+                  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại !!!");
+              }
+              if(item.getSdt().equals(dto.getSdt().trim())) {
+                  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại !!!");
+              }
+          }
+          kh.setAnhNguoiDung(urlImg);
           kh.setEmail(dto.getEmail());
           kh.setNgaySinh(dateFormat.parse(dateFormat.format(dto.getNgaySinh())));
           kh.setSdt(dto.getSdt());
           kh.setTrangThai(1);
+          kh.setDeleted(1);
           kh.setMatKhau(dto.getPass());
           KhachHang khNew = khachHangRepository.save(kh);
           return ResponseEntity.ok(khNew);

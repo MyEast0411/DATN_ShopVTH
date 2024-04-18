@@ -82,7 +82,7 @@ public class ThanhToanController {
                     .deleted(1)
                     .build();
             hinhThucThanhToanService.save(hinhThucThanhToan);
-            System.out.println(tt);
+
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             return ResponseEntity.badRequest().body("ERROR");

@@ -138,10 +138,25 @@ public class HoaDonChiTietController {
                                      @RequestBody HoaDonChiTietUpdateRequest request
     ) {
         try {
+
+            // check số lượng  sp trc khi check
+
+            // get danh sach spct
+            // check soluong tồn
+
+            SanPhamChiTiet sanPhamChiTiet = ssSPCT.findById(id_san_pham).get();
+            if (sanPhamChiTiet.getSoLuongTon() < request.getQuantity()){
+                return ResponseEntity.ok("FAIL");
+            }else{
             boolean check = true;
             HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(id_hoa_don, id_san_pham);
             System.out.println("id hd "+ hoaDonChiTiet.getId_hoa_don().getId());
             System.out.println("id sp "+ hoaDonChiTiet.getId_chi_tiet_san_pham().getId());
+
+
+
+
+
             for (HoaDonChiTiet hdct:
                     ssHDCT.findAll()) {
                 if(hdct.getId_hoa_don().getId().equals(hoaDonChiTiet.getId_hoa_don().getId())
@@ -203,6 +218,7 @@ public class HoaDonChiTietController {
                     .build();
             lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
             return ResponseEntity.ok("OK");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("ERROR");
@@ -328,6 +344,7 @@ public class HoaDonChiTietController {
                 maxMa = 0;
             }
             KhachHang khachHang = ssKH.findByMa(cartNotLoginDTO.getMaKH());
+            System.out.println("Thông tin khách hàng : " + khachHang);
             Voucher voucher = ssVC.getVoucherByCode(cartNotLoginDTO.getVoucher());
             Double tienGiam = 0.0;
             if(voucher != null) {
@@ -347,7 +364,7 @@ public class HoaDonChiTietController {
                         .sdt(khachHang == null ? null : khachHang.getSdt())
                         .tenKhachHang(khachHang == null ? null : khachHang.getTen())
                         .id_voucher(voucher)
-                        .id_nhan_vien(ssNV.findById(idNhanVien).get())
+                        .id_nhan_vien(ssNV.findById(idNhanVien).isPresent()?ssNV.findById(idNhanVien).get():null)
                         .tienGiam(BigDecimal.valueOf(tienGiam))
                         .tienShip(BigDecimal.valueOf(Double.valueOf(cartNotLoginDTO.getPhiVanChuyen())))
                         .ngayNhan(new Date(cartNotLoginDTO.getDeliveryTime()))
