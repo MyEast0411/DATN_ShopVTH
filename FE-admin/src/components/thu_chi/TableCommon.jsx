@@ -253,6 +253,13 @@ const GetTrangThai = ({ tinhTrang }) => {
     );
   if (tinhTrang == 5)
     return (
+      <Tag color="#2C7865">
+        {" "}
+        <span className=" text-sm ">Trả Hàng</span>
+      </Tag>
+    );
+  if (tinhTrang == 6)
+    return (
       <Tag color="#ff0000">
         {" "}
         <span className=" text-sm ">Hủy</span>

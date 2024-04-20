@@ -159,7 +159,7 @@ export default function TableSanPham({
         cancelDelete();
       })
       .catch((error) => {
-        toast(error.response.data);
+        toast(error);
       });
     cancelDelete();
     setIsModalOpenThemSL(false);

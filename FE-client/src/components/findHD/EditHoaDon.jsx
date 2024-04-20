@@ -12,6 +12,9 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import { notification } from "antd";
 import { BsPen, BsTrash } from "react-icons/bs";
 import { format } from "date-fns";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { CiWarning } from "react-icons/ci";
 // import moment from "moment";
 
 // import { ToastContainer, toast } from "react-toastify";
@@ -62,6 +65,9 @@ function EditHoaDon() {
   const [valueHuyen, setValueHuyen] = useState([]);
   const [valueXa, setValueXa] = useState([]);
   const [checkEdit, setCheckEdit] = useState(false);
+  const [idToUpdate, setIdToUpdate] = useState(null);
+  const [isModalOpenUpdateSL, setIsModalOpenUpdateSL] = useState(false);
+  const [isModalOpenChangeAddress, setIsModalOpenChangeAddress] = useState(false);
 
   useEffect(() => {
     getProvinces().then((data) => {
@@ -286,93 +292,87 @@ function EditHoaDon() {
       const dataAddress = `${addressEdit.soNha},${addressEdit.xa},${addressEdit.huyen},${addressEdit.thanhPho}`;
       // tính tiền ship
       console.log(deliveryTime);
-
-      // confirm
-      Modal.confirm({
-        title: "Bạn có muốn cập nhật không ?",
-        icon: <ExclamationCircleFilled />,
-        // content: "Some descriptions",
-        async onOk() {
-          await axios
-            .put(`http://localhost:8080/hoa_don/update_client/${id}`, {
-              // addressEdit: dataAddress,
-              ...hoadon,
-              diaChi: dataAddress,
-              tienShip: tienShip,
-              ngayNhan: deliveryTime,
-            })
-            .then((res) => {
-              getAddress(res.data.diaChi);
-              setHoadon(() => ({
-                ...res.data,
-                ngayTao: format(
-                  new Date(res.data.ngayTao),
-                  "yyyy-MM-dd HH:mm:ss"
-                ),
-                ngayNhan: format(
-                  new Date(res.data.ngayNhan),
-                  "yyyy-MM-dd  HH:mm:ss"
-                ),
-              }));
-              setMoney({
-                tienGiam: res.data.tienGiam,
-                tienHang: res.data.tongTien,
-                tienShip: res.data.tienShip,
-
-                tongTien:
-                  res.data.tongTien + res.data.tienShip - res.data.tienGiam,
-                ma: res.data.ma,
-              });
-              setCheckEdit(false);
-              api["success"]({
-                message: "Thông báo",
-                description: "Cập nhật thành công",
-              });
-            })
-            .catch((error) => {
-              api["error"]({
-                message: "Thông báo",
-                description: "Cập nhật không thành công",
-              });
-            });
-        },
-        onCancel() {
-          openNotificationWithIcon(
-            "canceled",
-
-            "Bạn đã hủy cập nhật"
-          );
-        },
-      });
+      setIsModalOpenChangeAddress(true);
     } else {
       console.log(error);
-      api["error"]({
-        message: "Thông báo",
-        description: "Lỗi người dùng , xxin mời nhập đầy đủ địa chỉ",
-      });
+      toast("Lỗi người dùng , xxin mời nhập đầy đủ địa chỉ");
     }
+  };
+  const cancelChangeAddress = ()=>{
+    setIsModalOpenChangeAddress(false);
+  }
+
+
+  const confirmChangesAddress = async () => {
+    const dataAddress = `${addressEdit.soNha},${addressEdit.xa},${addressEdit.huyen},${addressEdit.thanhPho}`;
+   
+    cancelChangeAddress();
+      await axios
+        .put(`http://localhost:8080/hoa_don/update_client/${id}`, {
+          // addressEdit: dataAddress,
+          ...hoadon,
+          diaChi: dataAddress,
+          tienShip: tienShip,
+          ngayNhan: deliveryTime,
+        })
+        .then((res) => {
+          getAddress(res.data.diaChi);
+          setHoadon(() => ({
+            ...res.data,
+            ngayTao: format(
+              new Date(res.data.ngayTao),
+              "yyyy-MM-dd HH:mm:ss"
+            ),
+            ngayNhan: format(
+              new Date(res.data.ngayNhan),
+              "yyyy-MM-dd  HH:mm:ss"
+            ),
+          }));
+          setMoney({
+            tienGiam: res.data.tienGiam,
+            tienHang: res.data.tongTien,
+            tienShip: res.data.tienShip,
+
+            tongTien:
+              res.data.tongTien + res.data.tienShip - res.data.tienGiam,
+            ma: res.data.ma,
+          });
+          setCheckEdit(false);
+          toast( "Cập nhật thành công");
+         
+        })
+        .catch((error) => {
+          toast( "Cập nhật không thành công");
+          cancelChangeAddress();
+        })
+        
+    
+    
   };
 
+
+  
+
   // notifications
-  const [api, contextHolder] = notification.useNotification();
-  const openNotificationWithIcon = (type, description) => {
-    if (type === "success") {
-      api[type]({
-        message: "Thông báo",
-        description: description,
-      });
-    } else if (type === "error") {
-      api[type]({
-        message: "Cảnh bảo",
-        description: description,
-      });
-    } else if (type === "canceled") {
-      api["warning"]({
-        message: "Thông báo ",
-        description: description,
-      });
-    }
-  };
+  // const [api, contextHolder] = notification.useNotification();
+  // const openNotificationWithIcon = (type, description) => {
+  //   if (type === "success") {
+  //     api[type]({
+  //       message: "Thông báo",
+  //       description: description,
+  //     });
+  //   } else if (type === "error") {
+  //     api[type]({
+  //       message: "Cảnh bảo",
+  //       description: description,
+  //     });
+  //   } else if (type === "canceled") {
+  //     api["warning"]({
+  //       message: "Thông báo ",
+  //       description: description,
+  //     });
+  //   }
+  // };
 
   // update san pham
   const [openSP, setOpenSP] = useState(false);
@@ -393,36 +393,79 @@ function EditHoaDon() {
     setSPCT((value) => (value = rowsSPCT.filter((sp) => sp.id == id)[0]));
   };
   const onHandleUpdate = (idSPCT) => {
-    if (spct.quantity < 1) {
-      api["error"]({
-        message: "Thông báo",
-        description: "Số Lượng Phải Lớn Hơn Hoặc Bằng 1",
-      });
-    } else {
-      Modal.confirm({
-        title: `Bạn có muốn cập nhật sản phẩm không ?`,
-        okText: "Yes",
-        okType: "danger",
-        onOk: async () => {
-          await axios
-            .post(
-              `http://localhost:8080/hoa_don_chi_tiet/update/${id}/${idSPCT}`,
-              {
-                quantity: spct.quantity,
-              }
-            )
-            .then((response) => {
-              getInfoHD();
-              getDataChiTietSanPham();
-              handleOkLichSuSP();
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        },
-      });
+      if(spct.quantity == null || spct.quantity == ""){
+        toast("Số lượng không được để trống");
+      }else if(spct.quantity <= 0){
+        toast("Số lượng lớn hơn hoặc bằng 1");
+      }else if(spct.quantity > 5){
+       toast("Số lượng Không quá 5 sản phẩm");
+      }else{
+         setIdToUpdate(idSPCT);
+      setIsModalOpenUpdateSL(true);
+      setOpenSP(false);
+      }
+    };
+
+    const cancelUpdateSL = ()=>{
+      setIdToUpdate(null);
+      setIsModalOpenUpdateSL(false);
     }
-  };
+  // const confirmUpdateSL =async ()=>{
+
+  //         await axios
+  //           .post(
+  //             `http://localhost:8080/hoa_don_chi_tiet/update/${id}/${idToUpdate}`,
+  //             {
+  //               quantity: spct.quantity,
+  //             }
+  //           )
+  //           .then((response) => {
+  //             getInfoHD();
+  //             getDataChiTietSanPham();
+  //             handleOkLichSuSP();
+  //             toast("Cập nhật thành công");
+  //             cancelUpdateSL();
+
+  //           })
+  //           .catch((e) => {
+  //             console.log(e);
+  //             cancelUpdateSL();
+  //           });
+  //       };
+
+        const confirmUpdateSL = async () => {
+          if (idToUpdate) {
+            cancelUpdateSL();
+            await axios
+              .post(
+                `http://localhost:8080/hoa_don_chi_tiet/update/${id}/${idToUpdate}`,
+                {
+                  quantity: spct.quantity,
+                }
+              )
+              .then((response) => {
+                if(response.data == "FAIL"){
+                  toast("Số lượng tồn không đủ");
+                }else{
+                
+                getInfoHD();
+                getDataChiTietSanPham();
+                handleOkLichSuSP();
+                toast("Cập nhật thành công");
+                cancelUpdateSL();
+                }
+               
+              
+              })
+              .catch((error) => {
+                toast("😢 Cập nhật thất bại");
+                console.log(e);
+                cancelUpdateSL();
+              });
+          
+          }
+        };
+     
 
   const onHandleDelete = (idSPCT) => {
     Modal.confirm({
@@ -633,7 +676,74 @@ function EditHoaDon() {
           alignItems: "center",
         }}
       >
-        {contextHolder}
+        {/* update số lượng */}
+       <Modal 
+      open={isModalOpenUpdateSL} 
+      centered
+      onCancel={cancelUpdateSL}
+      onOK={confirmUpdateSL}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelUpdateSL}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={confirmUpdateSL} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            Bạn có muốn cập nhật số lượng sản phẩm này không ?
+            </span>
+          </div>
+       
+      </Modal>
+{/* update Address */}
+      <Modal 
+      open={isModalOpenChangeAddress} 
+      centered
+      onCancel={cancelChangeAddress}
+      onOK={confirmChangesAddress}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelChangeAddress}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={confirmChangesAddress} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            Bạn có muốn cập nhật địa chỉ này không ?
+            </span>
+          </div>
+       
+      </Modal>
+      <ToastContainer />
+        {/* {contextHolder} */}
         <div className="flex justify-center">
           <p className="text-2xl">Thông tin hóa đơn</p>
         </div>

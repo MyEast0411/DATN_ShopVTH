@@ -73,6 +73,7 @@ const statusColorMap = {
 };
 statusColorMap["Đang bán"] = "success";
 statusColorMap["Ngừng bán"] = "danger";
+statusColorMap["Sản Phẩm Lỗi"] = "warning";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "stt",
@@ -104,7 +105,6 @@ export default function ChiTietSanPham() {
   const [sanPhams, setSanPhams] = React.useState([]);
   const { ma } = useParams();
   const [kmspcts, setKmspcts] = useState([]);
-  const [data, setData] = React.useState([]);
   const [sanPhamChiTiet, setSanPhamChiTiet] = useState({
     id: "",
     description: "",
@@ -211,7 +211,7 @@ export default function ChiTietSanPham() {
 
   useEffect(() => {
     fetchKMSPCT();
-  }, [kmspcts]);
+  }, []);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -247,7 +247,6 @@ export default function ChiTietSanPham() {
 
   //load table khi loc
   const fetchData = async () => {
-    console.log("heloo");
     try {
       const response = await axios.post(
         "http://localhost:8080/filterSPCT",
@@ -302,40 +301,7 @@ export default function ChiTietSanPham() {
       console.error("Lỗi khi gọi API: ", error);
     }
   }
-  const handlePriceChange = async (value) => {
-    if(value == undefined) {
-      console.log(sanPham);
-      fetchData();
-      return;
-    }
-    const price = value[0] + value[1];
-    const fromPrice = value[0];
-    const toPrice = value[1];
-    console.log(price);
-    if (price == 0 && sanPham.id_the_loai != '') {
-      fetchData();
-    } else {
-      await axios.post(`http://localhost:8080/filterSPCTByPrice/${fromPrice}/${toPrice}`, sanPham).then((response) => {
-        console.log(response);
-        const updatedRows = response.data.map((item, index) => ({
-          id: item.id,
-          stt: index + 1,
-          tenSanPham: item.ten,
-          hinhAnh: item.defaultImg,
-          mauSac: item.id_mau_sac.maMau,
-          kichThuoc: item.id_kich_co.ten,
-          soLuongTon: item.soLuongTon,
-          deGiay: item.id_de_giay.ten,
-          giaBan: item.giaBan,
-          trangThai: item.trangThai,
-          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
-            ?.id_khuyen_mai.giaTriPhanTram,
-        }));
-  
-        setSanPhams(updatedRows);
-      });
-    }
-  }
+
   useEffect(() => {
     fetchChiTietSanPham();
   }, []);
@@ -425,8 +391,6 @@ export default function ChiTietSanPham() {
     setIsOpenModal(true);
   };
   const handleOkUpdate = async () => {
-    console.log(sanPhams);
-
     await axios
       .put(`http://localhost:8080/updateSortSPCT`, sanPhams)
       .then((response) => {
@@ -451,7 +415,10 @@ export default function ChiTietSanPham() {
 
       switch (columnKey) {
         case "soLuongTon":
-          return (
+          return sanPham.trangThai == "Sản Phẩm Lỗi" ||
+            sanPham.trangThai == "Ngừng bán" ? (
+            <span>{sanPham.soLuongTon}</span>
+          ) : (
             <InputNumber
               min={1}
               value={sanPham.soLuongTon}
@@ -459,13 +426,17 @@ export default function ChiTietSanPham() {
             />
           );
         case "giaBan":
-          return (
+          return sanPham.trangThai == "Sản Phẩm Lỗi" ||
+            sanPham.trangThai == "Ngừng bán" ? (
+            <span>{numeral(sanPham.giaBan).format("0,0 VND")}</span>
+          ) : (
             <InputNumber
               min={1}
               value={numeral(sanPham.giaBan).format("0,0 VND")}
               onChange={(value) => handleGiaBanChange(sanPham.id, value)}
             />
           );
+
         case "hinhAnh":
           const hinhAnhURL = sanPham.hinhAnh;
           return (
@@ -493,11 +464,19 @@ export default function ChiTietSanPham() {
           return (
             <Chip
               // className="capitalize"
-              color={statusColorMap[sanPham.trangThai == 1 ? "Đang bán" : "Ngừng bán"]}
+              color={statusColorMap[sanPham.trangThai == 1
+                  ? "Đang bán"
+                  : sanPham.trangThai == 0
+                      ? "Ngừng bán"
+                      : "Sản Phẩm Lỗi""]}
               size="sm"
               variant="flat"
             >
-              {cellValue == 1 ? "Đang bán" : "Ngừng bán"}
+              {cellValue == 1
+                ? "Đang bán"
+                : cellValue == 0
+                ? "Ngừng bán"
+                : "Sản Phẩm Lỗi""}
             </Chip>
           );
         case "mauSac":
@@ -574,19 +553,21 @@ export default function ChiTietSanPham() {
 
   const showUpdate = () => {
     setUpdateConfirmationOpen(true);
-  }
+  };
   const handleOKUpdateConfirmation = async () => {
-    await axios.put("http://localhost:8080/updateSanPhamDetail", sanPhamChiTiet).then((response) => {
-      if (response.status == 200) {
-        setIsModalOpenSP(false);
-        handleCloseUpdateConfirmation();
-        toast.success("Cập nhật sản phẩm chi tiết thành công !");
-        fetchData();
-      }
-
-    }).catch((err) => {
-      console.log(err);
-    })
+    await axios
+      .put("http://localhost:8080/updateSanPhamDetail", sanPhamChiTiet)
+      .then((response) => {
+        if (response.status == 200) {
+          setIsModalOpenSP(false);
+          handleCloseUpdateConfirmation();
+          toast.success("Cập nhật sản phẩm chi tiết thành công !");
+          fetchData();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   const handleCloseUpdateConfirmation = () => {
     setUpdateConfirmationOpen(false);
@@ -730,7 +711,7 @@ export default function ChiTietSanPham() {
           page={page}
           total={pages}
           onChange={setPage}
-        // style={{ paddingLeft: "730px" }}
+          // style={{ paddingLeft: "730px" }}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
@@ -819,7 +800,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -847,7 +828,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -875,7 +856,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -903,7 +884,7 @@ export default function ChiTietSanPham() {
                         <option
                           key={x.id}
                           value={x.id}
-                        //style={{ backgroundColor: x.maMau, color: "white" }}
+                          //style={{ backgroundColor: x.maMau, color: "white" }}
                         >
                           {x.ten}
                         </option>
@@ -1109,36 +1090,36 @@ export default function ChiTietSanPham() {
           </TableBody>
         </Table>
         <Dialog open={updateConfirmationOpen} onClose={handleCloseUpdateConfirmation} fullWidth>
-          <DialogTitle>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                paddingBottom: "15px",
-              }}
-            >
-              <TbInfoTriangle
-                className="mr-2"
+            <DialogTitle>
+              <div
                 style={{
-                  color: "red",
-                  fontSize: "25px",
+                  display: "flex",
+                  alignItems: "center",
+                  paddingBottom: "15px",
                 }}
-              />
-              <span>Xác nhận cập nhật</span>
-            </div>
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText>Bạn có chắc muốn cập nhật sản phẩm này?</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseUpdateConfirmation} color="warning">
-              Hủy
-            </Button>
-            <Button onClick={handleOKUpdateConfirmation}>
-              Hoàn tất
-            </Button>
-          </DialogActions>
-        </Dialog>
+              >
+                <TbInfoTriangle
+                  className="mr-2"
+                  style={{
+                    color: "red",
+                    fontSize: "25px",
+                  }}
+                />
+                <span>Xác nhận cập nhật</span>
+              </div>
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>Bạn có chắc muốn cập nhật sản phẩm này?</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseUpdateConfirmation} color="warning">
+                Hủy
+              </Button>
+              <Button onClick={handleOKUpdateConfirmation}>
+                Hoàn tất
+              </Button>
+            </DialogActions>
+          </Dialog>
         <Dialog open={deleteConfirmationOpen} onClose={cancelDelete} fullWidth>
           <DialogTitle>
             <div
@@ -1182,7 +1163,11 @@ export default function ChiTietSanPham() {
           style={{ position: "relative" }}
           width={800}
         >
-          <ModalChiTietSanPham idDetailProduct={idDetailProduct} sanPhamChiTiet={sanPhamChiTiet} setSanPhamChiTiet={setSanPhamChiTiet} />
+          <ModalChiTietSanPham
+            idDetailProduct={idDetailProduct}
+            sanPhamChiTiet={sanPhamChiTiet}
+            setSanPhamChiTiet={setSanPhamChiTiet}
+          />
         </Modal>
         <Modal
           title="Xác nhận chỉnh sửa sản phẩm"

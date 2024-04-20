@@ -115,12 +115,13 @@ export default function QuanLyHoaDon() {
     getData(key);
   };
   const items = [
-    `Chờ xác nhận`,
-    `Xác Nhận`,
-    `Chờ Vận Chuyển`,
-    `Giao Hàng`,
-    `Hoàn Thành`,
-    `Hủy`,
+    `Chờ xác nhận`, //  - 0
+    `Xác Nhận`, //  - 1
+    `Chờ Vận Chuyển`, //  - 2,
+    `Giao Hàng`, //  - 3,
+    `Hoàn Thành`, //  - 4,
+    `Trả Hàng`, //  - 5,
+    `Hủy`, //  - 6,
   ];
   var data = [];
   for (let index = 0; index < items.length; index++) {

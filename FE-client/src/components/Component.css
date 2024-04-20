@@ -693,3 +693,158 @@
   background-color: #212122;
   transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
 }
+
+/* News */
+
+h1 {
+  text-align: center;
+}
+
+.post__button {
+  font-size: 1rem;
+  padding: 0.35em 0.75em;
+  line-height: 1;
+  background-color: transparent;
+  border: 0.125rem solid #2a2a2a;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: 0.1s;
+  outline: 0;
+}
+.post__button:hover {
+  background-color: #2a2a2a;
+  color: #fff !important;
+}
+.post__button .fa {
+  font-size: 0.75em;
+  margin-left: 0.5em;
+}
+.post__button.btn--primary {
+  border-color: #042a4f;
+  color: #042a4f;
+}
+.post__button.btn--primary:hover {
+  background-color: #042a4f;
+  color: #fff;
+}
+.post__button.btn--accent {
+  border-color: #000000;
+  color: #000;
+}
+
+.posts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 2.5rem;
+}
+@media (max-width: 1140px) {
+  .posts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .posts {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.post__image {
+  width: 100%;
+  height: 240px;
+  position: relative;
+  overflow: hidden;
+}
+.post__image:before,
+.post__image:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+.post__image:before {
+  background-size: cover;
+  background-position: center center;
+  transform: scale(1);
+  filter: blur(0);
+  transition: 2s cubic-bezier(0, 0.6, 0.2, 1);
+}
+.post__image:after {
+  background: linear-gradient(30deg, #042a4f 0%, #e65891 100%);
+  background-size: 100% 300%;
+  background-position: bottom left;
+  opacity: 0.15;
+  transition: 2s cubic-bezier(0, 0.6, 0.2, 1);
+}
+.post__image--1:before {
+  background-image: url("https://bizweb.dktcdn.net/thumb/large/100/427/145/articles/anh-chup-man-hinh-2024-04-11-184411.png?v=1712836327260");
+}
+.post__image--2:before {
+  background-image: url("https://bizweb.dktcdn.net/thumb/large/100/427/145/articles/anh-chup-man-hinh-2024-04-10-202559.png?v=1712756038403");
+}
+.post__image--3:before {
+  background-image: url("https://bizweb.dktcdn.net/thumb/large/100/427/145/articles/tat-ca-cac-dieu-ban-can-biet-truoc-khi-mua-mot-doi-kyrie-8-infinity-1.png?v=1712387845910");
+}
+.post__image--4:before {
+  background-image: url("https://bizweb.dktcdn.net/thumb/large/100/427/145/articles/tai-sao-moi-nguoi-lai-thich-nike-kyrie-7-toi-vay-7.png?v=1711995779897");
+}
+.post__image--5:before {
+  background-image: url("https://bizweb.dktcdn.net/thumb/large/100/427/145/articles/nike-kd-16.png?v=1711642462630");
+}
+.post__image--6:before {
+  background-image: url("https://bizweb.dktcdn.net/thumb/large/100/427/145/articles/tai-sao-nike-blazer-lai-co-suc-hut-dac-biet-toi-vay-6.png?v=1711468138213");
+}
+.post__content {
+  margin: -3rem 1.5rem 0;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15);
+  transition: margin 0.2s ease-in-out;
+  position: relative;
+  z-index: 1;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.post__inside {
+  overflow: hidden;
+  height: 4.85rem;
+  transition: height 0.2s ease-in-out;
+}
+.post__title {
+  font-size: 1.35rem;
+  line-height: 1;
+  margin: 0 0 1rem;
+  font-weight: 300;
+  color: #042a4f;
+}
+.post__excerpt {
+  overflow: hidden;
+  margin: 0;
+  max-height: 6.25rem;
+  position: relative;
+}
+..post__button {
+  margin-top: 1rem;
+}
+
+/* ====== HOVER ====== */
+.post:hover .post__content {
+  margin-top: -9.8rem;
+}
+.post:hover .post__inside {
+  height: 11.65rem;
+}
+.post:hover .post__image:after {
+  opacity: 0.5;
+}
+.post:hover .post__image:before {
+  transform: scale(1.1);
+  filter: blur(10px);
+}

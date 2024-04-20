@@ -1,20 +1,34 @@
 import { useEffect, useState, useRef } from "react";
 import {
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
+  // Dialog,
+  // DialogActions,
+  // DialogContent,
+  // DialogContentText,
+  // DialogTitle,
   TbInfoTriangle,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
+  // DialogHeader,
+  // DialogBody,
+  // DialogFooter,
 } from "@material-tailwind/react";
 import moment from "moment";
 import { format } from "date-fns";
 import TableSanPham from "./TableSanPham";
 import QRCode from "qrcode.react";
+import numeral from "numeral";
+
+import React from "react";
+import { ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/react";
+
+
+
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 
 import {
   Table,
@@ -36,18 +50,21 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
 import { faMoneyBillTransfer } from "@fortawesome/free-solid-svg-icons";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { CiWarning } from "react-icons/ci";
 import { Table as TableAntd } from "antd";
 import ComponentToPrint from "./InHoaDon";
+import { notification} from 'antd';
+
 
 function DetailHoadon() {
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
-  const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
-  const [addLSHDConfirmationOpen, setAddLSHDConfirmationOpen] = useState(false);
-  const [cancleHDConfirmationOpen, setCancleHDConfirmationOpen] =
-    useState(false);
-  const [luiHDConfirmationOpen, setLuiHDConfirmationOpen] = useState(false);
+  // const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  // const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
+  // const [addLSHDConfirmationOpen, setAddLSHDConfirmationOpen] = useState(false);
+  // const [cancleHDConfirmationOpen, setCancleHDConfirmationOpen] =
+  //   useState(false);
+  // const [luiHDConfirmationOpen, setLuiHDConfirmationOpen] = useState(false);
   const [thanhToanConfirmationOpen, setThanhToanConfirmationOpen] =
     useState(false);
   const [isModalOpenCK, setIsModalOpenCK] = useState(false);
@@ -73,13 +90,28 @@ function DetailHoadon() {
   const [maGiaoDich, setMaGiaoDich] = useState("");
   const [khachCanTra, setKhachCanTra] = useState("");
   const [thanhToan, setThanhToan] = useState([]);
-  const [value, setValue] = useState("TM");
+  const [httt, setHTTT] = useState("TM");
+
   const [tongTien, setTongTien] = useState(0);
-  const [tienThua, setTienThua] = useState("0 ₫");
-  const [loading, setLoading] = useState(false);
+  const [tienThua, setTienThua] = useState(0);
+  const [tienKhachDua, setTienKhachDua] = useState(0);
+  const [tienThanhToan, setTienThanhToan] = useState(0);
+
   const [openFixHD, setOpenFixHD] = useState(false);
   const [isModalOpenHD, setIsModalOpenHD] = useState(false);
   const componentRef = useRef();
+
+
+
+
+  const [isModalOpenTienTrangThai, setIsModalOpenTienTrangThai] = useState(false);
+  const [isModalOpenLuiTrangThai, setIsModalOpenLuiTrangThai] = useState(false);
+  const [isModalOpenXoaSP, setIsModalOpenXoaSP] = useState(false);
+  const [isModalOpenHuy, setIsModalOpenHuy] = useState(false);
+  const [isModalOpenUpdateSL, setIsModalOpenUpdateSL] = useState(false);
+  const [isModalOpenThanhToan, setIsModalOpenThanhToan] = useState(false);
+  const [isModalOpenLichSu, setIsModalOpenLichSu] = useState(false);
+
   //in hoa đơn
   const showModalHD = () => {
     setIsModalOpenHD(true);
@@ -87,30 +119,7 @@ function DetailHoadon() {
   const handleCancelHD = () => {
     setIsModalOpenHD(false);
   };
-  // const downloadPDF = () => {
-  //   const input = componentRef.current;
-  //   html2canvas(input).then((canvas) => {
-  //     const imgData = canvas.toDataURL("image/png");
-  //     const pdf = new jsPDF("p", "mm", "a4", true);
-  //     const pdfHeight = pdf.internal.pageSize.getHeight();
-  //     const pdfWidth = pdf.internal.pageSize.getWidth();
-  //     const imgWidth = canvas.width;
-  //     const imgHeight = canvas.height;
-  //     const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-  //     const imgX = (pdfWidth - imgWidth * ratio) / 2;
-  //     const imgY = 20;
-  //     pdf.addImage(
-  //       imgData,
-  //       "PNG",
-  //       imgX,
-  //       imgY,
-  //       imgWidth * ratio,
-  //       imgHeight * ratio
-  //     );
-  //     pdf.save(`billHD_${format(new Date(), " hh-mm-ss, dd-MM-yyyy")}`);
-  //   });
-  //   setIsModalOpenHD(false);
-  // };
+
 
   const downloadPDF = () => {
     const input = componentRef.current;
@@ -185,6 +194,14 @@ function DetailHoadon() {
     // setIsModalOpenHD(false);
   };
 
+
+// chuyển trang thái
+ 
+  const handleCancelChuyenTrangThai = () => {
+    setIsModalOpenTienTrangThai(false);
+  };
+ 
+
   const showModalFixHD = () => {
     setOpenFixHD(true);
   };
@@ -196,7 +213,10 @@ function DetailHoadon() {
   };
 
   const onChange = (e) => {
-    setValue(e.target.value);
+    setHTTT(e.target.value);
+    if (e.target.value == "TM") {
+      setMaGiaoDich("");
+    }
   };
 
   const showModal = () => {
@@ -207,6 +227,9 @@ function DetailHoadon() {
     setNote("");
     setOpenTimeLine(false);
   };
+
+
+
   // Lùi Trạng Thái Hóa Đơn
   const showModalLui = () => {
     setOpenModalLui(true);
@@ -219,16 +242,20 @@ function DetailHoadon() {
 
   const onHandleLuiHD = () => {
     if (note) {
-      setLuiHDConfirmationOpen(true);
+      setIsModalOpenLuiTrangThai(true);
+      hideModalLui();
+
     } else {
       toast("Bạn chưa nhập ghi chú");
     }
   };
 
   const cancelLuiHD = () => {
-    setLuiHDConfirmationOpen(false);
+    setIsModalOpenLuiTrangThai(false);
   };
   const confirmLuiHD = async () => {
+    cancelLuiHD();
+        hideModalLui();
     await axios
       .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
         moTaHoaDon: "Lùi Hóa Đơn",
@@ -261,6 +288,7 @@ function DetailHoadon() {
   const handleCancelThem = () => {
     setIsModalOpenThem(false);
   };
+  
   // modal upcdate sp
   const [openSP, setOpenSP] = useState(false);
 
@@ -274,18 +302,39 @@ function DetailHoadon() {
   const handleCancelLichSuSP = () => {
     setOpenSP(false);
   };
+
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type) => {
+    api[type]({
+      message: 'Notification Title',
+      description:
+        'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
+    });
+  };
   // update sanr pham
   const onHandleUpdate = (idToDelete) => {
-    setIdToUpdate(idToDelete);
-    setUpdateConfirmationOpen(true);
+    if(  spct.quantity == null || spct.quantity == ""){
+      toast("Số lượng không được để trống");
+    }else if(spct.quantity <= 0){
+      toast("Số lượng lớn hơn hoặc bằng 1");
+    }else if(spct.quantity > 5){
+      //toast("Số lượng Không quá 5 sản phẩm");
+      openNotificationWithIcon('error');
+    }else{
+       setIdToUpdate(idToDelete);
+    setIsModalOpenUpdateSL(true);
+    }
   };
+
+  
 
   const cancelUpdate = () => {
     setIdToUpdate(null);
-    setUpdateConfirmationOpen(false);
+    setIsModalOpenUpdateSL(false);
   };
   const confirmUpdate = async () => {
     if (idToUpdate) {
+      cancelUpdate();
       await axios
         .post(
           `http://localhost:8080/hoa_don_chi_tiet/update/${id}/${idToUpdate}`,
@@ -294,6 +343,9 @@ function DetailHoadon() {
           }
         )
         .then((response) => {
+          if(response.data == "FAIL"){
+            toast("Số lượng tồn không đủ");
+          }else{
           toast("🎉 Cập nhật thành công");
           hideModal();
           fetchKMSPCT();
@@ -302,6 +354,9 @@ function DetailHoadon() {
           getDataChiTietSanPham();
           getDataLichSu();
           cancelUpdate();
+          }
+         
+        
         })
         .catch((error) => {
           toast("😢 Cập nhật thất bại");
@@ -314,7 +369,8 @@ function DetailHoadon() {
 
   const onHandleAddLSHD = () => {
     if (note) {
-      setAddLSHDConfirmationOpen(true);
+      hideModal();
+      setIsModalOpenTienTrangThai(true);
     } else {
       toast("Bạn chưa nhập ghi chú");
     }
@@ -324,6 +380,7 @@ function DetailHoadon() {
     setAddLSHDConfirmationOpen(false);
   };
   const confirmAddLSHD = async () => {
+    setIsModalOpenTienTrangThai(false);
     await axios
       .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
         moTaHoaDon: listTitleTimline[info.trangThai + 1].title,
@@ -338,53 +395,62 @@ function DetailHoadon() {
         getInfoHD();
         getDataChiTietSanPham();
         getDataLichSu();
-        cancelAddLSHD();
-        hideModal();
+        setIsModalOpenTienTrangThai(false);
+       
       })
       .catch((error) => {
         toast("😢 Chuyển trạng thái thất bại");
         console.log(error);
       });
-    cancelAddLSHD();
+      
   };
   // khach nhap tien
   const showModalTT = () => {
     setIsModalOpenTT(true);
   };
   const handleOkTT = () => {
-    setIsModalOpenTT(false);
+    // if(tongTien <= tienKhachDua){
+      setIsModalOpenTT(false);
     onHandleThanhToan();
+    
+    // }else{
+    //   toast("Tiền Khách Đưa Không Đủ ");
+    // }
+    
   };
   const handleCancelTT = () => {
     setIsModalOpenTT(false);
   };
 
   const onHandleThanhToan = () => {
-    setThanhToanConfirmationOpen(true);
+    setIsModalOpenThanhToan(true);
   };
 
   const cancelThanhToan = () => {
-    setThanhToanConfirmationOpen(false);
+    setIsModalOpenThanhToan(false);
   };
 
   const confirmThanhToan = async () => {
     // if (inputValue != null) {
+      setIsModalOpenThanhToan(false);
     await axios
       .post("http://localhost:8080/thanh-toan/addThanhToan", {
-        maHD: info.maHD,
-        maGiaoDich: "",
-        soTien: tongTien,
-        phuongThuc: "Tiền mặt",
+        maHD: info.ma,
+        maGiaoDich: maGiaoDich,
+        soTien: tienKhachDua,
+        phuongThuc: httt,
       })
       .then((response) => {
-        toast("🎉 Thêm thành công");
-        getThanhToan();
-        cancelTienMat();
+        toast("🎉 Thêm thanh toán thành công");
+        getDataLichSuThanhToan();
+        setIsModalOpenThanhToan(false);
+        setTienKhachDua(0);
       })
       .catch((error) => {
-        toast("😢 Thêm thất bại");
+        toast("😢 Thêm thanh toán thất bại");
       });
-    cancelTienMat();
+      
+    // cancelTienMat();
     // }
   };
   //modal chuyen khoan
@@ -502,7 +568,7 @@ function DetailHoadon() {
           id: index + 1,
           maGiaoDich: item.id_thanh_toan.ma_giao_dich,
           soTien: item.id_thanh_toan.soTien,
-          trangThai: item.id_thanh_toan.hinhThuc,
+          trangThai: item.id_thanh_toan.trangThai,
           thoiGian: item.ngayTao,
           // loaiGiaoDich: item.id_thanh_toan.trangThai,
           phuongThucThanhToan: item.id_thanh_toan.hinhThuc,
@@ -511,6 +577,9 @@ function DetailHoadon() {
         };
       });
       setRowsLichSuThanhToan(list);
+      const tien = list.reduce((a, b) => a + parseFloat(b.soTien), 0);
+      // console.log(tien);
+      setTienThanhToan(tien);
     }
   };
   // get data TTHD
@@ -530,7 +599,7 @@ function DetailHoadon() {
       "http://localhost:8080/hoa_don_chi_tiet/getHDCTByID/" + id
     );
     const data = await res.data;
-    console.log(data);
+    // console.log(data);
     const checkData = data.filter((item) => item.deleted == 1);
     setRowsSPCT(
       checkData.map((item, index) => {
@@ -542,6 +611,7 @@ function DetailHoadon() {
           mausac: item.id_chi_tiet_san_pham.id_mau_sac.ten,
           quantity: item.soLuong,
           price: item.id_chi_tiet_san_pham.giaBan,
+          giaTien: item.giaTien,
         };
       })
     );
@@ -557,6 +627,7 @@ function DetailHoadon() {
           quantity: item.soLuong,
           price: item.id_chi_tiet_san_pham.giaBan,
           ghiChu: item.ghiChu,
+          giaTien: item.giaTien,
         };
       })
     );
@@ -586,13 +657,14 @@ function DetailHoadon() {
   };
   const onHandleCancelHD = () => {
     hideModalHuy();
-    setCancleHDConfirmationOpen(true);
+    setIsModalOpenHuy(true);
   };
 
   const cancelCancelHD = () => {
-    setCancleHDConfirmationOpen(false);
+    setIsModalOpenHuy(false);
   };
   const confirmCancelHD = async () => {
+    cancelCancelHD();
     await axios
       .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
         moTaHoaDon: "Hủy Hóa Đơn",
@@ -612,20 +684,22 @@ function DetailHoadon() {
       .catch((error) => {
         toast("😢 Xóa thất bại");
       });
-    cancelDelete();
+      cancelCancelHD();
   };
   // xóa sp
   const onHandleDelete = (idToDelete) => {
     setIdToDelete(idToDelete);
-    setDeleteConfirmationOpen(true);
+    setIsModalOpenXoaSP(true);
   };
 
   const cancelDelete = () => {
     setIdToDelete(null);
-    setDeleteConfirmationOpen(false);
+    setIsModalOpenXoaSP(false);
   };
   const confirmDelete = async () => {
+
     if (idToDelete) {
+      cancelDelete();
       await axios
         .delete(
           `http://localhost:8080/hoa_don_chi_tiet/deleteHDCT/${id}/${idToDelete}`
@@ -734,10 +808,11 @@ function DetailHoadon() {
   ];
 
   const handleMoney = (value) => {
+    setTienKhachDua(value);
     if (value >= tongTien) {
-      setTienThua(`${Intl.NumberFormat().format(value - tongTien)} ₫`);
+      setTienThua(value - tongTien);
     } else if (value == 0 || value < tongTien) {
-      setTienThua("0  ₫");
+      setTienThua(0);
     }
   };
 
@@ -773,7 +848,14 @@ function DetailHoadon() {
 
   return (
     <>
-      <div className="conatiner mx-auto space-y-5">
+     {contextHolder}
+     <ToastContainer/>
+      <div
+        className="conatiner mx-auto space-y-5"
+        style={{
+          backgroundColor: "white",
+        }}
+      >
         <div className=" bg-white">
           <div
             className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
@@ -817,13 +899,15 @@ function DetailHoadon() {
                 Lùi lại
               </Button>
             )}
-            {info.loaiHd === 0 && info.trangThai != 4 ? (
+            {info.loaiHd === 0 && info.trangThai != 4 && info.trangThai < 4 ? (
               <Button
                 className="me-4"
                 type="primary"
+                //  onClick={showModal1}
                 onClick={showModal}
                 style={{ marginRight: 10 }}
               >
+               
                 Chuyển Trạng Thái
                 {/* {listTitleTimline[info.trangThai].title} */}
               </Button>
@@ -911,7 +995,7 @@ function DetailHoadon() {
             </Modal>
           </div>
           <div className="row grid justify-items-end">
-            <Button className="me-4 " onClick={handleOpen} variant="gradient">
+            <Button className="me-4 " onClick={()=>setIsModalOpenLichSu(true)} variant="gradient">
               Lịch Sử
             </Button>
 
@@ -925,8 +1009,10 @@ function DetailHoadon() {
                 <Button onClick={handleCancelTT} className="me-4">
                   Cancel
                 </Button>,
-                <Button type="primary" onClick={handleOkTT}>
-                  Xác Nhận
+                <Button type="primary" onClick={handleOkTT} >
+                 Xác Nhận
+                 
+                 
                 </Button>,
               ]}
             >
@@ -937,15 +1023,23 @@ function DetailHoadon() {
 
                 <div className="mb-3">
                   <p>Tổng Tiền</p>
-                  <Input value={`${Intl.NumberFormat().format(tongTien)} ₫`} />
+                  <Input value={`${Intl.NumberFormat().format(tongTien - tienThanhToan)} ₫`} />
                 </div>
                 <div className="mb-3">
                   <p>Tiền Khách Đưa</p>
-                  <Input onChange={(e) => handleMoney(e.target.value)} />
+                  <Input
+                    min={1}
+                    value={tienKhachDua}
+                    onChange={(e) => handleMoney(e.target.value)}
+                  />
+                  {/* <Input onChange={(e) => handleMoney(e.target.value)} /> */}
                 </div>
                 <div className="mb-3">
                   <p>Tiền Thừa</p>
-                  <Input value={tienThua} readOnly />
+                  <Input
+                    value={`${Intl.NumberFormat().format(tienThua)} ₫`}
+                    readOnly
+                  />
                 </div>
 
                 <div className="mb-3">
@@ -953,15 +1047,20 @@ function DetailHoadon() {
                 </div>
                 <div className="mb-3">
                   <p>Phương thức thanh toán</p>
-                  <Radio.Group onChange={onChange} value={value}>
+                  <Radio.Group onChange={onChange} value={httt}>
                     <Radio value={"TM"}>Tiền Mặt</Radio>
                     <Radio value={"CK"}>Chuyển Khoản</Radio>
                   </Radio.Group>
                 </div>
-                <div className="mb-3">
-                  <p>Mã giao dịch</p>
-                  <Input />
-                </div>
+                {httt == "CK" && (
+                  <div className="mb-3">
+                    <p>Mã giao dịch</p>
+                    <Input
+                      onChange={(e) => setMaGiaoDich(e.target.value)}
+                      value={maGiaoDich}
+                    />
+                  </div>
+                )}
               </div>
             </Modal>
 
@@ -1041,7 +1140,7 @@ function DetailHoadon() {
                 </p>
               </div>
               <div className="pt-3">
-                {rowsLichSuThanhToan.length > 0 ? (
+                {tienThanhToan ==  tongTien ? (
                   ""
                 ) : (
                   <Button onClick={showModalTT}>Xác nhận thanh toán</Button>
@@ -1253,9 +1352,7 @@ function DetailHoadon() {
                       </div>
                       <div className="inline-flex items-center gap-10">
                         <p className="font-medium text-red-500">
-                          {Intl.NumberFormat().format(
-                            item.price * item.quantity
-                          )}
+                          {Intl.NumberFormat().format(item.giaTien)}
                           &nbsp;₫
                         </p>
 
@@ -1287,108 +1384,108 @@ function DetailHoadon() {
                   </div>
                 ))}
               </div>
-
-              <div className="row table-san-pham ">
-                <h1 className="m-3">Danh sách sản phẩm trả</h1>
-                <Divider />
-                {rowsSPCTTra.map((item, index) => (
-                  <div
-                    className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
-                    key={index}
-                  >
-                    <div style={{ position: "relative" }}>
-                      <img
-                        src={item.imageUrl}
-                        alt="product-image"
-                        className="w-full rounded-lg sm:w-20 me-10 object-contain"
-                        style={{
-                          width: "7rem",
-                        }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          right: 16,
-                          left: -10,
-                          zIndex: 1,
-                        }}
-                      >
-                        <DiscountTag
-                          discount={
-                            kmspcts.find(
-                              (x) => x.id_chi_tiet_san_pham.id == item.id
-                            )?.id_khuyen_mai.giaTriPhanTram
-                          }
+              {rowsSPCTTra.length > 0 && (
+                <div className="row table-san-pham ">
+                  <h1 className="m-3">Danh sách sản phẩm trả</h1>
+                  <Divider />
+                  {rowsSPCTTra.map((item, index) => (
+                    <div
+                      className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
+                      key={index}
+                    >
+                      <div style={{ position: "relative" }}>
+                        <img
+                          src={item.imageUrl}
+                          alt="product-image"
+                          className="w-full rounded-lg sm:w-20 me-10 object-contain"
+                          style={{
+                            width: "7rem",
+                          }}
                         />
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between w-full">
-                      <div>
-                        <div className=" sm:mt-0">
-                          <h2 className="text-lg font-medium text-gray-900 mb-3">
-                            {item.name}
-                          </h2>
-                          <p className="mb-3  font-medium text-gray-900">
-                            Size: {item.kichco}
-                          </p>
-                          <p className="font-medium text-gray-900 mb-3">
-                            Số lượng :
-                            <span className="font-medium text-red-500 mb-3">
-                              {item.quantity}&nbsp;
-                            </span>
-                            sản phẩm
-                          </p>
-                          <p className="font-medium text-gray-900 mb-3">
-                            Đơn giá :{" "}
-                            <span className="font-medium text-red-500 mb-3">
-                              {Intl.NumberFormat().format(item.price)} &nbsp;₫
-                            </span>
-                          </p>
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            right: 16,
+                            left: -10,
+                            zIndex: 1,
+                          }}
+                        >
+                          <DiscountTag
+                            discount={
+                              kmspcts.find(
+                                (x) => x.id_chi_tiet_san_pham.id == item.id
+                              )?.id_khuyen_mai.giaTriPhanTram
+                            }
+                          />
                         </div>
                       </div>
-                      <div className="inline-flex items-center gap-10">
-                        <p className="font-medium text-red-500">
-                          {Intl.NumberFormat().format(
-                            item.price * item.quantity
-                          )}
-                          &nbsp;₫
-                        </p>
 
-                        {info.trangThai < 4 && (
-                          <Tooltip title="Xóa sản phẩm" arrow={true}>
-                            <Button
-                              color="red"
-                              onClick={() => onHandleDelete(item.id)}
-                            >
-                              <DeleteIcon />
-                            </Button>
-                          </Tooltip>
-                        )}
-                        {info.trangThai < 4 && (
-                          <Tooltip title="Chỉnh sửa số lượng" arrow={true}>
-                            <Button
-                              color="yellow"
-                              onClick={() => {
-                                showModalLichSuSP();
-                                getSPCT(item.id);
-                              }}
-                            >
-                              <EditIcon />
-                            </Button>
-                          </Tooltip>
-                        )}
-                      </div>
-                      <div>
-                        <h2 className="text-sm font-medium text-gray-900 mb-3">
-                          Lý do đỏi trả : {item.ghiChu}
-                        </h2>
+                      <div className="flex justify-between w-full">
+                        <div>
+                          <div className=" sm:mt-0">
+                            <h2 className="text-lg font-medium text-gray-900 mb-3">
+                              {item.name}
+                            </h2>
+                            <p className="mb-3  font-medium text-gray-900">
+                              Size: {item.kichco}
+                            </p>
+                            <p className="font-medium text-gray-900 mb-3">
+                              Số lượng :
+                              <span className="font-medium text-red-500 mb-3">
+                                {item.quantity}&nbsp;
+                              </span>
+                              sản phẩm
+                            </p>
+                            <p className="font-medium text-gray-900 mb-3">
+                              Đơn giá :{" "}
+                              <span className="font-medium text-red-500 mb-3">
+                                {Intl.NumberFormat().format(item.price)} &nbsp;₫
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="inline-flex items-center gap-10">
+                          <p className="font-medium text-red-500">
+                            {Intl.NumberFormat().format(item.giaTien)}
+                            &nbsp;₫
+                          </p>
+
+                          {info.trangThai < 4 && (
+                            <Tooltip title="Xóa sản phẩm" arrow={true}>
+                              <Button
+                                color="red"
+                                onClick={() => onHandleDelete(item.id)}
+                              >
+                                <DeleteIcon />
+                              </Button>
+                            </Tooltip>
+                          )}
+                          {info.trangThai < 4 && (
+                            <Tooltip title="Chỉnh sửa số lượng" arrow={true}>
+                              <Button
+                                color="yellow"
+                                onClick={() => {
+                                  showModalLichSuSP();
+                                  getSPCT(item.id);
+                                }}
+                              >
+                                <EditIcon />
+                              </Button>
+                            </Tooltip>
+                          )}
+                        </div>
+                        <div>
+                          <h2 className="text-sm font-medium text-gray-900 mb-3">
+                            Lý do đỏi trả : {item.ghiChu}
+                          </h2>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
+
               <Modal
                 open={openSP}
                 title="Cập Nhật Sản Phảm"
@@ -1400,7 +1497,7 @@ function DetailHoadon() {
                     <Button
                       color="yellow"
                       onClick={() => {
-                        handleCancelLichSuSP();
+                        //handleCancelLichSuSP();
                         onHandleUpdate(spct.id);
                       }}
                     >
@@ -1508,7 +1605,46 @@ function DetailHoadon() {
         </div>
       </div>
       {/* dialog lịch su hoa don */}
-      <Dialog open={open} handler={handleOpen} size="xl">
+      <Modal 
+      open={isModalOpenLichSu} 
+     
+      onCancel={()=> setIsModalOpenLichSu(false)}
+      // onOK={()=> setIsModalOpenLichSu(false)}
+      width={1000}
+      
+      footer={[
+        <>
+      <Button color="red" onClick={()=> setIsModalOpenLichSu(false)} >
+       Thoát
+      </Button>
+        </>
+      ]}
+      ><div>
+        <p style={{fontSize : 20 , marginBottom : 15}}>Lịch sử hóa đơn</p>
+        <div>
+            <Table aria-label="Example table with dynamic content">
+            <TableHeader columns={columnsLSHD}>
+              {(column) => (
+                <TableColumn key={column.key}>{column.label}</TableColumn>
+              )}
+            </TableHeader>
+            <TableBody items={rowsLichSu}>
+              {(item) => (
+                <TableRow key={item.key}>
+                  {(columnKey) => (
+                    <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+          
+      </div>
+        
+    
+      </Modal>
+      {/* <Dialog open={open} handler={handleOpen} size="xl">
         <DialogHeader>Lịch sử hóa đơn</DialogHeader>
         <DialogBody>
           <Table aria-label="Example table with dynamic content">
@@ -1538,11 +1674,43 @@ function DetailHoadon() {
             <span>Thoát</span>
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
 
       {/* confirm xóa */}
+      <Modal 
+      open={isModalOpenXoaSP} 
+      centered
+      onCancel={cancelDelete}
+      onOK={confirmDelete}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelDelete}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={confirmDelete} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
 
-      <Dialog open={deleteConfirmationOpen} handler={cancelDelete}>
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            Bạn có muốn xóa sản phẩm này không ?
+            </span>
+          </div>
+       
+      </Modal>
+
+      {/* <Dialog open={deleteConfirmationOpen} handler={cancelDelete}>
         <DialogHeader>
           <CiWarning style={{ color: "red", fontSize: 40 }} />
           <span>Cảnh báo</span>
@@ -1562,10 +1730,42 @@ function DetailHoadon() {
             Vẫn xóa
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
 
       {/* confirm lùi */}
-      <Dialog open={luiHDConfirmationOpen} onClose={cancelLuiHD}>
+      <Modal 
+      open={isModalOpenLuiTrangThai} 
+      centered
+      onCancel={cancelLuiHD}
+      onOK={confirmLuiHD}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelLuiHD}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={confirmLuiHD} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            Bạn có muốn cập nhật về trạng thái trước của hóa đơn này không ?
+            </span>
+          </div>
+       
+      </Modal>
+      {/* <Dialog open={luiHDConfirmationOpen} onClose={cancelLuiHD}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1585,9 +1785,42 @@ function DetailHoadon() {
             Vẫn cập nhật
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
+      
       {/* confirm tiến */}
-      <Dialog open={addLSHDConfirmationOpen} onClose={cancelAddLSHD}>
+      <Modal 
+      open={isModalOpenTienTrangThai} 
+      centered
+      onCancel={handleCancelChuyenTrangThai}
+      onOK={confirmAddLSHD}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={handleCancelChuyenTrangThai}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={confirmAddLSHD} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            Bạn có muốn cập nhật trạng thái hóa đơn này không ?
+            </span>
+          </div>
+       
+      </Modal>
+      {/* <Dialog open={addLSHDConfirmationOpen} onClose={cancelAddLSHD}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1607,10 +1840,42 @@ function DetailHoadon() {
             Vẫn cập nhật
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
 
       {/* confirm hủy hóa đơn */}
-      <Dialog open={cancleHDConfirmationOpen} handler={cancelCancelHD}>
+      <Modal 
+      open={isModalOpenHuy} 
+      centered
+      onCancel={cancelCancelHD}
+      onOK={confirmCancelHD}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelCancelHD}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={confirmCancelHD} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            Bạn có muốn hủy hóa đơn này không ?
+            </span>
+          </div>
+       
+      </Modal>
+      {/* <Dialog open={cancleHDConfirmationOpen} handler={cancelCancelHD}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1630,9 +1895,41 @@ function DetailHoadon() {
             Vẫn Hủy
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
       {/* confirm update sl */}
-      <Dialog open={updateConfirmationOpen} handler={cancelUpdate}>
+      <Modal 
+      open={isModalOpenUpdateSL} 
+      centered
+      onCancel={cancelUpdate}
+      onOK={confirmUpdate}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelUpdate}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={confirmUpdate} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            Bạn có muốn cập nhật số lượng sản phẩm này không ?
+            </span>
+          </div>
+       
+      </Modal>
+      {/* <Dialog open={updateConfirmationOpen} handler={cancelUpdate}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1652,10 +1949,42 @@ function DetailHoadon() {
             Vẫn cập nhật
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
 
       {/* confirm thanh toán */}
-      <Dialog open={thanhToanConfirmationOpen} onClose={cancelThanhToan}>
+      <Modal 
+      open={isModalOpenThanhToan} 
+      centered
+      onCancel={cancelThanhToan}
+      onOK={confirmThanhToan}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelThanhToan}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={confirmThanhToan} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+              Bạn có muốn thanh toán này không ?
+            </span>
+          </div>
+       
+      </Modal>
+      {/* <Dialog open={thanhToanConfirmationOpen} onClose={cancelThanhToan}>
         <DialogHeader>
           <CiWarning style={{ color: "yellow", fontSize: 40 }} />
           <span>Thông báo</span>
@@ -1675,51 +2004,51 @@ function DetailHoadon() {
             Tiếp tục
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
+
+
+
+
+    
+   {/* chuyển trang thái hóa đơn */}
+      {/* <Modal 
+      open={isModalOpenTienTrangThai} 
+      centered
+      onCancel={handleCancelChuyenTrangThai}
+      onOK={confirmAddLSHD}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={handleCancelChuyenTrangThai}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={confirmAddLSHD} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+              Bạn có muốn chuyển trạng thái không   ?
+            </span>
+          </div>
+       
+      </Modal> */}
+
     </>
   );
 }
 
 export default DetailHoadon;
 
-// const columnsThanhToan = [
-//   { key: "id", label: "STT" },
-//   {
-//     key: "maGiaoDich",
-//     label: "Mã Giao Dịch",
-//   },
-//   {
-//     key: "soTien",
-//     label: "Số Tiền",
-//   },
-//   { key: "trangThai", label: "Trạng Thái" },
-//   {
-//     key: "thoiGian",
-//     label: "Thời Gian",
-//   },
-//   // {
-//   //   key: "loaiGiaoDich",
-//   //   label: "Loại Giao Dịch",
-//   //   width: 110,
-//   //   dataIndex: "loaiGiaoDich",
 
-//   //   render: (_, record) =>
-//   //     record.loaiGiaoDich == 1 ? (
-//   //       <Tag color="green"> Thanh toán</Tag>
-//   //     ) : (
-//   //       <Tag color="red">Chưa thanh toán</Tag>
-//   //     ),
-//   // },
-//   {
-//     key: "phuongThucThanhToan",
-//     label: "Phương Thức Thanh Toán",
-//   },
-//   { key: "ghiChu", label: "Ghi Chú" },
-//   {
-//     key: "nguoiXacNhan",
-//     label: "Người xác Nhận",
-//   },
-// ];
 
 const columnsThanhToan = [
   { key: "id", title: "STT", dataIndex: "id", width: 15 },
@@ -1803,34 +2132,4 @@ const columnsLSHD = [
   // },
 ];
 
-// const columns = [
-//   {
-//     title: "Name",
-//     dataIndex: "name",
-//     key: "name",
-//     render: (_, record) => (
-//       <span>
-//         {record.name}
-//         {" ( "}
-//         {record.mausac}
-//         {" , "}
-//         {record.kichco}
-//         {" ) "}
-//       </span>
-//     ),
-//   },
-//   {
-//     title: "Số lượng",
-//     dataIndex: "quantity",
-//     key: "quantity",
-//     render: (text) => <span>{text} sản phẩm</span>,
-//   },
-//   {
-//     title: "Đơn Giá",
-//     dataIndex: "price",
-//     key: "price",
-//     render: (text) => (
-//       <span className="text-red-300">{Intl.NumberFormat().format(text)} ₫</span>
-//     ),
-//   },
-// ];
+

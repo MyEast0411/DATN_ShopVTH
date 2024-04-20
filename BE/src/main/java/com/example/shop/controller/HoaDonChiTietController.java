@@ -109,6 +109,7 @@ public class HoaDonChiTietController {
     public ResponseEntity deleteHDCT(@PathVariable String id_hoa_don, @PathVariable String id_san_pham) {
 
         try {
+            System.out.println("done");
             HoaDon don = ssHD.findById(id_hoa_don).get();
             SanPhamChiTiet sanPhamChiTiet = ssSP.findById(id_san_pham).get();
             double tongTien = 0;
@@ -117,7 +118,7 @@ public class HoaDonChiTietController {
                     .id_hoa_don(don)
                     .id_chi_tiet_san_pham(sanPhamChiTiet)
                     .build();
-            ssHDCT.delete(hdct);
+             ssHDCT.delete(hdct);
             List<HoaDonChiTiet> list = ssHDCT.getHDCT(id_hoa_don);
             for (HoaDonChiTiet donChiTiet : list) {
                 tongTien += donChiTiet.getSoLuong() * donChiTiet.getGiaTien().doubleValue();
@@ -137,10 +138,25 @@ public class HoaDonChiTietController {
                                      @RequestBody HoaDonChiTietUpdateRequest request
     ) {
         try {
+
+            // check số lượng  sp trc khi check
+
+            // get danh sach spct
+            // check soluong tồn
+
+            SanPhamChiTiet sanPhamChiTiet = ssSPCT.findById(id_san_pham).get();
+            if (sanPhamChiTiet.getSoLuongTon() < request.getQuantity()){
+                return ResponseEntity.ok("FAIL");
+            }else{
             boolean check = true;
             HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(id_hoa_don, id_san_pham);
             System.out.println("id hd "+ hoaDonChiTiet.getId_hoa_don().getId());
             System.out.println("id sp "+ hoaDonChiTiet.getId_chi_tiet_san_pham().getId());
+
+
+
+
+
             for (HoaDonChiTiet hdct:
                     ssHDCT.findAll()) {
                 if(hdct.getId_hoa_don().getId().equals(hoaDonChiTiet.getId_hoa_don().getId())
@@ -152,7 +168,8 @@ public class HoaDonChiTietController {
                                 .id_hoa_don(hoaDonChiTiet.getId_hoa_don())
                                 .id_chi_tiet_san_pham(ssSPCT.findSanPhamDangBan(hoaDonChiTiet.getId_chi_tiet_san_pham().getMa()))
                                 .soLuong(request.getQuantity() - hoaDonChiTiet.getSoLuong())
-                                .giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
+                                //.giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
+                                .giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(request.getQuantity() - hoaDonChiTiet.getSoLuong())))
                                 .deleted(1)
                                 .build();
                         ssHDCT.save(hdChiTiet);
@@ -160,7 +177,7 @@ public class HoaDonChiTietController {
                     } else {
                         System.out.println(2);
                         hdct.setSoLuong(request.getQuantity());
-                        hdct.setGiaTien(hdct.getId_chi_tiet_san_pham().getGiaBan());
+                        hdct.setGiaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(request.getQuantity())));
                         hdct.setDeleted(1);
                         check = false;
                         ssHDCT.save(hdct);
@@ -184,7 +201,7 @@ public class HoaDonChiTietController {
                 }
             }
             Double gia = ssHDCT.getMoneyBYHD(id_hoa_don);
-            System.out.println(ssHDCT.getMoneyBYHD(id_hoa_don));
+
             HoaDon hoaDon = ssHD.findById(id_hoa_don).get();
             hoaDon.setTongTien(new BigDecimal(gia)
                     .subtract(hoaDon.getTienGiam()== null?new BigDecimal("0") :hoaDon.getTienGiam())
@@ -201,6 +218,7 @@ public class HoaDonChiTietController {
                     .build();
             lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
             return ResponseEntity.ok("OK");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("ERROR");
@@ -326,6 +344,7 @@ public class HoaDonChiTietController {
                 maxMa = 0;
             }
             KhachHang khachHang = ssKH.findByMa(cartNotLoginDTO.getMaKH());
+            System.out.println("Thông tin khách hàng : " + khachHang);
             Voucher voucher = ssVC.getVoucherByCode(cartNotLoginDTO.getVoucher());
             Double tienGiam = 0.0;
             if(voucher != null) {
@@ -345,7 +364,7 @@ public class HoaDonChiTietController {
                         .sdt(khachHang == null ? null : khachHang.getSdt())
                         .tenKhachHang(khachHang == null ? null : khachHang.getTen())
                         .id_voucher(voucher)
-                        .id_nhan_vien(ssNV.findById(idNhanVien).get())
+                        .id_nhan_vien(ssNV.findById(idNhanVien).isPresent()?ssNV.findById(idNhanVien).get():null)
                         .tienGiam(BigDecimal.valueOf(tienGiam))
                         .tienShip(BigDecimal.valueOf(Double.valueOf(cartNotLoginDTO.getPhiVanChuyen())))
                         .ngayNhan(new Date(cartNotLoginDTO.getDeliveryTime()))
@@ -495,6 +514,8 @@ public class HoaDonChiTietController {
                             .id_hoa_don(hdct.getId_hoa_don())
                             .id_chi_tiet_san_pham(hdct.getId_chi_tiet_san_pham())
                             .build();
+
+
                     ssHDCT.delete(hdctXoa);
                 }else{
                     //  set soLuong = quantity
@@ -531,6 +552,7 @@ public class HoaDonChiTietController {
                             .id_hoa_don(hdct.getId_hoa_don())
                             .id_chi_tiet_san_pham(sanPhamChiTietSave)
                             .soLuong(hdct.getQuantity())
+                            .ngayTao(new Date())
 //                            .giaTien(hdct.getGiaTien())
                             .giaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(sanPhamChiTietSave.getSoLuongTon())))
                             .deleted(0)
@@ -625,6 +647,7 @@ public class HoaDonChiTietController {
                 }
             }
             hoaDon.setTongTien(new BigDecimal(tongTien + ""));
+            hoaDon.setTrangThai(5);
             ssHD.save(hoaDon);
             return ResponseEntity.ok("hi");
         } catch (Exception e) {
