@@ -63,7 +63,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             "  AND (id_de_giay = :id_de_giay OR :id_de_giay IS NULL OR :id_de_giay = '')\n" +
             "  AND (id_kich_co = :id_kich_co OR :id_kich_co IS NULL OR :id_kich_co = '')\n" +
             "  AND (id_mau_sac = :id_mau_sac OR :id_mau_sac IS NULL OR :id_mau_sac = '')\n" +
-            "  AND (id_nhan_hieu = :id_nhan_hieu OR :id_nhan_hieu IS NULL OR :id_nhan_hieu = '')\n" +
+            "  AND (id_the_loai = :id_the_loai OR :id_the_loai IS NULL OR :id_the_loai = '')\n" +
         ")", nativeQuery = true)
     List<SanPhamChiTiet> filterSPCT(
             @Param("id_chat_lieu") String id_chat_lieu,
@@ -71,10 +71,34 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("id_de_giay") String id_de_giay,
             @Param("id_kich_co") String id_kich_co,
             @Param("id_mau_sac") String id_mau_sac,
-            @Param("id_nhan_hieu") String id_nhan_hieu,
+            @Param("id_the_loai") String id_the_loai,
             @Param("trang_thai") Integer trangThai,
             @Param("id_san_pham") String id_san_pham
     );
+
+    @Query(value = "SELECT * " +
+            "FROM san_pham_chi_tiet " +
+            "WHERE trang_thai = :trang_thai AND deleted = 1 AND id_san_pham = :id_san_pham AND " +
+            "((gia_ban >= :fromPrice - 50000 AND gia_ban <= :toPrice + 50000) OR :fromPrice IS NULL OR :toPrice IS NULL) AND " +
+            "((id_chat_lieu = :id_chat_lieu OR :id_chat_lieu IS NULL OR :id_chat_lieu = '') " +
+            "AND (id_thuong_hieu = :id_thuong_hieu OR :id_thuong_hieu IS NULL OR :id_thuong_hieu = '') " +
+            "AND (id_de_giay = :id_de_giay OR :id_de_giay IS NULL OR :id_de_giay = '') " +
+            "AND (id_kich_co = :id_kich_co OR :id_kich_co IS NULL OR :id_kich_co = '') " +
+            "AND (id_mau_sac = :id_mau_sac OR :id_mau_sac IS NULL OR :id_mau_sac = '') " +
+            "AND (id_the_loai = :id_the_loai OR :id_the_loai IS NULL OR :id_the_loai = ''))", nativeQuery = true)
+    List<SanPhamChiTiet> filterSPCTByPrice(
+            @Param("id_chat_lieu") String id_chat_lieu,
+            @Param("id_thuong_hieu") String id_thuong_hieu,
+            @Param("id_de_giay") String id_de_giay,
+            @Param("id_kich_co") String id_kich_co,
+            @Param("id_mau_sac") String id_mau_sac,
+            @Param("id_the_loai") String id_the_loai,
+            @Param("trang_thai") Integer trangThai,
+            @Param("id_san_pham") String id_san_pham,
+            @Param("fromPrice") Double fromPrice,
+            @Param("toPrice") Double toPrice
+    );
+
 
     //---------------Hội----------------//
     @Query(value = "SELECT c FROM SanPhamChiTiet c JOIN c.id_san_pham s WHERE s.ma IN :maList and c.deleted = 1")

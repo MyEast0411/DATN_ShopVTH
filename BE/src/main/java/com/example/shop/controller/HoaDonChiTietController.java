@@ -237,7 +237,7 @@ public class HoaDonChiTietController {
                         .id_hoa_don(hoaDon)
                         .id_chi_tiet_san_pham(sp)
                         .soLuong(hoaDonChiTiet.getSo_luong())
-                        .giaTien( sp.getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSo_luong())))
+                        .giaTien(sp.getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSo_luong())))
                         .deleted(1)
                         .build();
                 ssHDCT.save(hdct);
@@ -250,7 +250,7 @@ public class HoaDonChiTietController {
             hoaDon.setTongTien(new BigDecimal("" + gia));
             ssHD.save(hoaDon);
 
-            return ResponseEntity.ok("Thành công");
+            return ResponseEntity.ok(hoaDon);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("ERROR");
         }
@@ -395,6 +395,7 @@ public class HoaDonChiTietController {
                 spct.setTen(spct.getTen() +"[OLD]");
                 HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
                         .id_hoa_don(hd1)
+                        .deleted(1)
                         .id_chi_tiet_san_pham(ssSPCT.save(spct))
                         .soLuong(cartNotLoginDTO.getSoLuong())
                         .giaTien(sanPhamChiTiet.getGiaBan())

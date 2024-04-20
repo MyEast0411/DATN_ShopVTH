@@ -74,29 +74,29 @@ const TabBanHang = () => {
         setItems((prevItems) => [
           ...prevItems,
           {
-            label: res.data[0].id,
+            label: res?.data[0]?.id,
             soLuong : res.data[0]?.soLuong,
             children: (
               <Children
                 columns={columns}
-                users={res.data[0]?.list}
-                activeKey={res.data[0].id}
+                users={res?.data[0]?.list}
+                activeKey={res?.data[0]?.id}
                 updateSoLuong={updateSoLuong}
                 onDataSelect={handleDataSelect}
               />
             ),
-            key: res.data[0].id,
+            key: res?.data[0]?.id,
           },
         ]);
 
-        setActiveKey(res.data[0].id);
+        setActiveKey(res?.data[0]?.id);
         setItems(data);
       });
   };
 
   useEffect(() => {
     // getData();
-  }, []);
+  }, [items]);
 
   const [invoiceCount, setInvoiceCount] = useState(1);
 

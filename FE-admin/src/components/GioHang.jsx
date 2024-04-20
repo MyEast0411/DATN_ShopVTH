@@ -189,7 +189,7 @@ const GioHang = ({
         console.log(updatedRows);
 
         const totalSoTien = updatedRows.reduce(
-          (sum, row) => sum + parseFloat(row.soTien.replaceAll(".", "")),
+          (sum, row) => sum + parseFloat(row.soTien.replaceAll(",", "")),
           0
         );
 
@@ -507,9 +507,10 @@ const GioHang = ({
             return item;
           });
         });
+        setTienHang(response?.data?.tongTien);
       })
       .catch((error) => {
-        toast.error("Mã qr không đúng");
+        toast.error("Mã qr không hợp lệ");
       });
   };
 
@@ -666,6 +667,7 @@ const GioHang = ({
     getKhachHang();
   }, []);
   useEffect(() => {
+    console.log("get data");
     getData();
   }, [tienHang, activeKey, tienShip]);
   return (
@@ -685,6 +687,7 @@ const GioHang = ({
                 setIsModalOpenThem={setIsModalOpenThem}
                 setItems={setItems}
                 setTienHang={setTienHang}
+                tienHang={tienHang}
               />
             </div>
           </Modal>
@@ -854,6 +857,7 @@ const GioHang = ({
             updateSoLuong={updateSoLuong}
             gioHang={activeKey}
             setTienHang={setTienHang}
+            tienHang={tienHang}
           />
         </div>
 

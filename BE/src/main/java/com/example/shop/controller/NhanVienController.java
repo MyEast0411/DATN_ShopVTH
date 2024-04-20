@@ -38,23 +38,25 @@ public class NhanVienController {
     public ResponseEntity getAllNhanVien() {
         return ResponseEntity.ok(nhanVienRepository.getAllNhanVien());
     }
+
     @GetMapping("/getAllChucVu")
     public ResponseEntity getAllChucVu() {
         return ResponseEntity.ok(chucVuRepository.getAllChucVu());
     }
+
     @PostMapping("/addChucVu")
     public ResponseEntity addChucVu(@RequestBody ChucVuRequest request) {
         try {
             Integer maxMa = chucVuRepository.getMaxMa() == null ? 1 : Integer.parseInt(chucVuRepository.getMaxMa());
             ChucVu chucVu = ChucVu.builder()
-                    .ma("CV"+(maxMa + 1))
+                    .ma("CV" + (maxMa + 1))
                     .nguoiTao("Đông")
                     .ten(request.getTenChucVu())
                     .deleted(1)
                     .build();
             chucVuRepository.save(chucVu);
             return ResponseEntity.ok("Thành công");
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
@@ -63,15 +65,17 @@ public class NhanVienController {
     public NhanVien findByMa(@PathVariable String ma) {
         return nhanVienRepository.findByMa(ma);
     }
+
     @PostMapping("/filterNhanVien")
     public ResponseEntity filterKhachHang(@RequestBody SearchNhanVienRequest nhanVien) {
         try {
-            List<NhanVien> list = nhanVienRepository.filter(nhanVien.getSelectedStatus(),nhanVien.getTextInput(),nhanVien.getTextInput());
+            List<NhanVien> list = nhanVienRepository.filter(nhanVien.getSelectedStatus(), nhanVien.getTextInput(), nhanVien.getTextInput());
             return ResponseEntity.ok(list);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
         }
     }
+
     @PostMapping("/add")
     public ResponseEntity add(@RequestBody NhanVienVM khachHang) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -91,22 +95,22 @@ public class NhanVienController {
         String urlImg = "";
         try {
             NhanVien kh = new NhanVien();
-            if(khachHang.getAnhNguoiDung() == null || khachHang.getAnhNguoiDung().equals("")) {
+            if (khachHang.getAnhNguoiDung() == null || khachHang.getAnhNguoiDung().equals("")) {
                 urlImg = "https://i.ibb.co/Zfpv5xv/z4990910514033-c5e7b06a688bc0bd64e7d55442f212a6.jpg";
-            }else {
+            } else {
                 urlImg = UploadAnh.upload(khachHang.getAnhNguoiDung());
             }
-            for (NhanVien item:
+            for (NhanVien item :
                     nhanVienRepository.getAllNhanVien()) {
-                if(item.getEmail().equals(khachHang.getEmail().trim())) {
+                if (item.getEmail().equals(khachHang.getEmail().trim())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại !!!");
                 }
-                if(item.getSdt().equals(khachHang.getSdt().trim())) {
+                if (item.getSdt().equals(khachHang.getSdt().trim())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại !!!");
                 }
             }
             kh.setAnh(urlImg);
-            kh.setMa("NV"+(maxMa + 1));
+            kh.setMa("NV" + (maxMa + 1));
             kh.setTen(khachHang.getTen());
             kh.setEmail(khachHang.getEmail());
             kh.setGioiTinh(khachHang.getGioi_tinh());
@@ -117,14 +121,15 @@ public class NhanVienController {
             kh.setDeleted(1);
             kh.setId_chuc_vu(chucVuRepository.findById(khachHang.getChucVu()).get());
             kh.setMatKhau(randomString);
-            SendMail.sendMailNhanVien(kh.getEmail(),kh.getMatKhau());
+            SendMail.sendMailNhanVien(kh.getEmail(), kh.getMatKhau());
             nhanVienRepository.save(kh);
             return ResponseEntity.ok("Thành công");
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
     }
+
     @PutMapping("/update")
     public ResponseEntity updateNhanVien(@RequestBody NhanVien nhanVien) {
         try {
@@ -141,14 +146,27 @@ public class NhanVienController {
             nv.setNguoiSua("Đông");
             nhanVienRepository.save(nv);
             return ResponseEntity.ok("Thành công");
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
     }
+
     @PutMapping("/deleteSoft/{id}")
     public NhanVien deleteSoft(@PathVariable("id") NhanVien nhanVien) {
         nhanVien.setDeleted(0);
         return nhanVienRepository.save(nhanVien);
+    }
+
+    @DeleteMapping("/deleteChucVu/{idChucVu}")
+    public ResponseEntity deleteChucVu(@PathVariable String idChucVu) {
+        try {
+            ChucVu chucVu = chucVuRepository.findById(idChucVu).get();
+            chucVuRepository.delete(chucVu);
+            return ResponseEntity.ok("Xóa thành công");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

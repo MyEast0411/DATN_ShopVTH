@@ -14,7 +14,7 @@ public interface NhanVienRepository extends JpaRepository<NhanVien,String> {
     List<NhanVien> getAllNhanVien();
     @Query(value = "SELECT nv FROM NhanVien nv where nv.ma = :ma and nv.deleted = 1")
     NhanVien findByMa(@Param("ma") String ma);
-    @Query(value = "SELECT MAX(substr(ma,3)) FROM shopvth.nhan_vien",nativeQuery = true)
+    @Query(value = "SELECT MAX(substr(ma,3)) FROM nhan_vien",nativeQuery = true)
     String findMaxMa();
     @Query(value = "select * from nhan_vien where email= :email",nativeQuery = true)
     NhanVien findEmail(@Param("email")String email);

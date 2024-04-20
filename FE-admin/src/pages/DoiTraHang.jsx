@@ -530,7 +530,7 @@ function AfterSearch({ hdDoiTra }) {
     >
       <div className="icon-title">
         <FaShippingFast style={{ display: "inline", fontSize: 30 }} />{" "}
-        <span>Đổi trả</span>
+        <span>Trả hàng</span>
       </div>
 
       <div
@@ -670,18 +670,17 @@ function AfterSearch({ hdDoiTra }) {
               >
                 <p>
                   <span className="font-medium">Khách hàng</span> :{" "}
-                  {inforKH?.tenKhachHang}
+                  {inforKH?.tenKhachHang || "Khách lẻ"}
                 </p>
+                {/* <p>
+                  <span className="font-medium">Người Nhận</span> : 
+                </p> */}
                 <p>
-                  <span className="font-medium">Người Nhận</span> : A Chàng Đẹp
-                  TRoai
-                </p>
-                <p>
-                  <span className="font-medium">SDT</span> : {inforKH?.sdt}
+                  <span className="font-medium">SDT</span> : {inforKH?.sdt || "Khách lẻ"}
                 </p>
                 <p>
                   <span className="font-medium">Địa chỉ</span>:{" "}
-                  {inforKH?.diaChi}
+                  {inforKH?.diaChi || "Khách lẻ"}
                 </p>
               </div>
               <div

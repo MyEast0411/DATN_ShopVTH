@@ -86,7 +86,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "hanhDong",
 ];
 
-export default function App({ gioHang, setIsModalOpenThem, setItems, setTienHang }) {
+export default function App({ gioHang, setIsModalOpenThem, setItems, setTienHang, tienHang }) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -146,11 +146,6 @@ export default function App({ gioHang, setIsModalOpenThem, setItems, setTienHang
     setIsModalOpenThemSL(true);
   };
   const handleOkThemSL = async () => {
-    // localStorage.setItem("gioHang"+gioHang,soLuongSP.id)
-    // localStorage.setItem("soLuongDat",soLuongDat)
-    // // // console.log(gioHang);
-    // // // console.log(soLuongSP.id);
-    // // // console.log(soLuongDat);
     if(soLuongDat <= 0) {
       toast.error("Số lượng đặt phải lớn hơn hoặc bằng 1");
       setIsModalOpenThem(false);
@@ -183,11 +178,11 @@ export default function App({ gioHang, setIsModalOpenThem, setItems, setTienHang
             return item;
           });
         });
-        setTienHang(response.data.tongTien)
+        setTienHang(response.data.tongTien);
         // cancelDelete();
       })
       .catch((error) => {
-        console.log("err");
+        console.log(error);
         toast.error(error.response.data);
         setIsModalOpenThem(false);
         handleCancelThemSL();

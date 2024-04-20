@@ -1563,7 +1563,7 @@ export default function Checkout() {
           width={1200}
           footer={[]}
         >
-          <TableVoucher codeVC={codeVC} setCodeVC={setCodeVC} setIsModalVoucher={setIsModalVoucher} idKhachHang={user.id}
+          <TableVoucher codeVC={codeVC} setCodeVC={setCodeVC} setIsModalVoucher={setIsModalVoucher} idKhachHang={user?.id}
           tongTien={calculateTotal()}/>
         </Modal>
       </div>

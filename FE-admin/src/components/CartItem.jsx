@@ -29,7 +29,7 @@ const statusColorMap = {
   vacation: "warning",
 };
 
-export default function CartItem({ users, columns, updateSoLuong, setItems, gioHang, setTienHang }) {
+export default function CartItem({ users, columns, updateSoLuong, setItems, gioHang, setTienHang, tienHang }) {
   const [idToDelete, setIdToDelete] = useState({
     id_hoa_don : "",
     id_san_pham : ""
@@ -183,7 +183,7 @@ export default function CartItem({ users, columns, updateSoLuong, setItems, gioH
       case "tongTien":
         return (
           <span style={{ color: "red", fontSize: 20 }}>
-            {Intl.NumberFormat().format(user.giaTien * user.soLuong)}&nbsp;₫
+            {Intl.NumberFormat().format(user.giaTien)}&nbsp;₫
           </span>
         );
       case "actions":

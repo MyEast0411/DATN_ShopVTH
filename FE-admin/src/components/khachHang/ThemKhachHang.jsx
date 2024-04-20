@@ -167,7 +167,7 @@ export default function ThemKhachHang() {
     console.log("đã reset form");
     console.log(ten);
     form.resetFields();
-  }, [khachHang]);
+  }, []);
 
   const onSubmit = async () => {
     setLoading(true);

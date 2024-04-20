@@ -42,6 +42,10 @@ const Sidebar = () => {
   }, [isTabletMid]);
   const getNhanVien = async () => {
     const result = await axios.get('http://localhost:8080/user/findByMa');
+    console.log(result);
+    if(result.data == 'FAILED') {
+      window.location.href = "http://localhost:5173";
+    }
     localStorage.setItem("user", JSON.stringify(result.data));
     const nhanVienData = result.data;
     console.log(nhanVienData);
@@ -192,7 +196,7 @@ const Sidebar = () => {
             <li>
               <NavLink to={"/doi-tra-hang"} className="link">
                 <BsArrowReturnLeft size={23} className="min-w-max" />
-                Đổi trả hàng
+                Trả hàng
               </NavLink>
             </li>
             <li>

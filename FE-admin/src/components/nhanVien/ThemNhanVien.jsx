@@ -19,6 +19,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import TailSpinLoading from "../loading/TailSpinLoading";
 import { Button } from "@nextui-org/react";
 import { TbInfoTriangle } from "react-icons/tb";
 import axios from "axios";
@@ -34,6 +35,7 @@ export default function ThemNhanVien() {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const handleAdd = () => {
     setDeleteConfirmationOpen(true);
   };
@@ -95,7 +97,7 @@ export default function ThemNhanVien() {
     sdt: "",
     ngay_sinh: "",
     email: "",
-    chucVu: "Nhân viên",
+    chucVu: "",
     soNha: "",
     xa: "",
     huyen: "",
@@ -122,6 +124,11 @@ export default function ThemNhanVien() {
     setIsModalOpenCV(true);
   };
   const handleOkCV = async () => {
+    if(tenChucVu == '') {
+      toast.error("Không được để trống tên chức vụ");
+      setIsModalOpenCV(false);
+      return;
+    }
     await axios
       .post("http://localhost:8080/nhan_vien/addChucVu", {
         tenChucVu: tenChucVu,
@@ -131,6 +138,7 @@ export default function ThemNhanVien() {
           position: "top-right",
           autoClose: 2000,
         });
+        getAllChucVu();
       })
       .catch((error) => {
         toast.error(`Thêm thất bại`, {
@@ -158,10 +166,25 @@ export default function ThemNhanVien() {
   }, []);
 
   const options = listChucVu.map((item) => (
-    <Option key={item.id} value={item.id}>
-      {item.ten}
-    </Option>
+    <Option key={item.id} value={item.id} className="relative flex items-center">
+    {item.ten}
+    {chucVu !== item.id && (
+      <button onClick={async (e) => {
+        e.stopPropagation();
+        await axios.delete(`http://localhost:8080/nhan_vien/deleteChucVu/${item.id}`).then((response) => {
+          if(response.status == 200) {
+            toast.success("Xóa chức vụ thành công");
+            getAllChucVu();
+          }
+        })
+      }} className="absolute right-0 top-0 p-1 bg-red-500 text-white rounded hover:bg-red-600 h-5 flex justify-center items-center">
+        <span className="inline-block">-</span>
+      </button>
+    )}
+  </Option>
+  
   ));
+
 
   const onChange = (e) => {
     console.log(e.target.name);
@@ -213,26 +236,38 @@ export default function ThemNhanVien() {
 
   const onSubmit = async () => {
     try {
+      setLoading(true);
       // Kiểm tra hợp lệ của form
       await form.validateFields();
+      cancelAdd();
 
+      if (chucVu == '') {
+        toast.error("Bạn chưa chọn chức vụ !");
+        setLoading(false);
+        return;
+      }
       await axios
         .post("http://localhost:8080/nhan_vien/add", khachHang)
         .then((response) => {
           toast.success(`🎉 Thêm thành công`);
+          setLoading(false);
           navigate("/quan-ly-tai-khoan/nhan-vien");
         })
         .catch((error) => {
-          toast.error(`😢 Thêm thất bại`);
+          console.log(error);
+          setLoading(false);
+          toast.error(`😢 ${error.response.data}`);
         });
       cancelAdd();
     } catch (error) {
+      setLoading(false);
       console.log(error);
       cancelAdd();
     }
   };
   return (
     <>
+      {loading && <TailSpinLoading />}
       <div
         class="grid grid-cols-3 gap-4 m-5"
         style={{
@@ -295,7 +330,7 @@ export default function ThemNhanVien() {
             <div className="grid grid-cols-2 gap-4">
               <div className="left">
                 <div className="mb-20">
-                  <p className="pb-2 font-bold">Tên khách hàng</p>
+                  <p className="pb-2 font-bold">Tên nhân viên</p>
                   <Form.Item
                     name="ten"
                     rules={[
@@ -310,7 +345,8 @@ export default function ThemNhanVien() {
                           } else {
                             return Promise.resolve();
                           }
-                      }},
+                        }
+                      },
                     ]}
                   >
                     <Input
@@ -331,60 +367,75 @@ export default function ThemNhanVien() {
                     name="chucVu"
                   >
                     <div className="flex">
-                  <Select
-                    placeholder="Chức vụ"
-                    value={chucVu}
-                    name="id_nhan_vien"
-                    onChange={(e) => {
-                      setKhachHang({ ...khachHang, chucVu: e });
-                    }}
-                    style={{
-                      width: "90%",
-                      height: "40px",
-                      marginRight: "10px",
-                      marginBottom: "54px",
-                    }}
-                  >
-                    {options}
-                  </Select>
-                  <div
-                    className="p-3"
-                    style={{
-                      backgroundColor: "#00C5CD",
-                      borderRadius: "5px",
-                      color: "white",
-                      cursor: "pointer",
-                      height: "40px",
-                    }}
-                    onClick={showModalCV}
-                  >
-                    <AiOutlinePlus />
-                  </div>
-                </div>
-                <Modal
-                  title="Thêm chức vụ"
-                  open={isModalOpenCV}
-                  onOk={handleOkCV}
-                  onCancel={handleCancelCV}
-                  cancelText="Hủy"
-                  okText="Thêm"
-                  style={{ position: "relative" }}
-                >
-                  <div>
-                    <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
-                      Tên chức vụ
-                    </label>
-                    <input
-                      type="text"
-                      name="tenChucVu"
-                      value={tenChucVu}
-                      className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                      placeholder="Nhập tên chức vụ"
-                      onChange={(e) => onChangeCV(e)}
-                      style={{ borderRadius: "5px" }}
-                    />
-                  </div>
-                </Modal>
+                      <Select
+                        placeholder="Chức vụ"
+                        value={chucVu == '' ? "Chọn chức vụ" : chucVu}
+                        name="id_nhan_vien"
+                        onChange={(e) => {
+                          setKhachHang({ ...khachHang, chucVu: e });
+                        }}
+                        style={{
+                          width: "90%",
+                          height: "40px",
+                          marginRight: "10px",
+                          marginBottom: "54px",
+                        }}
+
+                      >
+                        {options}
+
+                        {/* {options.map((option, index) => (
+                          <div className="d-flex">
+                          <option key={index} value={option.props.value} className="relative">
+                            {option.props.children}
+                          </option>
+                          <button onClick={(e) => {
+                              e.stopPropagation();
+                              console.log(option.props.value);
+                            }} className="absolute right-0 top-0 p-2 bg-red-500 text-white rounded hover:bg-red-600 flex justify-center items-center h-3">
+                              <span>-</span>
+                          </button>
+                          </div>
+                        ))} */}
+                      </Select>
+                      <div
+                        className="p-3"
+                        style={{
+                          backgroundColor: "#00C5CD",
+                          borderRadius: "5px",
+                          color: "white",
+                          cursor: "pointer",
+                          height: "40px",
+                        }}
+                        onClick={showModalCV}
+                      >
+                        <AiOutlinePlus />
+                      </div>
+                    </div>
+                    <Modal
+                      title="Thêm chức vụ"
+                      open={isModalOpenCV}
+                      onOk={handleOkCV}
+                      onCancel={handleCancelCV}
+                      cancelText="Hủy"
+                      okText="Thêm"
+                      style={{ position: "relative" }}
+                    >
+                      <div>
+                        <label htmlFor="country" className="block text-sm font-medium leading-6 text-gray-900">
+                          Tên chức vụ
+                        </label>
+                        <input
+                          type="text"
+                          name="tenChucVu"
+                          value={tenChucVu}
+                          className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                          placeholder="Nhập tên chức vụ"
+                          onChange={(e) => onChangeCV(e)}
+                          style={{ borderRadius: "5px" }}
+                        />
+                      </div>
+                    </Modal>
                   </Form.Item>
                 </div>
 

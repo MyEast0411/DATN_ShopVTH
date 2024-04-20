@@ -119,13 +119,24 @@ public class SanPhamController {
 
     @PostMapping("/filterSPCT")
     public ResponseEntity filerSPCT(@RequestBody ChiTietSanPhamVM x) {
-        System.out.println(x.toString());
         try {
             List<SanPhamChiTiet> list = repo.filterSPCT(x.getId_chat_lieu().equals("Tất cả") ? "" : x.getId_chat_lieu(), x.getId_thuong_hieu().equals("Tất cả") ? "" : x.getId_thuong_hieu(), x.getId_de_giay().equals("Tất cả") ? "" : x.getId_de_giay(),
-                    x.getId_kich_co().equals("Tất cả") ? "" : x.getId_kich_co(), x.getId_mau_sac().equals("Tất cả") ? "" : x.getId_mau_sac(), x.getId_nhan_hieu().equals("Tất cả") ? "" : x.getId_nhan_hieu(),
+                    x.getId_kich_co().equals("Tất cả") ? "" : x.getId_kich_co(), x.getId_mau_sac().equals("Tất cả") ? "" : x.getId_mau_sac(), x.getId_the_loai().equals("Tất cả") ? "" : x.getId_the_loai(),
                     1, sanPhamRepository.findByMa(x.getMaSP()).getId());
             return ResponseEntity.ok(list);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
+    @PostMapping("/filterSPCTByPrice/{fromPrice}/{toPrice}")
+    public ResponseEntity filerSPCTByPrice(@RequestBody ChiTietSanPhamVM x, @PathVariable Double fromPrice, @PathVariable Double toPrice) {
+        try {
+            List<SanPhamChiTiet> list = repo.filterSPCTByPrice(x.getId_chat_lieu().equals("Tất cả") ? "" : x.getId_chat_lieu(), x.getId_thuong_hieu().equals("Tất cả") ? "" : x.getId_thuong_hieu(), x.getId_de_giay().equals("Tất cả") ? "" : x.getId_de_giay(),
+                    x.getId_kich_co().equals("Tất cả") ? "" : x.getId_kich_co(), x.getId_mau_sac().equals("Tất cả") ? "" : x.getId_mau_sac(), x.getId_the_loai().equals("Tất cả") ? "" : x.getId_the_loai(),
+                    1, sanPhamRepository.findByMa(x.getMaSP()).getId(),fromPrice,toPrice);
+            return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
@@ -155,6 +166,23 @@ public class SanPhamController {
             String anh = UploadAnh.upload(hinhAnhVM.getImgUrl());
             hinhAnh.setMa("HA" + (maxMa + 1));
             hinhAnh.setMauSac(hinhAnhVM.getMauSac().trim());
+            hinhAnh.setTen(anh);
+            hinhAnh.setNguoiTao("Đông");
+            hinhAnhRepository.save(hinhAnh);
+            return ResponseEntity.ok("Thêm thành công");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("ERROR");
+        }
+    }
+    @PostMapping("/addHinhAnhSanPhamChiTiet")
+    public ResponseEntity addHinhAnhSPCT(@RequestBody AddHinhAnhRequest request) {
+        try {
+            HinhAnh hinhAnh = new HinhAnh();
+            Integer maxMa = Integer.parseInt(hinhAnhRepository.getMaxMa());
+            String anh = UploadAnh.upload(request.getImgUrl());
+            hinhAnh.setMa("HA" + (maxMa + 1));
+            hinhAnh.setId_san_pham_chi_tiet(repo.findById(request.getIdSanPhamChiTiet()).get());
+            hinhAnh.setMauSac(request.getMauSac().trim());
             hinhAnh.setTen(anh);
             hinhAnh.setNguoiTao("Đông");
             hinhAnhRepository.save(hinhAnh);
@@ -374,11 +402,11 @@ public class SanPhamController {
     @PostMapping("/addDeGiay")
     public DeGiay addDeGiay(@RequestBody DeGiayRequest request) {
         DeGiay deGiay = new DeGiay();
-        int seconds = (int) System.currentTimeMillis() / 1000;
-        Random random = new Random();
-        int number = random.nextInt(seconds + 1);
-        String threeNumbers = String.valueOf(number).substring(0, 3);
-        deGiay.setMa("DG" + threeNumbers);
+//        int seconds = (int) System.currentTimeMillis() / 1000;
+//        Random random = new Random();
+//        int number = random.nextInt(seconds + 1);
+//        String threeNumbers = String.valueOf(number).substring(0, 3);
+        deGiay.setMa("DG" + 100);
         deGiay.setTen(request.getTenDeGiay());
         deGiay.setDeleted(1);
         return deGiayRepository.save(deGiay);
@@ -417,6 +445,17 @@ public class SanPhamController {
 
     }
 
+    @PostMapping("/deleteHinhAnh/{idHinhAnh}")
+    public ResponseEntity deleteHinhAnh(@PathVariable String idHinhAnh) {
+        try {
+            HinhAnh hinhAnh = hinhAnhRepository.findById(idHinhAnh).get();
+            hinhAnhRepository.delete(hinhAnh);
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     //-------------Hội-----------------
     @GetMapping("/get-chiTietSP-by-ListMa/{maList}")
     public ResponseEntity<List<SanPhamChiTiet>> getByListMa(@PathVariable List<String> maList) {
