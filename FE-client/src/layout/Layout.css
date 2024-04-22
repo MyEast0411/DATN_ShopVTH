@@ -320,68 +320,10 @@ section {
   display: inline-block;
 }
 
-.black-circle {
+.circle-color {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background-color: #0f0f0f;
-}
-
-.blue-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #39a7ff;
-}
-
-.brown-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #706233;
-}
-
-.green-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #79ac78;
-}
-
-.grey-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #a9a9a9;
-}
-
-.orange-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #ff9130;
-}
-
-.red-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #be3144;
-}
-
-.white-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #fff;
-  border: 1px solid #ccc;
-}
-
-.purple-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #b15eff;
 }
 
 .main-color {
