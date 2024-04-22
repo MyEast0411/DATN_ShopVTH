@@ -235,106 +235,11 @@ export default function Shop() {
                       className="main-color relative black flex flex-col justify-center"
                       onClick={() => onChangeCheckBox("Đen")}
                     >
-                      <div className="black-circle"></div>
+                      <div className={`circle-color bg-[#244971]`}></div>
+
                       <p className="color-text">Đen</p>
                       {selectedOptions.includes("Đen") && (
                         <div className="tick-icon absolute text-white bottom-[22px]">
-                          &#10003;
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="main-color relative black flex flex-col justify-center"
-                      onClick={() => onChangeCheckBox("Lam")}
-                    >
-                      <div className="blue-circle"></div>
-                      <p className="color-text">Lam</p>
-                      {selectedOptions.includes("Lam") && (
-                        <div className="tick-icon absolute text-white bottom-[22px]">
-                          &#10003;
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="main-color relative black flex flex-col justify-center"
-                      onClick={() => onChangeCheckBox("Nâu")}
-                    >
-                      <div className="brown-circle"></div>
-                      <p className="color-text">Nâu</p>
-                      {selectedOptions.includes("Nâu") && (
-                        <div className="tick-icon absolute text-white bottom-[22px]">
-                          &#10003;
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="main-color relative black flex flex-col justify-center"
-                      onClick={() => onChangeCheckBox("Lục")}
-                    >
-                      <div className="green-circle"></div>
-                      <p className="color-text">Lục</p>
-                      {selectedOptions.includes("Lục") && (
-                        <div className="tick-icon absolute text-white bottom-[22px]">
-                          &#10003;
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="main-color relative black flex flex-col justify-center"
-                      onClick={() => onChangeCheckBox("Xám")}
-                    >
-                      <div className="grey-circle"></div>
-                      <p className="color-text">Xám</p>
-                      {selectedOptions.includes("Xám") && (
-                        <div className="tick-icon absolute text-white bottom-[22px]">
-                          &#10003;
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="main-color relative black flex flex-col justify-center"
-                      onClick={() => onChangeCheckBox("Cam")}
-                    >
-                      <div className="orange-circle"></div>
-                      <p className="color-text">Cam</p>
-                      {selectedOptions.includes("Cam") && (
-                        <div className="tick-icon absolute text-white bottom-[22px]">
-                          &#10003;
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="main-color relative black flex flex-col justify-center"
-                      onClick={() => onChangeCheckBox("Đỏ")}
-                    >
-                      <div className="red-circle"></div>
-                      <p className="color-text">Đỏ</p>
-                      {selectedOptions.includes("Đỏ") && (
-                        <div className="tick-icon absolute text-white bottom-[22px]">
-                          &#10003;
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="main-color relative black flex flex-col justify-center"
-                      onClick={() => onChangeCheckBox("Tím")}
-                    >
-                      <div className="purple-circle"></div>
-                      <p className="color-text">Tím</p>
-                      {selectedOptions.includes("Tím") && (
-                        <div className="tick-icon absolute text-white bottom-[22px]">
-                          &#10003;
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="main-color relative black flex justify-center flex-col"
-                      onClick={() => onChangeCheckBox("Trắng")}
-                    >
-                      <div className="white-circle"></div>
-                      <p className="color-text">Trắng</p>
-                      {selectedOptions.includes("Trắng") && (
-                        <div className="tick-icon absolute text-black bottom-[22px]">
                           &#10003;
                         </div>
                       )}
