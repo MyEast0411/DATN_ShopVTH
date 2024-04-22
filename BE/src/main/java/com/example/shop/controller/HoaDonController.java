@@ -285,6 +285,7 @@ public class HoaDonController {
                             .nguoiTao("Đông")
                             .ngayTao(new Date(System.currentTimeMillis()))
                             .build();
+                        lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
                     LichSuHoaDon lichSuHoaDon2 = LichSuHoaDon.builder()
                             .id_hoa_don(hoaDon1)
                             .moTaHoaDon("Xác nhận")
@@ -292,7 +293,6 @@ public class HoaDonController {
                             .nguoiTao("Đông")
                             .ngayTao(new Date(System.currentTimeMillis()))
                             .build();
-                    lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
                     lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon2);
                 }else {
                     LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()

@@ -49,7 +49,11 @@ export default function Profile() {
   const [district, setDistrict] = useState([]);
   const [ward, setWard] = useState([]);
   const [isOn, setIsOn] = useState(false);
-  const [diaChiAdd, setDiaChiAdd] = useState({});
+  const [diaChiAdd, setDiaChiAdd] = useState({
+    thanhPho : '',
+    huyen : '',
+    xa : ''
+  });
   const [updateSdt, setUpdateSdt] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showcurrentPassword, setShowcurrentPassword] = useState(false);
@@ -326,7 +330,23 @@ export default function Profile() {
   };
 
   const handleAddressModalOk = async () => {
+    console.log(diaChiAdd);
     setConfirmLoading(true);
+    if(diaChiAdd.thanhPho == '') {
+      openNotificationWithIcon("error", "Bạn chưa chọn thành phố", errorIcon);
+      setConfirmLoading(false);
+      return;
+    }
+    if(diaChiAdd.huyen == '') {
+      openNotificationWithIcon("error", "Bạn chưa chọn quận/ huyện", errorIcon);
+      setConfirmLoading(false);
+      return;
+    }
+    if(diaChiAdd.xa == '') {
+      openNotificationWithIcon("error", "Bạn chưa chọn xã/ phường", errorIcon);
+      setConfirmLoading(false);
+      return;
+    }
     setTimeout(async () => {
       await axios.post("http://localhost:8080/khachHangAddDiaChi", {
         idKhachHang: user?.id,
@@ -396,7 +416,7 @@ export default function Profile() {
   }
 
   const handleDiaChiAdd = (e) => {
-    setDiaChiAdd({ [e.target.name]: e.target.value })
+    setDiaChiAdd({ ...diaChiAdd ,[e.target.name]: e.target.value })
   }
 
   const handlePasswordUpdate = (e) => {

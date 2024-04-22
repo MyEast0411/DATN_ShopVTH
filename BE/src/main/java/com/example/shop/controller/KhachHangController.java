@@ -158,6 +158,16 @@ public class KhachHangController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
     }
+    @PutMapping("/update")
+    public ResponseEntity updateKhachHang(@RequestBody KhachHang khachHang) {
+        try {
+            KhachHang kh = khachHangRepository.findByMa(khachHang.getMa());
+
+            return ResponseEntity.ok("Thành công");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
+        }
+    }
     @PostMapping("/filterKhachHang")
     public ResponseEntity filterKhachHang(@RequestBody SearchKhachHangRequest khachHang) {
         try {

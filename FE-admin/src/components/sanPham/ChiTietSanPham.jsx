@@ -105,6 +105,7 @@ export default function ChiTietSanPham() {
   const [sanPhams, setSanPhams] = React.useState([]);
   const { ma } = useParams();
   const [kmspcts, setKmspcts] = useState([]);
+  const [data, setData] = useState([]);
   const [sanPhamChiTiet, setSanPhamChiTiet] = useState({
     id: "",
     description: "",
@@ -268,6 +269,7 @@ export default function ChiTietSanPham() {
       }));
 
       setSanPhams(updatedRows);
+      setData(updatedRows);
     } catch (error) {
       console.error(error);
     }
@@ -302,6 +304,41 @@ export default function ChiTietSanPham() {
     }
   }
 
+  const handlePriceChange = async (value) => {
+    if(value == undefined) {
+      console.log(sanPham);
+      fetchData();
+      return;
+    }
+    
+    const price = value[0] + value[1];
+    const fromPrice = value[0];
+    const toPrice = value[1];
+    console.log(price);
+    if (price == 0 && sanPham.id_the_loai != '') {
+      fetchData();
+    } else {
+      await axios.post(`http://localhost:8080/filterSPCTByPrice/${fromPrice}/${toPrice}`, sanPham).then((response) => {
+        console.log(response);
+        const updatedRows = response.data.map((item, index) => ({
+          id: item.id,
+          stt: index + 1,
+          tenSanPham: item.ten,
+          hinhAnh: item.defaultImg,
+          mauSac: item.id_mau_sac.maMau,
+          kichThuoc: item.id_kich_co.ten,
+          soLuongTon: item.soLuongTon,
+          deGiay: item.id_de_giay.ten,
+          giaBan: item.giaBan,
+          trangThai: item.trangThai,
+          giaGiam: kmspcts.find((x) => x.id_chi_tiet_san_pham.id == item.id)
+            ?.id_khuyen_mai.giaTriPhanTram,
+        }));
+
+        setSanPhams(updatedRows);
+      });
+    }
+  }
   useEffect(() => {
     fetchChiTietSanPham();
   }, []);
@@ -468,7 +505,7 @@ export default function ChiTietSanPham() {
                   ? "Đang bán"
                   : sanPham.trangThai == 0
                       ? "Ngừng bán"
-                      : "Sản Phẩm Lỗi""]}
+                      : "Sản Phẩm Lỗi"]}
               size="sm"
               variant="flat"
             >
@@ -476,7 +513,7 @@ export default function ChiTietSanPham() {
                 ? "Đang bán"
                 : cellValue == 0
                 ? "Ngừng bán"
-                : "Sản Phẩm Lỗi""}
+                : "Sản Phẩm Lỗi"}
             </Chip>
           );
         case "mauSac":

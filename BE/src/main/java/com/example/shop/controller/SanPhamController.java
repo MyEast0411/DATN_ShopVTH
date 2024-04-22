@@ -4,6 +4,7 @@ package com.example.shop.controller;
 import com.example.shop.entity.*;
 import com.example.shop.repositories.*;
 import com.example.shop.requests.*;
+import com.example.shop.response.FilterSanPhamClientResponse;
 import com.example.shop.response.FilterSanPhamResponse;
 import com.example.shop.util.GenderCode;
 import com.example.shop.util.UploadAnh;
@@ -524,7 +525,45 @@ public class SanPhamController {
             return sanPhamInfo;
         }).collect(Collectors.toList());
     }
+    @PostMapping("/filterSanPhamClient")
+    public List<Map<String, Object>> filterSanPhamClient(@RequestBody FilterSanPhamClientRequest request) {
+        try {
+            System.out.println(request);
+            System.out.println(sanPhamRepository.filterSPClient(request.getListThuongHieu(),request.getListMauSac(),request.getListTheLoai(),request.getToPrice(),request.getFromPrice()));
+            List<SanPham> sanPhams = sanPhamRepository.filterSPClient(request.getListThuongHieu(),request.getListMauSac(),request.getListTheLoai(),request.getToPrice(),request.getFromPrice());
 
+            return sanPhams.stream().map(sanPham -> {
+                Map<String, Object> sanPhamInfo = new HashMap<>();
+                sanPhamInfo.put("id", sanPham.getId());
+                sanPhamInfo.put("ma", sanPham.getMa());
+                sanPhamInfo.put("ten", sanPham.getTen());
+
+                // Lấy giá cao nhất
+                List<SanPhamChiTiet> sanPhamChiTiets = repo.getAllSanPhamChiTietByIdSanPham(sanPham.getId());
+                Optional<SanPhamChiTiet> maxPriceSPCT = sanPhamChiTiets.stream()
+                        .max(Comparator.comparing(SanPhamChiTiet::getGiaBan));
+
+                maxPriceSPCT.ifPresent(spct -> {
+                    sanPhamInfo.put("defaultImg", spct.getDefaultImg());
+                    sanPhamInfo.put("maxPrice", spct.getGiaBan());
+                    sanPhamInfo.put("theLoai", spct.getId_the_loai().getTen());
+                });
+
+                // Đếm tổng màu
+                long colorCount = sanPhamChiTiets.stream()
+                        .map(spct -> spct.getId_mau_sac().getId())
+                        .distinct()
+                        .count();
+
+                sanPhamInfo.put("colorCount", colorCount);
+
+                return sanPhamInfo;
+            }).collect(Collectors.toList());
+        }catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     @GetMapping("/countAllSanPham")
     public int countAllSanPham() {
         return sanPhamRepository.countAllSanPham();

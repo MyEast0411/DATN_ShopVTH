@@ -398,7 +398,11 @@ export default function ThemKhachHang() {
                       //               dark:focus:ring-blue-500 mb-16 dark:focus:border-blue-500"
                       type="date"
                       name="ngay_sinh"
-                      value={parseDate(ngay_sinh) ? parseDate(ngay_sinh).toISOString().slice(0, 10) : ngay_sinh}
+                      value={
+                        parseDate(ngay_sinh)
+                          ? parseDate(ngay_sinh).toISOString().slice(0, 10)
+                          : ngay_sinh
+                      }
                       id="dateInput"
                       style={{
                         width: "100%",
