@@ -1,5 +1,6 @@
 package com.example.shop.repositories;
 
+import com.example.shop.entity.SanPham;
 import com.example.shop.entity.SanPhamChiTiet;
 import com.example.shop.response.FilterSanPhamResponse;
 import com.example.shop.viewmodel.SanPhamVM;
@@ -98,6 +99,26 @@ public interface ChiTietSanPhamRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("fromPrice") Double fromPrice,
             @Param("toPrice") Double toPrice
     );
+
+
+
+//    @Query(value = """
+//        SELECT b
+//        FROM SanPhamChiTiet a
+//        JOIN SanPham b ON a.id_san_pham = b.id
+//        WHERE b.deleted = 1
+//        AND ((a.giaBan >= :toPrice AND a.giaBan <= :fromPrice) OR :toPrice IS NULL OR :fromPrice IS NULL)
+//        OR (a.id_mau_sac in :id_mau_sac)
+//        OR (a.id_thuong_hieu in :id_thuong_hieu)
+//        OR (a.id_the_loai in :id_the_loai)
+//    """)
+//    List<SanPham> filterSanPhamClient(
+//            @Param("id_thuong_hieu") List<String> id_thuong_hieu,
+//            @Param("id_mau_sac") List<String> id_mau_sac,
+//            @Param("id_the_loai") List<String> id_the_loai,
+//            @Param("fromPrice") Double price,
+//            @Param("toPrice") Double toPrice
+//    );
 
 
     //---------------Hội----------------//

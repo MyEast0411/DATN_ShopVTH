@@ -5,26 +5,26 @@ import {
   getAllSanPham,
 } from "../apis/SanPham";
 
-export default function ProductList() {
-  const [sanPhams, setSanPhams] = useState([]);
+export default function ProductList({sanPhams, setSanPhams}) {
+  // const [sanPhams, setSanPhams] = useState([]);
   const [hinhAnhs, setHinhAnhs] = useState([]);
   const [idHover, setIdHover] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
   const [isMouseOver, setIsMouseOver] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getAllSanPham();
-        // has been filter unique
-        setSanPhams(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const data = await getAllSanPham();
+  //       // has been filter unique
+  //       setSanPhams(data);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     const fetchSanPhamById = async () => {
@@ -86,8 +86,8 @@ export default function ProductList() {
             ) : (
               <>
                 <h2 className="name-product">{sanPham.ten}</h2>
-                <h2 className="gender">{sanPham.theLoai}</h2>
-                <h2 className="color-quantity">{`${sanPham.colorCount} Colors`}</h2>
+                {/* <h2 className="gender">{sanPham.theLoai}</h2> */}
+                <h2 className="color-quantity">{`${sanPham.colorCount} Màu sắc`}</h2>
               </>
             )}
             <div className="price-product">

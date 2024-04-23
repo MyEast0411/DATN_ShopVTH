@@ -15,8 +15,26 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     String getMaxMa();
     @Query(value = "SELECT sp FROM SanPham sp WHERE sp.deleted = 1")
     List<SanPham> getAll();
-    SanPham findByMa(String ma);
+    @Query(value = """
+        SELECT b.*
+        FROM san_pham_chi_tiet a
+        JOIN san_pham b ON a.id_san_pham = b.id
+        WHERE b.deleted = 1
+        AND ((a.gia_ban >= :toPrice AND a.gia_ban <= :fromPrice) OR :toPrice IS NULL OR :fromPrice IS NULL)
+        OR (a.id_mau_sac in :id_mau_sac)
+        OR (a.id_thuong_hieu in :id_thuong_hieu)
+        OR (a.id_the_loai in :id_the_loai)
+        GROUP BY b.id
+    """, nativeQuery = true)
+    List<SanPham> filterSPClient(
+            @Param("id_thuong_hieu") List<String> id_thuong_hieu,
+            @Param("id_mau_sac") List<String> id_mau_sac,
+            @Param("id_the_loai") List<String> id_the_loai,
+            @Param("fromPrice") Double price,
+            @Param("toPrice") Double toPrice
+    );
 
+    SanPham findByMa(String ma);
 
     @Query(value = "select count(*) from san_pham", nativeQuery = true)
     int countAllSanPham();

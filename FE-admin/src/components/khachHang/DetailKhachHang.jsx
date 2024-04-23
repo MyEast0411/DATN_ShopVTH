@@ -173,8 +173,7 @@ export default function DetailKhachHang() {
     thanhPho: "",
   });
   const { soNha, xa, huyen, thanhPho } = diaChi;
-  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, cccd } =
-    khachHang;
+  const { ma, ten, anhNguoiDung, gioi_tinh, sdt, ngay_sinh, email, cccd } = khachHang;
 
   function formatDate(dateString) {
     if (dateString) {
@@ -326,13 +325,13 @@ export default function DetailKhachHang() {
 
   const onSubmit = async () => {
     await axios
-      .post("http://localhost:8080/khach-hang/add", khachHang)
+      .put("http://localhost:8080/khach-hang/update", khachHang)
       .then((response) => {
-        toast.success(`🎉 Thêm thành công`);
+        toast.success(`🎉 Cập nhật thành công`);
         navigate("/quan-ly-tai-khoan/khach-hang");
       })
       .catch((error) => {
-        toast.error(`😢 Thêm thất bại`);
+        toast.error(`😢 Sửa thất bại`);
       });
     cancelAdd();
   };
