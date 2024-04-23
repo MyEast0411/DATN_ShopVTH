@@ -468,7 +468,7 @@ export default function ChiTietSanPham() {
                   ? "Đang bán"
                   : sanPham.trangThai == 0
                       ? "Ngừng bán"
-                      : "Sản Phẩm Lỗi""]}
+                      : "Sản Phẩm Lỗi"]}
               size="sm"
               variant="flat"
             >
@@ -476,7 +476,7 @@ export default function ChiTietSanPham() {
                 ? "Đang bán"
                 : cellValue == 0
                 ? "Ngừng bán"
-                : "Sản Phẩm Lỗi""}
+                : "Sản Phẩm Lỗi"}
             </Chip>
           );
         case "mauSac":

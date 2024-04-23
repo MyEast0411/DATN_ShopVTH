@@ -25,7 +25,7 @@ import { Button as NextuiButton } from "@nextui-org/button";
 export default function KhuyenMaiUpdate() {
   let { idKM } = useParams();
   const [khuyenMai, setKhuyenMai] = useState({});
-  const percentValues = Array.from({ length: 60 }, (_, index) => index + 1);
+  const percentValues = Array.from({ length: 30 }, (_, index) => index + 1);
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
   const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);

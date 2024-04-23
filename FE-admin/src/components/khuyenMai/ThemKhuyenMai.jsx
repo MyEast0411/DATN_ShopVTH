@@ -31,7 +31,7 @@ export default function ThemKhuyenMai() {
   const [addConfirmationOpen, setAddConfirmationOpen] = useState(false);
 
   const chuyenTrang = useNavigate();
-  const percentValues = Array.from({ length: 60 }, (_, index) => index + 1);
+  const percentValues = Array.from({ length: 30 }, (_, index) => index + 1);
   const [selectedMaValues, setSelectedMaValues] = useState([]);
   const [selectedMaCTSPValues, setSelectedMaCTSPValues] = useState([]);
 
