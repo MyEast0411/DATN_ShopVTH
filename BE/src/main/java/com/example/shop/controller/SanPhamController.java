@@ -529,8 +529,8 @@ public class SanPhamController {
     public List<Map<String, Object>> filterSanPhamClient(@RequestBody FilterSanPhamClientRequest request) {
         try {
             System.out.println(request);
-            System.out.println(sanPhamRepository.filterSPClient(request.getListThuongHieu(),request.getListMauSac(),request.getListTheLoai(),request.getToPrice(),request.getFromPrice()));
-            List<SanPham> sanPhams = sanPhamRepository.filterSPClient(request.getListThuongHieu(),request.getListMauSac(),request.getListTheLoai(),request.getToPrice(),request.getFromPrice());
+            System.out.println(sanPhamRepository.filterSPClient(request.getToPrice().intValue(),request.getFromPrice().intValue(),request.getListMauSac(),request.getListThuongHieu(),request.getListTheLoai()));
+            List<SanPham> sanPhams = sanPhamRepository.filterSPClient(request.getToPrice().intValue(),request.getFromPrice().intValue(),request.getListMauSac(),request.getListThuongHieu(),request.getListTheLoai());
 
             return sanPhams.stream().map(sanPham -> {
                 Map<String, Object> sanPhamInfo = new HashMap<>();
