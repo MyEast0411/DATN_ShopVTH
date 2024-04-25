@@ -68,6 +68,7 @@ public class LichSuHoaDonController {
         list.add(" đang chờ vận chuyển ");
         list.add(" đã được chuyển tới ship ");
         list.add(" đã hoàn thành ");
+        list.add(" đã hoàn trả ");
         list.add(" đã bị hủy ");
         List<String> listIcon = new ArrayList<>();
         listIcon.add(" 🤔🤔🤔🤔  ");
@@ -75,6 +76,7 @@ public class LichSuHoaDonController {
         listIcon.add(" 🚛🚛🚛🚛 ");
         listIcon.add(" 🙌🙌🙌🙌 ");
         listIcon.add(" 😎😎😎😎 ");
+        listIcon.add(" 🏍🏍🏍‍🏍 ");
         listIcon.add(" 😞😞😞😞 ");
         List<String> listTitleTimline = List.of("Chờ xác nhận", "Xác Nhận", "Chờ Vận Chuyển", "Giao Hàng", "Hoàn Thành");
 

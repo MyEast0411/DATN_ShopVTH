@@ -18,7 +18,7 @@ import TableAntd from "../../small-component/common/TableAntd";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { UploadOutlined, UserOutlined } from "@ant-design/icons";
+import { CiWarning } from "react-icons/ci";
 const { RangePicker } = DatePicker;
 
 import { format, parseISO } from "date-fns";
@@ -32,6 +32,7 @@ export default function AddVoucher() {
   const navigate = useNavigate();
   const [check, setCheck] = useState(false);
   const [anh, setAnh] = useState("");
+  const [isModalOpenAdd, setIsModalOpenAdd] = useState(false);
 
   const onChange = (e) => {
     console.log("radio checked", e.target.value);
@@ -149,33 +150,32 @@ export default function AddVoucher() {
         autoClose: 2000,
       });
     } else {
-      Modal.confirm({
-        title: `Bạn có muốn thêm voucher không?`,
-        okText: "Yes",
-        okType: "danger",
-        onOk: async () => {
-          try {
-            const response = await axios.post(url + `voucher/add-voucher`, {
-              voucher: voucherNew,
-              listKhachHang: listKhachHang,
-            });
+      setIsModalOpenAdd(true);
 
-            toast.success(`Thêm thành công`, {
-              position: "top-right",
-              autoClose: 2000,
-            });
-
-            navigate("/giam-gia/voucher");
-          } catch (error) {
-            toast.error(`Thêm thất bại`, {
-              position: "top-right",
-              autoClose: 2000,
-            });
-          }
-        },
-      });
     }
   };
+  const handleAddVoucher =async ()=>{
+    await axios.post(url + `voucher/add-voucher`, {
+              voucher: voucherNew,
+              listKhachHang: listKhachHang,
+            }).then(()=>{
+              toast.success(`Thêm thành công`, {
+                position: "top-right",
+                autoClose: 2000,
+              });
+              navigate("/giam-gia/voucher");
+            }) .catch ((error)=> {
+                    toast.error(`Thêm thất bại`, {
+                      position: "top-right",
+                      autoClose: 2000,
+                    });
+                  })
+                  cancelAdd();
+  }
+
+  const cancelAdd = () => {
+    setIsModalOpenAdd(false); 
+  }
 
   // get data user from service
   const getDataKhachHang = async () => {
@@ -516,6 +516,38 @@ export default function AddVoucher() {
           </div>
         </div>
       </div>
+      <Modal 
+      open={isModalOpenAdd} 
+      centered
+      onCancel={cancelAdd}
+      onOK={handleAddVoucher}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelAdd}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={handleAddVoucher} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            Bạn có muốn tạo voucher này không ?
+            </span>
+          </div>
+       
+      </Modal>
     </>
   );
 }
