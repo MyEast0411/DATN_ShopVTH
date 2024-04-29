@@ -24,7 +24,7 @@ import {
   DropdownItem,
   Pagination,
   Spinner,
-  user,
+  // user,
   Slider,
   Image,
 } from "@nextui-org/react";
@@ -51,6 +51,7 @@ import Switch from "@mui/material/Switch";
 import moment from "moment";
 import { DeleteIcon } from "../common/otherComponents/DeleteIcon";
 import { EyeIcon } from "../common/otherComponents/EyeIcon";
+import { CiWarning } from "react-icons/ci";
 // import { setOptions } from "react-chartjs-2/dist/utils";
 const { RangePicker } = DatePicker;
 
@@ -101,6 +102,9 @@ export default function Voucher() {
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
   const [priceOptions, setPriceOptions] = useState([]);
+  const [isModalOpenChange, setIsModalOpenChange] = useState(false);
+  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const [voucher, setVoucher] = useState({});
 
   const onChangeDatePicker = (value, dateString) => {
     console.log("Data: " + dateString);
@@ -213,31 +217,98 @@ export default function Voucher() {
         if (ngayBatDau <= ndata && ngayKetThuc >= ndata) return voucher;
       });
   };
+  
+  const handleChangeTrangThai = async () => {
+   
+   await axios.put(url + `update-trang-thai/${voucher.ids}`)
+              .then((response) => {
+                if(response.data == null || response.data == ""){
+                  toast.error(`Update  thất bại`, {
+                    position: "top-right",
+                    autoClose: 2000,
+                  })
+                }else{
+                  setAction(() => !action);
+                cancelChange();
+                toast.success(`Update thành công`, {
+                  position: "top-right",
+                  autoClose: 2000,
+                });
+                }
+                
+              })
+              .catch((e) =>
+                toast.error(`Update  thất bại`, {
+                  position: "top-right",
+                  autoClose: 2000,
+                })
+              );
+              cancelChange();
+          }
 
-  const handleDelete = (id) => {
-    Modal.confirm({
-      title: `bạn có muốn xóa  voucher không ?`,
-      okText: "Yes",
-      okType: "danger",
-      onOk: async () => {
-        axios
-          .delete(url + `delete/${id}`)
-          .then((response) => {
-            toast.success(`Xóa thành công`, {
-              position: "top-right",
-              autoClose: 2000,
-            });
-            getData();
-          })
-          .catch((e) =>
-            toast.error(`Xóa  thất bại`, {
-              position: "top-right",
-              autoClose: 2000,
-            })
-          );
-      },
-    });
-  };
+    const cancelChange = () => {
+      setIsModalOpenChange(false);
+    };
+
+
+    const handleDeleteVoucher = async () => {
+   
+      await  axios.delete(url + `delete/${voucher.ids}`)
+                 .then((response) => {
+                   if(response.data == null || response.data == ""){
+                     toast.error(`Xóa  thất bại`, {
+                       position: "top-right",
+                       autoClose: 2000,
+                     })
+                   }else{
+                     setAction(() => !action);
+                   cancelChange();
+                   toast.success(`Xóa thành công`, {
+                     position: "top-right",
+                     autoClose: 2000,
+                   });
+                   }
+                   
+                 })
+                 .catch((e) =>
+                   toast.error(`Xóa  thất bại`, {
+                     position: "top-right",
+                     autoClose: 2000,
+                   })
+                 );
+                 cancelDelete();
+             }
+   
+       const cancelDelete = () => {
+         setIsModalOpenDelete(false);
+       };
+
+  
+
+  // const handleDelete = (id) => {
+  //   Modal.confirm({
+  //     title: `bạn có muốn xóa  voucher không ?`,
+  //     okText: "Yes",
+  //     okType: "danger",
+  //     onOk: async () => {
+  //       axios
+  //         .delete(url + `delete/${id}`)
+  //         .then((response) => {
+  //           toast.success(`Xóa thành công`, {
+  //             position: "top-right",
+  //             autoClose: 2000,
+  //           });
+  //           getData();
+  //         })
+  //         .catch((e) =>
+  //           toast.error(`Xóa  thất bại`, {
+  //             position: "top-right",
+  //             autoClose: 2000,
+  //           })
+  //         );
+  //     },
+  //   });
+  // };
 
   React.useEffect(() => {
     getData();
@@ -381,7 +452,10 @@ export default function Voucher() {
               </div>
               <div>
                 <Tooltip title="Xóa voucher" color="red">
-                  <Link onClick={() => handleDelete(user.ids)}>
+                  <Link onClick={() => {
+                    setVoucher(user)
+                  setIsModalOpenDelete(true);}
+                  }>
                     <DeleteIcon
                       description="Chi tiết"
                       className="cursor-pointer text-xl blue-hover mr-4"
@@ -403,35 +477,39 @@ export default function Voucher() {
                     ? true
                     : false
                 }
-                checked={user.trangThai === 1 ? true : false}
-                onChange={() => {
-                  Modal.confirm({
-                    title: `bạn có muốn ${user.trangThai == 1 ? "hủy" : " "
-                      } kích hoạt voucher không ?`,
-                    okText: "Yes",
-                    okType: "danger",
-                    onOk: async () => {
-                      axios
-                        .put(url + `update-trang-thai/${user.ids}`)
-                        .then((response) => {
-                          setAction(() => !action);
-                          toast.success(`Update thành công`, {
-                            position: "top-right",
-                            autoClose: 2000,
-                          });
-                        })
-                        .catch((e) =>
-                          toast.error(`Update  thất bại`, {
-                            position: "top-right",
-                            autoClose: 2000,
-                          })
-                        );
-                    },
-                    okCancel: () => {
-                      alert("cancelText");
-                    },
-                  });
+                checked={user.trangThai == 1 ? true : false}
+                onChange={()=>{
+                  setIsModalOpenChange(true);
+                  setVoucher(user);
                 }}
+                // onChange={() => {
+                //   Modal.confirm({
+                //     title: `bạn có muốn ${user.trangThai == 1 ? "hủy" : " "
+                //       } kích hoạt voucher không ?`,
+                //     okText: "Yes",
+                //     okType: "danger",
+                //     onOk: async () => {
+                //       axios
+                //         .put(url + `update-trang-thai/${user.ids}`)
+                //         .then((response) => {
+                //           setAction(() => !action);
+                //           toast.success(`Update thành công`, {
+                //             position: "top-right",
+                //             autoClose: 2000,
+                //           });
+                //         })
+                //         .catch((e) =>
+                //           toast.error(`Update  thất bại`, {
+                //             position: "top-right",
+                //             autoClose: 2000,
+                //           })
+                //         );
+                //     },
+                //     okCancel: () => {
+                //       alert("cancelText");
+                //     },
+                //   });
+                // }}
               />
             </Tooltip>
           </div>
@@ -771,40 +849,75 @@ export default function Voucher() {
                   )}
                 </TableBody>
               </Table>
-              <Dialog
-              // open={deleteConfirmationOpen}
-              // onClose={cancelDelete}
-              // fullWidth
-              >
-                <DialogTitle>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      paddingBottom: "15px",
-                    }}
-                  >
-                    <TbInfoTriangle
-                      className="mr-2"
-                      style={{
-                        color: "red",
-                        fontSize: "25px",
-                      }}
-                    />
-                    <span>Xác nhận xóa</span>
-                  </div>
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    Bạn có chắc muốn xóa Sản phẩm này?
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  {/* <Button onClick={cancelDelete} color="warning"> */}
-                  <Button color="warning">Hủy</Button>
-                  <Button color="primary">Vẫn xóa</Button>
-                </DialogActions>
-              </Dialog>
+              {/* change TrangThai */}
+              <Modal 
+      open={isModalOpenChange} 
+      centered
+      onCancel={cancelChange}
+      onOK={handleChangeTrangThai}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelChange}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={handleChangeTrangThai} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            bạn có muốn {voucher.trangThai == 1 ? "hủy" : " "} kích hoạt voucher không ?
+            </span>
+          </div>
+       
+      </Modal>
+
+
+
+      {/* xóa voucher */}
+      <Modal 
+      open={isModalOpenDelete} 
+      centered
+      onCancel={cancelDelete}
+      onOK={handleDeleteVoucher}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelDelete}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={handleDeleteVoucher} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            Bạn có muốn xóa voucher không ?
+            </span>
+          </div>
+       
+      </Modal>
             </div>
           </div>
         </div>
