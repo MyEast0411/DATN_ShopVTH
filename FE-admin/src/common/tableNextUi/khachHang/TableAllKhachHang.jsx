@@ -240,7 +240,7 @@ export default function App({ data, dataSearch, status }) {
       case "hanhDong":
         return (
           <div className="relative flex items-center gap-4">
-            <Tooltip content="Lịch sử hóa đơn" showArrow={true}>
+            {/* <Tooltip content="Lịch sử hóa đơn" showArrow={true}>
               <Link
                 to={`/lich-su-mua-hang/${sanPham.id}`}
                 // style={{ display: "block" }}
@@ -250,7 +250,7 @@ export default function App({ data, dataSearch, status }) {
                   <FaHistory />
                 </span>
               </Link>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip content="Xem" showArrow={true}>
               <Link
                 to={`/quan-ly-tai-khoan/khach-hang/edit-khach-hang/${sanPham.maKH}`}

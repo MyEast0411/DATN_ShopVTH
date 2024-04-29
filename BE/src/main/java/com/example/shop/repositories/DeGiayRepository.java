@@ -13,6 +13,9 @@ public interface DeGiayRepository extends JpaRepository<DeGiay, String> {
     @Query(value = "SELECT * FROM de_giay\n" +
             "order by ngay_tao desc",nativeQuery = true)
     List<DeGiay> getListDeGiay();
+    @Query(value = "SELECT MAX(CAST(SUBSTRING(ma, 3) AS UNSIGNED)) as maxMa\n" +
+            "FROM de_giay",nativeQuery = true)
+    String getMaxMa();
 
     @Query(value = "SELECT cl FROM DeGiay cl WHERE cl.deleted = 1 ORDER BY cl.ngayTao DESC")
     List<DeGiay> getAll();

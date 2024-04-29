@@ -26,4 +26,9 @@ public interface TheLoaiRepository extends JpaRepository<TheLoai, String> {
             "OR ten like \"%:ten%\" AND ten = ''\n" +
             "OR ma like \"%:ma%\" AND ma = '' order by ngay_tao desc", nativeQuery = true)
     List<TheLoai> filter(@Param("trang_thai") Integer trang_thai, @Param("ten") String ten, @Param("ma") String ma);
+
+    @Query(value = "SELECT MAX(CAST(SUBSTRING(ma, 3) AS UNSIGNED)) as maxMa\n" +
+            "FROM the_loai",nativeQuery = true)
+    String getMaxMa();
+
 }

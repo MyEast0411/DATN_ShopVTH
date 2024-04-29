@@ -756,6 +756,7 @@ export default function Checkout() {
         PaymentVNPAYAPI.paymentVnpay(data).then(
           (res) => {
             window.location.replace(res.data);
+            sessionStorage.removeItem("formBill");
             sessionStorage.setItem("formBill", JSON.stringify(cartNotLoginDTO));
           },
           (err) => {

@@ -33,6 +33,7 @@ export default function DetailProduct() {
   const [selectedIdSPCT, setSelectedIdSPCT] = useState("");
   const [runFirstTime, setRunFirstTime] = useState(false);
   const [selectedTheLoai, setSelectedTheLoai] = useState("");
+  const [selectedTen, setSelectedTen] = useState("");
   const [cartItem, setCartItem] = useState([]);
   const [api, contextHolder] = notification.useNotification();
   const [sizeBorder, setSizeBorder] = useState("");
@@ -102,6 +103,7 @@ export default function DetailProduct() {
         setSelectedGiaBan(data[0].giaBan);
         setSelectedSize(data.map((item) => item.id_kich_co.ten));
         setSelectedTheLoai(data[0].id_the_loai.ten);
+        setSelectedTen(data[0].ten);
         setSelectedIdSPCT(data[0].id);
       } catch (error) {
         console.error("fetchSPCTbyUrlImg:", error);
@@ -291,12 +293,15 @@ export default function DetailProduct() {
           </div>
 
           <div className="col-span-1 detail-product-right">
-            <div className="detail-pro-name">{sanPhamChiTiets[0].ten}</div>
+            {/* <div className="detail-pro-name">{sanPhamChiTiets[0].ten}</div> */}
+            {sanPhamChiTiets[0].ten && (
+              <div className="detail-pro-name">{selectedTen}</div>
+            )}
             {sanPhamChiTiets[0].id_the_loai && (
               <div className="detail-pro-gender">{selectedTheLoai}</div>
             )}
             <div className="detail-pro-price mt-5">
-              VNĐ {Intl.NumberFormat().format(selectedGiaBan)}
+              {Intl.NumberFormat().format(selectedGiaBan)} VNĐ
             </div>
             <div className="choose-color-product flex flex-wrap">
               {uniqueArrayImg.map((img) => (

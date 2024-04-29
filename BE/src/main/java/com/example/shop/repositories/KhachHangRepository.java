@@ -14,7 +14,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang,String> {
     @Query(value = "SELECT * FROM khach_hang kh where kh.ma = :ma and kh.deleted = 1",nativeQuery = true)
     KhachHang findByMa(@Param("ma") String ma);
 
-    @Query(value = "SELECT MAX(substr(ma,3)) FROM khach_hang",nativeQuery = true)
+    @Query(value = "SELECT MAX(CAST(SUBSTRING(ma, 3) AS UNSIGNED)) FROM khach_hang",nativeQuery = true)
     String findMaxMa();
 
     List<KhachHang> findAllByDeleted(int deleted);
