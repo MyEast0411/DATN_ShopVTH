@@ -648,20 +648,26 @@ export default function ThemSanPham() {
     setIsModalOpenDG(true);
   };
   const handleOkDG = async () => {
+    if(deGiayModal.tenDeGiay == '') {
+      toast.error("Bạn chưa nhập tên đế giày");
+      return;
+    }
     await axios
       .post("http://localhost:8080/addDeGiay", deGiayModal)
       .then((response) => {
-        toast.success(`Thêm thành công`, {
+        toast.success(`Thêm đế giày thành công`, {
           position: "top-right",
           autoClose: 2000,
         });
         getAllDG();
+        setDeGiayModal({tenDeGiay : ''});
       })
       .catch((error) => {
-        toast.error(`Thêm thất bại`, {
+        toast.error(`${error.response.data}`, {
           position: "top-right",
           autoClose: 2000,
         });
+        setDeGiayModal({tenDeGiay : ''});
       });
     setIsModalOpenDG(false);
   };
@@ -670,6 +676,114 @@ export default function ThemSanPham() {
   };
   const onChangeDG = (e) => {
     setDeGiayModal({ [e.target.name]: e.target.value });
+  };
+  // ------------------------modal the loai-------------------------
+  const [theLoaiAdd, setTheLoaiAdd] = useState('');
+  const [isModalOpenTL, setIsModalOpenTL] = useState(false);
+  const showModalAddTheLoai = () => {
+    setIsModalOpenTL(true);
+  };
+  const handleOkTL = async () => {
+    if(theLoaiAdd == '') {
+      toast.error("Bạn chưa nhập tên thể loại");
+      return;
+    }
+    await axios
+      .post("http://localhost:8080/addTheLoai", {
+        ten : theLoaiAdd
+      })
+      .then((response) => {
+        toast.success(`Thêm thể loại thành công`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+        getAllTL();
+      })
+      .catch((error) => {
+        toast.error(`${error.response.data}`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      });
+    setIsModalOpenTL(false);
+  };
+  const handleCancelTL = () => {
+    setIsModalOpenTL(false);
+  };
+  const onChangeTL = (e) => {
+    setTheLoaiAdd(e.target.value);
+  };
+  // ------------------------modal chat lieu-------------------------
+  const [chatLieuAdd, setChatLieuAdd] = useState('');
+  const [isModalOpenCL, setIsModalOpenCL] = useState(false);
+  const showModalAddChatLieu = () => {
+    setIsModalOpenCL(true);
+  };
+  const handleOkCL = async () => {
+    if(chatLieuAdd == '') {
+      toast.error("Bạn chưa nhập tên chất liệu");
+      return;
+    }
+    await axios
+      .post("http://localhost:8080/addChatLieu", {
+        ten : chatLieuAdd
+      })
+      .then((response) => {
+        toast.success(`Thêm chất liệu thành công`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+        getAllCL();
+      })
+      .catch((error) => {
+        toast.error(`${error.response.data}`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      });
+    setIsModalOpenCL(false);
+  };
+  const handleCancelCL = () => {
+    setIsModalOpenCL(false);
+  };
+  const onChangeCL = (e) => {
+    setChatLieuAdd(e.target.value);
+  };
+  // ------------------------modal thuong hieu-------------------------
+  const [thuongHieuAdd, setThuongHieuAdd] = useState('');
+  const [isModalOpenTH, setIsModalOpenTH] = useState(false);
+  const showModalAddThuongHieu = () => {
+    setIsModalOpenTH(true);
+  };
+  const handleOkTH = async () => {
+    if(thuongHieuAdd == '') {
+      toast.error("Bạn chưa nhập tên thương hiệu");
+      return;
+    }
+    await axios
+      .post("http://localhost:8080/addThuongHieu", {
+        ten : thuongHieuAdd
+      })
+      .then((response) => {
+        toast.success(`Thêm thương hiệu thành công`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+        getAllTH();
+      })
+      .catch((error) => {
+        toast.error(`${error.response.data}`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      });
+    setIsModalOpenTH(false);
+  };
+  const handleCancelTH = () => {
+    setIsModalOpenTH(false);
+  };
+  const onChangeTH = (e) => {
+    setThuongHieuAdd(e.target.value);
   };
   // --------------------------comfirm-------------------------------
   const handleOpenAddConfirmation = () => {
@@ -1074,6 +1188,33 @@ export default function ThemSanPham() {
                             </option>
                           ))}
                         </select>
+                        <Modal
+                        title="Thêm thương hiệu"
+                        open={isModalOpenTH}
+                        onOk={handleOkTH}
+                        onCancel={handleCancelTH}
+                        cancelText="Hủy"
+                        okText="Thêm"
+                        style={{ position: "relative" }}
+                      >
+                        <div>
+                          <label
+                            htmlFor="country"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                          >
+                            Tên thương hiệu
+                          </label>
+                          <input
+                            type="text"
+                            name="tenThuongHieu"
+                            // value={tenTheLoai}
+                            className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                            placeholder="Nhập tên thương hiệu"
+                            onChange={(e) => onChangeTH(e)}
+                            style={{ borderRadius: "5px" }}
+                          />
+                        </div>
+                      </Modal>
                         <div
                           className="p-2"
                           style={{
@@ -1083,7 +1224,7 @@ export default function ThemSanPham() {
                             cursor: "pointer",
                           }}
                         >
-                          <AiOutlinePlus />
+                          <AiOutlinePlus onClick={showModalAddThuongHieu}/>
                         </div>
                       </div>
                     </Form.Item>
@@ -1122,9 +1263,9 @@ export default function ThemSanPham() {
                       </select>
                       <Modal
                         title="Thêm thể loại"
-                        open={isModalOpenDG}
-                        onOk={handleOkDG}
-                        onCancel={handleCancelDG}
+                        open={isModalOpenTL}
+                        onOk={handleOkTL}
+                        onCancel={handleCancelTL}
                         cancelText="Hủy"
                         okText="Thêm"
                         style={{ position: "relative" }}
@@ -1142,7 +1283,7 @@ export default function ThemSanPham() {
                             // value={tenTheLoai}
                             className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                             placeholder="Nhập tên thể loại"
-                            onChange={(e) => onChangeDG(e)}
+                            onChange={(e) => onChangeTL(e)}
                             style={{ borderRadius: "5px" }}
                           />
                         </div>
@@ -1156,7 +1297,7 @@ export default function ThemSanPham() {
                           cursor: "pointer",
                         }}
                       >
-                        <AiOutlinePlus />
+                        <AiOutlinePlus onClick={showModalAddTheLoai}/>
                       </div>
                     </div>
                     </Form.Item>
@@ -1195,6 +1336,33 @@ export default function ThemSanPham() {
                           </option>
                         ))}
                       </select>
+                      <Modal
+                        title="Thêm chất liệu"
+                        open={isModalOpenCL}
+                        onOk={handleOkCL}
+                        onCancel={handleCancelCL}
+                        cancelText="Hủy"
+                        okText="Thêm"
+                        style={{ position: "relative" }}
+                      >
+                        <div>
+                          <label
+                            htmlFor="country"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                          >
+                            Tên chất liệu
+                          </label>
+                          <input
+                            type="text"
+                            name="tenChatLieu"
+                            // value={tenTheLoai}
+                            className="block p-2 mt-3 flex-1 w-full border-2 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                            placeholder="Nhập tên chất liệu"
+                            onChange={(e) => onChangeCL(e)}
+                            style={{ borderRadius: "5px" }}
+                          />
+                        </div>
+                      </Modal>
                       <div
                         className="p-2"
                         style={{
@@ -1204,7 +1372,7 @@ export default function ThemSanPham() {
                           cursor: "pointer",
                         }}
                       >
-                        <AiOutlinePlus />
+                        <AiOutlinePlus onClick={showModalAddChatLieu}/>
                       </div>
                     </div>
                     </Form.Item>
@@ -1640,7 +1808,7 @@ export default function ThemSanPham() {
               }}
               onClick={handleOpenAddConfirmation}
             >
-              Thêm sản phẩm
+              Hoàn tất
             </Button>
           </div>
         </Form>

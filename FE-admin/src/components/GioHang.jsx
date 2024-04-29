@@ -948,6 +948,8 @@ const GioHang = ({
                 setTienShip={setTienShip}
                 setNgayNhan={setNgayNhan}
                 phiVanChuyen={phiVanChuyen}
+                isBlur={isBlur}
+                isGiaoHangHoaToc={isGiaoHangHoaToc}
               />
             </div>
           </div>

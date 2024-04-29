@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface ChatLieuRepository extends JpaRepository<ChatLieu, String> {
 
-    @Query(value = "SELECT cl FROM ChatLieu cl WHERE cl.deleted = 1 ORDER BY cl.ngayTao ASC")
+    @Query(value = "SELECT cl FROM ChatLieu cl WHERE cl.deleted = 1 ORDER BY cl.ngayTao DESC")
     List<ChatLieu> getAll();
 
     ChatLieu findByMa(String ma);
@@ -27,4 +27,8 @@ public interface ChatLieuRepository extends JpaRepository<ChatLieu, String> {
             "OR ten like \"%:ten%\" AND ten = ''\n" +
             "OR ma like \"%:ma%\" AND ma = '' order by ngay_tao desc", nativeQuery = true)
     List<ChatLieu> filter(@Param("trang_thai") Integer trang_thai, @Param("ten") String ten, @Param("ma") String ma);
+
+    @Query(value = "SELECT MAX(CAST(SUBSTRING(ma, 3) AS UNSIGNED)) as maxMa\n" +
+            "FROM chat_lieu",nativeQuery = true)
+    String getMaxMa();
 }

@@ -24,4 +24,8 @@ public interface ThuongHieuRepository extends JpaRepository<ThuongHieu,String> {
             "OR ten like \"%:ten%\" AND ten = ''\n" +
             "OR ma like \"%:ma%\" AND ma = '' order by ngay_tao desc", nativeQuery = true)
     List<ThuongHieu> filter(@Param("trang_thai") Integer trang_thai, @Param("ten") String ten, @Param("ma") String ma);
+
+    @Query(value = "SELECT MAX(CAST(SUBSTRING(ma, 3) AS UNSIGNED)) as maxMa\n" +
+            "FROM thuong_hieu",nativeQuery = true)
+    String getMaxMa();
 }

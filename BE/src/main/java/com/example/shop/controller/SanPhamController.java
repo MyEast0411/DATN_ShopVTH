@@ -70,12 +70,12 @@ public class SanPhamController {
 
     @GetMapping("/getAllTH")
     List<ThuongHieu> getAllTH() {
-        return thuongHieuRepository.findAll();
+        return thuongHieuRepository.getAll();
     }
 
     @GetMapping("/getAllCL")
     List<ChatLieu> getAllCL() {
-        return chatLieuRepository.findAll();
+        return chatLieuRepository.getAll();
     }
 
     @GetMapping("/getAllDG")
@@ -90,12 +90,12 @@ public class SanPhamController {
 
     @GetMapping("/getAllNH")
     List<NhanHieu> getAllNH() {
-        return nhanHieuRepository.findAll();
+        return nhanHieuRepository.getAll();
     }
 
     @GetMapping("/getAllTL")
     List<TheLoai> getAllTL() {
-        return theLoaiRepository.findAll();
+        return theLoaiRepository.getAll();
     }
 
     @GetMapping("/getAllHA")
@@ -401,21 +401,25 @@ public class SanPhamController {
     }
 
     @PostMapping("/addDeGiay")
-    public DeGiay addDeGiay(@RequestBody DeGiayRequest request) {
+    public ResponseEntity addDeGiay(@RequestBody DeGiayRequest request) {
         DeGiay deGiay = new DeGiay();
-//        int seconds = (int) System.currentTimeMillis() / 1000;
-//        Random random = new Random();
-//        int number = random.nextInt(seconds + 1);
-//        String threeNumbers = String.valueOf(number).substring(0, 3);
-        deGiay.setMa("DG" + 100);
+        if(deGiayRepository.existsByTen(request.getTenDeGiay())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại đế giày này!");
+        }
+        Integer maxMa = Integer.parseInt(deGiayRepository.getMaxMa());
+        deGiay.setMa("DG" + (maxMa + 1));
         deGiay.setTen(request.getTenDeGiay());
         deGiay.setDeleted(1);
-        return deGiayRepository.save(deGiay);
+        deGiayRepository.save(deGiay);
+        return ResponseEntity.ok("Thành công");
     }
 
     @PostMapping("/addKichCo")
     public ResponseEntity addKichCo(@RequestBody KichCoRequest request) {
         try {
+            if(kichCoRepository.existsByTen(request.getTenKichCo())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại kích cỡ này!");
+            }
             KichCo kichCo = new KichCo();
             Integer maxMa = Integer.parseInt(kichCoRepository.getMaxMa());
             kichCo.setMa("KC" + (maxMa + 1));
@@ -426,13 +430,67 @@ public class SanPhamController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại kích cỡ này!");
         }
+    }
 
+    @PostMapping("/addTheLoai")
+    public ResponseEntity addTheLoai(@RequestBody AddThuocTinhRequest request) {
+        try {
+            if(theLoaiRepository.existsByTen(request.getTen())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại thể loại này!");
+            }
+            TheLoai tl = new TheLoai();
+            Integer maxMa = Integer.parseInt(theLoaiRepository.getMaxMa());
+            tl.setMa("TL" + (maxMa + 1));
+            tl.setTen(request.getTen());
+            tl.setDeleted(1);
+            theLoaiRepository.save(tl);
+            return ResponseEntity.ok("Thành công");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại kích cỡ này!");
+        }
+    }
+    @PostMapping("/addChatLieu")
+    public ResponseEntity addChatLieu(@RequestBody AddThuocTinhRequest request) {
+        try {
+            if(chatLieuRepository.existsByTen(request.getTen())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại chất liệu này!");
+            }
+            ChatLieu cl = new ChatLieu();
+            Integer maxMa = Integer.parseInt(chatLieuRepository.getMaxMa());
+            cl.setMa("CL" + (maxMa + 1));
+            cl.setTen(request.getTen());
+            cl.setDeleted(1);
+            chatLieuRepository.save(cl);
+            return ResponseEntity.ok("Thành công");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại chất liệu này!");
+        }
+    }
+    @PostMapping("/addThuongHieu")
+    public ResponseEntity addThuongHieu(@RequestBody AddThuocTinhRequest request) {
+        try {
+            if(thuongHieuRepository.existsByTen(request.getTen())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại thương hiệu này!");
+            }
+            ThuongHieu th = new ThuongHieu();
+            Integer maxMa = Integer.parseInt(thuongHieuRepository.getMaxMa());
+            th.setMa("TH" + (maxMa + 1));
+            th.setTen(request.getTen());
+            th.setDeleted(1);
+            thuongHieuRepository.save(th);
+            return ResponseEntity.ok("Thành công");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại thương hiệu này!");
+        }
     }
 
     @PostMapping("/addSanPham")
     public ResponseEntity addKichCo(@RequestBody SanPhamRequest request) {
         System.out.println(request.getTenSanPham());
         try {
+            if(sanPhamRepository.existsByTen(request.getTenSanPham())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại sản phẩm này!");
+            }
             SanPham sanPham = new SanPham();
             Integer maxMa = Integer.parseInt(sanPhamRepository.getMaxMa());
             sanPham.setMa("SP" + (maxMa + 1));
@@ -443,7 +501,6 @@ public class SanPhamController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đã tồn tại sản phẩm này!");
         }
-
     }
 
     @PostMapping("/deleteHinhAnh/{idHinhAnh}")

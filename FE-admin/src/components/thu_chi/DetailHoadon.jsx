@@ -1268,15 +1268,18 @@ function DetailHoadon() {
               </div>
             </div> */}
             <div className="flex justify-end">
-            {info.trangThai <3 && 
-              <Button
+              {
+                info.trangThai < 3 &&
+                <Button
                 onClick={() => {
                   showModalThem();
                 }}
               >
                 Thêm sản phẩm <MdAddCircle style={{ display: "inline" }} />
               </Button>
-  }
+              }
+
+
               <Modal
                 onOk={handleOkThem}
                 onCancel={handleCancelThem}
@@ -1357,7 +1360,7 @@ function DetailHoadon() {
                           &nbsp;₫
                         </p>
 
-                        {info.trangThai <3 && (
+                        {info.trangThai < 3 && (
                           <Tooltip title="Xóa sản phẩm" arrow={true}>
                             <Button
                               color="red"
@@ -1645,7 +1648,7 @@ function DetailHoadon() {
         
     
       </Modal>
-     
+
 
       {/* confirm xóa */}
       <Modal 

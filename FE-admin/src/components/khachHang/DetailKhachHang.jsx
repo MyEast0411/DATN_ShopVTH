@@ -41,6 +41,7 @@ export default function DetailKhachHang() {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
+  const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
   const [listDiaChi, setListDiaChi] = useState([]);
   const [isOn, setIsOn] = useState(false);
   const [idToDelete, setIdToDelete] = useState("");
@@ -65,11 +66,11 @@ export default function DetailKhachHang() {
     setDeleteConfirmationOpen(false);
   };
   const handleAdd = () => {
-    setDeleteConfirmationOpen(true);
+    setUpdateConfirmationOpen(true);
   };
 
   const cancelAdd = () => {
-    setDeleteConfirmationOpen(false);
+    setUpdateConfirmationOpen(false);
   };
   useEffect(() => {
     getProvinces().then((data) => {
@@ -325,7 +326,7 @@ export default function DetailKhachHang() {
 
   const onSubmit = async () => {
     await axios
-      .put("http://localhost:8080/khach-hang/update", khachHang)
+      .put("http://localhost:8080/updateKhachHang", khachHang)
       .then((response) => {
         toast.success(`🎉 Cập nhật thành công`);
         navigate("/quan-ly-tai-khoan/khach-hang");
@@ -390,6 +391,7 @@ export default function DetailKhachHang() {
             </label>
             <input
               value={ten}
+              name="ten"
               type="text"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm 
                                 rounded-lg focus:ring-blue-500 focus:border-blue-500 block
@@ -454,6 +456,7 @@ export default function DetailKhachHang() {
               type="date"
               name="ngay_sinh"
               value={formatDate(ngay_sinh)}
+              readOnly
               id="dateInput"
               style={{
                 width: "100%",
@@ -910,7 +913,7 @@ export default function DetailKhachHang() {
           </div>
         </div>
       </div>
-      <Dialog open={deleteConfirmationOpen} onClose={cancelAdd} fullWidth>
+      <Dialog open={updateConfirmationOpen} onClose={cancelAdd} fullWidth>
         <DialogTitle>
           <div
             style={{

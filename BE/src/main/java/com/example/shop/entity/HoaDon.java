@@ -1,6 +1,5 @@
 package com.example.shop.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +27,7 @@ public class HoaDon {
     @Column(name = "dia_chi")
     private String diaChi;
 
-    @Column(name = "ma")
+    @Column(name = "ma", unique = true)
     private String ma;
 
     @Column(name = "ho_ten")

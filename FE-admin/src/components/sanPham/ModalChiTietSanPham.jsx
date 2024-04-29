@@ -100,7 +100,6 @@ export default function ModalChiTietSanPham({ idDetailProduct, sanPhamChiTiet, s
     });
 
     const getDetailProductById = async () => {
-        console.log(idDetailProduct);
         const result = await axios.get(`http://localhost:8080/detailSP/${idDetailProduct}`);
         const danhSachHinhAnh = await axios.get(`http://localhost:8080/getHinhAnhByIdSPCT/${idDetailProduct}`);
         console.log(danhSachHinhAnh.data);
@@ -134,9 +133,11 @@ export default function ModalChiTietSanPham({ idDetailProduct, sanPhamChiTiet, s
         })
         setListHinhAnh(danhSachHinhAnh.data);
     }
+
     useEffect(() => {
         getDetailProductById();
     }, [idDetailProduct]);
+    
     const [loadingImg, setLoadingImg] = useState(false);
     const handleImageChange = async (event) => {
         setLoadingImg(true);
