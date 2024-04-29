@@ -7,8 +7,14 @@ import Footer from "../layout/Footer";
 import { Image, Input, Modal, Result, Select, Tag } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Button } from "@nextui-org/react";
+// import { Button } from "@nextui-org/react";
+import {
+  Button,
 
+} from "@material-tailwind/react";
+import { CiWarning } from "react-icons/ci";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { notification } from "antd";
 
 // import {
@@ -25,8 +31,9 @@ export default function PurchaseHistory() {
   const { idkh } = useParams();
   const [list, setList] = useState([]);
   const [search, setSearch] = useState("");
-  const [checkBox, setCheckBox] = useState(0);
-
+  const [checkBox, setCheckBox] = useState(-1);
+  const [isModalOpenCanceled, setIsModalOpenCanceled] = useState(false);
+  const [hd , setHD] = useState({});
   // const [open, setOpen] = useState(false);
   // const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -39,7 +46,7 @@ export default function PurchaseHistory() {
           return hd;
       })
       .filter((hd) => {
-        if (checkBox == 0) return hd;
+        if (checkBox == -1) return hd;
         if (hd.trangThai == checkBox) return hd;
       });
   };
@@ -65,32 +72,38 @@ export default function PurchaseHistory() {
     return <div className="discount-tag">{`${discount}% OFF`}</div>;
   };
 
-  const [api, contextHolder] = notification.useNotification();
-  const handleCanceled = (idHD) => {
-    Modal.confirm({
-      title: `Bạn có muốn hủy hóa đơn này không ?`,
-      okText: "Yes",
-      okType: "danger",
-      onOk: async () => {
+
+
+  const handleCanceled =  async () => {
+   
         await axios
-          .post(`http://localhost:8080/lich_su_hoa_don/add/${idHD}`, {
+          .post(`http://localhost:8080/lich_su_hoa_don/add/${hd.id}`, {
             moTaHoaDon: "Hủy Hóa Đơn",
             deleted: 1,
             nguoiTao: "Cam",
             ghiChu: "Khách Hàng Đã Hủy",
           })
           .then((response) => {
-            if (response.status === 200) {
+            cancelCancled();
               getDataById();
-              api["success"]({
-                message: "Thông báo",
-                description: "Hủy Thành Công",
+              toast.success(`Hủy thành công`, {
+                position: "top-right",
+                autoClose: 2000,
               });
-            }
+           
+          }).catch((error) => {
+            console.log(error.message);
+            toast.error(`Hủy thất bại`, {
+              position: "top-right",
+              autoClose: 2000,
+            });
           });
-      },
-    });
+          cancelCancled();
+   
   };
+  const cancelCancled = () => {
+    setIsModalOpenCanceled(false);
+  }
 
   const getDataById = async () => {
     await axios
@@ -132,7 +145,7 @@ export default function PurchaseHistory() {
           height: 800,
         }}
       >
-        {contextHolder}
+        <ToastContainer/>
         <div
           className="mb-3 flex justify-between"
           style={{
@@ -159,7 +172,7 @@ export default function PurchaseHistory() {
           />
 
           <Select
-            defaultValue="0"
+            defaultValue="-1"
             style={{
               width: 200,
             }}
@@ -309,7 +322,10 @@ export default function PurchaseHistory() {
                         <Link to={`/client/edit-hoa-don/${ls.hoaDon.id}`}>
                           <Button className="me-4">Sửa hóa đơn</Button>
                         </Link>
-                        <Button onPress={() => handleCanceled(ls.hoaDon.id)}>
+                        <Button onPress={() => {
+                          setIsModalOpenCanceled(true);
+                          setHD(ls.hoaDon);
+                        }}>
                           Hủy Hóa Đơn
                         </Button>
                       </>
@@ -342,6 +358,40 @@ export default function PurchaseHistory() {
             </>
           ))
         )}
+
+        {/* change TrangThai */}
+        <Modal 
+      open={isModalOpenCanceled} 
+      centered
+      onCancel={cancelCancled}
+      onOK={handleCanceled}
+      width={600}
+      height={180}
+      footer={[
+        <>
+        <Button color="black" className="me-3" onClick={cancelCancled}>
+        Hủy
+      </Button>
+      <Button color="red" onClick={handleCanceled} >
+        Tiếp tục
+      </Button>
+        </>
+      ]}
+      >
+        
+      <div className="flex">
+        <CiWarning style={{ color: "red", fontSize: 25  }}  /> 
+        <p style={{  fontSize: 20  }}>Thông báo</p>
+      </div>
+
+         
+          <div className="grid">
+            <span style={{ fontSize: 15 , marginTop : 20 , marginBottom : 20  }}>
+            bạn có muốn hủy hóa đơn không ?
+            </span>
+          </div>
+       
+      </Modal>
       </div>
       <Footer />
     </>
@@ -385,6 +435,13 @@ const GetTrangThai = (tinhTrang) => {
     );
   if (tinhTrang == 5)
     return (
+      <Tag color="#03cffc">
+        {" "}
+        <span className=" text-sm ">Đã Trả</span>
+      </Tag>
+    );
+  if (tinhTrang == 6)
+    return (
       <Tag color="#ff0000">
         {" "}
         <span className=" text-sm ">Hủy</span>
@@ -393,20 +450,24 @@ const GetTrangThai = (tinhTrang) => {
 };
 const data = [
   {
-    value: "0",
+    value: "-1",
     label: "Tất cả",
   },
   {
-    value: "1",
+    value: "0",
     label: "Chờ Xác Nhận",
   },
   {
-    value: "2",
+    value: "1",
     label: " Xác Nhận",
   },
   {
-    value: "3",
+    value: "2",
     label: "Chờ Vận Chuyển",
+  },
+  {
+    value: "3",
+    label: "Đang Giao",
   },
   {
     value: "4",
@@ -414,6 +475,11 @@ const data = [
   },
   {
     value: "5",
+    label: "Đã Trả",
+  },
+  
+  {
+    value: "6",
     label: "Hủy",
   },
 ];

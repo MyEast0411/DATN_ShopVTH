@@ -1278,7 +1278,7 @@ function DetailHoadon() {
                 Thêm sản phẩm <MdAddCircle style={{ display: "inline" }} />
               </Button>
               }
-              
+
 
               <Modal
                 onOk={handleOkThem}
@@ -1455,7 +1455,7 @@ function DetailHoadon() {
                             &nbsp;₫
                           </p>
 
-                          {info.trangThai < 4 && (
+                          {/* {info.trangThai < 4 && (
                             <Tooltip title="Xóa sản phẩm" arrow={true}>
                               <Button
                                 color="red"
@@ -1477,7 +1477,7 @@ function DetailHoadon() {
                                 <EditIcon />
                               </Button>
                             </Tooltip>
-                          )}
+                          )} */}
                         </div>
                         <div>
                           <h2 className="text-sm font-medium text-gray-900 mb-3">
@@ -1648,37 +1648,7 @@ function DetailHoadon() {
         
     
       </Modal>
-      {/* <Dialog open={open} handler={handleOpen} size="xl">
-        <DialogHeader>Lịch sử hóa đơn</DialogHeader>
-        <DialogBody>
-          <Table aria-label="Example table with dynamic content">
-            <TableHeader columns={columnsLSHD}>
-              {(column) => (
-                <TableColumn key={column.key}>{column.label}</TableColumn>
-              )}
-            </TableHeader>
-            <TableBody items={rowsLichSu}>
-              {(item) => (
-                <TableRow key={item.key}>
-                  {(columnKey) => (
-                    <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-                  )}
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            variant="text"
-            color="red"
-            onClick={handleOpen}
-            className="mr-1"
-          >
-            <span>Thoát</span>
-          </Button>
-        </DialogFooter>
-      </Dialog> */}
+
 
       {/* confirm xóa */}
       <Modal 

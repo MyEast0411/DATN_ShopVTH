@@ -256,11 +256,11 @@ public class HoaDonChiTietController {
                         .deleted(1)
                         .build();
                 ssHDCT.save(hdct);
+
+            } else {
+                hoaDonChiTietExist.setSoLuong(hoaDonChiTietExist.getSoLuong() + hoaDonChiTiet.getSo_luong());
+                ssHDCT.save(hoaDonChiTietExist);
             }
-//            } else {
-//                hoaDonChiTietExist.setSoLuong(hoaDonChiTietExist.getSoLuong() + hoaDonChiTiet.getSo_luong());
-//                ssHDCT.save(hoaDonChiTietExist);
-//            }
             Double gia = ssHDCT.getMoneyBYHD(hoaDon.getId());
             hoaDon.setTongTien(new BigDecimal("" + gia));
             ssHD.save(hoaDon);

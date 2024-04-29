@@ -184,6 +184,7 @@ public class VoucherController {
             if (voucher1 != null) {
                 voucher1.setTrangThai(voucher1.getTrangThai() == 1 ? 0 : 1);
                 Voucher voucherAdd = voucherService.updateVoucher(voucher1);
+                System.out.println(voucherAdd);
                 return new ResponseEntity<>(voucherAdd, HttpStatus.CREATED);
             } else {
                 throw new Exception("khong co id" + id);
