@@ -370,7 +370,7 @@ export default function Shop() {
                         onClick={() => onChangeCheckBoxMauSac(item.id)}
                       >
                         <div className={`circle-color`} style={{backgroundColor : item.maMau}}></div>
-                        <p className="color-text">{item.ten}</p>
+                        <p className="color-text text-center">{item.ten}</p>
                         {selectedOptionsMauSac.includes(item.id) && (
                           <div className="tick-icon absolute text-white bottom-[22px]">
                             &#10003;
