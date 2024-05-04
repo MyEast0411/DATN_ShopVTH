@@ -100,7 +100,7 @@ export default function ChiTietSanPham() {
   const [kichCo, setKichCo] = useState([]);
   const [nhanHieu, setNhanHieu] = useState([]);
   const [theLoai, setTheLoai] = useState([]);
-  const [idDetailProduct, setIdDetailProduct] = useState([]);
+  const [idDetailProduct, setIdDetailProduct] = useState("");
   const [page, setPage] = React.useState(1);
   const [sanPhams, setSanPhams] = React.useState([]);
   const { ma } = useParams();
@@ -436,6 +436,7 @@ export default function ChiTietSanPham() {
         });
         fetchData();
         fetchChiTietSanPham();
+        setIdDetailProduct("");
       })
       .catch((err) => {
         console.log(err);
@@ -543,7 +544,6 @@ export default function ChiTietSanPham() {
                     onClick={() => {
                       showModalSP();
                       setIdDetailProduct(sanPham.id);
-                      console.log(sanPham.id);
                     }}
                   />
                 </span>
@@ -1202,6 +1202,7 @@ export default function ChiTietSanPham() {
         >
           <ModalChiTietSanPham
             idDetailProduct={idDetailProduct}
+            setIdDetailProduct={setIdDetailProduct}
             sanPhamChiTiet={sanPhamChiTiet}
             setSanPhamChiTiet={setSanPhamChiTiet}
           />

@@ -206,14 +206,13 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
     }
   }
   useEffect(() => {
-
     const interval = setInterval(() => {
       fetchKhuyenMais();
     }, 10000); // Mỗi 10 giây
 
     return () => clearInterval(interval);
   }, []);
-  
+
   useEffect(() => {
     fetchKhuyenMais();
     setFilterValue(search);
@@ -305,8 +304,7 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
                 </span>
               </Tooltip>
               {khuyenMai.trangThai !== "Đã kết thúc" &&
-                khuyenMai.trangThai !== "Đã dừng" &&
-                khuyenMai.trangThai !== "Đang diễn ra" && (
+                khuyenMai.trangThai !== "Đã dừng" && (
                   <Tooltip content="Chỉnh sửa" showArrow={true}>
                     <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                       <Link to={`/update-khuyen-mai/${khuyenMai.id}`}>
@@ -315,11 +313,6 @@ export default function TableAllKhuyenMai({ nbd, nkt, search }) {
                     </span>
                   </Tooltip>
                 )}
-              <Tooltip color="danger" content="Xóa" showArrow={true}>
-                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <DeleteIcon onClick={() => handleDelete(khuyenMai.id)} />
-                </span>
-              </Tooltip>
               {(khuyenMai.trangThai === "Đang diễn ra" ||
                 khuyenMai.switchKM === "Đã dừng") && (
                 <Tooltip

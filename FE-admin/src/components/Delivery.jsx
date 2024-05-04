@@ -14,6 +14,8 @@ export default function Delivery({
   setDiaChi,
   diaChi,
   setNgayNhan,
+  isBlur,
+  isGiaoHangHoaToc
 }) {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -129,7 +131,15 @@ export default function Delivery({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const apiUrl =
+    if (
+      idTP != undefined &&
+      idTP != "" &&
+      idHuyen != undefined &&
+      idHuyen != "" &&
+      idXa != undefined &&
+      idXa != "" && isBlur == true
+    ) {
+      const apiUrl =
       "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime";
     const token = "83b3ca14-88ad-11ee-a6e6-e60958111f48";
     const shopId = "190374 - 0964457125";
@@ -167,7 +177,13 @@ export default function Delivery({
       .catch((error) => {
         console.error(error);
       });
-  }, [idTP, idHuyen, idXa]);
+    }else if(isGiaoHangHoaToc == false) {
+      setDeliveryTime("");
+      setNgayNhan("");
+    }else {
+      setDeliveryTime("Khoảng 12h-24h");
+    }
+  }, [idTP, idHuyen, idXa, tienHang, phiVanChuyen, tienShip, isBlur]);
   //{ProvinceID: 201, ProvinceName: 'Hà Nội', CountryID: 1
   // lay id tp
   const getIdThanhPho = () => {
@@ -271,7 +287,6 @@ export default function Delivery({
   }, [diaChi, phiVanChuyen, tienShip, idTP, idHuyen, idXa]);
   // Tính phí vận chuyển
   useEffect(() => {
-    console.log(phiVanChuyen);
     if (
       phiVanChuyen == "" &&
       idTP != undefined &&
@@ -279,7 +294,7 @@ export default function Delivery({
       idHuyen != undefined &&
       idHuyen != "" &&
       idXa != undefined &&
-      idXa != ""
+      idXa != "" && isBlur == true
     ) {
       console.log("da call api tinh phi van chuyen");
       const apiUrl =
@@ -318,8 +333,10 @@ export default function Delivery({
         .catch((error) => {
           console.error("Error:", error);
         });
+    }else if(isGiaoHangHoaToc == false){
+      setTienShip(0)
     }
-  }, [idTP, idHuyen, idXa, tienHang, phiVanChuyen, tienShip]);
+  }, [idTP, idHuyen, idXa, tienHang, phiVanChuyen, tienShip, isBlur]);
   const options = valueTP.map((name) => (
     <Option key={name} value={name}>
       {name}

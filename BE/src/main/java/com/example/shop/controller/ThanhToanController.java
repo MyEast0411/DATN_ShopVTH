@@ -70,7 +70,7 @@ public class ThanhToanController {
                     .ma_giao_dich(thanhToan.getMaGiaoDich())
                     .ngayTao(new Date())
                     .soTien(thanhToan.getSoTien())
-                    .hinhThuc(thanhToan.getPhuongThuc().equals("TM") || thanhToan.getPhuongThuc().equals("Tiền mặt")?"Tiền Mặt" : "Chuyển Khoản")
+                    .hinhThuc(thanhToan.getPhuongThuc().equals("TM") || thanhToan.getPhuongThuc().equals("Tiền mặt") ? "Tiền Mặt" : "Chuyển Khoản")
                     .trangThai("Thành Công")
                     .build();
             ThanhToan newThanhToan = thanhToanService.addThanhToan(tt);
@@ -85,6 +85,7 @@ public class ThanhToanController {
 
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("ERROR");
         }
     }

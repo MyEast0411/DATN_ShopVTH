@@ -28,6 +28,7 @@ import ContactUs from "./components/ContactUs";
 import News from "./components/News";
 import About from "./components/About";
 
+
 function App() {
   return (
     <>

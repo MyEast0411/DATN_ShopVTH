@@ -20,19 +20,20 @@ export default function SizeGuide() {
     return result;
   };
 
-  const mensSizes = generateNumbers(1, 40.5, 0.5);
-  const womensSizes = generateNumbers(2.5, 40.5, 0.5);
+  const mensSizes = generateNumbers(24, 30, 0.5);
+  const womensSizes = generateNumbers(38.5, 46, 0.5);
+
+  const mensSizes2 = generateNumbers(20, 27, 0.5);
+  const womensSizes2 = generateNumbers(34.5, 42, 0.5);
 
   return (
     <>
       <InfoTop />
       <Header />
       <div className="main-size-guide">
-        <h2 className="main-size-guide-title">Nike Size Charts</h2>
+        <h2 className="main-size-guide-title">Nike Size</h2>
         <div className="main-foot-wear-size-chart">
-          <h2 className="main-foot-wear-size-chart-title">
-            Men's Footwear Size Chart
-          </h2>
+          <h2 className="main-foot-wear-size-chart-title">Size giày Nam</h2>
 
           <div className="size-chart">
             <Table
@@ -44,14 +45,41 @@ export default function SizeGuide() {
               }}
             >
               <TableHeader>
-                <TableColumn>Men's</TableColumn>
-                <TableColumn>Women's</TableColumn>
+                <TableColumn>Centimet</TableColumn>
+                <TableColumn>Size VN</TableColumn>
               </TableHeader>
               <TableBody isLoading={isLoading}>
                 {mensSizes.map((size, index) => (
                   <TableRow key={index + 1}>
                     <TableCell>{size}</TableCell>
                     <TableCell>{womensSizes[index]}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+        <div className="main-foot-wear-size-chart pt-2">
+          <h2 className="main-foot-wear-size-chart-title">Size giày Nữ</h2>
+
+          <div className="size-chart">
+            <Table
+              isStriped
+              aria-label="Example static collection table"
+              classNames={{
+                base: "max-h-[450px] overflow-scroll",
+                table: "min-h-[420px]",
+              }}
+            >
+              <TableHeader>
+                <TableColumn>Centimet</TableColumn>
+                <TableColumn>Size VN</TableColumn>
+              </TableHeader>
+              <TableBody isLoading={isLoading}>
+                {mensSizes2.map((size, index) => (
+                  <TableRow key={index + 1}>
+                    <TableCell>{size}</TableCell>
+                    <TableCell>{womensSizes2[index]}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

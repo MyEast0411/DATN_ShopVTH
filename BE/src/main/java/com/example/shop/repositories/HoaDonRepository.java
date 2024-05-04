@@ -37,6 +37,8 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
 
     HoaDon getHoaDonByMa(String ma);
 
+
+
     @Query(value = "SELECT MAX(CAST(SUBSTRING(ma, 3) AS UNSIGNED)) as maxMa\n" +
             "FROM hoa_don",nativeQuery = true)
     String getMaxMa();

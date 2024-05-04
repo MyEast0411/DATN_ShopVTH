@@ -25,32 +25,65 @@ export default function Shop() {
   const [selectedFilterTop, setSelectedFilterTop] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectedOptionsTheLoai, setSelectedOptionsTheLoai] = useState([]);
+  const [selectedOptionsMauSac, setSelectedOptionsMauSac] = useState([]);
+  const [selectedOptionsThuongHieu, setSelectedOptionsThuongHieu] = useState([]);
   const [theLoai, setTheLoai] = useState([]);
+  const [mauSac, setMauSac] = useState([]);
   const [thuongHieu, setThuongHieu] = useState([]);
   const [sanPhams, setSanPhams] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
-
-  console.log("SselectedFilterTop:", selectedFilterTop);
-  console.log("selectedOptions:", selectedOptions);
-  console.log("selected the loai", selectedOptionsTheLoai);
-
+  const [toPrice, setToPrice] = useState(0);
+  const [fromPrice, setFromPrice] = useState(0);
 
   const onChangeCheckBox = (option) => {
+    console.log(option);
     setSelectedOption(option);
-    const index = selectedOptions.indexOf(option);
-    if (index === -1) {
-      setSelectedOptions([...selectedOptions, option]);
-    } else {
-      setSelectedOptions(selectedOptions.filter((item) => item !== option));
+    if(option == "200.000-500.000") {
+      console.log("option 1");
+      setToPrice(200000);
+      setFromPrice(500000);
+    } else if(option == "500.000-1Tr") {
+      console.log("option 2");
+      setToPrice(500000);
+      setFromPrice(1000000);
+    }else if(option == "1Tr-1.5Tr") {
+      console.log("option 3");
+      setToPrice(1000000);
+      setFromPrice(1500000);
+    }else {
+      console.log("option 5");
+      setToPrice(1500000);
+      setFromPrice(10000000);
     }
+    // const index = selectedOptions.indexOf(option);
+    // if (index === -1) {
+    //   setSelectedOptions([...selectedOptions, option]);
+    // } else {
+    //   setSelectedOptions(selectedOptions.filter((item) => item !== option));
+    // }
   };
   const onChangeCheckBoxTheLoai = (option) => {
-    setSelectedOption(option);
     const index = selectedOptionsTheLoai.indexOf(option);
     if (index === -1) {
       setSelectedOptionsTheLoai([...selectedOptionsTheLoai, option]);
     } else {
       setSelectedOptionsTheLoai(selectedOptionsTheLoai.filter((item) => item !== option));
+    }
+  };
+  const onChangeCheckBoxMauSac = (option) => {
+    const index = selectedOptionsMauSac.indexOf(option);
+    if (index === -1) {
+      setSelectedOptionsMauSac([...selectedOptionsMauSac, option]);
+    } else {
+      setSelectedOptionsMauSac(selectedOptionsMauSac.filter((item) => item !== option));
+    }
+  };
+  const onChangeCheckBoxThuongHieu = (option) => {
+    const index = selectedOptionsThuongHieu.indexOf(option);
+    if (index === -1) {
+      setSelectedOptionsThuongHieu([...selectedOptionsThuongHieu, option]);
+    } else {
+      setSelectedOptionsThuongHieu(selectedOptionsThuongHieu.filter((item) => item !== option));
     }
   };
 
@@ -82,13 +115,13 @@ export default function Shop() {
   const filterSanPhamClient = async () => {
     console.log("da call filter");
     await axios.post("http://localhost:8080/filterSanPhamClient", {
-      listTheLoai : selectedOptionsTheLoai,
-      listMauSac : [],
-      listThuongHieu : [],
-      toPrice : 100000,
-      fromPrice : 1200000
+      listTheLoai: selectedOptionsTheLoai,
+      listMauSac: selectedOptionsMauSac,
+      listThuongHieu: selectedOptionsThuongHieu,
+      toPrice: toPrice,
+      fromPrice: fromPrice
     }).then((response) => {
-      if(response.status == 200) {
+      if (response.status == 200) {
         setSanPhams(response.data);
         console.log(response.data);
       }
@@ -97,13 +130,17 @@ export default function Shop() {
     })
   }
   useEffect(() => {
-    console.log(selectedOptionsTheLoai.length);
-    if(selectedOptionsTheLoai.length == 0) {
+    console.log("useEffect");
+    console.log(toPrice);
+    console.log(fromPrice);
+    if (selectedOptionsTheLoai.length == 0 && selectedOptionsMauSac.length == 0 && selectedOptionsThuongHieu.length == 0 && toPrice <= 0 && fromPrice <= 0) {
       fetchData();
-    }else {
+      console.log("fecth data");
+    } else {
       filterSanPhamClient();
+      console.log("filter");
     }
-  },[selectedOptionsTheLoai])
+  }, [selectedOptionsTheLoai, selectedOptionsMauSac, selectedOptionsThuongHieu, selectedOption])
   useEffect(() => {
     fetchCountSanPham();
   }, [countSanPham]);
@@ -119,10 +156,16 @@ export default function Shop() {
       setTheLoai(response.data);
     });
   };
-
+  const getAllMS = async () => {
+    await axios.get("http://localhost:8080/getAllMS").then((response) => {
+      setMauSac(response.data);
+      console.log(response.data);
+    });
+  };
   useEffect(() => {
     getAllTL();
     getAllTH();
+    getAllMS();
   }, [])
   const items = [
     {
@@ -320,19 +363,21 @@ export default function Shop() {
                   className="font-medium"
                 >
                   <div className="grid grid-cols-3 gap-4 pb-2">
-                    <div
-                      className="main-color relative black flex flex-col justify-center"
-                      onClick={() => onChangeCheckBox("Đen")}
-                    >
-                      <div className={`circle-color bg-[#244971]`}></div>
-
-                      <p className="color-text">Đen</p>
-                      {selectedOptions.includes("Đen") && (
-                        <div className="tick-icon absolute text-white bottom-[22px]">
-                          &#10003;
-                        </div>
-                      )}
-                    </div>
+                    {mauSac.map((item, index) => (
+                      <div
+                        key={index}
+                        className="main-color relative black flex flex-col items-center justify-center"
+                        onClick={() => onChangeCheckBoxMauSac(item.id)}
+                      >
+                        <div className={`circle-color`} style={{backgroundColor : item.maMau}}></div>
+                        <p className="color-text text-center">{item.ten}</p>
+                        {selectedOptionsMauSac.includes(item.id) && (
+                          <div className="tick-icon absolute text-white bottom-[22px]">
+                            &#10003;
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </AccordionItem>
                 <AccordionItem
@@ -343,7 +388,7 @@ export default function Shop() {
                 >
                   <div className="flex flex-col">
                     {thuongHieu.map((item, index) => (
-                      <Checkbox key={index} onChange={() => onChangeCheckBox(item.id)}>
+                      <Checkbox key={index} onChange={() => onChangeCheckBoxThuongHieu(item.id)}>
                         {item.ten}
                       </Checkbox>
                     ))}
@@ -374,7 +419,7 @@ export default function Shop() {
             </div>
           </div>
           <div className="product-list w-full col-start-2 col-end-7">
-            <ProductList sanPhams={sanPhams} setSanPhams={setSanPhams}/>
+            <ProductList sanPhams={sanPhams} setSanPhams={setSanPhams} />
           </div>
         </div>
       </div>

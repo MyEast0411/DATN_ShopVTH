@@ -47,7 +47,7 @@ public class HoaDonChiTietController {
     @Autowired
     private LichSuHoaDonService lichSuHoaDonService;
     @Autowired
-     HoaDonService hoaDonService;
+    HoaDonService hoaDonService;
     private String idNhanVien = "8fc123b4-c457-4447-99d3-f39faaec2c5b";
 
     @GetMapping("/getHDCT/{maHD}")
@@ -118,7 +118,7 @@ public class HoaDonChiTietController {
                     .id_hoa_don(don)
                     .id_chi_tiet_san_pham(sanPhamChiTiet)
                     .build();
-             ssHDCT.delete(hdct);
+            ssHDCT.delete(hdct);
             List<HoaDonChiTiet> list = ssHDCT.getHDCT(id_hoa_don);
             for (HoaDonChiTiet donChiTiet : list) {
                 tongTien += donChiTiet.getSoLuong() * donChiTiet.getGiaTien().doubleValue();
@@ -145,79 +145,76 @@ public class HoaDonChiTietController {
             // check soluong tồn
 
             SanPhamChiTiet sanPhamChiTiet = ssSPCT.findById(id_san_pham).get();
-            if (sanPhamChiTiet.getSoLuongTon() < request.getQuantity()){
+            if (sanPhamChiTiet.getSoLuongTon() < request.getQuantity()) {
                 return ResponseEntity.ok("FAIL");
-            }else{
-            boolean check = true;
-            HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(id_hoa_don, id_san_pham);
-            System.out.println("id hd "+ hoaDonChiTiet.getId_hoa_don().getId());
-            System.out.println("id sp "+ hoaDonChiTiet.getId_chi_tiet_san_pham().getId());
+            } else {
+                boolean check = true;
+                HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(id_hoa_don, id_san_pham);
+                System.out.println("id hd " + hoaDonChiTiet.getId_hoa_don().getId());
+                System.out.println("id sp " + hoaDonChiTiet.getId_chi_tiet_san_pham().getId());
 
 
-
-
-
-            for (HoaDonChiTiet hdct:
-                    ssHDCT.findAll()) {
-                if(hdct.getId_hoa_don().getId().equals(hoaDonChiTiet.getId_hoa_don().getId())
-                        && hdct.getId_chi_tiet_san_pham().getId().equals(hoaDonChiTiet.getId_chi_tiet_san_pham().getId())) {
-                    if (hoaDonChiTiet.getId_chi_tiet_san_pham().getDeleted() == 0) {
-                        System.out.println(1);
-                        HoaDonChiTiet hdChiTiet = HoaDonChiTiet.
-                                builder()
-                                .id_hoa_don(hoaDonChiTiet.getId_hoa_don())
-                                .id_chi_tiet_san_pham(ssSPCT.findSanPhamDangBan(hoaDonChiTiet.getId_chi_tiet_san_pham().getMa()))
-                                .soLuong(request.getQuantity() - hoaDonChiTiet.getSoLuong())
-                                //.giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
-                                .giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(request.getQuantity() - hoaDonChiTiet.getSoLuong())))
-                                .deleted(1)
-                                .build();
-                        ssHDCT.save(hdChiTiet);
-                        check = false;
-                    } else {
-                        System.out.println(2);
-                        hdct.setSoLuong(request.getQuantity());
-                        hdct.setGiaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(request.getQuantity())));
-                        hdct.setDeleted(1);
-                        check = false;
-                        ssHDCT.save(hdct);
+                for (HoaDonChiTiet hdct :
+                        ssHDCT.findAll()) {
+                    if (hdct.getId_hoa_don().getId().equals(hoaDonChiTiet.getId_hoa_don().getId())
+                            && hdct.getId_chi_tiet_san_pham().getId().equals(hoaDonChiTiet.getId_chi_tiet_san_pham().getId())) {
+                        if (hoaDonChiTiet.getId_chi_tiet_san_pham().getDeleted() == 0) {
+                            System.out.println(1);
+                            HoaDonChiTiet hdChiTiet = HoaDonChiTiet.
+                                    builder()
+                                    .id_hoa_don(hoaDonChiTiet.getId_hoa_don())
+                                    .id_chi_tiet_san_pham(ssSPCT.findSanPhamDangBan(hoaDonChiTiet.getId_chi_tiet_san_pham().getMa()))
+                                    .soLuong(request.getQuantity() - hoaDonChiTiet.getSoLuong())
+                                    //.giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
+                                    .giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(request.getQuantity() - hoaDonChiTiet.getSoLuong())))
+                                    .deleted(1)
+                                    .build();
+                            ssHDCT.save(hdChiTiet);
+                            check = false;
+                        } else {
+                            System.out.println(2);
+                            hdct.setSoLuong(request.getQuantity());
+                            hdct.setGiaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(request.getQuantity())));
+                            hdct.setDeleted(1);
+                            check = false;
+                            ssHDCT.save(hdct);
+                        }
                     }
                 }
-            }
-            if(check) {
-                if (hoaDonChiTiet.getId_chi_tiet_san_pham().getDeleted() == 0) {
-                    HoaDonChiTiet hdct = HoaDonChiTiet.
-                            builder()
-                            .id_hoa_don(hoaDonChiTiet.getId_hoa_don())
-                            .id_chi_tiet_san_pham(hoaDonChiTiet.getId_chi_tiet_san_pham())
-                            .soLuong(hoaDonChiTiet.getSoLuong())
-                            .giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
-                            .deleted(1)
-                            .build();
-                    ssHDCT.save(hdct);
-                } else {
-                    hoaDonChiTiet.setSoLuong(request.getQuantity());
-                    ssHDCT.save(hoaDonChiTiet);
+                if (check) {
+                    if (hoaDonChiTiet.getId_chi_tiet_san_pham().getDeleted() == 0) {
+                        HoaDonChiTiet hdct = HoaDonChiTiet.
+                                builder()
+                                .id_hoa_don(hoaDonChiTiet.getId_hoa_don())
+                                .id_chi_tiet_san_pham(hoaDonChiTiet.getId_chi_tiet_san_pham())
+                                .soLuong(hoaDonChiTiet.getSoLuong())
+                                .giaTien(hoaDonChiTiet.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSoLuong())))
+                                .deleted(1)
+                                .build();
+                        ssHDCT.save(hdct);
+                    } else {
+                        hoaDonChiTiet.setSoLuong(request.getQuantity());
+                        ssHDCT.save(hoaDonChiTiet);
+                    }
                 }
-            }
-            Double gia = ssHDCT.getMoneyBYHD(id_hoa_don);
+                Double gia = ssHDCT.getMoneyBYHD(id_hoa_don);
 
-            HoaDon hoaDon = ssHD.findById(id_hoa_don).get();
-            hoaDon.setTongTien(new BigDecimal(gia)
-                    .subtract(hoaDon.getTienGiam()== null?new BigDecimal("0") :hoaDon.getTienGiam())
-                    .add(hoaDon.getTienShip()== null?new BigDecimal("0") :hoaDon.getTienShip()));
-            ssHD.save(hoaDon);
+                HoaDon hoaDon = ssHD.findById(id_hoa_don).get();
+                hoaDon.setTongTien(new BigDecimal(gia)
+                        .subtract(hoaDon.getTienGiam() == null ? new BigDecimal("0") : hoaDon.getTienGiam())
+                        .add(hoaDon.getTienShip() == null ? new BigDecimal("0") : hoaDon.getTienShip()));
+                ssHD.save(hoaDon);
 
-            LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
-                    .id_hoa_don(hoaDon)
-                    .moTaHoaDon(String.format("Khách hàng đã sửa cập nhật sản phẩm mã %s",
-                            hoaDonChiTiet.getId_chi_tiet_san_pham().getMa()))
-                    .deleted(1)
-                    .nguoiTao("Đông")
-                    .ngayTao(new Date(System.currentTimeMillis()))
-                    .build();
-            lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
-            return ResponseEntity.ok("OK");
+                LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
+                        .id_hoa_don(hoaDon)
+                        .moTaHoaDon(String.format("Khách hàng đã sửa cập nhật sản phẩm mã %s",
+                                hoaDonChiTiet.getId_chi_tiet_san_pham().getMa()))
+                        .deleted(1)
+                        .nguoiTao("Đông")
+                        .ngayTao(new Date(System.currentTimeMillis()))
+                        .build();
+                lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon);
+                return ResponseEntity.ok("OK");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -233,15 +230,15 @@ public class HoaDonChiTietController {
             SanPhamChiTiet sp = ssSP.findById(hoaDonChiTiet.getId_san_pham()).get();
             System.out.println(sp.getSoLuongTon() <= 0);
             BigDecimal tongTien = sp.getGiaBan().multiply(BigDecimal.valueOf(hoaDonChiTiet.getSo_luong()));
-            if(sp.getSoLuongTon() <= 0 || sp.getSoLuongTon() - hoaDonChiTiet.getSo_luong() < 0) {
+            if (sp.getSoLuongTon() <= 0 || sp.getSoLuongTon() - hoaDonChiTiet.getSo_luong() < 0) {
                 System.out.println("khong du so luong");
-                return ResponseEntity.badRequest().body("Sản phẩm không " + sp.getTen() +" đủ số lượng tồn !!!");
+                return ResponseEntity.badRequest().body("Sản phẩm không " + sp.getTen() + " đủ số lượng tồn !!!");
             }
             boolean check = true;
 //            if (hoaDonChiTietExist == null) {
-            for (HoaDonChiTiet hdct:
-                 ssHDCT.findAll()) {
-                if(hdct.getId_hoa_don().getId().equals(hoaDon.getId()) && hdct.getId_chi_tiet_san_pham().getId().equals(hoaDonChiTiet.getId_san_pham())) {
+            for (HoaDonChiTiet hdct :
+                    ssHDCT.findAll()) {
+                if (hdct.getId_hoa_don().getId().equals(hoaDon.getId()) && hdct.getId_chi_tiet_san_pham().getId().equals(hoaDonChiTiet.getId_san_pham())) {
                     hdct.setSoLuong(hoaDonChiTiet.getSo_luong());
                     hdct.setGiaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(hdct.getSoLuong())));
                     hdct.setDeleted(1);
@@ -249,7 +246,7 @@ public class HoaDonChiTietController {
                     ssHDCT.save(hdct);
                 }
             }
-            if(check) {
+            if (check) {
                 HoaDonChiTiet hdct = HoaDonChiTiet.
                         builder()
                         .id_hoa_don(hoaDon)
@@ -324,6 +321,7 @@ public class HoaDonChiTietController {
     @PostMapping("/addHoaDonChiTietToHoaDon")
     public ResponseEntity addHoaDonChiTietToHoaDon(@RequestBody CartNotLoginDTO cartNotLoginDTO) {
         SimpleDateFormat format = new SimpleDateFormat();
+        System.out.println(cartNotLoginDTO.getValue() + " value");
         System.out.println("getEmail: " + cartNotLoginDTO.getEmail());
         System.out.println("getMa: " + cartNotLoginDTO.getMaKH());
         System.out.println("getHoTen: " + cartNotLoginDTO.getHoTen());
@@ -345,16 +343,15 @@ public class HoaDonChiTietController {
                 maxMa = 0;
             }
             KhachHang khachHang = ssKH.findByMa(cartNotLoginDTO.getMaKH());
-            System.out.println("Thông tin khách hàng : " + khachHang);
             Voucher voucher = ssVC.getVoucherByCode(cartNotLoginDTO.getVoucher());
             Double tienGiam = 0.0;
-            if(voucher != null) {
+            if (voucher != null) {
                 voucher.setSoLuong(voucher.getSoLuong() - 1);
                 tienGiam = voucher.getGiaTriMax();
                 ssVC.save(voucher);
             }
             HoaDon hd1 = new HoaDon();
-            if(cartNotLoginDTO.getValue() == 1) {
+            if (cartNotLoginDTO.getValue() == 1) {
                 HoaDon hoaDon = HoaDon.builder()
                         .ma("HD" + (maxMa + 1))
                         .trangThai(0)
@@ -365,7 +362,7 @@ public class HoaDonChiTietController {
                         .sdt(khachHang == null ? null : khachHang.getSdt())
                         .tenKhachHang(khachHang == null ? null : khachHang.getTen())
                         .id_voucher(voucher)
-                        .id_nhan_vien(ssNV.findById(idNhanVien).isPresent()?ssNV.findById(idNhanVien).get():null)
+                        .id_nhan_vien(ssNV.findById(idNhanVien).isPresent() ? ssNV.findById(idNhanVien).get() : null)
                         .tienGiam(BigDecimal.valueOf(tienGiam))
                         .tienShip(BigDecimal.valueOf(Double.valueOf(cartNotLoginDTO.getPhiVanChuyen())))
                         .ngayNhan(new Date(cartNotLoginDTO.getDeliveryTime()))
@@ -373,7 +370,7 @@ public class HoaDonChiTietController {
                         .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
                         .build();
                 hd1 = ssHD.save(hoaDon);
-            }else if(cartNotLoginDTO.getValue() == 2) {
+            } else if (cartNotLoginDTO.getValue() == 2) {
                 HoaDon hoaDon = HoaDon.builder()
                         .ma("HDHoaToc" + (maxMa + 1))
                         .trangThai(0)
@@ -392,6 +389,25 @@ public class HoaDonChiTietController {
                         .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
                         .build();
                 hd1 = ssHD.save(hoaDon);
+            } else if(cartNotLoginDTO.getValue() == 3){
+                HoaDon hoaDon = HoaDon.builder()
+                        .ma("HD" + (maxMa + 1))
+                        .trangThai(0)
+                        .deleted(1)
+                        .loaiHd(0)
+                        .ngayTao(new Date())
+                        .id_khach_hang(khachHang)
+                        .sdt(khachHang == null ? null : khachHang.getSdt())
+                        .tenKhachHang(khachHang == null ? null : khachHang.getTen())
+                        .id_voucher(voucher)
+                        .id_nhan_vien(ssNV.findById(idNhanVien).isPresent() ? ssNV.findById(idNhanVien).get() : null)
+                        .tienGiam(BigDecimal.valueOf(tienGiam))
+                        .tienShip(BigDecimal.valueOf(Double.valueOf(cartNotLoginDTO.getPhiVanChuyen())))
+                        .ngayNhan(new Date(cartNotLoginDTO.getDeliveryTime()))
+                        .diaChi(cartNotLoginDTO.getDuong() + "," + cartNotLoginDTO.getThanhPho() + "," + cartNotLoginDTO.getQuanHuyen() + "," + cartNotLoginDTO.getXaPhuong())
+                        .tongTien(BigDecimal.valueOf(Double.parseDouble(cartNotLoginDTO.getTongTien())))
+                        .build();
+                hd1 = ssHD.save(hoaDon);
             }
 
             LichSuHoaDon lichSuHoaDon = LichSuHoaDon.builder()
@@ -402,17 +418,18 @@ public class HoaDonChiTietController {
                     .ngayTao(new Date(System.currentTimeMillis()))
                     .build();
             ssLSHD.save(lichSuHoaDon);
+
             for (SanPhamChiTiet sanPhamChiTiet : cartNotLoginDTO.getSanPhams()) {
                 SanPhamChiTiet spct = sanPhamChiTiet;
-                if(sanPhamChiTiet.getSoLuongTon() <= 0 || sanPhamChiTiet.getSoLuongTon() - cartNotLoginDTO.getSoLuong() < 0) {
-                    return ResponseEntity.badRequest().body("Sản phẩm không " + sanPhamChiTiet.getTen() +" đủ số lượng tồn !!!");
+                if (sanPhamChiTiet.getSoLuongTon() <= 0 || sanPhamChiTiet.getSoLuongTon() - cartNotLoginDTO.getSoLuong() < 0) {
+                    return ResponseEntity.badRequest().body("Sản phẩm không " + sanPhamChiTiet.getTen() + " đủ số lượng tồn !!!");
                 }
                 sanPhamChiTiet.setSoLuongTon(sanPhamChiTiet.getSoLuongTon() - cartNotLoginDTO.getSoLuong());
                 ssSPCT.save(sanPhamChiTiet);
                 spct.setId(null);
                 spct.setDeleted(0);
                 spct.setNgayTao(new Date());
-                spct.setTen(spct.getTen() +"[OLD]");
+                spct.setTen(spct.getTen() + "[OLD]");
                 HoaDonChiTiet hoaDonChiTiet = HoaDonChiTiet.builder()
                         .id_hoa_don(hd1)
                         .deleted(1)
@@ -427,7 +444,7 @@ public class HoaDonChiTietController {
                     cartNotLoginDTO.getPhiVanChuyen(), cartNotLoginDTO.getTongTien(), cartNotLoginDTO.getHoTen());
             return ResponseEntity.ok("Thanh toán thành công");
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return ResponseEntity.badRequest().body("err");
 //            return ResponseEntity.badRequest().body("err");
         }
@@ -441,18 +458,15 @@ public class HoaDonChiTietController {
     }
 
 
-
-
-
     @GetMapping("/getHDDoiTra/{maHD}")
-    public ResponseEntity getHDDoiTra(@PathVariable String maHD){
+    public ResponseEntity getHDDoiTra(@PathVariable String maHD) {
         try {
             HoaDonDoiTraDTO hoaDonDoiTraDTO = new HoaDonDoiTraDTO();
-        HoaDon hoaDon = hoaDonService.findHDDoiTra(maHD);
-          List<HoaDonChiTiet> list = ssHDCT.getHDCT(hoaDon.getId());
+            HoaDon hoaDon = hoaDonService.findHDDoiTra(maHD);
+            List<HoaDonChiTiet> list = ssHDCT.getHDCT(hoaDon.getId());
 
             hoaDonDoiTraDTO.setHoaDon(hoaDon);
-           hoaDonDoiTraDTO.setListHDCT(list);
+            hoaDonDoiTraDTO.setListHDCT(list);
 
             return ResponseEntity.ok(hoaDonDoiTraDTO);
         } catch (Exception e) {
@@ -461,7 +475,7 @@ public class HoaDonChiTietController {
     }
 
     @PostMapping("/updateHDVoucher/{maHD}")
-    public ResponseEntity updateHDVoucher(@PathVariable String maHD , @RequestBody DoiTraDTO doiTraDTO) {
+    public ResponseEntity updateHDVoucher(@PathVariable String maHD, @RequestBody DoiTraDTO doiTraDTO) {
         try {
 //            System.out.println(doiTraDTO);
             HoaDon hoaDon = ssHD.getHoaDonByMa(maHD);
@@ -484,7 +498,7 @@ public class HoaDonChiTietController {
                     voucherList) {
                 if (tongTienSauTra >= x.getGiaTriMin() && x.getGiaTriMax() >= maxGiaTri.get()) {
                     hoaDon.setId_voucher(x);
-                   HoaDon hoaDonSaved =  ssHD.save(hoaDon);
+                    HoaDon hoaDonSaved = ssHD.save(hoaDon);
                     hoaDonDoiTraDTO.setHoaDon(hoaDonSaved);
                 } else {
                     hoaDon.setId_voucher(null);
@@ -499,7 +513,7 @@ public class HoaDonChiTietController {
     }
 
     @PostMapping("/updateHDDoiTra/{maHD}")
-    public ResponseEntity updateHDDoiTra(@PathVariable String maHD , @RequestBody TraHangRes traHangRes) {
+    public ResponseEntity updateHDDoiTra(@PathVariable String maHD, @RequestBody TraHangRes traHangRes) {
         try {
             List<HoaDonChiTietCustomer> list = traHangRes.getListSPST();
             List<HoaDonChiTietCustomer> listTra = traHangRes.getListSPCTDoiTra();
@@ -508,8 +522,8 @@ public class HoaDonChiTietController {
             StringBuilder stringBuilder = new StringBuilder("Khách hàng vừa đổi tra sản phẩm ");
             double tongTien = 0;
             // upadte lại sản phẩm trong hóa đơn
-            for (HoaDonChiTietCustomer hdct: list) {
-                if (hdct.getQuantity() == 0){
+            for (HoaDonChiTietCustomer hdct : list) {
+                if (hdct.getQuantity() == 0) {
 
                     HoaDonChiTiet hdctXoa = HoaDonChiTiet.builder()
                             .id_hoa_don(hdct.getId_hoa_don())
@@ -518,7 +532,7 @@ public class HoaDonChiTietController {
 
 
                     ssHDCT.delete(hdctXoa);
-                }else{
+                } else {
                     //  set soLuong = quantity
                     HoaDonChiTiet hoaDonChiTiet = ssHDCT.getHDCT(hdct.getId_hoa_don().getId(),
                             hdct.getId_chi_tiet_san_pham().getId());
@@ -531,7 +545,7 @@ public class HoaDonChiTietController {
             }
 
             // thêm 1 bản ghi mới vào hdct vs deleted = 0
-            for (HoaDonChiTietCustomer hdct: listTra) {
+            for (HoaDonChiTietCustomer hdct : listTra) {
                 stringBuilder.append(" mã " + hdct.getId_chi_tiet_san_pham().getMa() + " , ");
 
                 // set 2 TH
@@ -543,24 +557,23 @@ public class HoaDonChiTietController {
                 // 2 là lỗi
                 SanPhamChiTiet sanPhamLoi = hdct.getId_chi_tiet_san_pham();
                 sanPhamLoi.setId(null);
-                        sanPhamLoi.setTrangThai(2);
-                        sanPhamLoi.setMoTa(hdct.getGhiChu());
-                        sanPhamLoi.setNgayTao(new Date());
+                sanPhamLoi.setTrangThai(2);
+                sanPhamLoi.setMoTa(hdct.getGhiChu());
+                sanPhamLoi.setNgayTao(new Date());
                 sanPhamLoi.setSoLuongTon(hdct.getQuantity());
-                        SanPhamChiTiet sanPhamChiTietSave = ssSPCT.save(sanPhamLoi);
-                    HoaDonChiTiet hdctNew = HoaDonChiTiet.
-                            builder()
-                            .id_hoa_don(hdct.getId_hoa_don())
-                            .id_chi_tiet_san_pham(sanPhamChiTietSave)
-                            .soLuong(hdct.getQuantity())
-                            .ngayTao(new Date())
+                SanPhamChiTiet sanPhamChiTietSave = ssSPCT.save(sanPhamLoi);
+                HoaDonChiTiet hdctNew = HoaDonChiTiet.
+                        builder()
+                        .id_hoa_don(hdct.getId_hoa_don())
+                        .id_chi_tiet_san_pham(sanPhamChiTietSave)
+                        .soLuong(hdct.getQuantity())
+                        .ngayTao(new Date())
 //                            .giaTien(hdct.getGiaTien())
-                            .giaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(sanPhamChiTietSave.getSoLuongTon())))
-                            .deleted(0)
-                            .ghiChu(hdct.getGhiChu())
-                            .build();
-                    ssHDCT.save(hdctNew);
-
+                        .giaTien(hdct.getId_chi_tiet_san_pham().getGiaBan().multiply(BigDecimal.valueOf(sanPhamChiTietSave.getSoLuongTon())))
+                        .deleted(0)
+                        .ghiChu(hdct.getGhiChu())
+                        .build();
+                ssHDCT.save(hdctNew);
 
 
 //                List<SanPhamChiTiet> sanPhamChiTiets = ssSPCT.getAllSanPhamChiTietByIdSanPham(sanPhamLoi.getId());
@@ -590,13 +603,7 @@ public class HoaDonChiTietController {
 //                }
 
 
-
-
-
-
                 // thêm sản phẩm chi tiết 1 bản ghi mới bị lỗi
-
-
 
 
 //                System.out.println("quantity " + hdct.getQuantity());
@@ -643,7 +650,7 @@ public class HoaDonChiTietController {
             // upadte hoa dơn
             List<HoaDonChiTiet> listHD = ssHDCT.getHDCT(hoaDon.getId());
             for (HoaDonChiTiet donChiTiet : listHD) {
-                if (donChiTiet.getDeleted() == 1){
+                if (donChiTiet.getDeleted() == 1) {
                     tongTien += donChiTiet.getSoLuong() * donChiTiet.getGiaTien().doubleValue();
                 }
             }
@@ -655,7 +662,6 @@ public class HoaDonChiTietController {
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
-
 
 
 }

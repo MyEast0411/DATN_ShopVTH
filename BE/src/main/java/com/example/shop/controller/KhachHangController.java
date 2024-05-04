@@ -158,11 +158,15 @@ public class KhachHangController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ERROR");
         }
     }
-    @PutMapping("/update")
+    @PutMapping("/updateKhachHang")
     public ResponseEntity updateKhachHang(@RequestBody KhachHang khachHang) {
         try {
             KhachHang kh = khachHangRepository.findByMa(khachHang.getMa());
-
+            kh.setTen(khachHang.getTen());
+            kh.setSdt(khachHang.getSdt());
+            kh.setEmail(khachHang.getEmail());
+            kh.setSdt(khachHang.getSdt());
+            khachHangRepository.save(kh);
             return ResponseEntity.ok("Thành công");
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
