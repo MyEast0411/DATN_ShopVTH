@@ -26,7 +26,7 @@ export default function SaleBar() {
             width="91px"
             height="84px"
             fill="none"
-          >
+          > 
             <path
               fill="currentColor"
               fillRule="evenodd"

@@ -58,4 +58,6 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet , S
     @Query(value = "select sum(gia_tien) from hoa_don_chi_tiet where id_hoa_don = :id_hd", nativeQuery = true)
     Double getMoneyBYHD(@Param("id_hd") String idHD);
 
+
+
 }

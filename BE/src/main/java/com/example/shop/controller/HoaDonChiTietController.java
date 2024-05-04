@@ -270,6 +270,7 @@ public class HoaDonChiTietController {
 
             return ResponseEntity.ok(hoaDon);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("ERROR");
         }
     }

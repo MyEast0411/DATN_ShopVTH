@@ -1,13 +1,12 @@
 package com.example.shop.repositories;
 
 import com.example.shop.entity.HoaDon;
-import com.example.shop.entity.HoaDonChiTiet;
+import com.example.shop.response.ThongKeSoLuong;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -83,6 +82,20 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
             "AND hd.deleted = 1;", nativeQuery = true)
     HoaDon findHDDoiTra(@Param("maHD") String ma);
 
+    @Query(value = "SELECT trang_thai, COUNT(*) AS so_luong FROM hoa_don  where deleted = 1 GROUP BY trang_thai ORDER BY trang_thai", nativeQuery = true)
+    List<ThongKeSoLuong> getSLHDByTT();
+
+//    @Query(value = "SELECT \n" +
+//            "   \n" +
+//            "    trang_thai,\n" +
+//            "    COUNT(*) AS count\n" +
+//            "FROM \n" +
+//            "    hoa_don\n" +
+//            "GROUP BY \n" +
+//            "    trang_thai\n" +
+//            "ORDER BY \n" +
+//            "    trang_thai;", nativeQuery = true)
+//    Double getMoneyBYHD(@Param("id_hd") String idHD);
 
 
 

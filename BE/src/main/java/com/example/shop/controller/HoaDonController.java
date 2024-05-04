@@ -8,15 +8,12 @@ import com.example.shop.repositories.*;
 import com.example.shop.requests.HoaDonClientReq;
 import com.example.shop.requests.CreatePayMentVNPAYRequest;
 import com.example.shop.requests.HoaDonRequest;
+import com.example.shop.response.ThongKeSoLuong;
 import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
-import com.example.shop.viewmodel.SanPhamVM;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -60,6 +57,9 @@ public class HoaDonController {
     private LichSuHoaDonService lichSuHoaDonService;
     @Autowired
     private HoaDonChiTietService hoaDonChiTietService;
+
+
+
 
     private String idNhanVien = "8fc123b4-c457-4447-99d3-f39faaec2c5b";
     @GetMapping("getHoaDons")
@@ -167,7 +167,7 @@ public class HoaDonController {
             @PathVariable("id") String id,
             @RequestBody HoaDonClientReq hd
     ) {
-
+        System.out.println(hd);
         try {
             HoaDon hoaDon1 = hoaDonService.getHoaDon(id);
             String diaChiHT = hoaDon1.getDiaChi();
@@ -200,7 +200,7 @@ public class HoaDonController {
             @RequestBody ThanhToanHoaDonDTO hoaDon
     ) {
 
-        //System.out.println(hoaDon);
+        System.out.println(hoaDon);
         List<HoaDonChiTiet> hoaDonChiTietList = new ArrayList<>();
         for (Object[] row : hoaDonRepository.getHDCTByMaHD(hoaDonRepository.getHoaDonByMa(id).getId())) {
             //coppy san pham chi tiet them vao` hoa don luc thanh toan'
@@ -239,7 +239,7 @@ public class HoaDonController {
 
         try {
             HoaDon hoaDon1 = hoaDonRepository.getHoaDonByMa(id);
-            //System.out.println(hoaDon.toString());
+            System.out.println(hoaDon1);
 
 
             if (hoaDon1 != null) {
@@ -250,11 +250,18 @@ public class HoaDonController {
                 hoaDon1.setTenKhachHang(hoaDon.getTenKhachHang());
                 hoaDon1.setSdt(hoaDon.getSdt());
                 hoaDon1.setNgayTao(new Date());
-                if (hoaDon.getTienGiam() == null || hoaDon.getTienGiam() == ""){
-                    hoaDon1.setTienGiam(new BigDecimal("0"));
-                }else{
-                    hoaDon1.setTienGiam(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTienGiam())));
+                //  check nếu hóa đơn đã cos voucher thì ấy
+                if (hoaDon1.getId_voucher() !=  null) {
+                    hoaDon1.setTienGiam(new BigDecimal(hoaDon1.getId_voucher().getGiaTriMax() + ""));
+                }else {
+                    if (hoaDon.getTienGiam() == null || hoaDon.getTienGiam() == "") {
+                        hoaDon1.setTienGiam(new BigDecimal("0"));
+                    } else {
+                        hoaDon1.setTienGiam(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTienGiam())));
+                    }
                 }
+
+
                 hoaDon1.setId_khach_hang(ssKH.findByMa(hoaDon.getMaKH()));
                 hoaDon1.setId_nhan_vien(ssNV.findById(idNhanVien).orElse(null));
                 hoaDon1.setTongTien(BigDecimal.valueOf(Double.parseDouble(hoaDon.getTongTien())));
@@ -309,7 +316,8 @@ public class HoaDonController {
                 throw new Exception("khong co id" + id);
             }
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+            //System.out.println(exception.getMessage());
+            exception.printStackTrace();
             return ResponseEntity.badRequest().body("ERROR");
         }
     }
@@ -397,6 +405,12 @@ public class HoaDonController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/callSLHDByTT")
+    public ResponseEntity<List<ThongKeSoLuong> > getHoaDonByIdVoucher(){
+       return  ResponseEntity.ok(hoaDonRepository.getSLHDByTT());
+    }
+
 
 
 

@@ -1,11 +1,8 @@
 package com.example.shop.controller;
 
-import com.example.shop.entity.HoaDon;
-import com.example.shop.entity.HoaDonChiTiet;
-import com.example.shop.entity.KhachHang;
-import com.example.shop.entity.LichSuHoaDon;
-import com.example.shop.entity.SanPhamChiTiet;
+import com.example.shop.entity.*;
 import com.example.shop.repositories.ChiTietSanPhamRepository;
+import com.example.shop.repositories.NhanVienRepository;
 import com.example.shop.service.HoaDonChiTietService;
 import com.example.shop.service.HoaDonService;
 import com.example.shop.service.LichSuHoaDonService;
@@ -39,6 +36,8 @@ public class LichSuHoaDonController {
 
     @Autowired
     private HoaDonService hoaDonService;
+ @Autowired
+    private NhanVienRepository nhanVienRepository;
 
     @Autowired
     private ChiTietSanPhamRepository chiTietSanPhamRepository;
@@ -62,6 +61,7 @@ public class LichSuHoaDonController {
             @RequestBody LichSuHoaDon lshd
 
     ){
+        System.out.println(lshd);
         List<String> list = new ArrayList<>();
         list.add(" đang chờ xác nhận ");
         list.add(" đã dược xác nhận ");
@@ -79,7 +79,7 @@ public class LichSuHoaDonController {
         listIcon.add(" 🏍🏍🏍‍🏍 ");
         listIcon.add(" 😞😞😞😞 ");
         List<String> listTitleTimline = List.of("Chờ xác nhận", "Xác Nhận", "Chờ Vận Chuyển", "Giao Hàng", "Hoàn Thành");
-
+        NhanVien  nhanVien =nhanVienRepository.findByMa(lshd.getNguoiTao());
         LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
 
              if (lshd.getMoTaHoaDon().equals("Lùi Hóa Đơn")){
@@ -89,7 +89,7 @@ public class LichSuHoaDonController {
                                  .moTaHoaDon(listTitleTimline.get(hoaDon.getTrangThai()-1))
                                  .deleted(lshd.getDeleted())
                                  .ghiChu(lshd.getGhiChu())
-                                 .nguoiTao(lshd.getNguoiTao())
+                                 .nguoiTao(nhanVien.getNguoiTao())
                                  .ngayTao(new Date(System.currentTimeMillis()))
                                  .build();
                  lichSuHoaDon= lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon1);
@@ -100,7 +100,7 @@ public class LichSuHoaDonController {
                                  .moTaHoaDon(lshd.getMoTaHoaDon())
                                  .deleted(lshd.getDeleted())
                                  .ghiChu(lshd.getGhiChu())
-                                 .nguoiTao(lshd.getNguoiTao())
+                                 .nguoiTao(nhanVien.getNguoiTao())
                                  .ngayTao(new Date(System.currentTimeMillis()))
                                  .build();
                  lichSuHoaDon= lichSuHoaDonService.addLichSuHoaDon(lichSuHoaDon1);

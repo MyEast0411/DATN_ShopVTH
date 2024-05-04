@@ -140,7 +140,7 @@ public class ThongKeController {
 
         // công tổng tiền
 
-     Double tongGia = filteredTests.stream().mapToDouble(p -> p.getTongTien().doubleValue()).reduce(0, (a, b) -> a + b);
+     Double tongGia = filteredTests.stream().mapToDouble(p -> p.getTongTien() == null?0:p.getTongTien().doubleValue()  ).reduce(0, (a, b) -> a + b);
 
         // số lượng sản phẩm
         Integer soLuongSp = 0;
