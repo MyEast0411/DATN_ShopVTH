@@ -248,6 +248,7 @@ const ThongKe = () => {
         ngayKT: ngayKT,
       })
       .then((res) => {
+        console.log(res.data);
         setDataSearch(res.data);
       });
   };
@@ -933,7 +934,7 @@ const ThongKe = () => {
                   fontWeight: 600,
                 }}
               >
-                Tóp 5 Sản Phẩm Bán Chạy Theo {valueColumnChart}
+                Tóp 5 Sản Phẩm Bán Chạy Theo {valueColumnChart == "week" ?"Tuần":valueColumnChart=="month" ? "Tháng" : "Năm"}
               </h5>
             </div>
             {/* <div className="content justify-center">

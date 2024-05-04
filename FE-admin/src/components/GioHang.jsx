@@ -189,7 +189,7 @@ const GioHang = ({
         console.log(updatedRows);
 
         const totalSoTien = updatedRows.reduce(
-          (sum, row) => sum + parseFloat(row.soTien.replaceAll(",", "")),
+          (sum, row) => sum + parseFloat(row.soTien.replaceAll(".", "")),
           0
         );
 

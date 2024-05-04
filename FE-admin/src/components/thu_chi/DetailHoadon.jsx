@@ -59,6 +59,7 @@ import { notification} from 'antd';
 
 
 function DetailHoadon() {
+  const [user, setUser] = useState({});
   // const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   // const [updateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
   // const [addLSHDConfirmationOpen, setAddLSHDConfirmationOpen] = useState(false);
@@ -81,7 +82,8 @@ function DetailHoadon() {
   const [idToDelete, setIdToDelete] = useState(null);
   const [idToUpdate, setIdToUpdate] = useState(null);
   const [isModalOpenThem, setIsModalOpenThem] = useState(false);
-  const [note, setNote] = useState("");
+  // const [note, setNote] = useState("");
+  const [note, setNote] = useState(JSON.parse(localStorage.getItem("user")).ma+" - "+JSON.parse(localStorage.getItem("user")).ten + " ");
   const [isModalOpenTT, setIsModalOpenTT] = useState(false);
   const [openTimeLine, setOpenTimeLine] = useState(false);
   const [openModalLui, setOpenModalLui] = useState(false);
@@ -193,6 +195,15 @@ function DetailHoadon() {
     // });
     // setIsModalOpenHD(false);
   };
+  // get Usser
+  useEffect(() => {
+    if (localStorage?.getItem("user") != ""){
+       setUser(JSON.parse(localStorage.getItem("user")));
+       console.log(JSON.parse(localStorage.getItem("user")));
+    }
+     
+    else setUser(null);
+  }, []);
 
 
 // chuyển trang thái
@@ -224,7 +235,7 @@ function DetailHoadon() {
   };
 
   const hideModal = () => {
-    setNote("");
+   setNote("");
     setOpenTimeLine(false);
   };
 
@@ -272,6 +283,8 @@ function DetailHoadon() {
         getDataLichSu();
         cancelLuiHD();
         hideModalLui();
+        setNote(JSON.parse(localStorage.getItem("user")).ma+" - "+JSON.parse(localStorage.getItem("user")).ten + " ");
+  
       })
       .catch((error) => {
         toast("😢 Chuyển trạng thái thất bại");
@@ -385,7 +398,7 @@ function DetailHoadon() {
       .post(`http://localhost:8080/lich_su_hoa_don/add/${id}`, {
         moTaHoaDon: listTitleTimline[info.trangThai + 1].title,
         deleted: 1,
-        nguoiTao: "Cam",
+        nguoiTao: JSON.parse(localStorage.getItem("user")).ma,
         ghiChu: note,
       })
       .then((response) => {
@@ -396,6 +409,8 @@ function DetailHoadon() {
         getDataChiTietSanPham();
         getDataLichSu();
         setIsModalOpenTienTrangThai(false);
+        setNote(JSON.parse(localStorage.getItem("user")).ma+" - "+JSON.parse(localStorage.getItem("user")).ten + " ");
+  
        
       })
       .catch((error) => {
@@ -508,8 +523,10 @@ function DetailHoadon() {
   const fetchKMSPCT = async () => {
     const response = await axios.get(
       `http://localhost:8080/khuyen-mai/getAllKMSPCT`
-    );
-    setKmspcts(response.data);
+    ).then((res)=>{
+      setKmspcts(res.data)
+    }
+  )
   };
 
   const DiscountTag = ({ discount }) => {
@@ -526,22 +543,24 @@ function DetailHoadon() {
     await axios
       .get(`http://localhost:8080/lich_su_hoa_don/getLichSuHoaDons/${id}`)
       .then((res) => {
+        
         setRowsLichSu(
+          
           res.data.map((item, index) => {
             return {
               ...item,
               description: item.moTaHoaDon == null ? "Trống" : item.moTaHoaDon,
-              maNV:
-                item.id_hoa_don.id_nhan_vien == null
+              tenNV:
+                item.nguoiTao == null
                   ? "Trống"
-                  : item.id_hoa_don.id_nhan_vien.ma,
+                  : item.nguoiTao,
               date: moment(new Date(item.ngayTao)).format(
                 "  HH:mm:ss , DD-MM-YYYY"
               ),
-              tenNV:
-                item.id_hoa_don.id_nhan_vien == null
-                  ? "Trống"
-                  : item.id_hoa_don.id_nhan_vien.ten,
+              // tenNV:
+              //   item.id_hoa_don.id_nhan_vien == null
+              //     ? "Trống"
+              //     : item.id_hoa_don.id_nhan_vien.ten,
 
               ghiChu: item.ghiChu == null ? "trống" : item.ghiChu,
               nguoiXacNhan: " Admin ",
@@ -1023,7 +1042,11 @@ function DetailHoadon() {
 
                 <div className="mb-3">
                   <p>Tổng Tiền</p>
-                  <Input value={`${Intl.NumberFormat().format(tongTien - tienThanhToan)} ₫`} />
+                  <Input value={`${Intl.NumberFormat().format(rowsSPCT.reduce(
+                          (sum, element) =>
+                            sum + element.quantity * element.price,
+                          0
+                        ) - info.tienGiam - tienThanhToan)} ₫`} />
                 </div>
                 <div className="mb-3">
                   <p>Tiền Khách Đưa</p>
@@ -1140,7 +1163,11 @@ function DetailHoadon() {
                 </p>
               </div>
               <div className="pt-3">
-                {tienThanhToan ==  tongTien ? (
+                {tienThanhToan >=  rowsSPCT.reduce(
+                          (sum, element) =>
+                            sum + element.quantity * element.price,
+                          0
+                        ) - info.tienGiam ? (
                   ""
                 ) : (
                   <Button onClick={showModalTT}>Xác nhận thanh toán</Button>
@@ -1594,9 +1621,13 @@ function DetailHoadon() {
                           (sum, element) =>
                             sum + element.quantity * element.price,
                           0
-                        )
+                        ) - info.tienGiam
+                        
                       )}
+                      
                       &nbsp;₫
+                      {/* {Intl.NumberFormat().format(info.tongTien)}&nbsp;₫ */}
+
                     </p>
                   </div>
                 </div>

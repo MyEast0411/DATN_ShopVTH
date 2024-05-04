@@ -24,14 +24,18 @@ export default function QuanLyHoaDon() {
   const [dataSelect, setDataSelect] = useState(-1);
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
+  const [listSL, setListSL] = useState([]);
+  // const [data, setData] = useState([]);
+  
+  const [tongSL, setTongSL] = useState(0);
   const onChangeDatePicker = (value, dateString) => {
-    console.log("Data: " + dateString);
+    // console.log("Data: " + dateString);
     // console.log("Ngay bat dau: " + typeof dateString[0]);
     if (dateString[0] !== "" || dateString[1] !== "") {
       let nbd = moment(dateString[0], "DD-MM-YYYY HH:mm").valueOf();
       let nkt = moment(dateString[1], "DD-MM-YYYY HH:mm").valueOf();
-      console.log(nbd);
-      console.log(nkt);
+      // console.log(nbd);
+      // console.log(nkt);
       setNgayBatDau(nbd);
       setNgayKetThuc(nkt);
     } else {
@@ -55,9 +59,39 @@ export default function QuanLyHoaDon() {
     if (value.trim() == "") setFilterValue("");
     else setFilterValue(value);
   };
+
+  const getSoLuongHDByTT = async () => {
+    await axios.get(url + "callSLHDByTT")
+    .then((res) => { 
+     const items = [
+       `Chờ xác nhận`, //  - 0
+       `Xác Nhận`, //  - 1
+       `Chờ Vận Chuyển`, //  - 2,
+       `Giao Hàng`, //  - 3,
+       `Hoàn Thành`, //  - 4,
+       `Trả Hàng`, //  - 5,
+       `Hủy`, //  - 6,
+     ];
+     
+   
+    //  const dataSL =  res.data.map((el, i) => ({ ... el , trangThai  : items[i] }));
+    // console.log(dataSL);
+     localStorage.setItem('dataSL', JSON.stringify(res.data));
+     console.log(JSON.parse(localStorage.getItem('dataSL')));
+     setListSL(res.data);
+     const totalSoTien = res.data.reduce(
+       (sum, row) => sum + row.so_luong,
+       0
+     );
+     setTongSL( totalSoTien); 
+     })
+ };
+
   useEffect(() => {
+   
     getData(key1);
-  }, [key1, list]);
+    getSoLuongHDByTT();
+  }, [key1, list , listSL]);
 
   const filterOptions = (data) => {
     return data
@@ -88,11 +122,11 @@ export default function QuanLyHoaDon() {
   const getData = async (key) => {
     const res = await axios.get(url + `getHoaDons/${key}`);
     const data = await res.data;
-    console.log(
-      data.sort(function soSanhNgayTao(a, b) {
-        return b.ngayTao - a.ngayTao;
-      })
-    );
+    // console.log(
+    //   data.sort(function soSanhNgayTao(a, b) {
+    //     return b.ngayTao - a.ngayTao;
+    //   })
+    // );
 
     setList(
       filterOptions(data)
@@ -110,10 +144,8 @@ export default function QuanLyHoaDon() {
     );
   };
 
-  const onChange = async (key) => {
-    setKey(key);
-    getData(key);
-  };
+  
+
   const items = [
     `Chờ xác nhận`, //  - 0
     `Xác Nhận`, //  - 1
@@ -125,14 +157,20 @@ export default function QuanLyHoaDon() {
   ];
   var data = [];
   for (let index = 0; index < items.length; index++) {
+    const dataList =  JSON.parse(localStorage.getItem('dataSL'));
+    var sl  = 0;
+    dataList.map( (data) => {
+      if (data.trang_thai == index) {
+        sl = data.so_luong ;  
+      } 
+    }) 
     var item = {
       key: index,
-      label: items[index],
-      // children: <TableCommon dataSource={list} />,
+      label: `${items[index]} ( ${sl}) `,
+     
       children: (
         <TableCommon
           data={list}
-          // dataInput={dataInput}
         />
       ),
     };
@@ -141,15 +179,21 @@ export default function QuanLyHoaDon() {
   }
   data.unshift({
     key: -1,
-    label: `Tất cả`,
-    // children: <TableCommon dataSource={list} />,
+    label: `Tất cả   (${tongSL})`,
+    
     children: (
       <TableCommon
         data={list}
-        // dataInput={dataInput}
+       
       />
     ),
   });
+
+  const onChange = async (key) => {
+    setKey(key);
+    getData(key);
+  };
+
   return (
     <>
       <div>

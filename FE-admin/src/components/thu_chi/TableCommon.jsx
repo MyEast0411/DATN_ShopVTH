@@ -101,11 +101,11 @@ export default function TableCommon({ data }) {
                 </span>
               </Link>
             </Tooltip>
-            <Tooltip color="danger" content="Xóa hóa đơn" showArrow={true}>
+            {/* <Tooltip color="danger" content="Xóa hóa đơn" showArrow={true}>
               <span className="text-lg text-danger cursor-pointer active:opacity-50">
                 <DeleteIcon onClick={() => handleDelete(hoaDon.ids)} />
               </span>
-            </Tooltip>
+            </Tooltip> */}
           </div>
         );
       default:
